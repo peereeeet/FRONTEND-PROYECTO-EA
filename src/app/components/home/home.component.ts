@@ -23,12 +23,20 @@ export class HomeComponent implements OnInit {
   }
 
   loadStats(): void {
-    this.userService.getUsers().subscribe(users => {
-      this.animateCounter('userCount', users.length);
+    this.userService.getUsers().subscribe({
+      next: (res) => {
+        const totalUsers = res.totalItems ?? res.data.length;
+        this.animateCounter('userCount', totalUsers);
+      },
+      error: (err) => console.error('Error al contar usuarios:', err)
     });
 
-    this.eventoService.getEventos().subscribe(eventos => {
-      this.animateCounter('eventCount', eventos.length);
+    this.eventoService.getEventos().subscribe({
+      next: (res) => {
+        const totalEvents = res.totalItems ?? res.data.length;
+        this.animateCounter('eventCount', totalEvents);
+      },
+      error: (err) => console.error('Error al contar eventos:', err)
     });
   }
 

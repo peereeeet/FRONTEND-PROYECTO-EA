@@ -137,21 +137,21 @@
   <div class="lista-usuarios">
     <div class="list-header">
       <h2>Lista de Usuarios</h2>
-      <div class="page-size">
+      <!-- <div class="page-size">
         <label>Por página</label>
         <select #sizeSel (change)="setPageSize(sizeSel.value)">
           <option [selected]="pageSize===3" value="3">3</option>
           <option [selected]="pageSize===6" value="6">6</option>
           <option [selected]="pageSize===9" value="9">9</option>
         </select>
-      </div>
+      </div> -->
     </div>
 
     <div class="pager">
-      <button type="button" (click)="prevPage()" [disabled]="page<=1">«</button>
+      <button type="button" (click)="prevBackendPage()" [disabled]="page<=1">«</button>
       <span class="counter">Página {{ page }} / {{ totalPages }}</span>
-      <button type="button" (click)="nextPage()" [disabled]="page>=totalPages">»</button>
-      <span class="total">Total: {{ usuarios.length }}</span>
+      <button type="button" (click)="nextBackendPage()" [disabled]="page>=totalPages">»</button>
+      <span class="total">Total: {{ totalUsuarios }}</span>
     </div>
 
     <ul>

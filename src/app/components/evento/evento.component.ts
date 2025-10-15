@@ -16,6 +16,10 @@ import { Location } from '@angular/common';
 })
 export class EventoComponent implements OnInit {
   eventos: Evento[] = [];
+  totalEventos = 0; 
+  totalPagesBackend = 1; 
+  page = 1; 
+  pageSize = 3; 
   users: User[] = [];
   availableUsers: User[] = [];
   selectedUsers: User[] = [];
@@ -26,6 +30,12 @@ export class EventoComponent implements OnInit {
   showDeleteModal = false;
   private pendingDeleteIndex: number | null = null;
 
+  formSubmitted = false;
+
+  indiceEdicion: number | null = null;
+  showUpdateModal = false;
+  pendingUpdateEvento: Evento | null = null;
+
   showEditModal = false;
   editEvent: Evento = { name: '', schedule: [], address: '', participantes: [] };
   editAvailableUsers: User[] = [];
@@ -35,14 +45,14 @@ export class EventoComponent implements OnInit {
   private pendingEditIndex: number | null = null;
 
   availablePage = 1;
-  availablePageSize = 5;
+  availablePageSize = 3;
   selectedPage = 1;
-  selectedPageSize = 5;
+  selectedPageSize = 3;
 
   editAvailablePage = 1;
-  editAvailablePageSize = 5;
+  editAvailablePageSize = 3;
   editSelectedPage = 1;
-  editSelectedPageSize = 5;
+  editSelectedPageSize = 3;
 
   constructor(
     private eventoService: EventoService,
@@ -55,55 +65,125 @@ export class EventoComponent implements OnInit {
     this.loadEventos();
   }
 
-  private loadUsers(): void {
-    this.userService.getUsers().subscribe({
-      next: (users) => {
-        this.users = users as any;
-        this.availableUsers = [...this.users];
-        this.clampPages();
-      }
-    });
-  }
-
   private loadEventos(): void {
-    this.eventoService.getEventos().subscribe({
-      next: (evts) => {
-        this.eventos = evts.map(e => ({
+    this.eventoService.getEventos(this.page, this.pageSize).subscribe({
+      next: (res) => {
+        this.eventos = res.data.map(e => ({
           ...e,
           schedule: Array.isArray(e.schedule) ? e.schedule : (e.schedule ? [e.schedule as any] : []),
           participantes: Array.isArray((e as any).participantes) ? (e as any).participantes : ((e as any).participants || [])
         }));
+        this.totalEventos = res.totalItems ?? res.data.length;
+        this.totalPagesBackend = res.totalPages ?? 1;
+      },
+      error: (err) => {
+        console.error('Error al cargar eventos:', err);
       }
     });
   }
 
-  // Open edit modal with event data
-  openEditModal(index: number): void {
-    this.pendingEditIndex = index;
-    const evento = this.eventos[index];
-    
-    this.editEvent = { ...evento };
-    this.editSelectedUsers = this.users.filter(user => 
-      this.editEvent.participantes?.includes(user._id!)
-    );
-    this.editAvailableUsers = this.users.filter(user => 
-      !this.editEvent.participantes?.includes(user._id!)
-    );
+  nextBackendPage(): void {
+    if (this.page < this.totalPagesBackend) {
+      this.page++;
+      this.loadEventos();
+    }
+  }
+  prevBackendPage(): void {
+    if (this.page > 1) {
+      this.page--;
+      this.loadEventos();
+    }
+  }
 
-    if (this.editEvent.schedule && this.editEvent.schedule.length > 0) {
-      const scheduleStr = Array.isArray(this.editEvent.schedule) ? 
-        this.editEvent.schedule[0] : this.editEvent.schedule;
-      const [datePart, timePart] = scheduleStr.split(' ');
-      this.editDateStr = datePart;
-      this.editTimeStr = timePart;
+  private loadUsers(): void {
+    this.userService.getUsers(1, 100).subscribe({
+      next: (res) => {
+        this.users = res.data;
+        this.availableUsers = [...this.users];
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios:', err);
+      }
+    });
+  }
+
+  prepararEdicion(evento: Evento, index: number): void {
+    this.newEvent = { ...evento };
+    this.indiceEdicion = index;
+
+    if (this.newEvent.schedule && this.newEvent.schedule.length > 0) {
+      const [fecha, hora] = this.newEvent.schedule[0].split(' ');
+      this.dateStr = fecha;
+      this.timeStr = hora;
     } else {
-      this.editDateStr = '';
-      this.editTimeStr = '';
+      this.dateStr = '';
+      this.timeStr = '';
     }
 
-    this.showEditModal = true;
-    this.clampEditPages();
+    this.selectedUsers = this.users.filter(u =>
+      this.newEvent.participantes?.includes(u._id!)
+    );
+    this.availableUsers = this.users.filter(u =>
+      !this.newEvent.participantes?.includes(u._id!)
+    );
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  cancelarEdicion(): void {
+    this.indiceEdicion = null;
+    this.newEvent = { name: '', schedule: [], address: '', participantes: [] };
+    this.selectedUsers = [];
+    this.availableUsers = [...this.users];
+    this.dateStr = '';
+    this.timeStr = '';
+    this.formSubmitted = false;
+  }
+
+  // Open edit modal with event data
+  openEditModal(index: number): void {
+  this.pendingEditIndex = index;
+  const evento = this.eventos[index];
+
+  this.eventoService.getEventoById(evento._id!).subscribe({
+    next: (ev: any) => {
+      this.editEvent = {
+        ...ev,
+        schedule: Array.isArray(ev.schedule)
+          ? ev.schedule
+          : ev.schedule
+          ? [ev.schedule]
+          : [],
+        participantes: ev.participantes?.map((p: any) =>
+          typeof p === 'string' ? p : p._id
+        ) || []
+      };
+
+      this.editSelectedUsers = this.users.filter(u =>
+        this.editEvent.participantes?.includes(u._id!)
+      );
+      this.editAvailableUsers = this.users.filter(u =>
+        !this.editEvent.participantes?.includes(u._id!)
+      );
+
+      if (this.editEvent.schedule.length > 0) {
+        const [date, time] = this.editEvent.schedule[0].split(' ');
+        this.editDateStr = date;
+        this.editTimeStr = time;
+      } else {
+        this.editDateStr = '';
+        this.editTimeStr = '';
+      }
+
+      this.showEditModal = true;
+      this.clampEditPages();
+    },
+    error: (err) => {
+      console.error('Error al cargar evento para edición:', err);
+      this.errorMessage = 'No se pudo cargar el evento seleccionado.';
+    }
+  });
+}
 
   closeEditModal(): void {
     this.showEditModal = false;

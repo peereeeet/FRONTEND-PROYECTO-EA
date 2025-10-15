@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
-import { TruncatePipe } from '../../pipes/truncate.pipe';
 import { MaskEmailPipe } from '../../pipes/maskEmail.pipe';
 import { Evento } from '../../models/evento.model';
 import { EventoService } from '../../services/evento.service';
@@ -54,6 +53,8 @@ export class UsuarisComponent implements OnInit {
 
   page = 1;
   pageSize = 6;
+  totalUsuarios = 0;
+  totalPagesBackend = 1;
 
   todosEventos: Evento[] = [];
   private eventosById = new Map<string, Evento>();
@@ -65,28 +66,70 @@ export class UsuarisComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.eventoService.getEventos().subscribe({
-      next: (evts) => {
-        this.todosEventos = evts.map(e => ({
-          ...e,
-          schedule: Array.isArray(e.schedule) ? e.schedule : (e.schedule ? [e.schedule as any] : []),
-          participantes: Array.isArray((e as any).participantes) ? (e as any).participantes : ((e as any).participants || [])
+    this.loadEventos();
+    this.loadUsers();
+  }
+
+  loadUsers(): void {
+    this.userService.getUsers(this.page, this.pageSize).subscribe({
+      next: (res) => {
+        this.usuarios = (res.data ?? []).map(u => ({
+          ...u,
+          birthday: new Date(u.birthday as unknown as string)
         }));
-        this.eventosById.clear();
-        this.todosEventos.forEach(e => { if (e._id) this.eventosById.set(e._id, e); });
+        this.totalPagesBackend = res.totalPages ?? 1;
+        this.totalUsuarios = res.totalItems ?? this.usuarios.length;
+        this.desplegado = new Array(this.usuarios.length).fill(false);
+        this.mostrarPassword = new Array(this.usuarios.length).fill(false);
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios:', err);
       }
     });
-
-    this.userService.getUsers().subscribe(data => {
-      this.usuarios = data.map(u => ({
-        ...u,
-        birthday: new Date(u.birthday as unknown as string)
-      }));
-      this.desplegado = new Array(this.usuarios.length).fill(false);
-      this.mostrarPassword = new Array(this.usuarios.length).fill(false);
-      this.clampPage();
-    });
   }
+
+  prevBackendPage(): void {
+    if (this.page > 1) {
+      this.page--;
+      this.loadUsers();
+    }
+  }
+  nextBackendPage(): void {
+    if (this.page < this.totalPagesBackend) {
+      this.page++;
+      this.loadUsers();
+    }
+  }
+  setPageSize(v: string): void {
+    const n = parseInt(v, 10) || 6;
+    this.pageSize = n;
+    this.page = 1;
+    this.loadUsers();
+  }
+
+  private loadEventos(): void {
+  this.eventoService.getEventos(1, 1000).subscribe({
+    next: (res) => {
+      this.todosEventos = (res.data ?? []).map((e: Evento) => ({
+        ...e,
+        schedule: Array.isArray(e.schedule)
+          ? e.schedule
+          : (e.schedule ? [e.schedule as any] : []),
+        participantes: Array.isArray((e as any).participantes)
+          ? (e as any).participantes
+          : ((e as any).participants || [])
+      }));
+
+      this.eventosById.clear();
+      this.todosEventos.forEach((ev: Evento) => {
+        if (ev._id) this.eventosById.set(ev._id, ev);
+      });
+    },
+    error: (err) => {
+      console.error('Error al cargar eventos:', err);
+    }
+  });
+}
 
   toggleTableView(): void {
     this.showTableView = !this.showTableView;
@@ -179,14 +222,10 @@ export class UsuarisComponent implements OnInit {
     };
 
     this.userService.addUser(usuarioJSON).subscribe(response => {
-      this.usuarios.push({
-        ...usuarioJSON,
-        _id: response._id,
-        eventos: response.eventos ?? usuarioJSON.eventos
-      });
-      this.desplegado.push(false);
-      this.mostrarPassword.push(false);
-      this.clampPage();
+      this.loadUsers();
+      this.desplegado = new Array(this.usuarios.length).fill(false);
+      this.mostrarPassword = new Array(this.usuarios.length).fill(false);
+
       userForm.resetForm();
       this.resetFormInternal();
     });
@@ -199,10 +238,9 @@ export class UsuarisComponent implements OnInit {
     }
     const idx = this.pendingUpdateIndex;
     this.userService.updateUser(this.pendingUpdateUser).subscribe(response => {
-      this.usuarios[idx] = { ...(response as User) };
+      this.loadUsers();
       this.closeUpdateModal();
       this.resetFormInternal();
-      this.clampPage();
     });
   }
 
@@ -238,10 +276,10 @@ export class UsuarisComponent implements OnInit {
 
     this.userService.deleteUserById(usuarioAEliminar._id).subscribe(
       () => {
-        this.usuarios.splice(idx, 1);
-        this.desplegado.splice(idx, 1);
-        this.mostrarPassword.splice(idx, 1);
-        this.clampPage();
+        if (this.usuarios.length === 1 && this.page > 1) {
+          this.page--;
+        }
+        this.loadUsers();
         this.closeDeleteModal();
       },
       () => {
@@ -282,9 +320,10 @@ export class UsuarisComponent implements OnInit {
   }
 
   toggleDesplegable(index: number): void {
-    const willOpen = !this.desplegado[index];
-    this.desplegado = this.desplegado.map((_, i) => i === index ? willOpen : false);
-  }
+  const globalIndex = index;
+  const willOpen = !this.desplegado[globalIndex];
+  this.desplegado = this.desplegado.map((_, i) => i === globalIndex ? willOpen : false);
+}
 
   togglePassword(index: number): void {
     this.mostrarPassword[index] = !this.mostrarPassword[index];
@@ -313,39 +352,21 @@ export class UsuarisComponent implements OnInit {
     if (!u._id || !ev._id) return;
     this.userService.addEventToUser(u._id, ev._id).subscribe({
       next: (updated) => {
-        const idx = this.usuarios.findIndex(x => x._id === updated._id);
-        if (idx >= 0) {
-          const current = this.usuarios[idx];
-          const currentIds = this.userEventIds(current);
-          if (!currentIds.includes(ev._id!)) {
-            current.eventos = [...(current.eventos ?? []), ev._id!];
-          }
-        }
+        this.loadUsers();
       },
       error: () => alert('No se pudo añadir el usuario a ese evento.')
     });
   }
 
   get pagedUsuarios(): User[] {
-    const start = (this.page - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    return this.usuarios.slice(start, end);
+    return this.usuarios;
   }
   get totalPages(): number {
-    return Math.max(1, Math.ceil(this.usuarios.length / this.pageSize));
+    return this.totalPagesBackend;
   }
-  setPageSize(v: string): void {
-    const n = parseInt(v, 10) || 6;
-    this.pageSize = n;
-    this.page = 1;
-    this.clampPage();
-  }
-  prevPage(): void { if (this.page > 1) this.page--; }
-  nextPage(): void { if (this.page < this.totalPages) this.page++; }
-  idx(i: number): number { return (this.page - 1) * this.pageSize + i; }
-  private clampPage(): void {
-    this.page = Math.min(Math.max(1, this.page), this.totalPages);
-  }
+  idx(i: number): number {
+    return i;
+  } 
 
   private todayISO(): string {
     const d = new Date();

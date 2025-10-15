@@ -78,14 +78,14 @@
             <div class="participants-column">
               <div class="list-header">
                 <h4>👥 Usuarios disponibles</h4>
-                <div class="page-size">
+                <!-- <div class="page-size">
                   <label>Por página</label>
                   <select #availableSize (change)="setAvailablePageSize(availableSize.value)">
                     <option [selected]="availablePageSize===4" value="4">4</option>
                     <option [selected]="availablePageSize===6" value="6">6</option>
                     <option [selected]="availablePageSize===8" value="8">8</option>
                   </select>
-                </div>
+                </div> -->
               </div>
 
               <div class="pager">
@@ -108,14 +108,14 @@
             <div class="participants-column">
               <div class="list-header">
                 <h4>🎯 Participantes del evento</h4>
-                <div class="page-size">
+                <!-- <div class="page-size">
                   <label>Por página</label>
                   <select #selectedSize (change)="setSelectedPageSize(selectedSize.value)">
                     <option [selected]="selectedPageSize===4" value="4">4</option>
                     <option [selected]="selectedPageSize===6" value="6">6</option>
                     <option [selected]="selectedPageSize===8" value="8">8</option>
                   </select>
-                </div>
+                </div> -->
               </div>
 
               <div class="pager">
@@ -137,7 +137,7 @@
         </div>
       </div>
 
-      <button type="submit">💾 Guardar Evento</button>
+      <button type="submit" (click)="formSubmitted = true">💾 Guardar Evento</button>
     </form>
 
     <div class="error-message" *ngIf="errorMessage">
@@ -270,14 +270,14 @@
             <div class="participants-column">
               <div class="list-header">
                 <h4>👥 Usuarios disponibles</h4>
-                <div class="page-size">
+                <!-- <div class="page-size">
                   <label>Por página</label>
                   <select #editAvailableSize (change)="setEditAvailablePageSize(editAvailableSize.value)">
                     <option [selected]="editAvailablePageSize===4" value="4">4</option>
                     <option [selected]="editAvailablePageSize===6" value="6">6</option>
                     <option [selected]="editAvailablePageSize===8" value="8">8</option>
                   </select>
-                </div>
+                </div> -->
               </div>
 
               <div class="pager">
@@ -299,14 +299,14 @@
             <div class="participants-column">
               <div class="list-header">
                 <h4>🎯 Participantes del evento</h4>
-                <div class="page-size">
+                <!-- <div class="page-size">
                   <label>Por página</label>
                   <select #editSelectedSize (change)="setEditSelectedPageSize(editSelectedSize.value)">
                     <option [selected]="editSelectedPageSize===4" value="4">4</option>
                     <option [selected]="editSelectedPageSize===6" value="6">6</option>
                     <option [selected]="editSelectedPageSize===8" value="8">8</option>
                   </select>
-                </div>
+                </div> -->
               </div>
 
               <div class="pager">

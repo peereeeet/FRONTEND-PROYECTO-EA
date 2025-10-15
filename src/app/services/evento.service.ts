@@ -9,8 +9,10 @@ export class EventoService {
 
   constructor(private http: HttpClient) {}
 
-  getEventos(): Observable<Evento[]> {
-    return this.http.get<Evento[]>(this.apiUrl);
+  getEventos(page: number = 1, limit: number = 10): Observable<{ data: Evento[]; page: number; totalPages: number; totalItems: number; }> {
+    return this.http.get<{ data: Evento[]; page: number; totalPages: number; totalItems: number; }>(
+      `${this.apiUrl}?page=${page}&limit=${limit}`
+    );
   }
 
   getEventoById(id: string): Observable<Evento> {
