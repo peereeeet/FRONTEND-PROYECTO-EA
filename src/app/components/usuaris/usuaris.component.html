@@ -163,7 +163,9 @@
               {{ desplegado[idx(i)] ? '👁️ Ocultar' : '👁️ Mostrar' }}
             </button>
             <button (click)="prepararEdicion(usuario, idx(i))" class="modificar">✏️ Modificar</button>
-            <button (click)="openDeleteModal(idx(i))" class="eliminar">🗑️ Eliminar</button>
+            <button (click)="openDeleteModal(idx(i))" [ngClass]="usuario.isActive ? 'btn-deshabilitar' : 'btn-habilitar'">
+            {{ usuario.isActive ? '🚫 Deshabilitar' : '✅ Habilitar' }}
+            </button>
           </div>
         </div>
 
@@ -216,15 +218,24 @@
 
   <!-- Modal eliminar -->
   <div class="modal-overlay" *ngIf="showDeleteModal">
-    <div class="modal">
-      <h3>¿Eliminar usuario?</h3>
-      <p>Esta acción no se puede deshacer. Se eliminarán todos los datos del usuario.</p>
-      <div class="modal-actions">
-        <button class="btn-cancel" (click)="closeDeleteModal()">Cancelar</button>
-        <button class="btn-confirm" (click)="confirmarEliminar()">Eliminar</button>
-      </div>
+  <div class="modal">
+    <h3>
+      {{ usuarioAEliminar?.isActive ? '¿Deshabilitar usuario?' : '¿Habilitar usuario?' }}
+    </h3>
+    <p>
+      {{ usuarioAEliminar?.isActive
+        ? 'El usuario será deshabilitado temporalmente, pero sus datos se conservarán.'
+        : 'El usuario volverá a estar habilitado en el sistema y podrá iniciar sesión nuevamente.' }}
+    </p>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeDeleteModal()">Cancelar</button>
+      <button class="btn-confirm" (click)="confirmarDisable()">
+        {{ usuarioAEliminar?.isActive ? 'Deshabilitar' : 'Habilitar' }}
+      </button>
     </div>
   </div>
+</div>
+
 
   <!-- Modal actualización -->
   <div class="modal-overlay" *ngIf="showUpdateModal">

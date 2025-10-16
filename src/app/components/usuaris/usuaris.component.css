@@ -334,7 +334,32 @@
   background: #e69500;
   transform: translateY(-1px);
 }
+.btn-deshabilitar {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
 
+.btn-deshabilitar:hover {
+  background-color: #c0392b;
+}
+.btn-habilitar {
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-habilitar:hover {
+  background-color: #27ae60;
+}
 .eliminar {
   background: var(--error);
   color: white;

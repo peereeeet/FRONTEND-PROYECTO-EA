@@ -30,9 +30,9 @@ export class UserService {
     return this.http.put<User>(`${this.apiUrl}/${user._id}`, user, { headers });
   }
 
-  deleteUserById(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
+  disableUser(id: string): Observable<User> {
+  return this.http.patch<User>(`${this.apiUrl}/${id}/disable`, {});
+}
 
   addEventToUser(userId: string, eventId: string): Observable<User> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

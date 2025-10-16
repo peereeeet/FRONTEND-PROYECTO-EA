@@ -7,4 +7,5 @@ export interface User {
   password: string;
   birthday: Date;
   eventos?: (string | Evento)[];
+  isActive?: boolean;
 }

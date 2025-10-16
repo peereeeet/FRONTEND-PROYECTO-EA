@@ -35,7 +35,8 @@ export class UsuarisComponent implements OnInit {
     gmail: '',
     password: '',
     birthday: new Date(),
-    eventos: []
+    eventos: [], 
+    isActive: true
   };
 
   birthdayStr: string = this.todayISO();
@@ -43,6 +44,7 @@ export class UsuarisComponent implements OnInit {
   usuarioEdicion: User | null = null;
   indiceEdicion: number | null = null;
   formSubmitted = false;
+  usuarioAEliminar: User | null = null;
 
   showDeleteModal = false;
   private pendingDeleteIndex: number | null = null;
@@ -260,34 +262,37 @@ export class UsuarisComponent implements OnInit {
     this.showDeleteModal = false;
   }
 
-  confirmarEliminar(): void {
-    if (this.pendingDeleteIndex == null) {
-      this.closeDeleteModal();
-      return;
-    }
-    const idx = this.pendingDeleteIndex;
-    const usuarioAEliminar = this.usuarios[idx];
-
-    if (!usuarioAEliminar._id) {
-      alert('El usuario no se puede eliminar porque no está registrado en la base de datos.');
-      this.closeDeleteModal();
-      return;
-    }
-
-    this.userService.deleteUserById(usuarioAEliminar._id).subscribe(
-      () => {
-        if (this.usuarios.length === 1 && this.page > 1) {
-          this.page--;
-        }
-        this.loadUsers();
-        this.closeDeleteModal();
-      },
-      () => {
-        alert('Error al eliminar el usuario. Por favor, inténtalo de nuevo.');
-        this.closeDeleteModal();
-      }
-    );
+  confirmarDisable(): void {
+  if (this.pendingDeleteIndex == null) {
+    this.closeDeleteModal();
+    return;
   }
+
+  const idx = this.pendingDeleteIndex;
+  const usuarioAEliminar = this.usuarios[idx];
+
+  if (!usuarioAEliminar._id) {
+    alert('El usuario no se puede modificar porque no está registrado en la base de datos.');
+    this.closeDeleteModal();
+    return;
+  }
+  this.userService.disableUser(usuarioAEliminar._id).subscribe(
+    (updatedUser) => {
+    if (this.usuarios.length === 1 && this.page > 1) {
+      this.page--;
+    }
+
+    this.loadUsers(); // recargar la lista con los nuevos estados
+
+
+    this.closeDeleteModal();
+  },
+  () => {
+    alert('Error al actualizar el estado del usuario. Por favor, inténtalo de nuevo.');
+    this.closeDeleteModal();
+  }
+  );
+}
 
   cancelarEdicion(userForm: NgForm): void {
     this.indiceEdicion = null;
