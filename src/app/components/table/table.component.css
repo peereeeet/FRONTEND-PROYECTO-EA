@@ -85,32 +85,65 @@
   gap: 8px;
 }
 
-.btn-edit {
-  background: var(--primary-color);
+.action-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modificar {
+  background: var(--warning);
+  color: rgb(251, 171, 0);
+}
+
+.modificar:hover {
+  background: #e69500;
+  transform: translateY(-1px);
+}
+
+.eliminar {
+  background: var(--error);
+  color: rgb(12, 83, 237);
+}
+
+.eliminar:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.btn-habilitar {
+  background-color: #2ecc71;
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 8px 14px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 0.8rem;
+  transition: 0.2s;
 }
 
-.btn-delete {
-  background: var(--error-color);
+.btn-habilitar:hover {
+  background-color: #27ae60;
+}
+
+.btn-deshabilitar {
+  background-color: #e74c3c;
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 8px 14px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 0.8rem;
+  transition: 0.2s;
 }
 
-.btn-edit:hover {
-  background: var(--primary-dark);
-}
-
-.btn-delete:hover {
-  background: #d32f2f;
+.btn-deshabilitar:hover {
+  background-color: #c0392b;
 }
 
 .table-footer {

@@ -45,6 +45,10 @@
             <div class="error-message" *ngIf="(mailCtrl.touched || formSubmitted) && !mailCtrl.errors?.['required'] && mailCtrl.errors?.['email']">
               ⚠️ Formato de email no válido.
             </div>
+            <div class="error-message" *ngIf="isCheckingEmail">Verificando correo...</div>
+            <div class="error-message" *ngIf="emailExists">
+              ⚠️ Este correo ya está registrado.
+            </div>
           </div>
 
           <!-- Contraseña -->
@@ -265,7 +269,14 @@
       title="Lista de Usuarios"
       (onEdit)="onTableEdit($event)"
       (onDelete)="onTableDelete($event)"
-      (onExport)="exportTable()">
+      (onExport)="exportTable()"
+      (onToggleActive)="onTableToggleActive($event)">
     </app-dynamic-table>
+    <div class="pager" *ngIf="showTableView && totalPages > 1">
+      <button type="button" (click)="prevBackendPage()" [disabled]="page <= 1">«</button>
+      <span class="counter">Página {{ page }} / {{ totalPages }}</span>
+      <button type="button" (click)="nextBackendPage()" [disabled]="page >= totalPages">»</button>
+      <span class="total">Total: {{ totalUsuarios }}</span>
+    </div>
   </div>
 </div>

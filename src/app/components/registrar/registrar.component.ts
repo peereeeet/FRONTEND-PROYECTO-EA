@@ -26,6 +26,8 @@ export class RegistrarComponent {
   formSubmitted = false;
   errorMessage = '';
   isSubmitting = false;
+  emailExists: boolean = false;
+  isCheckingEmail: boolean = false;
 
   constructor(private userService: UserService, private router: Router) {
     const today = new Date();
@@ -42,32 +44,49 @@ export class RegistrarComponent {
   onSubmit(form: any) {
     this.formSubmitted = true;
     this.errorMessage = '';
+    this.emailExists = false;
 
     if (form.invalid || this.isFutureDate() || this.nuevoUsuario.password !== this.confirmarPassword) {
       this.errorMessage = 'Por favor, revisa los campos del formulario.';
       return;
     }
 
-    this.isSubmitting = true;
+    this.isCheckingEmail = true;
+    this.userService.checkEmailExists(this.nuevoUsuario.gmail).subscribe({
+      next: (res) => {
+        this.isCheckingEmail = false;
+        if (res.exists) {
+          this.emailExists = true;
+          this.errorMessage = 'Este correo ya está registrado.';
+          return;
+        }
 
-    const newUser: User = {
-      username: this.nuevoUsuario.username.trim(),
-      gmail: this.nuevoUsuario.gmail.trim(),
-      password: this.nuevoUsuario.password.trim(),
-      birthday: new Date(this.birthdayStr),
-    };
+      this.isSubmitting = true;
 
-    this.userService.addUser(newUser).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.error('Error al registrar usuario', err);
-        this.isSubmitting = false;
-        this.errorMessage =
-          err?.error?.message ||
-          'Ha ocurrido un error al registrar el usuario. Inténtalo nuevamente.';
+      const newUser: User = {
+        username: this.nuevoUsuario.username.trim(),
+        gmail: this.nuevoUsuario.gmail.trim(),
+        password: this.nuevoUsuario.password.trim(),
+        birthday: new Date(this.birthdayStr),
+      };
+
+      this.userService.addUser(newUser).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          console.error('Error al registrar usuario', err);
+          this.isSubmitting = false;
+          this.errorMessage =
+            err?.error?.message ||
+            'Ha ocurrido un error al registrar el usuario. Inténtalo nuevamente.';
+        }
+      });
+    },
+      error: () => {
+        this.isCheckingEmail = false;
+        this.errorMessage = 'Error al verificar el correo.';
       }
     });
   }

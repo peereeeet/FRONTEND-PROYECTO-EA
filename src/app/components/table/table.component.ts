@@ -22,6 +22,7 @@ export class DynamicTableComponent {
   @Output() onEdit = new EventEmitter<any>();
   @Output() onDelete = new EventEmitter<any>();
   @Output() onExport = new EventEmitter<void>();
+  @Output() onToggleActive = new EventEmitter<any>();
 
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';

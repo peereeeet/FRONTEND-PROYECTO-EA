@@ -45,6 +45,9 @@ export class UsuarisComponent implements OnInit {
   indiceEdicion: number | null = null;
   formSubmitted = false;
   usuarioAEliminar: User | null = null;
+  errorMessage = '';
+  emailExists: boolean = false;
+  isCheckingEmail: boolean = false;
 
   showDeleteModal = false;
   private pendingDeleteIndex: number | null = null;
@@ -137,13 +140,13 @@ export class UsuarisComponent implements OnInit {
     this.showTableView = !this.showTableView;
   }
 
-  get usuariosForTable(): any[] {
-    return this.usuarios.map(usuario => ({
-      ...usuario,
-      eventCount: this.getUserEvents(usuario).length,
-      birthday: new Date(usuario.birthday)
-    }));
-  }
+  get usuariosForTable(): any[] { 
+  return (this.usuarios ?? []).map(usuario => ({
+    ...usuario,
+    eventCount: this.getUserEvents(usuario).length,
+    birthday: new Date(usuario.birthday)
+  }));
+}
 
   onTableEdit(user: any): void {
     const index = this.usuarios.findIndex(u => u._id === user._id);
@@ -163,6 +166,23 @@ export class UsuarisComponent implements OnInit {
   exportTable(): void {
     const csvContent = this.convertToCSV(this.usuariosForTable);
     this.downloadCSV(csvContent, 'usuarios.csv');
+  }
+
+  onTableToggleActive(user: any): void {
+    const index = this.usuarios.findIndex(u => u._id === user._id);
+    if (index === -1) return;
+
+    const usuarioActualizado = { ...this.usuarios[index], isActive: !this.usuarios[index].isActive };
+
+    this.userService.updateUser(usuarioActualizado).subscribe({
+      next: (res) => {
+        this.usuarios[index] = res;
+      },
+      error: (err) => {
+        console.error('Error al cambiar estado del usuario:', err);
+        alert('No se pudo cambiar el estado del usuario.');
+      }
+    });
   }
 
   private convertToCSV(data: any[]): string {
@@ -196,41 +216,58 @@ export class UsuarisComponent implements OnInit {
 
   agregarElemento(userForm: NgForm): void {
     this.formSubmitted = true;
+    this.errorMessage = '';
+    this.emailExists = false;
 
     if (userForm.invalid) return;
     if (this.nuevoUsuario.password !== this.confirmarPassword) return;
     if (this.isFutureBirthday(this.birthdayStr)) return;
 
-    const birthdayDate = this.parseAsUTCDate(this.birthdayStr);
+    this.isCheckingEmail = true;
+    this.userService.checkEmailExists(this.nuevoUsuario.gmail).subscribe({
+      next: (res) => {
+        this.isCheckingEmail = false;
+        if (res.exists) {
+          this.emailExists = true;
+          return;
+        }
 
-    if (this.indiceEdicion !== null) {
-      const actualizado: User = {
-        ...this.nuevoUsuario,
-        birthday: birthdayDate,
-        _id: this.usuarios[this.indiceEdicion]._id
+      const birthdayDate = this.parseAsUTCDate(this.birthdayStr);
+
+      if (this.indiceEdicion !== null) {
+        const actualizado: User = {
+          ...this.nuevoUsuario,
+          birthday: birthdayDate,
+          _id: this.usuarios[this.indiceEdicion]._id
+        };
+        this.pendingUpdateUser = actualizado;
+        this.pendingUpdateIndex = this.indiceEdicion;
+        this.showUpdateModal = true;
+        return;
+      }
+
+      const usuarioJSON: User = {
+       username: this.nuevoUsuario.username,
+        gmail: this.nuevoUsuario.gmail,
+        password: this.nuevoUsuario.password,
+       birthday: birthdayDate,
+        eventos: this.nuevoUsuario.eventos ?? []
       };
-      this.pendingUpdateUser = actualizado;
-      this.pendingUpdateIndex = this.indiceEdicion;
-      this.showUpdateModal = true;
-      return;
+
+      this.userService.addUser(usuarioJSON).subscribe(response => {
+        this.loadUsers();
+        this.desplegado = new Array(this.usuarios.length).fill(false);
+        this.mostrarPassword = new Array(this.usuarios.length).fill(false);
+
+        userForm.resetForm();
+        this.resetFormInternal();
+      });
+    },
+    error: () => {
+      this.isCheckingEmail = false;
+      alert('Error al verificar el correo.');
     }
-
-    const usuarioJSON: User = {
-      username: this.nuevoUsuario.username,
-      gmail: this.nuevoUsuario.gmail,
-      password: this.nuevoUsuario.password,
-      birthday: birthdayDate,
-      eventos: this.nuevoUsuario.eventos ?? []
-    };
-
-    this.userService.addUser(usuarioJSON).subscribe(response => {
-      this.loadUsers();
-      this.desplegado = new Array(this.usuarios.length).fill(false);
-      this.mostrarPassword = new Array(this.usuarios.length).fill(false);
-
-      userForm.resetForm();
-      this.resetFormInternal();
-    });
+  });
   }
 
   confirmarUpdate(): void {

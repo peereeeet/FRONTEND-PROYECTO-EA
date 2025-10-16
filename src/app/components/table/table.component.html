@@ -31,6 +31,11 @@
                 <div class="action-buttons">
                   <button (click)="onEdit.emit(row)" class="btn-edit">Editar</button>
                   <button (click)="onDelete.emit(row)" class="btn-delete">Eliminar</button>
+                  <button
+                    (click)="onToggleActive.emit(row)"
+                    [ngClass]="row.isActive ? 'btn-deshabilitar' : 'btn-habilitar'">
+                    {{ row.isActive ? '🚫 Deshabilitar' : '✅ Habilitar' }}
+                  </button>
                 </div>
               </ng-container>
               <ng-container *ngSwitchDefault>
@@ -45,7 +50,7 @@
   
   <div class="table-footer">
     <div class="pagination-info">
-      Mostrando {{ sortedData.length }} de {{ data.length }} registros
+      Mostrando {{ data.length }} usuarios de esta página
     </div>
   </div>
 </div>

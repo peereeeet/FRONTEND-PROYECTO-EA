@@ -50,6 +50,8 @@
               <span *ngIf="gmailCtrl.errors?.['required']">El correo es obligatorio.</span>
               <span *ngIf="gmailCtrl.errors?.['email']">Formato no válido.</span>
             </div>
+            <div *ngIf="isCheckingEmail" class="error-message">Verificando correo...</div>
+            <div *ngIf="emailExists" class="error-message">⚠ Este correo ya está registrado.</div>
           </div>
         </div>
 
