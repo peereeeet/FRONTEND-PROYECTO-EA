@@ -319,9 +319,7 @@ export class UsuarisComponent implements OnInit {
       this.page--;
     }
 
-    this.loadUsers(); // recargar la lista con los nuevos estados
-
-
+    this.loadUsers();
     this.closeDeleteModal();
   },
   () => {
