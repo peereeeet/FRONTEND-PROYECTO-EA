@@ -497,8 +497,8 @@ button[type="submit"]:hover {
   flex-wrap: wrap;
 }
 
-.btn-edit {
-  background: var(--primary-500);
+.actions .btn-edit {
+  background: var(--warning);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -508,8 +508,8 @@ button[type="submit"]:hover {
   transition: all 0.3s ease;
 }
 
-.btn-edit:hover {
-  background: var(--primary-600);
+.actions .btn-edit:hover {
+  background:#e69500;
   transform: translateY(-1px);
 }
 
