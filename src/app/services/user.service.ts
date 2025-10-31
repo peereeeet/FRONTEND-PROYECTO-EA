@@ -39,12 +39,18 @@ export class UserService {
     return this.http.put<User>(`${this.apiUrl}/${userId}/addEvent`, { eventId }, { headers });
   }
 
-  checkEmailExists(gmail: string): Observable<{ exists: boolean }> {
+  checkEmailExists(gmail: string, userId?: string): Observable<{ exists: boolean }> {
+    const body = userId ? { gmail, userId } : { gmail };
+    return this.http.post<{ exists: boolean }>(`${this.apiUrl}/check-email`, body);
+  }
+
+  checkUsernameExists(username: string, userId?: string): Observable<{ exists: boolean }> {
+    const body = userId ? { username, userId } : { username };
+    return this.http.post<{ exists: boolean }>(`${this.apiUrl}/check-username`, body);
+  }
+
+  updateUserRole(id: string, role: 'admin' | 'usuario'): Observable<User> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post<{ exists: boolean }>(
-      `${this.apiUrl}/check-email`,
-      { gmail },
-      { headers }
-    );
+    return this.http.put<User>(`${this.apiUrl}/${id}/role`, { role }, { headers });
   }
 }

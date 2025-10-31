@@ -21,14 +21,14 @@ export class UsuarisComponent implements OnInit {
   desplegado: boolean[] = [];
   mostrarPassword: boolean[] = [];
 
-  showTableView: boolean = false;
+  /*showTableView: boolean = false;
   tableColumns: TableColumn[] = [
     { key: 'username', label: 'Nombre de Usuario', sortable: true },
     { key: 'gmail', label: 'Email', sortable: true },
     { key: 'birthday', label: 'Cumpleaños', sortable: true, type: 'date' },
     { key: 'eventCount', label: 'Nº Eventos', sortable: true },
     { key: 'actions', label: 'Acciones', type: 'actions' }
-  ];
+  ];*/
 
   nuevoUsuario: User = {
     username: '',
@@ -36,7 +36,8 @@ export class UsuarisComponent implements OnInit {
     password: '',
     birthday: new Date(),
     eventos: [], 
-    isActive: true
+    isActive: true,
+    role: 'usuario'
   };
 
   birthdayStr: string = this.todayISO();
@@ -48,6 +49,8 @@ export class UsuarisComponent implements OnInit {
   errorMessage = '';
   emailExists: boolean = false;
   isCheckingEmail: boolean = false;
+  isCheckingUsername = false;
+  usernameExists = false;
 
   showDeleteModal = false;
   private pendingDeleteIndex: number | null = null;
@@ -93,6 +96,21 @@ export class UsuarisComponent implements OnInit {
     });
   }
 
+  cambiarRol(u: User): void {
+  if (!u._id) return;
+  const nuevoRol = u.role === 'admin' ? 'usuario' : 'admin';
+
+  this.userService.updateUserRole(u._id, nuevoRol).subscribe({
+    next: (actualizado) => {
+      u.role = actualizado.role;
+      
+      const idx = this.usuarios.findIndex(x => x._id === u._id);
+      if (idx >= 0) this.usuarios[idx].role = actualizado.role;
+    },
+    error: () => alert('Error al cambiar el rol del usuario')
+  });
+}
+
   prevBackendPage(): void {
     if (this.page > 1) {
       this.page--;
@@ -136,7 +154,7 @@ export class UsuarisComponent implements OnInit {
   });
 }
 
-  toggleTableView(): void {
+  /*toggleTableView(): void {
     this.showTableView = !this.showTableView;
   }
 
@@ -210,7 +228,7 @@ export class UsuarisComponent implements OnInit {
     link.download = filename;
     link.click();
     window.URL.revokeObjectURL(url);
-  }
+  }*/
 
   goHome(): void { this.location.back(); }
 
@@ -224,13 +242,21 @@ export class UsuarisComponent implements OnInit {
     if (this.isFutureBirthday(this.birthdayStr)) return;
 
     this.isCheckingEmail = true;
-    this.userService.checkEmailExists(this.nuevoUsuario.gmail).subscribe({
+    this.userService.checkEmailExists(this.nuevoUsuario.gmail, this.nuevoUsuario._id).subscribe({
       next: (res) => {
         this.isCheckingEmail = false;
         if (res.exists) {
           this.emailExists = true;
           return;
         }
+        this.isCheckingUsername = true;
+        this.userService.checkUsernameExists(this.nuevoUsuario.username, this.nuevoUsuario._id).subscribe({
+          next: (res) => {
+            this.isCheckingUsername = false;
+            this.usernameExists = res.exists;
+          },
+          error: () => (this.isCheckingUsername = false)
+        });
 
       const birthdayDate = this.parseAsUTCDate(this.birthdayStr);
 
@@ -238,7 +264,8 @@ export class UsuarisComponent implements OnInit {
         const actualizado: User = {
           ...this.nuevoUsuario,
           birthday: birthdayDate,
-          _id: this.usuarios[this.indiceEdicion]._id
+          _id: this.usuarios[this.indiceEdicion]._id,
+          role: this.nuevoUsuario.role
         };
         this.pendingUpdateUser = actualizado;
         this.pendingUpdateIndex = this.indiceEdicion;
@@ -247,11 +274,12 @@ export class UsuarisComponent implements OnInit {
       }
 
       const usuarioJSON: User = {
-       username: this.nuevoUsuario.username,
+        username: this.nuevoUsuario.username,
         gmail: this.nuevoUsuario.gmail,
         password: this.nuevoUsuario.password,
-       birthday: birthdayDate,
-        eventos: this.nuevoUsuario.eventos ?? []
+        birthday: birthdayDate,
+        eventos: this.nuevoUsuario.eventos ?? [],
+        role: this.nuevoUsuario.role
       };
 
       this.userService.addUser(usuarioJSON).subscribe(response => {
@@ -342,7 +370,8 @@ export class UsuarisComponent implements OnInit {
       gmail: '',
       password: '',
       birthday: new Date(),
-      eventos: []
+      eventos: [],
+      role: 'usuario'
     };
     this.birthdayStr = this.todayISO();
     this.confirmarPassword = '';

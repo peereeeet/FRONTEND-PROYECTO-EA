@@ -30,6 +30,7 @@
               <span *ngIf="usernameCtrl.errors?.['required']">El nombre es obligatorio.</span>
               <span *ngIf="usernameCtrl.errors?.['minlength']">Mínimo 3 caracteres.</span>
             </div>
+            <div *ngIf="usernameExists" class="error-message">⚠ Este nombre de usuario ya está en uso.</div>
           </div>
 
           <div class="form-group">
@@ -50,7 +51,6 @@
               <span *ngIf="gmailCtrl.errors?.['required']">El correo es obligatorio.</span>
               <span *ngIf="gmailCtrl.errors?.['email']">Formato no válido.</span>
             </div>
-            <div *ngIf="isCheckingEmail" class="error-message">Verificando correo...</div>
             <div *ngIf="emailExists" class="error-message">⚠ Este correo ya está registrado.</div>
           </div>
         </div>

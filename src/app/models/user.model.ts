@@ -8,4 +8,5 @@ export interface User {
   birthday: Date;
   eventos?: (string | Evento)[];
   isActive?: boolean;
+  role?: 'admin' | 'usuario';
 }
