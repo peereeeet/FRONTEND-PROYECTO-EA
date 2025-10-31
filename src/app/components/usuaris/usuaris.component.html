@@ -10,145 +10,156 @@
       </div>
 
       <div class="form-grid">
-        <div class="left-col">
-          <!-- Nombre -->
-          <div class="form-group">
-            <label for="nombre" class="form-label">Nombre:</label>
-            <input
-              id="nombre"
-              class="form-input"
-              [(ngModel)]="nuevoUsuario.username"
-              name="name"
-              #nameCtrl="ngModel"
-              placeholder="Nombre del usuario"
-              required />
-            <div class="error-message" *ngIf="(nameCtrl.touched || formSubmitted) && nameCtrl.errors?.['required']">
-              ⚠️ El nombre es obligatorio.
-            </div>
-          </div>
-
-          <!-- Email -->
-          <div class="form-group">
-            <label for="mail" class="form-label">Email:</label>
-            <input
-              id="mail"
-              class="form-input"
-              [(ngModel)]="nuevoUsuario.gmail"
-              name="mail"
-              #mailCtrl="ngModel"
-              placeholder="Email"
-              required
-              email />
-            <div class="error-message" *ngIf="(mailCtrl.touched || formSubmitted) && mailCtrl.errors?.['required']">
-              ⚠️ El email es obligatorio.
-            </div>
-            <div class="error-message" *ngIf="(mailCtrl.touched || formSubmitted) && !mailCtrl.errors?.['required'] && mailCtrl.errors?.['email']">
-              ⚠️ Formato de email no válido.
-            </div>
-            <div class="error-message" *ngIf="isCheckingEmail">Verificando correo...</div>
-            <div class="error-message" *ngIf="emailExists">
-              ⚠️ Este correo ya está registrado.
-            </div>
-          </div>
-
-          <!-- Contraseña -->
-          <div class="form-group">
-            <label for="password" class="form-label">Contraseña:</label>
-            <input
-              id="password"
-              class="form-input"
-              [(ngModel)]="nuevoUsuario.password"
-              name="password"
-              #passCtrl="ngModel"
-              type="password"
-              placeholder="Password"
-              required
-              minlength="7" />
-            <div class="error-message" *ngIf="(passCtrl.touched || formSubmitted) && passCtrl.errors?.['required']">
-              ⚠️ La contraseña es obligatoria.
-            </div>
-            <div class="error-message" *ngIf="(passCtrl.touched || formSubmitted) && !passCtrl.errors?.['required'] && passCtrl.errors?.['minlength']">
-              ⚠️ La contraseña debe tener al menos 7 caracteres.
-            </div>
-          </div>
-
-          <!-- Confirmar contraseña -->
-          <div class="form-group">
-            <label for="confirmarPassword" class="form-label">Confirmar Contraseña:</label>
-            <input
-              id="confirmarPassword"
-              class="form-input"
-              [(ngModel)]="confirmarPassword"
-              name="confirmarPassword"
-              #confirmCtrl="ngModel"
-              type="password"
-              placeholder="Confirmar Password"
-              required
-              minlength="7" />
-            <div class="error-message" *ngIf="(confirmCtrl.touched || formSubmitted) && confirmCtrl.errors?.['required']">
-              ⚠️ Confirmar contraseña es obligatorio.
-            </div>
-            <div class="error-message" *ngIf="(confirmCtrl.touched || formSubmitted) && !confirmCtrl.errors?.['required'] && confirmCtrl.errors?.['minlength']">
-              ⚠️ Debe tener al menos 7 caracteres.
-            </div>
-            <div class="error-message"
-                 *ngIf="(confirmCtrl.touched || formSubmitted)
-                         && confirmarPassword
-                         && nuevoUsuario.password
-                         && confirmarPassword !== nuevoUsuario.password">
-              ⚠️ Las contraseñas no coinciden.
-            </div>
-          </div>
-
-          <!-- Aniversario -->
-          <div class="form-group">
-            <label for="birthday" class="form-label">Aniversario:</label>
-            <input
-              id="birthday"
-              class="form-input"
-              type="date"
-              [(ngModel)]="birthdayStr"
-              name="birthday"
-              #birthdayCtrl="ngModel"
-              required />
-            <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && birthdayCtrl.errors?.['required']">
-              ⚠️ El aniversario es obligatorio.
-            </div>
-            <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && !birthdayCtrl.errors?.['required'] && isFutureBirthday(birthdayStr)">
-              ⚠️ La fecha no puede ser posterior a hoy.
-            </div>
-          </div>
-        </div>
+  <!-- Columna izquierda: datos del usuario -->
+  <div class="left-col">
+    <!-- Nombre -->
+    <div class="form-group">
+      <label for="nombre" class="form-label">Nombre:</label>
+      <input
+        id="nombre"
+        class="form-input"
+        [(ngModel)]="nuevoUsuario.username"
+        name="name"
+        #nameCtrl="ngModel"
+        placeholder="Nombre del usuario"
+        required />
+      <div class="error-message" *ngIf="(nameCtrl.touched || formSubmitted) && nameCtrl.errors?.['required']">
+        ⚠️ El nombre es obligatorio.
       </div>
+      <div *ngIf="usernameExists" class="error-message">⚠ Este nombre de usuario ya está en uso.</div>
+    </div>
 
-      <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top: 25px;">
-        <button type="submit" class="submit-button">
-          {{ indiceEdicion !== null ? 'Actualizar' : 'Agregar' }}
-        </button>
-
-        <button
-          *ngIf="indiceEdicion !== null"
-          type="button"
-          class="submit-button cancel"
-          (click)="cancelarEdicion(userForm)">
-          Cancelar edición
-        </button>
+    <!-- Email -->
+    <div class="form-group">
+      <label for="mail" class="form-label">Email:</label>
+      <input
+        id="mail"
+        class="form-input"
+        [(ngModel)]="nuevoUsuario.gmail"
+        name="mail"
+        #mailCtrl="ngModel"
+        placeholder="Email"
+        required
+        email />
+      <div class="error-message" *ngIf="(mailCtrl.touched || formSubmitted) && mailCtrl.errors?.['required']">
+        ⚠️ El email es obligatorio.
       </div>
-    </form>
+      <div class="error-message" *ngIf="(mailCtrl.touched || formSubmitted) && !mailCtrl.errors?.['required'] && mailCtrl.errors?.['email']">
+        ⚠️ Formato de email no válido.
+      </div>
+      <div class="error-message" *ngIf="emailExists">
+        ⚠️ Este correo ya está registrado.
+      </div>
+    </div>
+
+    <!-- Contraseña -->
+    <div class="form-group">
+      <label for="password" class="form-label">Contraseña:</label>
+      <input
+        id="password"
+        class="form-input"
+        [(ngModel)]="nuevoUsuario.password"
+        name="password"
+        #passCtrl="ngModel"
+        type="password"
+        placeholder="Password"
+        required
+        minlength="7" />
+      <div class="error-message" *ngIf="(passCtrl.touched || formSubmitted) && passCtrl.errors?.['required']">
+        ⚠️ La contraseña es obligatoria.
+      </div>
+      <div class="error-message" *ngIf="(passCtrl.touched || formSubmitted) && !passCtrl.errors?.['required'] && passCtrl.errors?.['minlength']">
+        ⚠️ La contraseña debe tener al menos 7 caracteres.
+      </div>
+    </div>
   </div>
+
+  <div class="right-col">
+    <!-- Confirmar contraseña -->
+    <div class="form-group">
+      <label for="confirmarPassword" class="form-label">Confirmar Contraseña:</label>
+      <input
+        id="confirmarPassword"
+        class="form-input"
+        [(ngModel)]="confirmarPassword"
+        name="confirmarPassword"
+        #confirmCtrl="ngModel"
+        type="password"
+        placeholder="Confirmar Password"
+        required
+        minlength="7" />
+      <div class="error-message" *ngIf="(confirmCtrl.touched || formSubmitted) && confirmCtrl.errors?.['required']">
+        ⚠️ Confirmar contraseña es obligatorio.
+      </div>
+      <div class="error-message" *ngIf="(confirmCtrl.touched || formSubmitted) && !confirmCtrl.errors?.['required'] && confirmCtrl.errors?.['minlength']">
+        ⚠️ Debe tener al menos 7 caracteres.
+      </div>
+      <div class="error-message"
+           *ngIf="(confirmCtrl.touched || formSubmitted)
+                   && confirmarPassword
+                   && nuevoUsuario.password
+                   && confirmarPassword !== nuevoUsuario.password">
+        ⚠️ Las contraseñas no coinciden.
+      </div>
+    </div>
+    <!-- Aniversario -->
+    <div class="form-group">
+      <label for="birthday" class="form-label">Aniversario:</label>
+      <input
+        id="birthday"
+        class="form-input"
+        type="date"
+        [(ngModel)]="birthdayStr"
+        name="birthday"
+        #birthdayCtrl="ngModel"
+        required />
+      <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && birthdayCtrl.errors?.['required']">
+        ⚠️ El aniversario es obligatorio.
+      </div>
+      <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && !birthdayCtrl.errors?.['required'] && isFutureBirthday(birthdayStr)">
+        ⚠️ La fecha no puede ser posterior a hoy.
+      </div>
+    </div>
+
+    <!-- ✅ Campo Rol
+    <div class="form-group">
+      <label for="role" class="form-label">Rol:</label>
+      <select
+        id="role"
+        class="form-input"
+        [(ngModel)]="nuevoUsuario.role"
+        name="role"
+        #roleCtrl="ngModel"
+        required
+      >
+        <option value="usuario">Usuario</option>
+        <option value="admin">Administrador</option>
+      </select>
+      <div class="error-message" *ngIf="(roleCtrl.touched || formSubmitted) && roleCtrl.errors?.['required']">
+        ⚠️ El rol es obligatorio.
+      </div>
+    </div> -->
+
+    <div class="form-actions" style="margin-top: 30px; display: flex; flex-direction: column; gap: 12px;">
+      <button type="submit" class="submit-button">
+        {{ indiceEdicion !== null ? 'Actualizar' : 'Agregar' }}
+      </button>
+
+      <button
+        *ngIf="indiceEdicion !== null"
+        type="button"
+        class="submit-button cancel"
+        (click)="cancelarEdicion(userForm)">
+        Cancelar edición
+      </button>
+    </div>
+  </div>
+</div>
 
   <!-- Lista de usuarios -->
   <div class="lista-usuarios">
     <div class="list-header">
       <h2>Lista de Usuarios</h2>
-      <!-- <div class="page-size">
-        <label>Por página</label>
-        <select #sizeSel (change)="setPageSize(sizeSel.value)">
-          <option [selected]="pageSize===3" value="3">3</option>
-          <option [selected]="pageSize===6" value="6">6</option>
-          <option [selected]="pageSize===9" value="9">9</option>
-        </select>
-      </div> -->
     </div>
 
     <div class="pager">
@@ -188,6 +199,8 @@
           <p><strong>Aniversario: </strong>
             <strong>{{ usuario.birthday | date: 'dd-MM-yyyy' }}</strong>
           </p>
+
+          <!-- <p><strong>Rol:</strong> {{ usuario.role | titlecase }}</p> -->
 
           <div class="user-events">
             <p><strong>Eventos del usuario: </strong> {{ getUserEventNames(usuario) }}</p>
@@ -254,7 +267,7 @@
   </div>
 
   <!-- Sección de Tabla Dinámica -->
-  <div class="table-section">
+  <!-- <div class="table-section">
     <div class="section-header">
       <h2>Vista de Tabla - Usuarios</h2>
       <button (click)="toggleTableView()" class="btn-toggle-table">
@@ -278,5 +291,4 @@
       <button type="button" (click)="nextBackendPage()" [disabled]="page >= totalPages">»</button>
       <span class="total">Total: {{ totalUsuarios }}</span>
     </div>
-  </div>
-</div>
+  </div> -->
