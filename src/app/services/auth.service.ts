@@ -13,6 +13,8 @@ export interface User {
 export interface LoginResponse {
   message: string;
   user: User;
+  token: string;
+  refreshToken: string;
 }
 
 @Injectable({
@@ -40,6 +42,8 @@ export class AuthService {
         if (response.user) {
           localStorage.setItem('currentUser', JSON.stringify(response.user));
           this.currentUserSubject.next(response.user);
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('refreshToken', response.refreshToken);
         }
       })
     );
@@ -47,6 +51,8 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     this.currentUserSubject.next(null);
   }
 
@@ -56,6 +62,9 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!this.currentUserSubject.value;
+  }
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
 
   // Método para crear admin (solo desarrollo)
