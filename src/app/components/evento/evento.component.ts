@@ -6,6 +6,7 @@ import { EventoService } from '../../services/evento.service';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-evento',
@@ -57,7 +58,8 @@ export class EventoComponent implements OnInit {
   constructor(
     private eventoService: EventoService,
     private userService: UserService,
-    private location: Location
+    private location: Location,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -104,6 +106,14 @@ export class EventoComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar usuarios:', err);
       }
+    });
+  }
+
+  goToRatings(evento: any) {
+    const id = evento?._id || evento?.id;
+    if (!id) return;
+    this.router.navigate(['/events', id, 'ratings'], {
+      state: { eventoName: evento.name, avgRating: evento.avgRating, ratingsCount: evento.ratingsCount }
     });
   }
 
@@ -326,7 +336,7 @@ export class EventoComponent implements OnInit {
   }
 
   goHome(): void {
-    this.location.back();
+    this.router.navigate(['/home']);
   }
 
   setSchedule(): void {

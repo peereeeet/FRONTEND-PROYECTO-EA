@@ -1,0 +1,110 @@
+<div class="ratings-container">
+  <div class="header">
+    <button class="btn-back" (click)="goBack()">← Volver</button>
+
+    <div class="title">
+      <h2>Valoraciones del evento</h2>
+
+      <div class="info-row">
+        <div class="subtitle">
+            <strong>Actividad:</strong> {{ eventoName }}
+        </div>
+        <div class="avg">
+            <strong>Media:</strong> {{ avgRating != null ? (avgRating | number:'1.1-2') : '—' }}
+        </div>
+        <div class="count">
+            <strong>Valoraciones:</strong> {{ ratingsCount != null ? ratingsCount : 0 }}
+        </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Tu valoración</h3>
+
+    <div class="upsert-row">
+      <label>Puntuación:</label>
+      <div class="stars" (mouseleave)="hover = 0">
+        <button
+            type="button"
+            *ngFor="let s of stars; let i = index"
+            [attr.aria-label]="'Puntuación ' + (i+1)"
+            (mouseenter)="hover = i+1"
+            (click)="setScore(i+1)">
+            <span [ngClass]="{ filled: (hover || myScore) > i }">
+            {{ (hover || myScore) > i ? '★' : '☆' }}
+            </span>
+        </button>
+    </div>
+
+      <span class="score-text" *ngIf="myScore">({{ myScore }}/5)</span>
+    </div>
+
+    <div class="upsert-row">
+      <label>Comentario (opcional):</label>
+      <textarea [(ngModel)]="myComment" rows="3" maxlength="1000" placeholder="Escribe tu opinión..."></textarea>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" [disabled]="saving" (click)="upsert()">💾 Guardar</button>
+    </div>
+
+    <div class="msg error" *ngIf="errorMsg">⚠️ {{ errorMsg }}</div>
+    <div class="msg ok" *ngIf="infoMsg">✅ {{ infoMsg }}</div>
+  </div>
+
+  <div class="card">
+    <div class="list-header">
+      <h3>Otras valoraciones</h3>
+      <div class="pager" *ngIf="totalPages > 1">
+        <button type="button" (click)="changePage(-1)" [disabled]="page <= 1">«</button>
+        <span class="counter">Página {{ page }} / {{ totalPages }}</span>
+        <button type="button" (click)="changePage(1)" [disabled]="page >= totalPages">»</button>
+        <span class="total">Total: {{ totalItems }} valoraciones</span>
+    </div>
+      <div class="search">
+        <input type="text" [(ngModel)]="q" placeholder="Buscar por comentario..." />
+        <button (click)="search()">Buscar</button>
+      </div>
+    </div>
+
+    <div *ngIf="loadingList" class="loading">Cargando...</div>
+    <div *ngIf="!loadingList && list.length === 0" class="empty">No hay valoraciones</div>
+
+    <ul class="ratings-list" *ngIf="!loadingList && list.length > 0">
+      <li *ngFor="let r of list">
+        <div class="left">
+          <div class="stars readonly">
+            <button type="button" *ngFor="let s of stars; let i = index">
+                <span [ngClass]="{ filled: i < (+r.puntuacion || 0) }">
+                {{ i < (+r.puntuacion || 0) ? '★' : '☆' }}
+                </span>
+            </button>
+        </div>
+
+          <div class="comment" *ngIf="r.comentario">{{ r.comentario }}</div>
+          <div class="meta">
+            <span *ngIf="r.createdAt">Creado: {{ r.createdAt | date:'short' }}</span>
+            <span *ngIf="r.updatedAt"> · Actualizado: {{ r.updatedAt | date:'short' }}</span>
+          </div>
+        </div>
+
+        <div class="right">
+          <button class="btn-danger" (click)="openDeleteModal(r)">Eliminar</button>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showDeleteModal">
+  <div class="modal">
+    <h3>¿Eliminar valoración?</h3>
+    <p>Esta acción no se puede deshacer.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeDeleteModal()">Cancelar</button>
+      <button class="btn-confirm" (click)="confirmDelete()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
