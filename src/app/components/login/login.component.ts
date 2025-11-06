@@ -45,8 +45,15 @@ export class LoginComponent  {
         .pipe(finalize(() => this.isLoading = false))
         .subscribe({
           next: (response) => {
-            console.log('Login exitoso:', response);
+            const role = response.user.rol;
+            if (role === 'admin') {
             this.router.navigate(['/home']);
+          } else if (role === 'usuario') {
+            this.router.navigate(['/menu']);
+          } else {
+            // fallback por si en el futuro hay más roles
+            this.router.navigate(['/home']);
+          }
           },
           error: (error) => {
             console.error('Error en login:', error);

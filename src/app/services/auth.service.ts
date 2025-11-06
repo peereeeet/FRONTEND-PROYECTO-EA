@@ -10,6 +10,7 @@ export interface User {
   gmail: string;
   birthday: Date;
   eventos: string[];
+  rol: 'admin' | 'usuario';
 }
 
 export interface LoginResponse {
@@ -56,8 +57,6 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     this.currentUserSubject.next(null);
-    
-    
   }
 
   getCurrentUser(): User | null {

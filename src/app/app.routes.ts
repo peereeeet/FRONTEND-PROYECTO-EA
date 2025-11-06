@@ -7,6 +7,7 @@ import { authGuard } from './guards/auth.guard';
 import { LoginComponent } from './components/login/login.component';
 import { RegistrarComponent } from './components/registrar/registrar.component';
 import { ValoracionComponent } from './components/valoracion/valoracion';
+import { MenuComponent } from './components/menu/menu.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -39,6 +40,9 @@ export const routes: Routes = [
   { path: 'events/:id/ratings',
     component: ValoracionComponent 
   },
+  { path: 'menu', 
+    component: MenuComponent, 
+    canActivate: [authGuard] },
   { 
     path: '**', 
     redirectTo: 'login' 
