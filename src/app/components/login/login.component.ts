@@ -29,7 +29,11 @@ export class LoginComponent  {
       password: ['', [Validators.required, Validators.minLength(4)]]
     });
   }
-
+ ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/home']);
+    }
+  }
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;

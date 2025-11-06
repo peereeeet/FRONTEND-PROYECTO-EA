@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import {jwtDecode} from 'jwt-decode';
+
 
 export interface User {
   _id: string;
@@ -13,6 +15,8 @@ export interface User {
 export interface LoginResponse {
   message: string;
   user: User;
+  token: string;
+  refreshToken: string;
 }
 
 @Injectable({
@@ -40,6 +44,8 @@ export class AuthService {
         if (response.user) {
           localStorage.setItem('currentUser', JSON.stringify(response.user));
           this.currentUserSubject.next(response.user);
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('refreshToken', response.refreshToken);
         }
       })
     );
@@ -47,7 +53,11 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     this.currentUserSubject.next(null);
+    
+    
   }
 
   getCurrentUser(): User | null {
@@ -55,11 +65,59 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!this.currentUserSubject.value;
+    const user = localStorage.getItem('currentUser')
+    if (!user)
+      return false
+    try {
+  const userData = JSON.parse(user);
+  const token = localStorage.getItem('token');
+
+  if (!token){
+    this.logout();
+  return false;
   }
 
+  const decoded: any = jwtDecode(token);
+  if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+    this.logout();
+    return false;
+  }
+
+  return !!userData.isActive;
+} catch (error) {
+  console.log("Error en el localStorage:", error);
+  return false;
+}
+
+  }
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  getUserRole(): string | null {
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+    try {
+    const decoded: any = jwtDecode(token);
+    return decoded.payload?.rol || null;
+  } catch (error) {
+    console.error('Error al decodificar token', error);
+    return null;
+  }
+  }
   // Método para crear admin (solo desarrollo)
   createAdminUser(): Observable<any> {
     return this.http.post(`${this.apiUrl}/user/auth/create-admin`, {});
+  }
+  refreshToken(): Observable<any> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    const currentUser = localStorage.getItem('currentUser');
+    if (!refreshToken || !currentUser) {
+      throw new Error('No refresh token or current user found');
+    }
+    const user = JSON.parse(currentUser);
+    return this.http.post(`${this.apiUrl}/user/refresh`, { refreshToken, userId: user._id });
   }
 }

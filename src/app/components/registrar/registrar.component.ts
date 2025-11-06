@@ -78,7 +78,6 @@ export class RegistrarComponent {
         gmail: this.nuevoUsuario.gmail.trim(),
         password: this.nuevoUsuario.password.trim(),
         birthday: new Date(this.birthdayStr),
-        role: 'usuario',
       };
 
       this.userService.addUser(newUser).subscribe({
