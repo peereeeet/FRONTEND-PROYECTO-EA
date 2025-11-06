@@ -369,33 +369,49 @@ export class EventoComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.errorMessage = '';
-    if (!this.newEvent.name?.trim()) {
-      this.errorMessage = 'El ti­tulo del evento es obligatorio.';
-      return;
-    }
-    if (!this.newEvent.schedule?.length) {
-      this.errorMessage = 'Selecciona el horario del evento.';
-      return;
-    }
-    if (!this.newEvent.address?.length) {
-      this.errorMessage = 'Selecciona la dirección del evento.';
-      return;
-    }
+  this.errorMessage = '';
 
-    this.eventoService.addEvento(this.newEvent).subscribe({
-      next: (created) => {
-        const normalized: Evento = {
-          ...created,
-          schedule: Array.isArray(created.schedule) ? created.schedule : (created.schedule ? [created.schedule as any] : []),
-          participantes: Array.isArray((created as any).participantes) ? (created as any).participantes : ((created as any).participants || [])
-        };
-        this.eventos.push(normalized);
-        this.resetForm();
-      },
-      error: () => this.errorMessage = 'Error al crear el evento. Revisa los datos.'
-    });
+  if (!this.newEvent.name?.trim()) {
+    this.errorMessage = 'El título del evento es obligatorio.';
+    return;
   }
+  if (!this.newEvent.schedule?.length) {
+    this.errorMessage = 'Selecciona el horario del evento.';
+    return;
+  }
+  if (!this.newEvent.address?.length) {
+    this.errorMessage = 'Selecciona la dirección del evento.';
+    return;
+  }
+
+  this.eventoService.checkEventNameExists(this.newEvent.name).subscribe({
+    next: (res) => {
+      if (res.exists) {
+        this.errorMessage = '⚠️ Ya existe un evento con este título.';
+        return;
+      }
+
+      // Crear el evento si no existe duplicado
+      this.eventoService.addEvento(this.newEvent).subscribe({
+        next: (created) => {
+          const normalized: Evento = {
+            ...created,
+            schedule: Array.isArray(created.schedule)
+              ? created.schedule
+              : (created.schedule ? [created.schedule as any] : []),
+            participantes: Array.isArray((created as any).participantes)
+              ? (created as any).participantes
+              : ((created as any).participants || [])
+          };
+          this.eventos.push(normalized);
+          this.resetForm();
+        },
+        error: () => (this.errorMessage = 'Error al crear el evento. Revisa los datos.')
+      });
+    },
+    error: () => (this.errorMessage = 'Error al verificar el título del evento.')
+  });
+}
 
   openDeleteModal(index: number): void {
     this.pendingDeleteIndex = index;

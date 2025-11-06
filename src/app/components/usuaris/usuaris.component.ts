@@ -14,21 +14,21 @@ import { DynamicTableComponent, TableColumn } from '../table/table.component';
   templateUrl: './usuaris.component.html',
   styleUrls: ['./usuaris.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, MaskEmailPipe]
+  imports: [CommonModule, FormsModule, MaskEmailPipe, DynamicTableComponent]
 })
 export class UsuarisComponent implements OnInit {
   usuarios: User[] = [];
   desplegado: boolean[] = [];
   mostrarPassword: boolean[] = [];
 
-  /*showTableView: boolean = false;
+  showTableView: boolean = false;
   tableColumns: TableColumn[] = [
     { key: 'username', label: 'Nombre de Usuario', sortable: true },
     { key: 'gmail', label: 'Email', sortable: true },
     { key: 'birthday', label: 'Cumpleaños', sortable: true, type: 'date' },
     { key: 'eventCount', label: 'Nº Eventos', sortable: true },
     { key: 'actions', label: 'Acciones', type: 'actions' }
-  ];*/
+  ];
 
   nuevoUsuario: User = {
     username: '',
@@ -37,7 +37,8 @@ export class UsuarisComponent implements OnInit {
     birthday: new Date(),
     eventos: [], 
     isActive: true,
-    //role: 'usuario'
+    rol: 'usuario'
+
   };
 
   birthdayStr: string = this.todayISO();
@@ -96,20 +97,20 @@ export class UsuarisComponent implements OnInit {
     });
   }
 
-  /*cambiarRol(u: User): void {
+  cambiarRol(u: User): void {
   if (!u._id) return;
-  const nuevoRol = u.role === 'admin' ? 'usuario' : 'admin';
+  const nuevoRol = u.rol === 'admin' ? 'usuario' : 'admin';
 
   this.userService.updateUserRole(u._id, nuevoRol).subscribe({
     next: (actualizado) => {
-      u.role = actualizado.role;
+      u.rol = actualizado.rol;
       
       const idx = this.usuarios.findIndex(x => x._id === u._id);
-      if (idx >= 0) this.usuarios[idx].role = actualizado.role;
+      if (idx >= 0) this.usuarios[idx].rol = actualizado.rol;
     },
     error: () => alert('Error al cambiar el rol del usuario')
   });
-}*/
+}
 
   prevBackendPage(): void {
     if (this.page > 1) {
@@ -154,7 +155,7 @@ export class UsuarisComponent implements OnInit {
   });
 }
 
-  /*toggleTableView(): void {
+  toggleTableView(): void {
     this.showTableView = !this.showTableView;
   }
 
@@ -228,7 +229,7 @@ export class UsuarisComponent implements OnInit {
     link.download = filename;
     link.click();
     window.URL.revokeObjectURL(url);
-  }*/
+  }
 
   goHome(): void { this.location.back(); }
 
@@ -265,7 +266,9 @@ export class UsuarisComponent implements OnInit {
           ...this.nuevoUsuario,
           birthday: birthdayDate,
           _id: this.usuarios[this.indiceEdicion]._id,
-          //role: this.nuevoUsuario.role
+
+          rol: this.nuevoUsuario.rol
+
         };
         this.pendingUpdateUser = actualizado;
         this.pendingUpdateIndex = this.indiceEdicion;
@@ -279,8 +282,8 @@ export class UsuarisComponent implements OnInit {
         password: this.nuevoUsuario.password,
         birthday: birthdayDate,
         eventos: this.nuevoUsuario.eventos ?? [],
-        //role: this.nuevoUsuario.role
-      };
+        rol: this.nuevoUsuario.rol
+     };
 
       this.userService.addUser(usuarioJSON).subscribe(response => {
         this.loadUsers();
@@ -371,7 +374,7 @@ export class UsuarisComponent implements OnInit {
       password: '',
       birthday: new Date(),
       eventos: [],
-      //role: 'usuario'
+      rol: 'usuario'
     };
     this.birthdayStr = this.todayISO();
     this.confirmarPassword = '';

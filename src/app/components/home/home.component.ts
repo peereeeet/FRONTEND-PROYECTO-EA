@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
 import { EventoService } from '../../services/evento.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,9 @@ export class HomeComponent implements OnInit {
   
   constructor(
     private userService: UserService,
-    private eventoService: EventoService
+    private eventoService: EventoService,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -55,4 +58,10 @@ export class HomeComponent implements OnInit {
       element.textContent = Math.floor(current).toString();
     }, 30);
   }
+   onLogout() {
+    this.authService.logout(); 
+    this.router.navigate(['login']);
+  }
+
 }
+ 

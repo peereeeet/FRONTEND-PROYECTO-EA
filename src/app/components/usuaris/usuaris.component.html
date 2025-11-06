@@ -121,24 +121,26 @@
       </div>
     </div>
 
-    <!-- ✅ Campo Rol
+
+    <!-- ✅ Campo Rol -->
     <div class="form-group">
-      <label for="role" class="form-label">Rol:</label>
+      <label for="rol" class="form-label">Rol:</label>
       <select
-        id="role"
+        id="rol"
         class="form-input"
-        [(ngModel)]="nuevoUsuario.role"
-        name="role"
-        #roleCtrl="ngModel"
+        [(ngModel)]="nuevoUsuario.rol"
+        name="rol"
+        #rolCtrl="ngModel"
         required
       >
         <option value="usuario">Usuario</option>
         <option value="admin">Administrador</option>
       </select>
-      <div class="error-message" *ngIf="(roleCtrl.touched || formSubmitted) && roleCtrl.errors?.['required']">
+      <div class="error-message" *ngIf="(rolCtrl.touched || formSubmitted) && rolCtrl.errors?.['required']">
         ⚠️ El rol es obligatorio.
       </div>
-    </div> -->
+    </div>
+
 
     <div class="form-actions" style="margin-top: 30px; display: flex; flex-direction: column; gap: 12px;">
       <button type="submit" class="submit-button">
@@ -200,7 +202,9 @@
             <strong>{{ usuario.birthday | date: 'dd-MM-yyyy' }}</strong>
           </p>
 
-          <!-- <p><strong>Rol:</strong> {{ usuario.role | titlecase }}</p> -->
+
+          <p><strong>Rol:</strong> {{ usuario.rol | titlecase }}</p>
+
 
           <div class="user-events">
             <p><strong>Eventos del usuario: </strong> {{ getUserEventNames(usuario) }}</p>
@@ -267,7 +271,7 @@
   </div>
 
   <!-- Sección de Tabla Dinámica -->
-  <!-- <div class="table-section">
+  <div class="table-section">
     <div class="section-header">
       <h2>Vista de Tabla - Usuarios</h2>
       <button (click)="toggleTableView()" class="btn-toggle-table">
@@ -291,4 +295,5 @@
       <button type="button" (click)="nextBackendPage()" [disabled]="page >= totalPages">»</button>
       <span class="total">Total: {{ totalUsuarios }}</span>
     </div>
-  </div> -->
+  </div> 
+

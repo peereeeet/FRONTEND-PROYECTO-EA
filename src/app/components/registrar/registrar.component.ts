@@ -28,6 +28,8 @@ export class RegistrarComponent {
   isSubmitting = false;
   emailExists: boolean = false;
   isCheckingEmail: boolean = false;
+  isCheckingUsername = false;
+  usernameExists = false;
 
   constructor(private userService: UserService, private router: Router) {
     const today = new Date();
@@ -60,6 +62,14 @@ export class RegistrarComponent {
           this.errorMessage = 'Este correo ya está registrado.';
           return;
         }
+        this.isCheckingUsername = true;
+    this.userService.checkUsernameExists(this.nuevoUsuario.username).subscribe({
+      next: (res) => {
+        this.isCheckingUsername = false;
+        this.usernameExists = res.exists;
+      },
+      error: () => (this.isCheckingUsername = false)
+    });
 
       this.isSubmitting = true;
 

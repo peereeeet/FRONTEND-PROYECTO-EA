@@ -47,5 +47,12 @@ export class UserService {
   checkUsernameExists(username: string, userId?: string): Observable<{ exists: boolean }> {
     const body = userId ? { username, userId } : { username };
     return this.http.post<{ exists: boolean }>(`${this.apiUrl}/check-username`, body);
+
+  }
+
+  updateUserRole(id: string, rol: 'admin' | 'usuario'): Observable<User> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.put<User>(`${this.apiUrl}/${id}/rol`, { rol }, { headers });
+
   }
 }

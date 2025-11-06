@@ -42,4 +42,12 @@ export class EventoService {
   deleteEvento(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  checkEventNameExists(name: string): Observable<{ exists: boolean; message?: string }> {
+    return this.http.post<{ exists: boolean; message?: string }>(
+      `${this.apiUrl}/check-name`,
+      { name },
+      { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
+    );
+  }
 }
