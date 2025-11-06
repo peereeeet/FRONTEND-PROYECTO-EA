@@ -158,6 +158,25 @@
           <span>{{ getParticipantsNames(evento) }}</span>
         </p>
 
+<!-- ⭐ Resumen valoraciones -->
+<div class="rating-summary" style="margin-top:8px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+  <strong>⭐ Valoraciones:</strong>
+  <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0">
+    Media {{ evento.avgRating | number:'1.1-2' }} ({{ evento.ratingsCount }} valoraciones)
+  </span>
+  <span *ngIf="!evento.ratingsCount || evento.ratingsCount === 0">
+    Sin valoraciones aún
+  </span>
+
+  <button
+    type="button"
+    class="btn-rate-link"
+    (click)="goToRatings(evento)">
+    ⭐ Ver / Valorar
+  </button>
+</div>
+
+
         <div class="actions">
           <button class="btn-edit" (click)="openEditModal(i)">✏️ Modificar Evento</button>
           <button class="btn-delete" (click)="openDeleteModal(i)">🗑️ Eliminar Evento</button>

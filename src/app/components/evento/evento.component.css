@@ -86,6 +86,19 @@
   transform: translateY(-1px);
 }
 
+.btn-rate-link {
+  display: inline-block;
+  background: var(--primary-500);
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.btn-rate-link:hover { background: var(--primary-600); transform: translateY(-1px); }
+
 /* Horario */
 .schedule-row {
   display: flex;

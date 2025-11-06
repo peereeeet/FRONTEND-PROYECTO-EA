@@ -4,4 +4,6 @@ export interface Evento {
   schedule: string | string[];
   address?: string;
   participantes?: string[];
+  avgRating?: number;
+  ratingsCount?: number;
 }

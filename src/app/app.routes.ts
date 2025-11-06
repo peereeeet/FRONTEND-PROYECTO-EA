@@ -6,6 +6,7 @@ import { HomeComponent } from './components/home/home.component';
 import { authGuard } from './guards/auth.guard';
 import { LoginComponent } from './components/login/login.component';
 import { RegistrarComponent } from './components/registrar/registrar.component';
+import { ValoracionComponent } from './components/valoracion/valoracion';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -34,6 +35,9 @@ export const routes: Routes = [
     path: 'evento', 
     component: EventoComponent,
     canActivate: [authGuard] 
+  },
+  { path: 'events/:id/ratings',
+    component: ValoracionComponent 
   },
   { 
     path: '**', 
