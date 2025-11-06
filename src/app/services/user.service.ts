@@ -1,7 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { User } from '../models/user.model';
+import { map, Observable } from 'rxjs';
+import { User } from '../models/user.model'; // ✅ import corregido
+
+export interface Page<T> {
+  data: T[];
+  page: number;
+  totalPages: number;
+  totalItems: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -9,10 +16,13 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  getUsers(page: number = 1, limit: number = 10): Observable<{ data: User[]; page: number; totalPages: number; totalItems: number; }> {
-    return this.http.get<{ data: User[]; page: number; totalPages: number; totalItems: number; }>(
-      `${this.apiUrl}?page=${page}&limit=${limit}`
-    );
+  getUsers(page = 1, limit = 20, q = ''): Observable<Page<User>> {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+      ...(q ? { q } : {})
+    }).toString();
+    return this.http.get<Page<User>>(`${this.apiUrl}?${params}`);
   }
 
   getUserById(id: string): Observable<User> {
@@ -53,6 +63,29 @@ export class UserService {
   updateUserRole(id: string, rol: 'admin' | 'usuario'): Observable<User> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.put<User>(`${this.apiUrl}/${id}/rol`, { rol }, { headers });
+  }
 
+  heartbeat(userId: string): Observable<{ _id: string; username: string; online: boolean; lastSeen: string }> {
+    return this.http.post<{ _id: string; username: string; online: boolean; lastSeen: string }>(
+      `${this.apiUrl}/${userId}/heartbeat`,
+      {}
+    );
+  }
+
+  listFriends(userId: string, page = 1, limit = 20, q = ''): Observable<Page<User>> {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+      ...(q ? { q } : {})
+    }).toString();
+    return this.http.get<Page<User>>(`${this.apiUrl}/${userId}/friends?${params}`);
+  }
+
+  addFriend(userId: string, friendId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${userId}/friends/${friendId}`, {});
+  }
+
+  removeFriend(userId: string, friendId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${userId}/friends/${friendId}`);
   }
 }

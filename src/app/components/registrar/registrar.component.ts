@@ -76,7 +76,7 @@ export class RegistrarComponent {
       const newUser: User = {
         username: this.nuevoUsuario.username.trim(),
         gmail: this.nuevoUsuario.gmail.trim(),
-        password: this.nuevoUsuario.password.trim(),
+        password: (this.nuevoUsuario.password?? '').trim(),
         birthday: new Date(this.birthdayStr),
       };
 
