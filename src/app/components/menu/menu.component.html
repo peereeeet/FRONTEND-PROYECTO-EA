@@ -102,21 +102,18 @@
               <small style="color:#666">({{ u.gmail }})</small>
             </span>
 
-            <!-- Si ya te envió solicitud -->
             <ng-container *ngIf="isPendingFrom(u._id!); else checkSent">
               <button type="button" class="btn-pending" (click)="openRequestsModal()">
                 📨 Solicitud pendiente
               </button>
             </ng-container>
 
-            <!-- Si TÚ ya le enviaste -->
             <ng-template #checkSent>
               <ng-container *ngIf="isPendingTo(u._id!); else canAddTpl">
                 <span class="sent-text">✅ Solicitud enviada</span>
               </ng-container>
             </ng-template>
 
-            <!-- Ninguna solicitud → botón Añadir -->
             <ng-template #canAddTpl>
               <button type="button" class="btn-add" (click)="addFromModal(u._id!)">
                 ➕ Añadir

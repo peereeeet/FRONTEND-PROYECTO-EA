@@ -204,16 +204,12 @@ export class MenuComponent implements OnInit, OnDestroy {
     const me = this.me();
     if (!me?._id) return;
 
-    // si ya tienes estas signals, las reutilizamos
     this.requestsLoading?.set(true);
     this.requestsError?.set('');
 
     this.userService.getFriendRequests(String(me._id)).subscribe({
       next: (list) => {
-        // si ya tienes una signal/estado para guardar las solicitudes, úsala
-        // por ejemplo, si es una signal:
         this.requestsList?.set(list ?? []);
-        // si en tu código usas un array normal, sustitúyelo por la asignación correspondiente
         this.requestsLoading?.set(false);
       },
       error: (err) => {
@@ -232,7 +228,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.sentRequests.set(res?.data ?? []);
       },
       error: () => {
-        this.sentRequests.set([]); // fallback silencioso
+        this.sentRequests.set([]);
       }
     });
   }
@@ -268,16 +264,13 @@ export class MenuComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: page => {
-          // Transformamos el array recibido
           const arr = (page?.data ?? []).map(u => ({
             ...u,
             isOnline: (u as any).online ?? (u as any).isOnline ?? false
           }));
 
-          // 🔽 FILTRO: excluye usuarios con rol "admin"
           const nonAdmins = arr.filter(u => u.rol !== 'admin');
 
-          // Guardamos la lista filtrada
           this.allUsers.set(nonAdmins);
           this.applyModalFilter();
         },
