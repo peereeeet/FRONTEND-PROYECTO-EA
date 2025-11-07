@@ -112,8 +112,10 @@ export class UserService {
   }
 
   getSentRequests(userId: string) {
-    return this.http.get<{ ok: boolean; data: any[] }>(`${this.apiUrl}/user/${userId}/requests/sent`);
-  } 
+    return this.http.get<{ ok: boolean; data: any[] }>(
+      `${this.apiUrl}/${userId}/requests/sent`
+    );
+  }
 
   removeFriend(myId: string, friendId: string) {
     return this.http.delete<{ ok: boolean }>(`${this.apiUrl}/${myId}/friends/${friendId}`);

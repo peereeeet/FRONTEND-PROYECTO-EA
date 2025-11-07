@@ -334,6 +334,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.allUsers.set(
           this.allUsers().filter((u) => this.getId(u) !== userId)
         );
+        this.refreshSentRequests();
         this.modalError.set('Solicitud de amistad enviada ✅');
       },
       error: (err) => {
