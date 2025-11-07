@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subject, interval } from 'rxjs';
+import { Subject, interval, Subscription, fromEvent } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { User } from '../../models/user.model';
 import { compileOpaqueAsyncClassMetadata } from '@angular/compiler';
+import { HostListener } from '@angular/core';
 
 type FriendLike = User;
 
@@ -28,7 +29,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   me = signal<User | null>(null);
   friends = signal<FriendLike[]>([]);
 
-  // ======= MODAL "Explorar usuarios" =======
   showAddModal = signal(false);
   modalError = signal('');
   modalSearch = signal('');
@@ -37,11 +37,15 @@ export class MenuComponent implements OnInit, OnDestroy {
   mPage = signal(1);
   mPageSize = signal(10);
 
-    // ======= MODAL "Solicitudes de amistad" =======
   showRequestsModal = signal(false);
   requestsLoading = signal(false);
   requestsError = signal('');
   requestsList = signal<User[]>([]);
+  sentRequests = signal<any[]>([]);
+
+  private visibilitySub?: Subscription;
+  private focusSub?: Subscription;
+  private friendsPollSub?: Subscription;
 
   get mTotalPages(): number {
     const n = this.filteredUsers().length;
@@ -76,28 +80,49 @@ export class MenuComponent implements OnInit, OnDestroy {
         const myId = this.getId(u);
         if (!myId) return;
 
-        // Heartbeat inicial
         this.userService.heartbeat(myId).subscribe({
           next: hb => this.me.set({ ...(this.me() as User), isOnline: !!hb.online }),
           error: () => {}
         });
 
-        // Heartbeat periódico
-        interval(60000)
+        interval(30000)
           .pipe(takeUntil(this.destroy$), switchMap(() => this.userService.heartbeat(myId)))
           .subscribe({
             next: hb => this.me.set({ ...(this.me() as User), isOnline: !!hb.online }),
             error: () => {}
           });
 
-        // Cargar amigos
         this.cargarAmigos(myId);
+        this.visibilitySub = fromEvent(document, 'visibilitychange')
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => {
+            if (document.visibilityState === 'visible') this.cargarAmigos(myId);
+          });
+
+        this.focusSub = fromEvent(window, 'focus')
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => this.cargarAmigos(myId));
+
+        this.friendsPollSub = interval(60000)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => this.cargarAmigos(myId));
+      });
+
+    this.userService.onFriendsChanged()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        const m = this.me(); if (!m) return;
+        const myId = this.getId(m);
+        if (myId) this.cargarAmigos(myId);
       });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.visibilitySub?.unsubscribe();
+    this.focusSub?.unsubscribe();
+    this.friendsPollSub?.unsubscribe();
   }
 
   private mapOnline = (u: any): FriendLike => ({
@@ -112,7 +137,10 @@ export class MenuComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: page => {
-          const arr = (page?.data ?? []).map(this.mapOnline);
+          const arr = (page?.data ?? []).map(u => ({
+            ...u,
+            isOnline: (u as any).online ?? (u as any).isOnline ?? false
+          }));
           this.friends.set(arr);
           this.loading.set(false);
         },
@@ -124,13 +152,29 @@ export class MenuComponent implements OnInit, OnDestroy {
       });
   }
 
-  // ====== Cerrar sesión (igual que en Home) ======
   onLogout(): void {
-    this.auth.logout();
-    this.router.navigate(['login']);
+    const meUser = this.me();
+    const myId = meUser ? this.getId(meUser) : '';
+
+    if (meUser) this.me.set({ ...(meUser as any), isOnline: false });
+
+    if (myId) {
+      this.userService.setOffline(myId).subscribe({
+        next: () => {
+          this.auth.logout();
+          this.router.navigate(['login']);
+        },
+        error: () => {
+          this.auth.logout();
+          this.router.navigate(['login']);
+        }
+      });
+    } else {
+      this.auth.logout();
+      this.router.navigate(['login']);
+    }
   }
 
-  // ====== Acciones amigos ======
   quitar(friendId: string): void {
     const meUser = this.me(); if (!meUser) return;
     const myId = this.getId(meUser); if (!myId) return;
@@ -138,23 +182,63 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.userService.removeFriend(myId, friendId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => this.cargarAmigos(myId),
+        next: () => {
+          this.cargarAmigos(myId);
+          this.userService.notifyFriendsChanged();
+        },
         error: () => {}
       });
   }
 
-  // ====== Modal ======
   openAddFriendsModal(): void {
     this.modalError.set('');
     this.modalSearch.set('');
     this.mPage.set(1);
     this.showAddModal.set(true);
     this.loadModalUsers();
+    this.refreshRequests();
+    this.refreshSentRequests(); 
+  }
+
+  refreshRequests(): void {
+    const me = this.me();
+    if (!me?._id) return;
+
+    // si ya tienes estas signals, las reutilizamos
+    this.requestsLoading?.set(true);
+    this.requestsError?.set('');
+
+    this.userService.getFriendRequests(String(me._id)).subscribe({
+      next: (list) => {
+        // si ya tienes una signal/estado para guardar las solicitudes, úsala
+        // por ejemplo, si es una signal:
+        this.requestsList?.set(list ?? []);
+        // si en tu código usas un array normal, sustitúyelo por la asignación correspondiente
+        this.requestsLoading?.set(false);
+      },
+      error: (err) => {
+        this.requestsError?.set(err?.error?.message || 'Error cargando solicitudes');
+        this.requestsLoading?.set(false);
+      }
+    });
+  }
+
+  refreshSentRequests(): void {
+    const me = this.me();
+    if (!me?._id) return;
+
+    this.userService.getSentRequests(String(me._id)).subscribe({
+      next: (res) => {
+        this.sentRequests.set(res?.data ?? []);
+      },
+      error: () => {
+        this.sentRequests.set([]); // fallback silencioso
+      }
+    });
   }
 
   closeAddFriendsModal(): void {
     this.showAddModal.set(false);
-    // recargar amigos por si hubo cambios
     const meUser = this.me(); if (!meUser) return;
     const myId = this.getId(meUser); if (!myId) return;
     this.cargarAmigos(myId);
@@ -174,25 +258,27 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.mPage.set(1);
   }
 
-  /** ← para el botón Buscar del modal */
   buscarPersonas(): void {
-    // Si quieres volver a consultar al backend con el término, haz getUsers(page, limit, modalSearch()).
-    // Como ya filtramos en onInput, aquí basta con re-aplicar filtro por si cambia el tamaño de página.
     this.applyModalFilter();
     this.mPage.set(1);
   }
 
   private loadModalUsers(): void {
-    // Trae usuarios para explorar (ajusta el límite si quieres)
     this.userService.getUsers(1, 200, '')
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: page => {
+          // Transformamos el array recibido
           const arr = (page?.data ?? []).map(u => ({
             ...u,
             isOnline: (u as any).online ?? (u as any).isOnline ?? false
           }));
-          this.allUsers.set(arr);
+
+          // 🔽 FILTRO: excluye usuarios con rol "admin"
+          const nonAdmins = arr.filter(u => u.rol !== 'admin');
+
+          // Guardamos la lista filtrada
+          this.allUsers.set(nonAdmins);
           this.applyModalFilter();
         },
         error: err => {
@@ -201,6 +287,20 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.filteredUsers.set([]);
         }
       });
+  }
+
+  isPendingFrom(id: string): boolean {
+    try {
+      const list = this.requestsList?.() ?? [];
+      return list.some((u: any) => String(u._id) === String(id));
+    } catch {
+      return false;
+    }
+  }
+
+  isPendingTo(id: string): boolean {
+    const list = this.sentRequests() ?? [];
+    return list.some(u => String(u._id) === String(id));
   }
 
   private applyModalFilter(): void {
@@ -216,7 +316,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.filteredUsers.set(filtered);
   }
   addFromModal(userId?: string): void {
-  if (!userId) return; // Evita undefined
+  if (!userId) return;
 
   const meUser = this.me();
   if (!meUser) return;
@@ -228,7 +328,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroy$))
     .subscribe({
       next: () => {
-        // Quita al usuario del modal tras enviar la solicitud
         this.filteredUsers.set(
           this.filteredUsers().filter((u) => this.getId(u) !== userId)
         );
@@ -327,7 +426,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       });
     
 }
-  // paginación modal
+
   modalPrev(): void { if (this.mPage() > 1) this.mPage.set(this.mPage() - 1); }
   modalNext(): void { if (this.mPage() < this.mTotalPages) this.mPage.set(this.mPage() + 1); }
 }
