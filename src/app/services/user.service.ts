@@ -81,7 +81,6 @@ export class UserService {
     try {
       const url = `${this.apiUrl}/${userId}/offline`;
       const blob = new Blob([JSON.stringify({})], { type: 'application/json' });
-      // Nota: Algunos servers rechazan PUT por beacon; si pasa, crea POST /:id/offline-beacon
       (navigator as any).sendBeacon?.(url, blob);
     } catch {}
   }
