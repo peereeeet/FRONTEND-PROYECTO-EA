@@ -62,32 +62,32 @@ export class AuthService {
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
-
+  
   isLoggedIn(): boolean {
     const user = localStorage.getItem('currentUser')
     if (!user)
       return false
-    try {
-  const userData = JSON.parse(user);
-  const token = localStorage.getItem('token');
+      try {
+          const userData = JSON.parse(user);
+          const token = localStorage.getItem('token');
 
-  if (!token){
-    this.logout();
-  return false;
-  }
+          if (!token){
+            this.logout();
+            return false;
+          }
 
-  const decoded: any = jwtDecode(token);
-  if (decoded.exp && Date.now() >= decoded.exp * 1000) {
-    this.logout();
-    return false;
-  }
+          const decoded: any = jwtDecode(token);
+          if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+           this.logout();
+           return false;
+          }
 
-  return !!userData.isActive;
-} catch (error) {
-  console.log("Error en el localStorage:", error);
-  return false;
-}
-
+         return !!userData.isActive;
+        } 
+      catch (error) {
+        console.log("Error en el localStorage:", error);
+        return false;
+      }
   }
   getToken(): string | null {
     return localStorage.getItem('token');

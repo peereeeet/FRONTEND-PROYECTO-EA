@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import { User } from '../models/user.model'; // ✅ import corregido
+import { User } from '../models/user.model';
 
 export interface Page<T> {
   data: T[];
@@ -81,8 +81,20 @@ export class UserService {
     return this.http.get<Page<User>>(`${this.apiUrl}/${userId}/friends?${params}`);
   }
 
-  addFriend(userId: string, friendId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${userId}/friends/${friendId}`, {});
+  sendFriendRequest(userId: string, targetId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/friend-request`, { userId, targetId });
+  }
+
+  acceptFriendRequest(userId: string, requesterId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/friend-accept`, { userId, requesterId });
+  }
+
+  rejectFriendRequest(userId: string, requesterId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/friend-reject`, { userId, requesterId });
+  }
+
+  getFriendRequests(userId: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}/friend-requests/${userId}`);
   }
 
   removeFriend(userId: string, friendId: string): Observable<any> {

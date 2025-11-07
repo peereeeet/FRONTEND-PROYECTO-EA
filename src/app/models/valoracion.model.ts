@@ -1,7 +1,7 @@
 export interface Valoracion {
   _id: string;
   evento: string;
-  puntuacion: number;    // 1..5
+  puntuacion: number;
   comentario?: string;
   createdAt?: string;
   updatedAt?: string;

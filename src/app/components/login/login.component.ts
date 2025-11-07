@@ -30,9 +30,12 @@ export class LoginComponent  {
     });
   }
  ngOnInit(): void {
-    if (this.authService.isLoggedIn()) {
+  const user = this.authService.getCurrentUser();
+    if (this.authService.isLoggedIn() && user?.rol == 'admin') {
       this.router.navigate(['/home']);
     }
+    else 
+      this.router.navigate(['/menu'])
   }
   onSubmit(): void {
     if (this.loginForm.valid) {

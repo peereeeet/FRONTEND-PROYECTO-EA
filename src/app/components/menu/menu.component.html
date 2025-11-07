@@ -29,6 +29,7 @@
       <span class="count">{{ friends().length }}</span>
       <div class="actions">
         <button type="button" class="btn" (click)="openAddFriendsModal()">Explorar usuarios</button>
+        <button type="button" class="btn secondary" (click)="openRequestsModal()">📨 Solicitudes</button>
       </div>
     </div>
 
@@ -44,7 +45,7 @@
         <div class="right">
           <span class="dot" [class.online]="f.isOnline" [class.offline]="!f.isOnline"></span>
           <span class="state">{{ f.isOnline ? 'En línea' : 'Desconectado' }}</span>
-          <button type="button" class="btn danger" (click)="quitar(f._id)">Quitar</button>
+          <button type="button" class="btn danger" (click)="quitar(f._id!)">Quitar</button>
         </div>
       </li>
     </ul>
@@ -97,7 +98,7 @@
 
           <div class="user-row" *ngFor="let u of modalPageItems">
             <span class="user-name">{{ u.username }} <small style="color:#666">({{ u.gmail }})</small></span>
-            <button type="button" class="btn-add" (click)="addFromModal(u._id)">➕ Añadir</button>
+            <button type="button" class="btn-add" (click)="addFromModal(u._id!)">➕ Añadir</button>
           </div>
 
           <div class="empty" *ngIf="!filteredUsers().length">
@@ -108,6 +109,45 @@
 
       <div class="modal-actions" style="margin-top:16px;">
         <button class="btn-cancel" (click)="closeAddFriendsModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Modal Solicitudes de Amistad ===== -->
+  <div class="modal-overlay" *ngIf="showRequestsModal()">
+    <div class="modal medium-modal">
+      <div class="modal-header">
+        <h3>📨 Solicitudes de amistad</h3>
+        <button class="btn-close" (click)="closeRequestsModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <p *ngIf="requestsLoading()">Cargando solicitudes...</p>
+        <p *ngIf="requestsError() && !requestsLoading()" class="msg error">{{ requestsError() }}</p>
+
+        <ul *ngIf="!requestsLoading() && requestsList().length">
+          <li *ngFor="let u of requestsList()">
+            <div class="left">
+              <div class="avatar small">👤</div>
+              <div class="data">
+                <div class="name">{{ u.username }}</div>
+                <div class="mail">{{ u.gmail }}</div>
+              </div>
+            </div>
+            <div class="right">
+              <button class="btn accept" (click)="acceptRequest(u._id!)">Aceptar</button>
+              <button class="btn reject" (click)="rejectRequest(u._id!)">Rechazar</button>
+            </div>
+          </li>
+        </ul>
+
+        <p *ngIf="!requestsLoading() && !requestsList().length && !requestsError()">
+          No tienes solicitudes pendientes 😄
+        </p>
+      </div>
+
+      <div class="modal-actions" style="margin-top:16px;">
+        <button class="btn-cancel" (click)="closeRequestsModal()">Cerrar</button>
       </div>
     </div>
   </div>

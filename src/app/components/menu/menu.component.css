@@ -332,4 +332,31 @@
   cursor: pointer;
   font-weight: 600;
 }
+.logout-button {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 15px;
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background: linear-gradient(135deg, #dc2626, #7f1d1d);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+.btn.secondary {
+  background: #f0f4f8;
+  color: #333;
+  border: 1px solid #ccc;
+}
+.btn.secondary:hover {
+  background: #e2e8f0;
+}
+
 

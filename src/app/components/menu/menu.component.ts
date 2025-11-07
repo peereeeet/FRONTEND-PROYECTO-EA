@@ -1,16 +1,19 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Subject, interval } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { User } from '../../models/user.model';
+import { compileOpaqueAsyncClassMetadata } from '@angular/compiler';
 
 type FriendLike = User;
 
 @Component({
   selector: 'app-menu',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css']
 })
@@ -33,6 +36,12 @@ export class MenuComponent implements OnInit, OnDestroy {
   filteredUsers = signal<User[]>([]);
   mPage = signal(1);
   mPageSize = signal(10);
+
+    // ======= MODAL "Solicitudes de amistad" =======
+  showRequestsModal = signal(false);
+  requestsLoading = signal(false);
+  requestsError = signal('');
+  requestsList = signal<User[]>([]);
 
   get mTotalPages(): number {
     const n = this.filteredUsers().length;
@@ -206,26 +215,118 @@ export class MenuComponent implements OnInit, OnDestroy {
 
     this.filteredUsers.set(filtered);
   }
+  addFromModal(userId?: string): void {
+  if (!userId) return; // Evita undefined
 
-  addFromModal(userId: string): void {
-    const meUser = this.me(); if (!meUser) return;
-    const myId = this.getId(meUser); if (!myId) return;
+  const meUser = this.me();
+  if (!meUser) return;
+  const myId = this.getId(meUser);
+  if (!myId) return;
 
-    this.userService.addFriend(myId, userId)
+  this.userService
+    .sendFriendRequest(myId, userId)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: () => {
+        // Quita al usuario del modal tras enviar la solicitud
+        this.filteredUsers.set(
+          this.filteredUsers().filter((u) => this.getId(u) !== userId)
+        );
+        this.allUsers.set(
+          this.allUsers().filter((u) => this.getId(u) !== userId)
+        );
+        this.modalError.set('Solicitud de amistad enviada ✅');
+      },
+      error: (err) => {
+        this.modalError.set(
+          err?.error?.error || 'No se pudo enviar la solicitud.'
+        );
+      },
+    });
+}
+
+   openRequestsModal(): void {
+    const meUser = this.me();
+    if (!meUser) return;
+    const myId = this.getId(meUser);
+    if (!myId) return;
+
+    this.requestsError.set('');
+    this.requestsLoading.set(true);
+    this.showRequestsModal.set(true);
+
+    this.userService
+      .getFriendRequests(myId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => {
-          // saca al usuario de la lista del modal y recarga amigos
-          this.filteredUsers.set(this.filteredUsers().filter(u => this.getId(u) !== userId));
-          this.allUsers.set(this.allUsers().filter(u => this.getId(u) !== userId));
-          this.cargarAmigos(myId);
+        next: (users) => {
+          this.requestsList.set(users);
+          this.requestsLoading.set(false);
         },
-        error: () => {
-          this.modalError.set('No se pudo añadir. Inténtalo de nuevo.');
-        }
+        error: (err) => {
+          this.requestsError.set(
+            err?.error?.message || 'Error cargando solicitudes'
+          );
+          this.requestsList.set([]);
+          this.requestsLoading.set(false);
+        },
       });
   }
 
+  closeRequestsModal(): void {
+    this.showRequestsModal.set(false);
+    const meUser = this.me();
+    if (!meUser) return;
+    const myId = this.getId(meUser);
+    if (!myId) return;
+    this.cargarAmigos(myId);
+  }
+
+  acceptRequest(userId: string): void {
+    const meUser = this.me();
+    if (!meUser) return;
+    const myId = this.getId(meUser);
+    if (!myId) return;
+
+    this.userService
+      .acceptFriendRequest(myId, userId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.requestsList.set(
+            this.requestsList().filter(
+              (u) => this.getId(u) !== userId
+            )
+          );
+          this.cargarAmigos(myId);
+        },
+        error: () =>
+          this.requestsError.set('Error al aceptar la solicitud'),
+      });
+  }
+
+  rejectRequest(userId: string): void {
+    const meUser = this.me();
+    if (!meUser) return;
+    const myId = this.getId(meUser);
+    if (!myId) return;
+
+    this.userService
+      .rejectFriendRequest(myId, userId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.requestsList.set(
+            this.requestsList().filter(
+              (u) => this.getId(u) !== userId
+            )
+          );
+        },
+        error: () =>
+          this.requestsError.set('Error al rechazar la solicitud'),
+      });
+    
+}
   // paginación modal
   modalPrev(): void { if (this.mPage() > 1) this.mPage.set(this.mPage() - 1); }
   modalNext(): void { if (this.mPage() < this.mTotalPages) this.mPage.set(this.mPage() + 1); }

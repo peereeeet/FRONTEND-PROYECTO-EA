@@ -64,11 +64,12 @@ export class ValoracionComponent implements OnInit {
     if (typeof st?.ratingsCount === 'number') this.ratingsCount = st.ratingsCount;
 
     this.refreshAggregates();
+    this.resetValoracionForm();
 
     if (!this.eventoName) {
       this.eventoSrv.getEventoById(this.eventoId).subscribe({
         next: (ev: any) => { this.eventoName = ev?.name || ev?.title || ''; },
-        error: () => { /* opcional: ignorar */ }
+        error: () => { }
       });
     }
 
@@ -126,6 +127,7 @@ export class ValoracionComponent implements OnInit {
         this.saving = false;
         this.loadList();
         this.refreshAggregates();
+        this.resetValoracionForm();
       },
       error: (err: HttpErrorResponse) => {
         this.errorMsg = err?.error?.message || 'No se pudo guardar la valoración';
@@ -182,6 +184,12 @@ export class ValoracionComponent implements OnInit {
         if (this.ratingsCount == null) this.ratingsCount = 0;
       }
     });
+  }
+
+  private resetValoracionForm(): void {
+    this.hover = 0;
+    this.myScore = 0;
+    this.myComment = '';
   }
 
   goBack() {
