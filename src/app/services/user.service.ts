@@ -81,22 +81,18 @@ export class UserService {
     return this.http.get<Page<User>>(`${this.apiUrl}/${userId}/friends?${params}`);
   }
 
-  // 📨 Enviar solicitud de amistad
   sendFriendRequest(userId: string, targetId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/friend-request`, { userId, targetId });
   }
 
-  // ✅ Aceptar solicitud
   acceptFriendRequest(userId: string, requesterId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/friend-accept`, { userId, requesterId });
   }
 
-  // ❌ Rechazar solicitud
   rejectFriendRequest(userId: string, requesterId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/friend-reject`, { userId, requesterId });
   }
 
-  // 📬 Ver solicitudes pendientes
   getFriendRequests(userId: string): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}/friend-requests/${userId}`);
   }
