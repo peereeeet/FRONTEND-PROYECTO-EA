@@ -1,0 +1,247 @@
+<div class="page-wrapper">
+  <!-- CABECERA -->
+  <div class="header-row">
+    <h1 class="page-title">Agregar un nuevo comentario</h1>
+
+    <button class="btn-secondary" (click)="goHome()">
+      ← Volver a Home
+    </button>
+  </div>
+
+  <!-- MENSAJE DE ERROR -->
+  <div *ngIf="errorMessage" class="alert-error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- TARJETA DEL FORMULARIO -->
+  <div class="card form-card">
+    <form (ngSubmit)="onSubmit()" class="form-grid">
+      <!-- CONTENIDO -->
+      <div class="form-group full-width">
+        <label class="form-label">Contenido:</label>
+        <textarea
+          [(ngModel)]="nuevoComentario.contenido"
+          name="contenido"
+          rows="3"
+          class="app-input textarea"
+          placeholder="Escribe aquí el comentario..."
+        ></textarea>
+      </div>
+
+      <!-- USUARIO -->
+      <div class="form-group full-width">
+        <label class="form-label">Usuario:</label>
+        <select
+          [(ngModel)]="nuevoComentario.usuario"
+          name="usuario"
+          class="app-input select"
+        >
+          <option value="">Selecciona el usuario</option>
+          <option *ngFor="let u of usuarios" [value]="u._id">
+            {{ u.username }}
+          </option>
+        </select>
+      </div>
+
+      <!-- EVENTO -->
+      <div class="form-group full-width">
+        <label class="form-label">Evento:</label>
+        <select
+          [(ngModel)]="nuevoComentario.evento"
+          name="evento"
+          class="app-input select"
+        >
+          <option value="">Selecciona el evento</option>
+          <option *ngFor="let e of eventos" [value]="e._id">
+            {{ e.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- LIKES -->
+      <div class="form-group small-width">
+        <label class="form-label">Likes iniciales:</label>
+        <input
+          type="number"
+          min="0"
+          class="app-input"
+          [(ngModel)]="nuevoComentario.likes"
+          name="likes"
+        />
+      </div>
+
+      <!-- BOTÓN -->
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">
+          {{ editingComentario ? 'Guardar cambios' : 'Agregar' }}
+        </button>
+
+        <button
+          *ngIf="editingComentario"
+          type="button"
+          class="btn-link"
+          (click)="cancelEdit()"
+        >
+          Cancelar edición
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- TARJETA LISTA DE COMENTARIOS -->
+  <div class="card list-card">
+    <div class="list-header">
+      <div>
+        <h2 class="list-title">Comentarios existentes</h2>
+        <p class="list-subtitle">
+          {{ isSearching ? 'Mostrando resultados filtrados' : 'Mostrando todos los comentarios' }}
+        </p>
+      </div>
+
+      <div class="filters-row">
+        <!-- BUSCAR -->
+        <div class="filter-item">
+          <label class="form-label small">Buscar:</label>
+          <input
+            type="text"
+            class="app-input"
+            [(ngModel)]="searchQuery"
+            name="searchQuery"
+            (keyup.enter)="searchComentarios()"
+            placeholder="Buscar por texto o usuario…"
+          />
+        </div>
+
+        <!-- FILTRAR EVENTO -->
+        <div class="filter-item">
+          <label class="form-label small">Evento:</label>
+          <select
+            class="app-input select"
+            [(ngModel)]="selectedEventoFilter"
+            name="selectedEventoFilter"
+            (change)="filterByEvento()"
+          >
+            <option value="">Todos</option>
+            <option *ngFor="let e of eventos" [value]="e._id">
+              {{ e.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- LIMPIAR -->
+        <button class="btn-link" type="button" (click)="clearSearch()">
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="table-wrapper" *ngIf="comentarios && comentarios.length > 0; else noData">
+      <table class="app-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Evento</th>
+            <th>Contenido</th>
+            <th class="center">Likes</th>
+            <th class="right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of comentarios; let i = index">
+            <td>
+              <span class="tag tag-user">{{ getUserName(c.usuario) }}</span>
+            </td>
+            <td>
+              <span class="tag tag-event">{{ getEventoName(c.evento) }}</span>
+            </td>
+            <td class="content-cell">
+              <span class="content-text" [title]="c.contenido">
+                {{ c.contenido }}
+              </span>
+              <span class="content-date">
+                {{ c.fechaCreacion | date: 'short' }}
+              </span>
+            </td>
+            <td class="center">
+              <span class="tag tag-likes">{{ c.likes }}</span>
+            </td>
+            <td class="right">
+              <div class="action-group">
+                <button type="button" class="btn-chip success" (click)="likeComentario(c._id!)">
+                  👍 Like
+                </button>
+                <button type="button" class="btn-chip primary" (click)="prepareEdit(c, i)">
+                  ✏️ Editar
+                </button>
+                <button type="button" class="btn-chip danger" (click)="openDeleteModal(c._id!)">
+                  🗑 Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SIN DATOS -->
+    <ng-template #noData>
+      <div class="no-data">
+        No hay comentarios todavía.
+      </div>
+    </ng-template>
+
+    <!-- PAGINACIÓN -->
+    <div class="pagination-row" *ngIf="totalPages > 1">
+      <div class="pagination-buttons">
+        <button
+          type="button"
+          class="btn-secondary small"
+          (click)="prevPage()"
+          [disabled]="page === 1"
+        >
+          ← Anterior
+        </button>
+        <button
+          type="button"
+          class="btn-secondary small"
+          (click)="nextPage()"
+          [disabled]="page === totalPages"
+        >
+          Siguiente →
+        </button>
+      </div>
+
+      <div class="pagination-info">
+        Página {{ page }} de {{ totalPages }} · Total: {{ total }}
+      </div>
+
+      <div class="page-size">
+        <span>Tamaño:</span>
+        <select (change)="changePageSize($event)" class="app-input select small">
+          <option [selected]="limit === 5">5</option>
+          <option [selected]="limit === 10">10</option>
+          <option [selected]="limit === 20">20</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ELIMINAR -->
+  <div *ngIf="showDeleteModal" class="modal-backdrop"></div>
+
+  <div *ngIf="showDeleteModal" class="modal-container">
+    <div class="modal-card">
+      <h3>Eliminar comentario</h3>
+      <p>¿Seguro que quieres eliminar este comentario?</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" type="button" (click)="closeDeleteModal()">
+          Cancelar
+        </button>
+        <button class="btn-danger" type="button" (click)="confirmDelete()">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

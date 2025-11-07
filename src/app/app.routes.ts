@@ -8,6 +8,8 @@ import { LoginComponent } from './components/login/login.component';
 import { RegistrarComponent } from './components/registrar/registrar.component';
 import { ValoracionComponent } from './components/valoracion/valoracion';
 import { MenuComponent } from './components/menu/menu.component';
+import { ComentariosComponent } from './components/comentarios/comentarios.component';
+
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -46,6 +48,11 @@ export const routes: Routes = [
   { 
     path: '**', 
     redirectTo: 'login' 
+  },
+    { 
+    path: 'comentarios',
+    component: ComentariosComponent,
+    canActivate: [authGuard] 
   }
 ];
 
