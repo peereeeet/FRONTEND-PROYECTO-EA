@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, Observable, Subject } from 'rxjs';
 import { User } from '../models/user.model';
 
 export interface Page<T> {
@@ -65,11 +65,25 @@ export class UserService {
     return this.http.put<User>(`${this.apiUrl}/${id}/rol`, { rol }, { headers });
   }
 
-  heartbeat(userId: string): Observable<{ _id: string; username: string; online: boolean; lastSeen: string }> {
-    return this.http.post<{ _id: string; username: string; online: boolean; lastSeen: string }>(
-      `${this.apiUrl}/${userId}/heartbeat`,
-      {}
-    );
+  heartbeat(userId: string): Observable<{ ok: boolean; online: boolean }> {
+    return this.http.post<{ ok: boolean; online: boolean }>(`${this.apiUrl}/${userId}/heartbeat`, {});
+  }
+
+  setOnline(userId: string): Observable<{ ok: boolean; online: boolean }> {
+    return this.http.put<{ ok: boolean; online: boolean }>(`${this.apiUrl}/${userId}/online`, {});
+  }
+
+  setOffline(userId: string): Observable<{ ok: boolean; online: boolean }> {
+    return this.http.put<{ ok: boolean; online: boolean }>(`${this.apiUrl}/${userId}/offline`, {});
+  }
+
+  beaconOffline(userId: string): void {
+    try {
+      const url = `${this.apiUrl}/${userId}/offline`;
+      const blob = new Blob([JSON.stringify({})], { type: 'application/json' });
+      // Nota: Algunos servers rechazan PUT por beacon; si pasa, crea POST /:id/offline-beacon
+      (navigator as any).sendBeacon?.(url, blob);
+    } catch {}
   }
 
   listFriends(userId: string, page = 1, limit = 20, q = ''): Observable<Page<User>> {
@@ -97,7 +111,17 @@ export class UserService {
     return this.http.get<User[]>(`${this.apiUrl}/friend-requests/${userId}`);
   }
 
-  removeFriend(userId: string, friendId: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${userId}/friends/${friendId}`);
+  getSentRequests(userId: string) {
+    return this.http.get<{ ok: boolean; data: any[] }>(
+      `${this.apiUrl}/${userId}/requests/sent`
+    );
   }
+
+  removeFriend(myId: string, friendId: string) {
+    return this.http.delete<{ ok: boolean }>(`${this.apiUrl}/${myId}/friends/${friendId}`);
+  }
+
+  private friendsBus = new Subject<void>();
+  notifyFriendsChanged(): void { this.friendsBus.next(); }
+  onFriendsChanged() { return this.friendsBus.asObservable(); }
 }

@@ -14,4 +14,6 @@ export interface User {
     string |
     { _id: string; username: string; gmail: string; isOnline?: boolean }
   >;
+  friendRequest?: Array<string | { _id: string; username: string; gmail: string }>;
+  sentRequests?: Array<string | { _id: string; username: string; gmail: string }>;
 }

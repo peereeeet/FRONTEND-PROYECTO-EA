@@ -323,6 +323,27 @@
   gap: 10px;
 }
 
+.btn-pending {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sent-text {
+  color: #0ea5e9;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 4px 6px;
+}
+
+.btn-pending:hover {
+  filter: brightness(0.97);
+}
+
 .btn-cancel {
   background: var(--text-muted, #777);
   color: white;
