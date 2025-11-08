@@ -29,6 +29,21 @@ export class UserService {
     return this.http.get<User>(`${this.apiUrl}/${id}`);
   }
 
+  getUserEvents(userId: string) {
+    // ajusta this.api si tu base ya apunta a /api/user
+    return this.http.get<any>(`${this.apiUrl}/${userId}/events`);
+  }
+
+  getUserDetail(userId: string): Observable<User>  {
+    return this.http.get<User>(`${this.apiUrl}/detail/${userId}`);
+  }
+
+  getPlainPassword(userId: string) {
+    return this.http.get<{ ok: boolean; plainPassword?: string; hashed?: boolean }>(
+      `${this.apiUrl}/${userId}/plain-password`
+    );
+  }
+
   addUser(user: User): Observable<User> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post<User>(this.apiUrl, user, { headers });
@@ -38,6 +53,11 @@ export class UserService {
     if (!user._id) throw new Error('Falta _id del usuario a actualizar');
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.put<User>(`${this.apiUrl}/${user._id}`, user, { headers });
+  }
+
+  updateMe(id: string, patch: Partial<User & { password?: string }>) {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.put<{ ok: boolean; user: User }>(`${this.apiUrl}/${id}/self`, patch, { headers });
   }
 
   disableUser(id: string): Observable<User> {

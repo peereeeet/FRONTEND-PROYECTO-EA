@@ -1,0 +1,138 @@
+<div class="perfil-page">
+  <div class="space-background"></div>
+  <div class="stars"></div>
+  <header class="app-bar">
+    <div class="app-bar__content centered">
+      <h1 class="app-bar__title">Mi perfil</h1>
+    </div>
+  </header>
+
+  <section class="perfil-container">
+    <div *ngIf="loading()" class="msg">Cargando…</div>
+    <div *ngIf="!loading() && error()" class="msg error">{{ error() }}</div>
+
+    <div class="card" *ngIf="!loading() && me()">
+      <div class="card-header">
+        <div class="avatar">👤</div>
+        <div class="info">
+          <div class="name-row">
+            <h2 class="name">{{ me()?.username }}</h2>
+            <button class="btn-back" routerLink="/menu">Volver al menú</button>
+            <button class="btn-edit" (click)="openEdit()">Modificar datos</button>
+          </div>
+          <div class="status">
+            <span class="     dot" [class.online]="me()?.isOnline" [class.offline]="!me()?.isOnline"></span>
+            <span>{{ me()?.isOnline ? 'En línea' : 'Desconectado' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <div class="label">Nombre de usuario</div>
+          <div class="value">{{ me()?.username || '—' }}</div>
+        </div>
+
+        <div class="field">
+          <div class="label">Correo</div>
+          <div class="value">{{ me()?.gmail || '—' }}</div>
+        </div>
+
+        <div class="field">
+          <div class="label">Cumpleaños</div>
+          <div class="value">{{ formatDate(me()?.birthday ) }}</div>
+        </div>
+
+        <div class="field password-field">
+          <div class="label">Contraseña</div>
+          <div class="value">
+            <span>{{ showPassword ? (realPassword || '—') : maskedPassword() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+          <h3>Eventos en los que participo</h3>
+          <span class="count">{{ eventos().length }}</span>
+      </div>
+
+      <div *ngIf="!eventos().length" class="empty">No participas en ningún evento.</div>
+
+      <ul class="event-list" *ngIf="eventos().length">
+          <li *ngFor="let ev of eventos()">
+          <div class="ev-left">
+              <div class="ev-title">{{ ev.title }}</div>
+              <div class="ev-sub">
+              {{ ev.date ? formatDate(ev.date) : '' }}
+              <span *ngIf="ev.location"> · {{ ev.location }}</span>
+              </div>
+          </div>
+          </li>
+      </ul>
+      </div>
+  </section>
+
+  <div class="modal-overlay" *ngIf="editOpen()" (click)="closeEdit()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Modificar datos</h3>
+        <button class="btn-close" (click)="closeEdit()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-row">
+          <label>Nombre de usuario</label>
+          <input
+              type="text"
+              [(ngModel)]="edit()!.username"
+              (blur)="checkUsername()"
+              minlength="3"
+          />
+          <div class="hint-row">
+              <span *ngIf="checkingUsername()" class="hint info">Comprobando nombre…</span>
+              <span *ngIf="usernameTaken()" class="hint error">⚠ Este nombre de usuario ya está en uso.</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Correo</label>
+          <input
+              type="email"
+              [(ngModel)]="edit()!.gmail"
+              (blur)="checkEmail()"
+          />
+          <div class="hint-row">
+              <span *ngIf="checkingEmail()" class="hint info">Comprobando correo…</span>
+              <span *ngIf="emailTaken()" class="hint error">⚠ Este correo ya está registrado.</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Cumpleaños</label>
+          <input
+          type="date"
+          [ngModel]="birthForInput()"
+          (ngModelChange)="onBirthInput($event)"
+          [attr.max]="todayISO()"
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Nueva contraseña</label>
+          <input type="password" [(ngModel)]="edit()!.password" placeholder="Déjalo vacío para no cambiarla" />
+        </div>
+
+        <div *ngIf="saveError()" class="msg error">{{ saveError() }}</div>
+      </div>
+
+      <div class="modal-actions">
+      <button class="btn cancel" (click)="closeEdit()">Cancelar</button>
+      <button class="btn primary" [disabled]="saving()" (click)="saveEdit()">
+          {{ saving() ? 'Guardando…' : 'Guardar' }}
+      </button>
+      </div>
+    </div>
+  </div>
+</div>
