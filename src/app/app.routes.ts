@@ -8,6 +8,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegistrarComponent } from './components/registrar/registrar.component';
 import { ValoracionComponent } from './components/valoracion/valoracion';
 import { MenuComponent } from './components/menu/menu.component';
+import { PerfilComponent } from './components/perfil/perfil.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -42,7 +43,12 @@ export const routes: Routes = [
   },
   { path: 'menu', 
     component: MenuComponent, 
-    canActivate: [authGuard] },
+    canActivate: [authGuard] 
+  },
+  { path: 'perfil', 
+    component: PerfilComponent, 
+    canActivate: [authGuard] 
+  },
   { 
     path: '**', 
     redirectTo: 'login' 

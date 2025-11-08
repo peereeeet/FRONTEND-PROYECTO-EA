@@ -1,65 +1,21 @@
 @import '../login/login.component.css';
 
-/* Ajustes específicos para el registro */
-.login-card {
-  max-width: 900px;
-  width: 90%;
+/* Ajustes del registro sobre la base del login */
+.login-card{ max-width:900px; width:90%; }
+
+.form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+.form-column{ display:flex; flex-direction:column; gap:12px; }
+
+.buttons-row{ display:flex; justify-content:center; align-items:center; gap:14px; margin-top:18px; flex-wrap:wrap; }
+.buttons-row .login-button, .buttons-row .admin-button{ flex:1; max-width:240px; }
+
+.form-error{
+  margin-top:16px; padding:12px; background: rgba(239,68,68,.08);
+  border:1px solid var(--error); color:#dc2626; text-align:center; border-radius: var(--radius-10);
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.form-column {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* ✅ Nueva fila de botones */
-.buttons-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  margin-top: 25px;
-  flex-wrap: wrap;
-}
-
-/* Aseguramos tamaños y consistencia */
-.buttons-row .login-button,
-.buttons-row .admin-button {
-  flex: 1;
-  max-width: 250px;
-  font-size: 16px;
-}
-
-/* Mensaje de error general */
-.form-error {
-  margin-top: 20px;
-  padding: 12px;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid #ef4444;
-  color: #dc2626;
-  text-align: center;
-  border-radius: 10px;
-  font-size: 14px;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsivo */
-@media (max-width: 700px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  .buttons-row {
-    flex-direction: column;
-  }
+/* Responsive */
+@media (max-width: 700px){
+  .form-grid{ grid-template-columns:1fr; }
+  .buttons-row{ flex-direction:column; }
 }
