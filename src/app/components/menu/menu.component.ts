@@ -175,6 +175,15 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
 
+  goToPerfil(): void {
+    const user = this.me?.();
+    if (!user || !user._id) return;
+
+    this.router.navigate(['/perfil'], {
+      state: { userId: String(user._id) } // ← pasamos SOLO el id
+    });
+  }
+
   quitar(friendId: string): void {
     const meUser = this.me(); if (!meUser) return;
     const myId = this.getId(meUser); if (!myId) return;

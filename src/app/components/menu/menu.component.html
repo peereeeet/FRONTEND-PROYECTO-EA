@@ -12,8 +12,9 @@
       </div>
     </div>
 
-    <!-- Botón Cerrar sesión (igual que en Home) -->
-    <div style="margin-left:auto;">
+    <!-- Acciones a la derecha -->
+    <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+      <button class="btn secondary" (click)="goToPerfil()">👤 Mi perfil</button>
       <button class="logout-button" (click)="onLogout()">Cerrar sesión</button>
     </div>
   </header>
