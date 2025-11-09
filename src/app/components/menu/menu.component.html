@@ -27,6 +27,27 @@
       </div>
     </header>
 
+        <!-- Sección de eventos -->
+    <section class="events-card">
+      <header class="events-header">
+        <h2>🎟️ Eventos</h2>
+      </header>
+
+    <button class="btn primary" (click)="goToCrearEvento()">
+      ➕ Crear evento
+    </button>
+    
+      <div class="events-actions">
+        <button type="button" class="btn" (click)="goToExplorarEventos()">
+          🔍 Explorar eventos
+        </button>
+
+        <button type="button" class="btn secondary" (click)="goToMisEventos()">
+          📅 Mis eventos
+        </button>
+      </div>
+    </section>
+
     <!-- Mensajes -->
     <div *ngIf="loading()" class="msg">Cargando…</div>
     <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>

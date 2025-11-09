@@ -1,0 +1,125 @@
+<!-- src/app/components/mis-eventos/mis-eventos.component.html -->
+<div class="mis-eventos-container">
+  <header class="header">
+    <h1>Mis Eventos</h1>
+  </header>
+
+  <button class="btn-back" (click)="goBack()">← Volver</button>
+
+
+  <div *ngIf="loading" class="loading">Cargando eventos...</div>
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+
+  <!-- Eventos Creados -->
+  <section class="eventos-section">
+    <h2>📝 Eventos que he creado ({{ eventosCreados.length }})</h2>
+    
+    <div *ngIf="eventosCreados.length === 0" class="empty-state">
+      <p>Aún no has creado ningún evento</p>
+    </div>
+
+    <ul class="eventos-list">
+      <li *ngFor="let evento of eventosCreados" class="evento-card creado">
+        <div class="evento-header">
+          <h3>{{ evento.name }}</h3>
+          <span class="badge badge-creator">Creador</span>
+        </div>
+
+        <div class="evento-info">
+          <p><strong>📍 Dirección:</strong> {{ evento.address || '-' }}</p>
+          <p><strong>🕒 Horario:</strong> {{ getScheduleText(evento) }}</p>
+          <p><strong>👥 Participantes:</strong> {{ evento.participantes?.length || 0 }}</p>
+          <div class="rating-info">
+            <strong>⭐ Valoración:</strong>
+            <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0">
+              {{ evento.avgRating | number:'1.1-2' }} ({{ evento.ratingsCount }} valoraciones)
+            </span>
+            <span *ngIf="!evento.ratingsCount || evento.ratingsCount === 0">
+              Sin valoraciones
+            </span>
+          </div>
+        </div>
+
+        <div class="evento-actions">
+          <button class="btn btn-rate" (click)="goToRatings(evento)">
+            ⭐ Ver valoraciones
+          </button>
+          <button class="btn btn-delete" (click)="openDeleteModal(evento)">
+            🗑️ Eliminar
+          </button>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Eventos Inscritos -->
+  <section class="eventos-section">
+    <h2>🎯 Eventos en los que estoy inscrito ({{ eventosInscritos.length }})</h2>
+    
+    <div *ngIf="eventosInscritos.length === 0" class="empty-state">
+      <p>Aún no estás inscrito en ningún evento</p>
+      <button class="btn btn-primary" routerLink="/explorar-eventos">
+        Explorar eventos
+      </button>
+    </div>
+
+    <ul class="eventos-list">
+      <li *ngFor="let evento of eventosInscritos" class="evento-card inscrito">
+        <div class="evento-header">
+          <h3>{{ evento.name }}</h3>
+          <span class="badge badge-participant">Inscrito</span>
+        </div>
+
+        <div class="evento-info">
+          <p><strong>👤 Creador:</strong> {{ getCreadorName(evento) }}</p>
+          <p><strong>📍 Dirección:</strong> {{ evento.address || '-' }}</p>
+          <p><strong>🕒 Horario:</strong> {{ getScheduleText(evento) }}</p>
+          <p><strong>👥 Participantes:</strong> {{ evento.participantes?.length || 0 }}</p>
+          <div class="rating-info">
+            <strong>⭐ Valoración:</strong>
+            <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0">
+              {{ evento.avgRating | number:'1.1-2' }} ({{ evento.ratingsCount }} valoraciones)
+            </span>
+            <span *ngIf="!evento.ratingsCount || evento.ratingsCount === 0">
+              Sin valoraciones
+            </span>
+          </div>
+        </div>
+
+        <div class="evento-actions">
+          <button class="btn btn-rate" (click)="goToRatings(evento)">
+            ⭐ Valorar evento
+          </button>
+          <button class="btn btn-leave" (click)="openLeaveModal(evento)">
+            👋 Salir del evento
+          </button>
+        </div>
+      </li>
+    </ul>
+  </section>
+</div>
+
+<!-- Modal Eliminar -->
+<div class="modal-overlay" *ngIf="showDeleteModal">
+  <div class="modal">
+    <h3>¿Eliminar evento?</h3>
+    <p>Esta acción no se puede deshacer. Se eliminarán todos los datos del evento y las valoraciones asociadas.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeDeleteModal()">Cancelar</button>
+      <button class="btn-confirm" (click)="confirmarEliminar()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Salir -->
+<div class="modal-overlay" *ngIf="showLeaveModal">
+  <div class="modal">
+    <h3>¿Salir del evento?</h3>
+    <p>Dejarás de estar inscrito en este evento. Podrás volver a unirte más tarde si lo deseas.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="closeLeaveModal()">Cancelar</button>
+      <button class="btn-confirm" (click)="confirmarSalir()">Salir</button>
+    </div>
+  </div>
+</div>
