@@ -1,82 +1,221 @@
-.crear-evento-page {
+/* ================= Fondo y app-bar (igual que explorar) ================ */
+
+.events-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.space-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(600px 300px at 20% 60%, rgba(99,102,241,.18), transparent 60%),
+    radial-gradient(500px 260px at 80% 25%, rgba(67,56,202,.18), transparent 60%);
+}
+
+.app-bar {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.app-bar__content {
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: flex-start;
-  padding: 60px 20px;
+  padding: 12px 16px;
+}
+.app-bar__title {
+  margin: 0;
+  color: #1e3a8a;
+  font-weight: 700;
+  font-size: 1.6rem;
 }
 
+/* ================= Contenedor principal ================== */
+
+.crear-evento-page {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+}
+
+/* NEW/CHANGED: menos padding y ancho algo menor para densidad visual */
 .crear-evento-container {
-  background: white;
+  width: 100%;
+  max-width: 840px; /* antes 900px */
+  background: var(--surface-light, #fff);
+  border: 2px solid var(--border-light, #e5e7eb);
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  padding: 32px;
-  width: 100%;
-  max-width: 600px;
+  padding: 18px; /* antes 24px */
+  box-shadow: var(--shadow-md, 0 10px 30px rgba(0,0,0,.06));
 }
 
-.crear-evento-container h1 {
-  text-align: center;
-  margin-bottom: 28px;
-  color: var(--text-primary);
-}
-
-.crear-evento-form {
+.top-row {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  justify-content: flex-start;
+  margin-bottom: 8px; /* más compacto */
 }
 
-.form-group label {
-  font-weight: 600;
-  color: var(--text-primary);
-  display: block;
-  margin-bottom: 6px;
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--border-light);
+/* Botón volver (estándar de perfil/explorar) */
+.btn-back {
+  background: var(--primary-50, #eef2ff);
+  color: var(--primary-700, #1d4ed8);
+  border: 2px solid var(--primary-300, #c7d2fe);
+  padding: 8px 16px; /* más compacto */
   border-radius: 10px;
-  background-color: var(--surface-card);
-  font-size: 14px;
-  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-back:hover {
+  background: var(--primary-100, #e0e7ff);
+  transform: translateY(-1px);
 }
 
-.form-group small {
-  color: var(--danger-600);
-  font-size: 13px;
-  margin-top: 4px;
+.card-title-inside {
+  margin: 6px 0 12px 0; /* más compacto */
+  font-size: 1.15rem;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+/* ================= Formulario ================= */
+
+/* NEW/CHANGED: rejilla 2 columnas con auto-fit */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px; /* menos separación */
+  align-items: end;
+}
+
+.form-group { margin-bottom: 6px; } /* antes 16px */
+
+.form-group--full {
+  grid-column: 1 / -1; /* ocupa todo el ancho */
+}
+
+.crear-evento-form label {
   display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px; /* más compacto */
+  font-size: 0.92rem;
+}
+
+.crear-evento-form input[type="text"],
+.crear-evento-form input[type="date"],
+.crear-evento-form input[type="time"] {
+  width: 100%;
+  padding: 10px 12px; /* más compacto */
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14.5px; /* ligeramente menor */
+  transition: all 0.2s ease;
+  background: #f8fafc;
+  font-family: inherit;
+  line-height: 1.2;
+}
+.crear-evento-form input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+  transform: translateY(-1px);
+}
+
+.crear-evento-form small {
+  display: block;
+  color: #b91c1c;
+  margin-top: 2px; /* más compacto */
+}
+
+/* NEW/CHANGED: acciones de horario en línea y con wrap */
+.schedule-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Botones horario */
+.add-slot,
+.remove-slot {
+  background: #1d4ed8;
+  color: #fff;
+  border: none;
+  padding: 8px 12px; /* más compacto */
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all .2s ease;
+}
+.add-slot:hover { transform: translateY(-1px); }
+.remove-slot { background: #dc2626; }
+.remove-slot:hover { transform: translateY(-1px); }
+
+/* Preview pill más denso */
+.schedule-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 6px 10px; /* más compacto */
+  font-weight: 600;
+}
+
+/* Mensajes y CTA */
+.msg.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  padding: 8px 10px; /* más compacto */
+  border-radius: 10px;
+  margin-top: 6px;
+}
+
+/* NEW: fila de acciones compacta */
+.actions-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-  color: white;
+  background: var(--gradient-primary, linear-gradient(135deg, #1e40af, #0b2a7a));
+  color: #fff;
   border: none;
+  padding: 10px 14px; /* más compacto */
   border-radius: 10px;
-  font-weight: 600;
-  font-size: 16px;
   cursor: pointer;
-  padding: 12px 24px;
-  text-align: center;
+  font-weight: 700;
+  box-shadow: 0 8px 16px rgba(30,64,175,.18);
+  transition: all .2s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(30,64,175,.24);
 }
 
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-back {
-  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  cursor: pointer;
+/* ================= Responsive ================= */
+@media (max-width: 640px) {
+  .crear-evento-container { padding: 14px; }
+  .btn-back { width: 100%; justify-content: center; }
+  .actions-row { justify-content: stretch; }
+  .btn-primary { width: 100%; }
 }

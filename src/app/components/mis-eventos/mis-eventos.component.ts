@@ -1,73 +1,93 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { EventoService } from '../../services/evento.service';
 import { AuthService } from '../../services/auth.service';
 import { Evento } from '../../models/evento.model';
+import { ValoracionService } from '../../services/valoracion.service';
+import { Valoracion, ValoracionesPage } from '../../models/valoracion.model';
 
 @Component({
   selector: 'app-mis-eventos',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './mis-eventos.component.html',
   styleUrls: ['./mis-eventos.component.css']
 })
 export class MisEventosComponent implements OnInit {
-  // ============ ESTADO DEL COMPONENTE ============
-  eventosCreados: Evento[] = [];      // Eventos que el usuario creó
-  eventosInscritos: Evento[] = [];    // Eventos donde está inscrito
-  loading = false;                     // Indicador de carga
-  errorMessage = '';                   // Mensajes de error
-  currentUserId: string = '';          // ID del usuario actual
 
-  // ============ MODALES ============
-  showDeleteModal = false;             // Mostrar modal de eliminar
-  eventoToDelete: Evento | null = null; // Evento a eliminar
-  showLeaveModal = false;              // Mostrar modal de salir
-  eventoToLeave: Evento | null = null; // Evento del que salir
+  // ===== Estado principal (igual que tu versión) =====
+  eventosCreados: Evento[] = [];
+  eventosInscritos: Evento[] = [];
+  loading = false;
+  errorMessage = '';
+  currentUserId = '';
+
+  // ===== Modales existentes (eliminar/salir) =====
+  showDeleteModal = false;
+  eventoToDelete: Evento | null = null;
+
+  showLeaveModal = false;
+  eventoToLeave: Evento | null = null;
+
+  // ===== NUEVO: Modal de valoraciones embebido =====
+  showRatingsModal = false;
+  ratingsEventoId: string | null = null;
+  ratingsEventoName = '';
+  ratingsAvg?: number;
+  ratingsCount?: number;
+
+  // Lista/paginación/búsqueda
+  ratingsList: Valoracion[] = [];
+  ratingsLoading = false;
+  ratingsError = '';
+  ratingsInfo = '';
+
+  q = '';
+  page = 1;
+  totalPages = 1;
+  totalItems = 0;
+  pageSize = 3;
+
+  // Alta/edición rápida
+  stars = [1, 2, 3, 4, 5];
+  hover = 0;
+  myScore = 0;
+  myComment = '';
+  saving = false;
 
   constructor(
     private eventoService: EventoService,
     private authService: AuthService,
+    private ratingsSrv: ValoracionService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    // 📌 Obtener ID del usuario actual
     const user = this.authService.getCurrentUser();
     this.currentUserId = user?._id || '';
-    
-    // 📌 Cargar eventos del usuario
     this.loadMisEventos();
   }
 
-  // ============ CARGA DE DATOS ============
-  /**
-   * Carga los eventos creados e inscritos del usuario
-   * Normaliza las estructuras de datos del backend
-   */
+  // ===== Carga de mis eventos (creados/inscritos) =====
   loadMisEventos(): void {
     this.loading = true;
     this.errorMessage = '';
 
     this.eventoService.getMisEventos().subscribe({
-      next: (res) => {
-        // 🔄 Normalizar eventos creados
-        this.eventosCreados = res.eventosCreados.map(e => ({
+      next: (res: any) => {
+        // Normalizamos schedule/participantes por si el backend mezcla tipos
+        this.eventosCreados = (res.eventosCreados || []).map((e: any) => ({
           ...e,
-          schedule: Array.isArray(e.schedule) 
-            ? e.schedule 
-            : [e.schedule as any]
+          schedule: Array.isArray(e.schedule) ? e.schedule : (e.schedule ? [e.schedule] : []),
+          participantes: Array.isArray(e.participantes) ? e.participantes : (e.participants || [])
         }));
-
-        // 🔄 Normalizar eventos inscritos
-        this.eventosInscritos = res.eventosInscritos.map(e => ({
+        this.eventosInscritos = (res.eventosInscritos || []).map((e: any) => ({
           ...e,
-          schedule: Array.isArray(e.schedule) 
-            ? e.schedule 
-            : [e.schedule as any]
+          schedule: Array.isArray(e.schedule) ? e.schedule : (e.schedule ? [e.schedule] : []),
+          participantes: Array.isArray(e.participantes) ? e.participantes : (e.participants || [])
         }));
-
         this.loading = false;
       },
       error: (err) => {
@@ -78,146 +98,172 @@ export class MisEventosComponent implements OnInit {
     });
   }
 
-  // ============ MODALES - ELIMINAR EVENTO ============
-  /**
-   * Abre el modal de confirmación para eliminar un evento
-   * Solo disponible para eventos creados por el usuario
-   */
-  openDeleteModal(evento: Evento): void {
-    this.eventoToDelete = evento;
-    this.showDeleteModal = true;
+  // ===== Utilidades UI (ya presentes en tus componentes) =====
+  goBack(): void { this.router.navigate(['/menu']); }
+
+  getCreadorName(ev: any): string {
+    const c = ev?.creador || ev?.owner || ev?.createdBy;
+    if (!c) return '—';
+    return typeof c === 'string' ? c : (c.username || c.name || c.email || '—');
   }
 
-  closeDeleteModal(): void {
-    this.showDeleteModal = false;
-    this.eventoToDelete = null;
+  getScheduleText(ev: any): string {
+    const sch = ev?.schedule || [];
+    if (!Array.isArray(sch) || sch.length === 0) return '—';
+    // Si ya recibes formato string, lo mostramos tal cual; si es objeto, renderiza algo básico
+    return sch.map((s: any) => (typeof s === 'string' ? s : (s?.date || s?.hora || s?.time || ''))).filter(Boolean).join(' · ');
   }
 
-  /**
-   * Elimina el evento y actualiza la lista
-   * Solo el creador puede eliminar sus eventos
-   */
-  confirmarEliminar(): void {
+  isUserCreator(ev: Evento): boolean {
+    const cid = (ev as any)?.creador?._id || (ev as any)?.creador || (ev as any)?.owner || (ev as any)?.createdBy;
+    return cid === this.currentUserId;
+  }
+
+  isUserInEvento(ev: Evento): boolean {
+    const arr: any[] = (ev as any)?.participantes || [];
+    return arr.some((p: any) => (typeof p === 'string' ? p === this.currentUserId : p?._id === this.currentUserId));
+  }
+
+  // ===== Acciones existentes (no tocadas) =====
+  openDeleteModal(evento: Evento): void { this.eventoToDelete = evento; this.showDeleteModal = true; }
+  closeDeleteModal(): void { this.showDeleteModal = false; this.eventoToDelete = null; }
+
+  confirmDelete(): void {
     if (!this.eventoToDelete?._id) return;
-    
     this.eventoService.deleteEvento(this.eventoToDelete._id).subscribe({
-      next: () => {
-        // ✅ Recargar la lista completa
-        this.loadMisEventos();
-        this.closeDeleteModal();
-      },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Error al eliminar evento';
-        this.closeDeleteModal();
-      }
+      next: () => { this.closeDeleteModal(); this.loadMisEventos(); },
+      error: () => { this.errorMessage = 'No se pudo eliminar el evento.'; this.closeDeleteModal(); }
     });
   }
 
-  // ============ MODALES - SALIR DE EVENTO ============
-  /**
-   * Abre el modal de confirmación para salir de un evento
-   * Solo disponible para eventos donde el usuario está inscrito
-   */
-  openLeaveModal(evento: Evento): void {
-    this.eventoToLeave = evento;
-    this.showLeaveModal = true;
-  }
+  openLeaveModal(evento: Evento): void { this.eventoToLeave = evento; this.showLeaveModal = true; }
+  closeLeaveModal(): void { this.showLeaveModal = false; this.eventoToLeave = null; }
 
-  closeLeaveModal(): void {
-    this.showLeaveModal = false;
-    this.eventoToLeave = null;
-  }
-
-  /**
-   * Desinscribe al usuario del evento
-   */
-  confirmarSalir(): void {
+  confirmLeave(): void {
     if (!this.eventoToLeave?._id) return;
-    
     this.eventoService.leaveEvento(this.eventoToLeave._id).subscribe({
+      next: () => { this.closeLeaveModal(); this.loadMisEventos(); },
+      error: () => { this.errorMessage = 'No se pudo salir del evento.'; this.closeLeaveModal(); }
+    });
+  }
+
+  joinEvento(ev: Evento): void {
+    if (!ev?._id) return;
+    this.eventoService.joinEvento(ev._id).subscribe({
+      next: () => this.loadMisEventos(),
+      error: (err) => this.errorMessage = err?.error?.message || 'Error al unirse al evento'
+    });
+  }
+
+  // =================================================================
+  // ===================   NUEVO: MODAL VALORACIONES   ================
+  // =================================================================
+
+  openRatingsModal(ev: Evento) {
+    this.showRatingsModal = true;
+    this.ratingsEventoId = ev._id!;
+    this.ratingsEventoName = ev.name || '';
+    this.ratingsAvg = typeof (ev as any).avgRating === 'number' ? (ev as any).avgRating : undefined;
+    this.ratingsCount = typeof (ev as any).ratingsCount === 'number' ? (ev as any).ratingsCount : undefined;
+
+    // re-inicia estado y carga
+    this.q = '';
+    this.page = 1;
+    this.pageSize = 3;
+    this.hover = 0; this.myScore = 0; this.myComment = '';
+    this.loadRatingsList();
+    this.refreshRatingsAggregates();
+  }
+
+  closeRatingsModal(): void {
+    this.showRatingsModal = false;
+    this.ratingsEventoId = null;
+  }
+
+  private refreshRatingsAggregates() {
+    if (!this.ratingsEventoId) return;
+    this.eventoService.getEventoById(this.ratingsEventoId).subscribe({
+      next: (ev: any) => {
+        this.ratingsAvg = typeof ev?.avgRating === 'number' ? ev.avgRating : 0;
+        this.ratingsCount = typeof ev?.ratingsCount === 'number' ? ev.ratingsCount : 0;
+      },
+      error: () => {
+        if (this.ratingsAvg == null) this.ratingsAvg = 0;
+        if (this.ratingsCount == null) this.ratingsCount = 0;
+      }
+    });
+  }
+
+  private loadRatingsList() {
+    if (!this.ratingsEventoId) return;
+    this.ratingsLoading = true;
+    this.ratingsError = '';
+
+    this.ratingsSrv
+      .listByEvent(this.ratingsEventoId, this.page, this.pageSize, this.q)
+      .subscribe({
+        next: (res) => {
+          this.ratingsList = res.data;
+          this.page = res.page;
+          this.totalPages = res.totalPages;
+          this.totalItems = res.totalItems;
+          this.ratingsLoading = false;
+        },
+        error: () => {
+          this.ratingsError = 'Error cargando valoraciones';
+          this.ratingsLoading = false;
+        }
+      });
+  }
+
+  changeRatingsPage(delta: number) {
+    const p = this.page + delta;
+    if (p < 1 || p > this.totalPages) return;
+    this.page = p;
+    this.loadRatingsList();
+  }
+
+  searchRatings(): void {
+    this.page = 1;
+    this.loadRatingsList();
+  }
+
+  setRatingsPageSize(v: string) {
+    const n = parseInt(v, 10) || 3;
+    this.pageSize = n;
+    this.page = 1;
+    this.loadRatingsList();
+  }
+
+  setScore(v: number): void { this.myScore = v; }
+
+  saveRating(): void {
+    if (!this.ratingsEventoId) return;
+    this.ratingsError = '';
+    this.ratingsInfo = '';
+
+    if (this.myScore < 1 || this.myScore > 5) {
+      this.ratingsError = 'Selecciona una puntuación entre 1 y 5.';
+      return;
+    }
+
+    this.saving = true;
+    this.ratingsSrv.create(this.ratingsEventoId, { puntuacion: this.myScore, comentario: this.myComment }).subscribe({
       next: () => {
-        // ✅ Recargar la lista completa
+        this.saving = false;
+        this.ratingsInfo = '¡Valoración guardada!';
+        this.hover = 0;
+        this.myScore = 0;
+        this.myComment = '';
+        this.loadRatingsList();
+        this.refreshRatingsAggregates();
+        // También refrescamos las tarjetas para que avg/count se actualicen a la vista
         this.loadMisEventos();
-        this.closeLeaveModal();
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Error al salir del evento';
-        this.closeLeaveModal();
+        this.saving = false;
+        this.ratingsError = err?.error?.message || 'No se pudo guardar la valoración';
       }
     });
-  }
-
-  // ============ FORMATO DE DATOS ============
-  /**
-   * Obtiene el texto formateado del horario del evento
-   */
-  getScheduleText(e: Evento): string {
-    if (Array.isArray(e.schedule) && e.schedule.length) {
-      return this.formatSchedule(e.schedule[0]);
-    }
-    return '-';
-  }
-
-  /**
-   * Formatea una fecha del formato backend al formato de visualización
-   * Ejemplo: "2024-12-25 14:30" → "25-12-2024 14:30"
-   */
-  formatSchedule(s: string): string {
-    if (!s) return '-';
-    
-    const sep = s.includes('T') ? 'T' : ' ';
-    const [d, t = ''] = s.split(sep);
-    const [y, m, d2] = d.split('-');
-    const hhmm = t.slice(0, 5);
-    
-    if (y && m && d2) {
-      return `${d2}-${m}-${y}${hhmm ? ' ' + hhmm : ''}`;
-    }
-    return s;
-  }
-
-  /**
-   * 🆕 Obtiene el nombre del creador del evento
-   * Maneja tanto objetos como strings
-   */
-  getCreadorName(evento: Evento): string {
-    // Si el creador es un objeto poblado (con populate)
-    if (typeof evento.creador === 'object' && evento.creador) {
-      return evento.creador.username;
-    }
-    
-    // Si es solo un ID (string)
-    if (typeof evento.creador === 'string') {
-      // Verificar si es el usuario actual
-      if (evento.creador === this.currentUserId) {
-        return 'Tú';
-      }
-      return 'Desconocido';
-    }
-    
-    return 'Desconocido';
-  }
-
-  // ============ NAVEGACIÓN ============
-  /**
-   * Navega a la página de valoraciones del evento
-   */
-  goToRatings(evento: Evento): void {
-    if (!evento._id) return;
-    
-    this.router.navigate(['/events', evento._id, 'ratings'], {
-      state: { 
-        eventoName: evento.name,
-        avgRating: evento.avgRating,
-        ratingsCount: evento.ratingsCount
-      }
-    });
-  }
-
-  /**
-   * Vuelve al menú principal
-   */
-  goBack(): void {
-    this.router.navigate(['/menu']);
   }
 }

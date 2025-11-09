@@ -242,4 +242,8 @@ export class ExplorarEventosComponent implements OnInit {
       }
     });
   }
+
+  goBackToMenu(): void {
+    this.router.navigate(['/menu']);
+  }
 }

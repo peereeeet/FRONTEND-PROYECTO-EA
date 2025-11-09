@@ -1,12 +1,15 @@
 <div class="menu-page">
   <div class="space-background"></div>
   <div class="stars"></div>
+
   <header class="app-bar">
     <div class="app-bar__content centered">
       <h1 class="app-bar__title">Menú principal</h1>
     </div>
   </header>
+
   <section class="menu-container">
+    <!-- === PERFIL (arriba) === -->
     <header class="menu-header">
       <div class="me">
         <div class="avatar">👤</div>
@@ -27,64 +30,62 @@
       </div>
     </header>
 
-        <!-- Sección de eventos -->
-    <section class="events-card">
-      <header class="events-header">
-        <h2>🎟️ Eventos</h2>
-      </header>
+    <!-- === GRID INFERIOR: Eventos (izq) + Amigos (dcha) === -->
+    <!-- ADDED: contenedor en grid para colocar eventos y amigos en dos columnas -->
+    <div class="menu-grid"><!-- ADDED -->
+      
+      <!-- === EVENTOS (izquierda) === -->
+      <!-- ADDED: tarjeta de eventos con estética alineada a cards -->
+      <section class="events-card"><!-- ADDED -->
+        <div class="events-header"><!-- ADDED -->
+          <h3>🎟️ Eventos</h3><!-- ADDED -->
+        </div><!-- ADDED -->
 
-    <button class="btn primary" (click)="goToCrearEvento()">
-      ➕ Crear evento
-    </button>
-    
-      <div class="events-actions">
-        <button type="button" class="btn" (click)="goToExplorarEventos()">
-          🔍 Explorar eventos
-        </button>
+        <div class="events-actions"><!-- ADDED -->
+          <button class="btn primary" (click)="goToCrearEvento()">➕ Crear evento</button>
+          <button type="button" class="btn" (click)="goToExplorarEventos()">🔍 Explorar eventos</button>
+          <button type="button" class="btn secondary" (click)="goToMisEventos()">📅 Mis eventos</button>
+        </div><!-- ADDED -->
+        
+        <!-- Mensajes (se mantienen dentro de la tarjeta de eventos) -->
+        <div *ngIf="loading()" class="msg">Cargando…</div>
+        <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
+      </section><!-- ADDED -->
 
-        <button type="button" class="btn secondary" (click)="goToMisEventos()">
-          📅 Mis eventos
-        </button>
-      </div>
-    </section>
-
-    <!-- Mensajes -->
-    <div *ngIf="loading()" class="msg">Cargando…</div>
-    <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
-
-    <!-- Tarjeta Amigos -->
-    <section class="friends-card">
-      <div class="friends-header">
-        <h3>Amigos</h3>
-        <span class="count">{{ friends().length }}</span>
-        <div class="actions">
-          <button type="button" class="btn" (click)="openAddFriendsModal()">Explorar usuarios</button>
-          <button type="button" class="btn secondary" (click)="openRequestsModal()">📨 Solicitudes</button>
+      <!-- === AMIGOS (derecha) === -->
+      <section class="friends-card">
+        <div class="friends-header">
+          <h3>Amigos</h3>
+          <span class="count">{{ friends().length }}</span>
+          <div class="actions">
+            <button type="button" class="btn" (click)="openAddFriendsModal()">Explorar usuarios</button>
+            <button type="button" class="btn secondary" (click)="openRequestsModal()">📨 Solicitudes</button>
+          </div>
         </div>
-      </div>
 
-      <ul class="friends-list" *ngIf="friends().length; else emptyList">
-        <li *ngFor="let f of friends()">
-          <div class="left">
-            <div class="avatar small">🙂</div>
-            <div class="data">
-              <div class="name">{{ f.username }}</div>
-              <div class="mail">{{ f.gmail }}</div>
+        <ul class="friends-list" *ngIf="friends().length; else emptyList">
+          <li *ngFor="let f of friends()">
+            <div class="left">
+              <div class="avatar small">🙂</div>
+              <div class="data">
+                <div class="name">{{ f.username }}</div>
+                <div class="mail">{{ f.gmail }}</div>
+              </div>
             </div>
-          </div>
-          <div class="right">
-            <span class="dot" [class.online]="f.isOnline" [class.offline]="!f.isOnline"></span>
-            <span class="state">{{ f.isOnline ? 'En línea' : 'Desconectado' }}</span>
-            <button type="button" class="btn danger" (click)="quitar(f._id!)">Quitar</button>
-          </div>
-        </li>
-      </ul>
+            <div class="right">
+              <span class="dot" [class.online]="f.isOnline" [class.offline]="!f.isOnline"></span>
+              <span class="state">{{ f.isOnline ? 'En línea' : 'Desconectado' }}</span>
+              <button type="button" class="btn danger" (click)="quitar(f._id!)">Quitar</button>
+            </div>
+          </li>
+        </ul>
 
-      <ng-template #emptyList>
-        <p class="empty">Aún no tienes amigos para mostrar.</p>
-        <button type="button" class="btn" (click)="openAddFriendsModal()">Buscar y agregar amigos</button>
-      </ng-template>
-    </section>
+        <ng-template #emptyList>
+          <p class="empty">Aún no tienes amigos para mostrar.</p>
+          <button type="button" class="btn" (click)="openAddFriendsModal()">Buscar y agregar amigos</button>
+        </ng-template>
+      </section>
+    </div>
 
     <!-- ===== Modal Añadir Amigos ===== -->
     <div class="modal-overlay" *ngIf="showAddModal()">
