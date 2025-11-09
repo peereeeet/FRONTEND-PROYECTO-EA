@@ -1,0 +1,47 @@
+<div class="crear-evento-page">
+  <div class="crear-evento-container">
+    <button class="btn-back" (click)="goBack()">← Volver</button>
+
+    <h1>Crear nuevo evento</h1>
+
+    <form [formGroup]="eventoForm" (ngSubmit)="onSubmit()" class="crear-evento-form">
+
+      <div class="form-group">
+        <label for="nombre">Nombre del evento</label>
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Ej. Torneo de verano">
+        <small *ngIf="eventoForm.get('nombre')?.touched && eventoForm.get('nombre')?.invalid">
+          El nombre es obligatorio y debe tener al menos 3 caracteres.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" formControlName="descripcion" rows="4" placeholder="Describe tu evento..."></textarea>
+        <small *ngIf="eventoForm.get('descripcion')?.touched && eventoForm.get('descripcion')?.invalid">
+          La descripción debe tener al menos 10 caracteres.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="fecha">Fecha</label>
+        <input id="fecha" type="date" formControlName="fecha">
+        <small *ngIf="eventoForm.get('fecha')?.touched && eventoForm.get('fecha')?.invalid">
+          La fecha es obligatoria.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="lugar">Lugar</label>
+        <input id="lugar" type="text" formControlName="lugar" placeholder="Ej. Polideportivo Central">
+        <small *ngIf="eventoForm.get('lugar')?.touched && eventoForm.get('lugar')?.invalid">
+          El lugar es obligatorio.
+        </small>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Creando...' : 'Crear evento' }}
+      </button>
+
+    </form>
+  </div>
+</div>

@@ -1,15 +1,12 @@
 <div class="menu-page">
   <div class="space-background"></div>
   <div class="stars"></div>
-
   <header class="app-bar">
     <div class="app-bar__content centered">
-      <h1 class="app-bar__title">🎯 Menú Principal</h1>
+      <h1 class="app-bar__title">Menú principal</h1>
     </div>
   </header>
-
   <section class="menu-container">
-    <!-- ===== HEADER USUARIO ===== -->
     <header class="menu-header">
       <div class="me">
         <div class="avatar">👤</div>
@@ -23,88 +20,42 @@
         </div>
       </div>
 
+      <!-- Acciones a la derecha -->
       <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
         <button class="btn secondary" (click)="goToPerfil()">👤 Mi perfil</button>
         <button class="logout-button" (click)="onLogout()">Cerrar sesión</button>
       </div>
     </header>
 
-    <!-- ===== MENSAJES DE ESTADO ===== -->
-    <div *ngIf="loading()" class="msg">Cargando…</div>
-    <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
+        <!-- Sección de eventos -->
+    <section class="events-card">
+      <header class="events-header">
+        <h2>🎟️ Eventos</h2>
+      </header>
 
-    <!-- ===== DASHBOARD DE EVENTOS (NUEVO) ===== -->
-    <section class="events-dashboard">
-      <div class="dashboard-header">
-        <h3>🎪 Mis Eventos</h3>
-      </div>
-
-      <!-- Tarjetas de estadísticas -->
-      <div class="stats-grid">
-        <div class="stat-card created">
-          <div class="stat-icon">📝</div>
-          <div class="stat-content">
-            <div class="stat-number">{{ eventStats().eventosCreados }}</div>
-            <div class="stat-label">Eventos Creados</div>
-          </div>
-        </div>
-
-        <div class="stat-card joined">
-          <div class="stat-icon">🎫</div>
-          <div class="stat-content">
-            <div class="stat-number">{{ eventStats().eventosInscritos }}</div>
-            <div class="stat-label">Eventos Inscritos</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Botones de acción -->
-      <div class="dashboard-actions">
-        <button class="btn-action primary" (click)="goToExplorarEventos()">
-          🔍 Explorar Eventos
+    <button class="btn primary" (click)="goToCrearEvento()">
+      ➕ Crear evento
+    </button>
+    
+      <div class="events-actions">
+        <button type="button" class="btn" (click)="goToExplorarEventos()">
+          🔍 Explorar eventos
         </button>
-        <button class="btn-action secondary" (click)="goToMisEventos()">
-          📋 Mis Eventos
+
+        <button type="button" class="btn secondary" (click)="goToMisEventos()">
+          📅 Mis eventos
         </button>
-      </div>
-
-      <!-- Próximos eventos destacados -->
-      <div class="upcoming-events" *ngIf="eventStats().proximosEventos.length > 0">
-        <h4>📅 Próximos Eventos</h4>
-        <div class="event-preview-list">
-          <div 
-            class="event-preview-card" 
-            *ngFor="let evento of eventStats().proximosEventos"
-            (click)="goToEventoDetalle(evento._id!)">
-            <div class="event-preview-date">
-              <span class="date-day">{{ formatearFecha(evento.fecha).split(' ')[0] }}</span>
-              <span class="date-month">{{ formatearFecha(evento.fecha).split(' ')[2] }}</span>
-            </div>
-            <div class="event-preview-info">
-              <h5>{{ evento.nombre }}</h5>
-              <p class="event-location">📍 {{ evento.ubicacion }}</p>
-              <p class="event-time">🕒 {{ formatearHora(evento.fecha) }}</p>
-            </div>
-            <div class="event-preview-action">
-              <span class="arrow">→</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="no-upcoming" *ngIf="eventStats().proximosEventos.length === 0 && !loadingEvents()">
-        <div class="empty-state">
-          <span class="empty-icon">📭</span>
-          <p>No tienes eventos próximos</p>
-          <button class="btn-small" (click)="goToExplorarEventos()">Explorar eventos</button>
-        </div>
       </div>
     </section>
 
-    <!-- ===== TARJETA DE AMIGOS ===== -->
+    <!-- Mensajes -->
+    <div *ngIf="loading()" class="msg">Cargando…</div>
+    <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
+
+    <!-- Tarjeta Amigos -->
     <section class="friends-card">
       <div class="friends-header">
-        <h3>👥 Amigos</h3>
+        <h3>Amigos</h3>
         <span class="count">{{ friends().length }}</span>
         <div class="actions">
           <button type="button" class="btn" (click)="openAddFriendsModal()">Explorar usuarios</button>
@@ -135,7 +86,7 @@
       </ng-template>
     </section>
 
-    <!-- ===== MODAL AÑADIR AMIGOS ===== -->
+    <!-- ===== Modal Añadir Amigos ===== -->
     <div class="modal-overlay" *ngIf="showAddModal()">
       <div class="modal large-modal">
         <div class="modal-header">
@@ -212,7 +163,7 @@
       </div>
     </div>
 
-    <!-- ===== MODAL SOLICITUDES DE AMISTAD ===== -->
+    <!-- ===== Modal Solicitudes de Amistad ===== -->
     <div class="modal-overlay" *ngIf="showRequestsModal()">
       <div class="modal medium-modal">
         <div class="modal-header">
@@ -224,7 +175,7 @@
           <p *ngIf="requestsLoading()">Cargando solicitudes...</p>
           <p *ngIf="requestsError() && !requestsLoading()" class="msg error">{{ requestsError() }}</p>
 
-          <ul class="friends-list" *ngIf="!requestsLoading() && requestsList().length">
+          <ul *ngIf="!requestsLoading() && requestsList().length">
             <li *ngFor="let u of requestsList()">
               <div class="left">
                 <div class="avatar small">👤</div>

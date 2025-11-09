@@ -9,14 +9,12 @@ import { RegistrarComponent } from './components/registrar/registrar.component';
 import { ValoracionComponent } from './components/valoracion/valoracion';
 import { MenuComponent } from './components/menu/menu.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
+import { MisEventosComponent } from './components/mis-eventos/mis-eventos.component';
+import { ExplorarEventosComponent } from './components/explorar-eventos/explorar-eventos.component';
+import { CrearEventoComponent } from './components/crear-eventos/crear-eventos.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { 
-    path: '', 
-    redirectTo: 'login', 
-    pathMatch: 'full' 
-  },
   { path: 'registrar', component: RegistrarComponent },
   { 
     path: '', 
@@ -49,6 +47,19 @@ export const routes: Routes = [
     component: PerfilComponent, 
     canActivate: [authGuard] 
   },
+    {
+    path: 'mis-eventos',
+    component: MisEventosComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'explorar-eventos',
+    component: ExplorarEventosComponent,
+    canActivate: [authGuard]
+  },
+  { path: 'crear-evento',
+    component: CrearEventoComponent,
+    canActivate: [authGuard] },
   { 
     path: '**', 
     redirectTo: 'login' 

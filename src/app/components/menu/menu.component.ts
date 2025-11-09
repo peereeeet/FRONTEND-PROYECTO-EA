@@ -11,10 +11,14 @@ import { Evento } from '../../models/evento.model';
 
 type FriendLike = User;
 
+/**
+ * Interfaz para las estadísticas de eventos del usuario
+ * Contiene contadores y lista de próximos eventos
+ */
 interface EventStats {
-  eventosCreados: number;
-  eventosInscritos: number;
-  proximosEventos: Evento[];
+  eventosCreados: number;      // Cantidad de eventos que el usuario creó
+  eventosInscritos: number;     // Cantidad de eventos donde está inscrito
+  proximosEventos: Evento[];    // Los próximos 3 eventos ordenados por fecha
 }
 
 @Component({
@@ -53,12 +57,22 @@ export class MenuComponent implements OnInit, OnDestroy {
   requestsList = signal<User[]>([]);
   sentRequests = signal<any[]>([]);
 
-  // === NUEVAS SEÑALES PARA EVENTOS ===
+  // === ✨ NUEVAS SEÑALES PARA EVENTOS ===
+  /**
+   * Contiene las estadísticas de eventos del usuario:
+   * - Eventos que ha creado
+   * - Eventos en los que está inscrito
+   * - Próximos eventos destacados (máximo 3)
+   */
   eventStats = signal<EventStats>({
     eventosCreados: 0,
     eventosInscritos: 0,
     proximosEventos: []
   });
+  
+  /**
+   * Indica si se están cargando los datos de eventos
+   */
   loadingEvents = signal(false);
 
   private visibilitySub?: Subscription;
@@ -116,7 +130,7 @@ export class MenuComponent implements OnInit, OnDestroy {
             error: () => {}
           });
 
-        // Cargar amigos y estadísticas de eventos
+        // ✨ Cargar amigos y estadísticas de eventos
         this.cargarAmigos(myId);
         this.cargarEstadisticasEventos(myId);
 
@@ -165,47 +179,59 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.friendsPollSub?.unsubscribe();
   }
 
-  // === MÉTODOS DE CARGA DE DATOS ===
+  // === ✨ MÉTODOS DE CARGA DE DATOS ===
 
   /**
-   * Carga las estadísticas de eventos del usuario:
-   * - Número de eventos creados
-   * - Número de eventos inscritos
-   * - Próximos 3 eventos destacados
+   * 🎯 Carga las estadísticas de eventos del usuario:
+   * 1. Número de eventos creados
+   * 2. Número de eventos inscritos
+   * 3. Próximos 3 eventos destacados ordenados por fecha
+   * 
+   * @param userId - ID del usuario autenticado
    */
   private cargarEstadisticasEventos(userId: string): void {
     this.loadingEvents.set(true);
 
-    this.eventoService.getMisEventos(userId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          const creados = data.eventosCreados || [];
-          const inscritos = data.eventosInscritos || [];
+    // Llamada al backend que retorna eventos creados e inscritos
+    this.eventoService.getMisEventos().subscribe({
+      next: (data) => {
+        const creados = data.eventosCreados || [];
+        const inscritos = data.eventosInscritos || [];
 
-          // Combinar y ordenar por fecha
-          const todosEventos = [...creados, ...inscritos];
-          const ahora = new Date();
-          
-          // Filtrar eventos futuros y ordenar por fecha
-          const eventosFuturos = todosEventos
-            .filter(e => new Date(e.fecha) >= ahora)
-            .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
-            .slice(0, 3); // Tomar solo los primeros 3
+        // Combinar ambas listas para sacar próximos eventos
+        const todosEventos = [...creados, ...inscritos];
+        const ahora = new Date();
+        
+        // 📅 Filtrar solo eventos futuros
+        const eventosFuturos = todosEventos
+          .filter(e => {
+            // Obtener la fecha del evento (puede estar en schedule)
+            const fechaStr = Array.isArray(e.schedule) ? e.schedule[0] : e.schedule;
+            if (!fechaStr) return false;
+            return new Date(fechaStr) >= ahora;
+          })
+          .sort((a, b) => {
+            // Ordenar por fecha ascendente (más cercano primero)
+            const fechaA = Array.isArray(a.schedule) ? a.schedule[0] : a.schedule;
+            const fechaB = Array.isArray(b.schedule) ? b.schedule[0] : b.schedule;
+            return new Date(fechaA).getTime() - new Date(fechaB).getTime();
+          })
+          .slice(0, 3); // Tomar solo los primeros 3
 
-          this.eventStats.set({
-            eventosCreados: creados.length,
-            eventosInscritos: inscritos.length,
-            proximosEventos: eventosFuturos
-          });
+        // Actualizar estado
+        this.eventStats.set({
+          eventosCreados: creados.length,
+          eventosInscritos: inscritos.length,
+          proximosEventos: eventosFuturos
+        });
 
-          this.loadingEvents.set(false);
-        },
-        error: (err) => {
-          console.error('Error cargando estadísticas de eventos:', err);
-          this.loadingEvents.set(false);
-        }
-      });
+        this.loadingEvents.set(false);
+      },
+      error: (err) => {
+        console.error('Error cargando estadísticas de eventos:', err);
+        this.loadingEvents.set(false);
+      }
+    });
   }
 
   private cargarAmigos(userId: string): void {
@@ -230,10 +256,11 @@ export class MenuComponent implements OnInit, OnDestroy {
       });
   }
 
-  // === MÉTODOS DE NAVEGACIÓN ===
+  // === ✨ MÉTODOS DE NAVEGACIÓN PARA EVENTOS ===
 
   /**
    * Navega a la vista de explorar eventos
+   * Aquí el usuario puede ver todos los eventos y unirse/salir
    */
   goToExplorarEventos(): void {
     this.router.navigate(['/explorar-eventos']);
@@ -241,9 +268,16 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   /**
    * Navega a la vista de mis eventos (creados e inscritos)
+   * Muestra listas separadas de eventos creados y eventos donde está inscrito
    */
   goToMisEventos(): void {
     this.router.navigate(['/mis-eventos']);
+  }
+  /**
+   * Navega a la vista de crear un nuevo evento
+   */
+  goToCrearEvento(): void {
+  this.router.navigate(['/crear-evento']);
   }
 
   /**
@@ -259,16 +293,20 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   /**
    * Navega a los detalles de un evento específico
+   * @param eventoId - ID del evento a visualizar
    */
   goToEventoDetalle(eventoId: string): void {
     this.router.navigate(['/evento', eventoId]);
   }
 
-  // === MÉTODOS DE FORMATO ===
+  // === ✨ MÉTODOS DE FORMATO PARA FECHAS ===
 
   /**
    * Formatea una fecha para mostrarla de forma amigable
    * Ejemplo: "15 de Diciembre, 2024"
+   * 
+   * @param fecha - String o Date con la fecha a formatear
+   * @returns String con formato legible
    */
   formatearFecha(fecha: string | Date): string {
     const date = new Date(fecha);
@@ -283,6 +321,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   /**
    * Formatea una hora para mostrarla
    * Ejemplo: "14:30"
+   * 
+   * @param fecha - String o Date con la fecha/hora a formatear
+   * @returns String con formato HH:MM
    */
   formatearHora(fecha: string | Date): string {
     const date = new Date(fecha);

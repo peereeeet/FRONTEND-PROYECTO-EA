@@ -1,12 +1,15 @@
 <!-- src/app/components/mis-eventos/mis-eventos.component.html -->
 <div class="mis-eventos-container">
   <header class="header">
-    <button class="btn-back" (click)="goBack()">← Volver</button>
     <h1>Mis Eventos</h1>
   </header>
 
+  <button class="btn-back" (click)="goBack()">← Volver</button>
+
+
   <div *ngIf="loading" class="loading">Cargando eventos...</div>
   <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
 
   <!-- Eventos Creados -->
   <section class="eventos-section">
