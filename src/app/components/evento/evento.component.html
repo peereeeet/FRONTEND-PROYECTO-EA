@@ -1,57 +1,80 @@
 <div class="evento-container">
-  <!-- Formulario de evento -->
   <div class="evento-form">
+    <div class="form-header">
+      <h2>Completa los datos del evento</h2>
+      <button type="button" class="btn-back" (click)="goHome()">← Volver a Home</button>
+    </div>
+
     <form (ngSubmit)="onSubmit()">
-      <div class="form-header">
-        <h2>Crear nuevo evento</h2>
-        <button type="button" class="btn-back" (click)="goHome()">
-          ← Volver a Home
-        </button>
-      </div>
-
-      <div class="form-group">
-        <label for="name" class="form-label">Título del evento:</label>
-        <input
-          id="name"
-          class="form-input"
-          type="text"
-          [(ngModel)]="newEvent.name"
-          name="name"
-          placeholder="Ej: Reunión de planificación Q4"
-          required />
-        <div class="error-message" *ngIf="errorMessage && errorMessage.includes('título')">
-          {{ errorMessage }}
-        </div>
-      </div>
-
       <div class="form-two-col">
         <div class="left-col">
+          <!-- CREADOR -->
           <div class="form-group">
-            <label class="form-label">Horario del evento:</label>
-            <div class="schedule-row">
-              <input 
-                type="date" 
-                class="form-input"
-                [(ngModel)]="dateStr" 
-                name="dateStr" 
-                aria-label="Fecha" />
-              <input 
-                type="time" 
-                class="form-input"
-                [(ngModel)]="timeStr" 
-                name="timeStr" 
-                aria-label="Hora" />
-              <button type="button" (click)="setSchedule()" class="add-slot">
-                📅 Establecer horario
-              </button>
+            <label for="creator" class="form-label">Creador del evento</label>
+            <select
+              id="creator"
+              class="form-input"
+              [(ngModel)]="creatorId"
+              name="creator"
+              required>
+              <option value="" disabled [selected]="!creatorId">Selecciona un usuario…</option>
+              <option *ngFor="let u of users" [value]="u._id">{{ u.username }} — {{ u.gmail }}</option>
+            </select>
+          </div>
 
+          <!-- TÍTULO -->
+          <div class="form-group">
+            <label for="name" class="form-label">Título del evento</label>
+            <input
+              id="name"
+              class="form-input"
+              type="text"
+              [(ngModel)]="newEvent.name"
+              name="name"
+              placeholder="Ej: Reunión de planificación Q4"
+              required
+              minlength="3" />
+            <small *ngIf="formSubmitted && (!newEvent.name || newEvent.name.trim().length<3)">
+              ⚠ El título es obligatorio (mínimo 3 caracteres).
+            </small>
+          </div>
+
+          <!-- DIRECCIÓN -->
+          <div class="form-group">
+            <label for="address" class="form-label">Dirección</label>
+            <input
+              id="address"
+              class="form-input"
+              type="text"
+              [(ngModel)]="newEvent.address"
+              name="address"
+              placeholder="Ej: C/ Mallorca 123, Barcelona" />
+          </div>
+
+          <!-- FECHA / HORA + ACCIONES DE HORARIO -->
+          <div class="form-group">
+            <label class="form-label">Horario del evento</label>
+
+            <div class="schedule-row">
+              <input
+                type="date"
+                class="form-input"
+                [(ngModel)]="dateStr"
+                name="dateStr"
+                aria-label="Fecha" />
+              <input
+                type="time"
+                class="form-input"
+                [(ngModel)]="timeStr"
+                name="timeStr"
+                aria-label="Hora" />
+
+              <button type="button" class="add-slot" (click)="setSchedule()">📅 Establecer horario</button>
               <button
                 type="button"
-                *ngIf="newEvent.schedule && newEvent.schedule !== ''"
-                (click)="clearSchedule()"
-                class="remove-slot">
-                ❌ Quitar
-              </button>
+                class="remove-slot"
+                *ngIf="newEvent.schedule"
+                (click)="clearSchedule()">❌ Quitar</button>
             </div>
 
             <div class="schedule-preview">
@@ -63,18 +86,14 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="address" class="form-label">Dirección:</label>
-            <input
-              id="address"
-              class="form-input"
-              type="text"
-              [(ngModel)]="newEvent.address"
-              name="address"
-              placeholder="Ej: C/ Mallorca 123, Barcelona" />
-          </div>
+          <div class="error-message" *ngIf="errorMessage">⚠ {{ errorMessage }}</div>
+
+          <button type="submit" (click)="formSubmitted = true" [disabled]="saving">
+            {{ saving ? 'Guardando…' : '💾 Guardar evento' }}
+          </button>
         </div>
 
+        <!-- ===== Participantes (se mantiene como ya lo tenías) ===== -->
         <div class="right-col">
           <div class="participants-wrapper">
             <!-- Usuarios disponibles -->
@@ -123,13 +142,7 @@
           </div>
         </div>
       </div>
-
-      <button type="submit" (click)="formSubmitted = true">💾 Guardar Evento</button>
     </form>
-
-    <div class="error-message" *ngIf="errorMessage">
-      ⚠️ {{ errorMessage }}
-    </div>
   </div>
 
   <!-- Lista de eventos -->
@@ -207,6 +220,14 @@
     </div>
 
     <form (ngSubmit)="onEditSubmit()">
+      <div class="form-group">
+        <label for="editCreator" class="form-label">Creador del evento:</label>
+        <select id="editCreator" class="form-input" [(ngModel)]="editCreatorId" name="editCreator" required>
+          <option value="" disabled [selected]="!editCreatorId">Selecciona un usuario…</option>
+          <option *ngFor="let u of users" [value]="u._id">{{ u.username }} — {{ u.gmail }}</option>
+        </select>
+      </div>
+
       <div class="form-group">
         <label for="editName" class="form-label">Titulo del evento:</label>
         <input

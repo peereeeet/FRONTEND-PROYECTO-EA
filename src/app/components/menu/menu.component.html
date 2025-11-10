@@ -9,7 +9,6 @@
   </header>
 
   <section class="menu-container">
-    <!-- === PERFIL (arriba) === -->
     <header class="menu-header">
       <div class="me">
         <div class="avatar">👤</div>
@@ -23,62 +22,67 @@
         </div>
       </div>
 
-      <!-- Acciones a la derecha -->
       <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
         <button class="btn secondary" (click)="goToPerfil()">👤 Mi perfil</button>
         <button class="logout-button" (click)="onLogout()">Cerrar sesión</button>
       </div>
     </header>
 
-    <!-- === GRID INFERIOR: Eventos (izq) + Amigos (dcha) === -->
-    <!-- ADDED: contenedor en grid para colocar eventos y amigos en dos columnas -->
-    <div class="menu-grid"><!-- ADDED -->
-      
-      <!-- === EVENTOS (izquierda) === -->
-      <!-- ADDED: tarjeta de eventos con estética alineada a cards -->
-      <section class="events-card"><!-- ADDED -->
-        <div class="events-header"><!-- ADDED -->
-          <h3>🎟️ Eventos</h3><!-- ADDED -->
-        </div><!-- ADDED -->
+    <div class="menu-grid">
+      <section class="events-card">
+        <div class="events-header">
+          <h3>🎟️ Eventos</h3>
+        </div>
 
-        <div class="events-actions"><!-- ADDED -->
+        <div class="events-actions">
           <button class="btn primary" (click)="goToCrearEvento()">➕ Crear evento</button>
           <button type="button" class="btn" (click)="goToExplorarEventos()">🔍 Explorar eventos</button>
           <button type="button" class="btn secondary" (click)="goToMisEventos()">📅 Mis eventos</button>
-        </div><!-- ADDED -->
+        </div>
         
-        <!-- Mensajes (se mantienen dentro de la tarjeta de eventos) -->
         <div *ngIf="loading()" class="msg">Cargando…</div>
         <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
-      </section><!-- ADDED -->
+      </section>
 
-      <!-- === AMIGOS (derecha) === -->
       <section class="friends-card">
         <div class="friends-header">
           <h3>Amigos</h3>
-          <span class="count">{{ friends().length }}</span>
+          <span class="count">{{ friends()?.length || 0 }}</span>
           <div class="actions">
             <button type="button" class="btn" (click)="openAddFriendsModal()">Explorar usuarios</button>
             <button type="button" class="btn secondary" (click)="openRequestsModal()">📨 Solicitudes</button>
           </div>
         </div>
 
-        <ul class="friends-list" *ngIf="friends().length; else emptyList">
-          <li *ngFor="let f of friends()">
-            <div class="left">
-              <div class="avatar small">🙂</div>
-              <div class="data">
-                <div class="name">{{ f.username }}</div>
-                <div class="mail">{{ f.gmail }}</div>
+        <ng-container *ngIf="(friends()?.length || 0) > 0; else emptyList">
+          <ul class="friends-list">
+            <li *ngFor="let f of friendsPaged()">
+              <div class="left">
+                <div class="avatar small">🙂</div>
+                <div class="data">
+                  <div class="name">{{ f.username }}</div>
+                  <div class="mail">{{ f.gmail }}</div>
+                </div>
               </div>
+              <div class="right">
+                <span class="dot" [class.online]="f.isOnline" [class.offline]="!f.isOnline"></span>
+                <span class="state">{{ f.isOnline ? 'En línea' : 'Desconectado' }}</span>
+                <button type="button" class="btn danger" (click)="quitar(f._id!)">Quitar</button>
+              </div>
+            </li>
+          </ul>
+
+          <div class="pager friends-pager">
+            <button type="button" (click)="friendsPrev()" [disabled]="fPage <= 1">«</button>
+            <span class="counter">Página {{ fPage }} / {{ fTotalPages() }}</span>
+            <button type="button" (click)="friendsNext()" [disabled]="fPage >= fTotalPages()">»</button>
+
+            <div class="page-size">
+              <label for="fsize">Ver</label>
+              <span class="total">Total: {{ friends()?.length || 0 }}</span>
             </div>
-            <div class="right">
-              <span class="dot" [class.online]="f.isOnline" [class.offline]="!f.isOnline"></span>
-              <span class="state">{{ f.isOnline ? 'En línea' : 'Desconectado' }}</span>
-              <button type="button" class="btn danger" (click)="quitar(f._id!)">Quitar</button>
-            </div>
-          </li>
-        </ul>
+          </div>
+        </ng-container>
 
         <ng-template #emptyList>
           <p class="empty">Aún no tienes amigos para mostrar.</p>
@@ -87,7 +91,6 @@
       </section>
     </div>
 
-    <!-- ===== Modal Añadir Amigos ===== -->
     <div class="modal-overlay" *ngIf="showAddModal()">
       <div class="modal large-modal">
         <div class="modal-header">
@@ -110,14 +113,6 @@
           <div class="participants-column">
             <div class="list-header">
               <h4>Usuarios</h4>
-              <div class="page-size">
-                <label>Tamaño pág.</label>
-                <select [value]="mPageSize()" (change)="onPageSizeChange($event)">
-                  <option [value]="5">5</option>
-                  <option [value]="10">10</option>
-                  <option [value]="20">20</option>
-                </select>
-              </div>
             </div>
 
             <div class="pager">
@@ -164,7 +159,6 @@
       </div>
     </div>
 
-    <!-- ===== Modal Solicitudes de Amistad ===== -->
     <div class="modal-overlay" *ngIf="showRequestsModal()">
       <div class="modal medium-modal">
         <div class="modal-header">

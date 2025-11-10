@@ -8,32 +8,25 @@
   </header>
 
   <section class="explorar-container events-container">
-    <!-- NUEVO: Botón volver al menú -->
     <div class="top-row">
       <button class="btn-back" type="button" (click)="goBackToMenu()">← Volver al menú</button>
     </div>
 
-    <!-- ========== LOADING INDICATOR ========== -->
     <div *ngIf="loading" class="loading">
       <div class="spinner"></div>
       <p>Cargando eventos...</p>
     </div>
 
-    <!-- ========== ERROR MESSAGE ========== -->
     <div *ngIf="errorMessage" class="error-message">
       ⚠️ {{ errorMessage }}
     </div>
 
-    <!-- ========== LISTA DE EVENTOS ========== -->
     <div *ngIf="!loading" class="eventos-section">
-      <!-- Empty State -->
       <div *ngIf="eventos.length === 0" class="empty-state">
         <span class="empty-icon">📭</span>
         <h3>No hay eventos disponibles</h3>
         <p>Los eventos aparecerán aquí cuando estén disponibles</p>
       </div>
-
-      <!-- Grid de Eventos -->
       <div class="eventos-grid" *ngIf="eventos.length > 0">
         <div *ngFor="let evento of eventos" class="evento-card">
           <div class="badges">
@@ -77,8 +70,6 @@
           </div>
 
           <div class="evento-actions">
-            <!-- <button class="btn btn-rate" (click)="goToRatings(evento)">⭐ Ver valoraciones</button> -->
-
             <button *ngIf="!isUserInEvento(evento) && !isUserCreator(evento)"
                     class="btn btn-join" (click)="joinEvento(evento)">
               ➕ Unirse al evento

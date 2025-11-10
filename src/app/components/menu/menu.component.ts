@@ -8,23 +8,20 @@ import { EventoService } from '../../services/evento.service';
 import { Router } from '@angular/router';
 import { User } from '../../models/user.model';
 import { Evento } from '../../models/evento.model';
+import { FormsModule } from '@angular/forms';
 
 type FriendLike = User;
 
-/**
- * Interfaz para las estadísticas de eventos del usuario
- * Contiene contadores y lista de próximos eventos
- */
 interface EventStats {
-  eventosCreados: number;      // Cantidad de eventos que el usuario creó
-  eventosInscritos: number;     // Cantidad de eventos donde está inscrito
-  proximosEventos: Evento[];    // Los próximos 3 eventos ordenados por fecha
+  eventosCreados: number;     
+  eventosInscritos: number;    
+  proximosEventos: Evento[];   
 }
 
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css']
 })
@@ -35,51 +32,39 @@ export class MenuComponent implements OnInit, OnDestroy {
   private eventoService = inject(EventoService);
   private router = inject(Router);
 
-  // === SEÑALES USUARIO Y AMIGOS ===
   loading = signal(false);
   errorMsg = signal('');
   me = signal<User | null>(null);
   friends = signal<FriendLike[]>([]);
 
-  // === SEÑALES MODAL AÑADIR AMIGOS ===
   showAddModal = signal(false);
   modalError = signal('');
   modalSearch = signal('');
   allUsers = signal<User[]>([]);
   filteredUsers = signal<User[]>([]);
   mPage = signal(1);
-  mPageSize = signal(10);
+  mPageSize = signal(4);
 
-  // === SEÑALES MODAL SOLICITUDES ===
   showRequestsModal = signal(false);
   requestsLoading = signal(false);
   requestsError = signal('');
   requestsList = signal<User[]>([]);
   sentRequests = signal<any[]>([]);
 
-  // === ✨ NUEVAS SEÑALES PARA EVENTOS ===
-  /**
-   * Contiene las estadísticas de eventos del usuario:
-   * - Eventos que ha creado
-   * - Eventos en los que está inscrito
-   * - Próximos eventos destacados (máximo 3)
-   */
   eventStats = signal<EventStats>({
     eventosCreados: 0,
     eventosInscritos: 0,
     proximosEventos: []
   });
-  
-  /**
-   * Indica si se están cargando los datos de eventos
-   */
   loadingEvents = signal(false);
 
   private visibilitySub?: Subscription;
   private focusSub?: Subscription;
   private friendsPollSub?: Subscription;
 
-  // === COMPUTED PROPERTIES ===
+  fPage: number = 1;
+  fPageSize: number = 3;
+
   get mTotalPages(): number {
     const n = this.filteredUsers().length;
     return Math.max(1, Math.ceil(n / this.mPageSize()));
@@ -98,13 +83,11 @@ export class MenuComponent implements OnInit, OnDestroy {
     return (m as any).isOnline ? 'En línea' : 'Desconectado';
   });
 
-  // === MÉTODOS AUXILIARES ===
   private getId(u: User): string {
     return String((u as any)?._id ?? (u as any)?.id ?? '');
   }
 
   ngOnInit(): void {
-    // Suscripción al usuario actual
     this.auth.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe(u => {
@@ -116,13 +99,11 @@ export class MenuComponent implements OnInit, OnDestroy {
         const myId = this.getId(u);
         if (!myId) return;
 
-        // Heartbeat inicial
         this.userService.heartbeat(myId).subscribe({
           next: hb => this.me.set({ ...(this.me() as User), isOnline: !!hb.online }),
           error: () => {}
         });
 
-        // Heartbeat cada 30 segundos
         interval(30000)
           .pipe(takeUntil(this.destroy$), switchMap(() => this.userService.heartbeat(myId)))
           .subscribe({
@@ -130,11 +111,9 @@ export class MenuComponent implements OnInit, OnDestroy {
             error: () => {}
           });
 
-        // ✨ Cargar amigos y estadísticas de eventos
         this.cargarAmigos(myId);
         this.cargarEstadisticasEventos(myId);
 
-        // Listeners de visibilidad y focus
         this.visibilitySub = fromEvent(document, 'visibilitychange')
           .pipe(takeUntil(this.destroy$))
           .subscribe(() => {
@@ -151,7 +130,6 @@ export class MenuComponent implements OnInit, OnDestroy {
             this.cargarEstadisticasEventos(myId);
           });
 
-        // Polling cada 60 segundos
         this.friendsPollSub = interval(60000)
           .pipe(takeUntil(this.destroy$))
           .subscribe(() => {
@@ -160,7 +138,6 @@ export class MenuComponent implements OnInit, OnDestroy {
           });
       });
 
-    // Escuchar cambios en amigos
     this.userService.onFriendsChanged()
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
@@ -179,46 +156,30 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.friendsPollSub?.unsubscribe();
   }
 
-  // === ✨ MÉTODOS DE CARGA DE DATOS ===
-
-  /**
-   * 🎯 Carga las estadísticas de eventos del usuario:
-   * 1. Número de eventos creados
-   * 2. Número de eventos inscritos
-   * 3. Próximos 3 eventos destacados ordenados por fecha
-   * 
-   * @param userId - ID del usuario autenticado
-   */
   private cargarEstadisticasEventos(userId: string): void {
     this.loadingEvents.set(true);
 
-    // Llamada al backend que retorna eventos creados e inscritos
     this.eventoService.getMisEventos().subscribe({
       next: (data) => {
         const creados = data.eventosCreados || [];
         const inscritos = data.eventosInscritos || [];
 
-        // Combinar ambas listas para sacar próximos eventos
         const todosEventos = [...creados, ...inscritos];
         const ahora = new Date();
         
-        // 📅 Filtrar solo eventos futuros
         const eventosFuturos = todosEventos
           .filter(e => {
-            // Obtener la fecha del evento (puede estar en schedule)
             const fechaStr = Array.isArray(e.schedule) ? e.schedule[0] : e.schedule;
             if (!fechaStr) return false;
             return new Date(fechaStr) >= ahora;
           })
           .sort((a, b) => {
-            // Ordenar por fecha ascendente (más cercano primero)
             const fechaA = Array.isArray(a.schedule) ? a.schedule[0] : a.schedule;
             const fechaB = Array.isArray(b.schedule) ? b.schedule[0] : b.schedule;
             return new Date(fechaA).getTime() - new Date(fechaB).getTime();
           })
-          .slice(0, 3); // Tomar solo los primeros 3
+          .slice(0, 3);
 
-        // Actualizar estado
         this.eventStats.set({
           eventosCreados: creados.length,
           eventosInscritos: inscritos.length,
@@ -256,33 +217,18 @@ export class MenuComponent implements OnInit, OnDestroy {
       });
   }
 
-  // === ✨ MÉTODOS DE NAVEGACIÓN PARA EVENTOS ===
-
-  /**
-   * Navega a la vista de explorar eventos
-   * Aquí el usuario puede ver todos los eventos y unirse/salir
-   */
   goToExplorarEventos(): void {
     this.router.navigate(['/explorar-eventos']);
   }
 
-  /**
-   * Navega a la vista de mis eventos (creados e inscritos)
-   * Muestra listas separadas de eventos creados y eventos donde está inscrito
-   */
   goToMisEventos(): void {
     this.router.navigate(['/mis-eventos']);
   }
-  /**
-   * Navega a la vista de crear un nuevo evento
-   */
+  
   goToCrearEvento(): void {
   this.router.navigate(['/crear-evento']);
   }
 
-  /**
-   * Navega al perfil del usuario
-   */
   goToPerfil(): void {
     const user = this.me?.();
     if (!user || !user._id) return;
@@ -291,23 +237,10 @@ export class MenuComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Navega a los detalles de un evento específico
-   * @param eventoId - ID del evento a visualizar
-   */
   goToEventoDetalle(eventoId: string): void {
     this.router.navigate(['/evento', eventoId]);
   }
 
-  // === ✨ MÉTODOS DE FORMATO PARA FECHAS ===
-
-  /**
-   * Formatea una fecha para mostrarla de forma amigable
-   * Ejemplo: "15 de Diciembre, 2024"
-   * 
-   * @param fecha - String o Date con la fecha a formatear
-   * @returns String con formato legible
-   */
   formatearFecha(fecha: string | Date): string {
     const date = new Date(fecha);
     const opciones: Intl.DateTimeFormatOptions = {
@@ -318,13 +251,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     return date.toLocaleDateString('es-ES', opciones);
   }
 
-  /**
-   * Formatea una hora para mostrarla
-   * Ejemplo: "14:30"
-   * 
-   * @param fecha - String o Date con la fecha/hora a formatear
-   * @returns String con formato HH:MM
-   */
   formatearHora(fecha: string | Date): string {
     const date = new Date(fecha);
     return date.toLocaleTimeString('es-ES', {
@@ -332,8 +258,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       minute: '2-digit'
     });
   }
-
-  // === MÉTODOS DE SESIÓN ===
 
   onLogout(): void {
     const meUser = this.me();
@@ -358,8 +282,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
 
-  // === MÉTODOS DE GESTIÓN DE AMIGOS ===
-
   quitar(friendId: string): void {
     const meUser = this.me();
     if (!meUser) return;
@@ -376,8 +298,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         error: () => {}
       });
   }
-
-  // === MODAL AÑADIR AMIGOS ===
 
   openAddFriendsModal(): void {
     this.modalError.set('');
@@ -407,7 +327,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   onPageSizeChange(event: Event): void {
     const sel = event.target as HTMLSelectElement | null;
-    const val = sel?.value ? Number(sel.value) : 10;
+    const val = sel?.value ? Number(sel.value) : 4;
     this.mPageSize.set(val);
     this.mPage.set(1);
   }
@@ -495,8 +415,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         },
       });
   }
-
-  // === MODAL SOLICITUDES ===
 
   refreshRequests(): void {
     const me = this.me();
@@ -614,4 +532,38 @@ export class MenuComponent implements OnInit, OnDestroy {
   modalNext(): void {
     if (this.mPage() < this.mTotalPages) this.mPage.set(this.mPage() + 1);
   }
+
+  private _friendsArray(): any[] {
+  const f: any = (this as any).friends;
+  try {
+    const arr = typeof f === 'function' ? f() : Array.isArray(f) ? f : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
 }
+
+fTotalPages(): number {
+  const total = this._friendsArray().length;
+  return Math.max(1, Math.ceil(total / this.fPageSize));
+}
+
+friendsPaged(): any[] {
+  const arr = this._friendsArray();
+  const start = (this.fPage - 1) * this.fPageSize;
+  return arr.slice(start, start + this.fPageSize);
+}
+
+friendsPrev(): void {
+  if (this.fPage > 1) this.fPage--;
+}
+
+friendsNext(): void {
+  const max = this.fTotalPages();
+  if (this.fPage < max) this.fPage++;
+}
+
+setFriendsPageSize(val: number): void {
+  this.fPageSize = Number(val) || 3;
+  this.fPage = 1;
+}}

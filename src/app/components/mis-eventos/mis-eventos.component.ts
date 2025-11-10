@@ -6,7 +6,7 @@ import { EventoService } from '../../services/evento.service';
 import { AuthService } from '../../services/auth.service';
 import { Evento } from '../../models/evento.model';
 import { ValoracionService } from '../../services/valoracion.service';
-import { Valoracion, ValoracionesPage } from '../../models/valoracion.model';
+import { Valoracion } from '../../models/valoracion.model';
 
 @Component({
   selector: 'app-mis-eventos',
@@ -16,41 +16,35 @@ import { Valoracion, ValoracionesPage } from '../../models/valoracion.model';
   styleUrls: ['./mis-eventos.component.css']
 })
 export class MisEventosComponent implements OnInit {
-
-  // ===== Estado principal (igual que tu versión) =====
   eventosCreados: Evento[] = [];
   eventosInscritos: Evento[] = [];
   loading = false;
   errorMessage = '';
   currentUserId = '';
 
-  // ===== Modales existentes (eliminar/salir) =====
   showDeleteModal = false;
   eventoToDelete: Evento | null = null;
 
   showLeaveModal = false;
   eventoToLeave: Evento | null = null;
 
-  // ===== NUEVO: Modal de valoraciones embebido =====
   showRatingsModal = false;
   ratingsEventoId: string | null = null;
   ratingsEventoName = '';
   ratingsAvg?: number;
   ratingsCount?: number;
 
-  // Lista/paginación/búsqueda
   ratingsList: Valoracion[] = [];
   ratingsLoading = false;
   ratingsError = '';
   ratingsInfo = '';
 
   q = '';
-  page = 1;
-  totalPages = 1;
-  totalItems = 0;
-  pageSize = 3;
+  page: number = 1;
+  pageSize: number = 4;
+  totalItems: number = 0;
+  totalPages: number = 1;
 
-  // Alta/edición rápida
   stars = [1, 2, 3, 4, 5];
   hover = 0;
   myScore = 0;
@@ -70,14 +64,12 @@ export class MisEventosComponent implements OnInit {
     this.loadMisEventos();
   }
 
-  // ===== Carga de mis eventos (creados/inscritos) =====
   loadMisEventos(): void {
     this.loading = true;
     this.errorMessage = '';
 
     this.eventoService.getMisEventos().subscribe({
       next: (res: any) => {
-        // Normalizamos schedule/participantes por si el backend mezcla tipos
         this.eventosCreados = (res.eventosCreados || []).map((e: any) => ({
           ...e,
           schedule: Array.isArray(e.schedule) ? e.schedule : (e.schedule ? [e.schedule] : []),
@@ -98,7 +90,6 @@ export class MisEventosComponent implements OnInit {
     });
   }
 
-  // ===== Utilidades UI (ya presentes en tus componentes) =====
   goBack(): void { this.router.navigate(['/menu']); }
 
   getCreadorName(ev: any): string {
@@ -110,7 +101,6 @@ export class MisEventosComponent implements OnInit {
   getScheduleText(ev: any): string {
     const sch = ev?.schedule || [];
     if (!Array.isArray(sch) || sch.length === 0) return '—';
-    // Si ya recibes formato string, lo mostramos tal cual; si es objeto, renderiza algo básico
     return sch.map((s: any) => (typeof s === 'string' ? s : (s?.date || s?.hora || s?.time || ''))).filter(Boolean).join(' · ');
   }
 
@@ -124,7 +114,6 @@ export class MisEventosComponent implements OnInit {
     return arr.some((p: any) => (typeof p === 'string' ? p === this.currentUserId : p?._id === this.currentUserId));
   }
 
-  // ===== Acciones existentes (no tocadas) =====
   openDeleteModal(evento: Evento): void { this.eventoToDelete = evento; this.showDeleteModal = true; }
   closeDeleteModal(): void { this.showDeleteModal = false; this.eventoToDelete = null; }
 
@@ -155,9 +144,11 @@ export class MisEventosComponent implements OnInit {
     });
   }
 
-  // =================================================================
-  // ===================   NUEVO: MODAL VALORACIONES   ================
-  // =================================================================
+  private recalcRatingsPager(): void {
+    this.totalItems = (this.ratingsList?.length ?? 0);
+    this.totalPages = Math.max(1, Math.ceil(this.totalItems / this.pageSize));
+    this.page = Math.min(this.page, this.totalPages);
+  }
 
   openRatingsModal(ev: Evento) {
     this.showRatingsModal = true;
@@ -166,13 +157,13 @@ export class MisEventosComponent implements OnInit {
     this.ratingsAvg = typeof (ev as any).avgRating === 'number' ? (ev as any).avgRating : undefined;
     this.ratingsCount = typeof (ev as any).ratingsCount === 'number' ? (ev as any).ratingsCount : undefined;
 
-    // re-inicia estado y carga
     this.q = '';
     this.page = 1;
-    this.pageSize = 3;
+    this.pageSize = 4;
     this.hover = 0; this.myScore = 0; this.myComment = '';
     this.loadRatingsList();
     this.refreshRatingsAggregates();
+    this.recalcRatingsPager();
   }
 
   closeRatingsModal(): void {
@@ -217,15 +208,14 @@ export class MisEventosComponent implements OnInit {
   }
 
   changeRatingsPage(delta: number) {
-    const p = this.page + delta;
-    if (p < 1 || p > this.totalPages) return;
-    this.page = p;
-    this.loadRatingsList();
+    const p = Math.min(this.totalPages, Math.max(1, this.page + delta));
+    if (p !== this.page) this.page = p;
   }
 
   searchRatings(): void {
     this.page = 1;
     this.loadRatingsList();
+    this.recalcRatingsPager();
   }
 
   setRatingsPageSize(v: string) {
@@ -257,7 +247,6 @@ export class MisEventosComponent implements OnInit {
         this.myComment = '';
         this.loadRatingsList();
         this.refreshRatingsAggregates();
-        // También refrescamos las tarjetas para que avg/count se actualicen a la vista
         this.loadMisEventos();
       },
       error: (err) => {

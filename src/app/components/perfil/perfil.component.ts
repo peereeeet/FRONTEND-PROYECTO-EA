@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
@@ -36,6 +35,12 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   checkingUsername = signal(false);
   usernameTaken    = signal(false);
+
+  deleteOpen = signal<boolean>(false);
+  deleting = signal<boolean>(false);
+  deleteError = signal<string | null>(null);
+  deletePasswordValue = '';
+  deletePassword: string = '';
 
   checkingEmail = signal(false);
   emailTaken    = signal(false);
@@ -254,7 +259,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
     const value = (e.username || '').trim();
     this.usernameTaken.set(false);
 
-    // Reglas rápidas: mínimo 3 chars
     if (value.length < 3) return;
 
     this.checkingUsername.set(true);
@@ -269,7 +273,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Dispara verificación de email (evita marcar tu propio email como duplicado)
   checkEmail(): void {
     const me = this.me();
     const e  = this.edit();
@@ -288,6 +291,49 @@ export class PerfilComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.checkingEmail.set(false);
+      }
+    });
+  }
+
+  openDelete(): void {
+    this.deletePassword = '';
+    this.deleteError.set('');
+    this.deleting.set(false);
+    this.deleteOpen.set(true);
+  }
+
+  closeDelete(): void {
+    this.deleteOpen.set(false);
+    this.deletePassword = '';
+  }
+
+  confirmDelete(): void {
+    const u = this.me();
+    const id = u?._id ?? '';
+    if (!u || !id) {
+      this.deleteError.set('No se encontró el usuario actual.');
+      return;
+    }
+    if (!this.deletePassword || this.deletePassword.length < 7) {
+      this.deleteError.set('Introduce tu contraseña (mínimo 7 caracteres).');
+      return;
+    }
+
+    this.deleting.set(true);
+    this.deleteError.set('');
+    this.userService.deleteAccountWithPassword(id, this.deletePassword).subscribe({
+      next: () => {
+        try { this.auth.logout(); } catch {}
+        this.deleting.set(false);
+        this.deleteOpen.set(false);
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        this.deleting.set(false);
+        const msg = err?.status === 401 || err?.status === 403
+          ? 'Contraseña incorrecta.'
+          : (err?.error?.message || 'No se pudo eliminar la cuenta.');
+        this.deleteError.set(msg);
       }
     });
   }

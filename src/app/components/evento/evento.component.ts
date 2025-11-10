@@ -25,6 +25,9 @@ export class EventoComponent implements OnInit {
   availableUsers: User[] = [];
   selectedUsers: User[] = [];
   newEvent: Evento = { name: '', schedule: [], address: '', participantes: [] };
+  creatorId: string = '';
+  editCreatorId: string = '';
+  saving = false;
   dateStr: string = '';
   timeStr: string = '';
   errorMessage = '';
@@ -221,7 +224,6 @@ export class EventoComponent implements OnInit {
     this.editTimeStr = '';
   }
 
-  // Add participant in edit mode
   addEditParticipant(u: User): void {
     if (!u?._id) return;
     this.editAvailableUsers = this.editAvailableUsers.filter(x => x._id !== u._id);
@@ -230,7 +232,6 @@ export class EventoComponent implements OnInit {
     this.clampEditPages();
   }
 
-  // Remove participant in edit mode
   removeEditParticipant(u: User): void {
     if (!u?._id) return;
     this.editSelectedUsers = this.editSelectedUsers.filter(x => x._id !== u._id);
@@ -246,7 +247,6 @@ export class EventoComponent implements OnInit {
     this.editEvent.participantes = this.editSelectedUsers.map(u => u._id!).filter(Boolean);
   }
 
-  // Submit edited event data
   onEditSubmit(): void {
     this.errorMessage = '';
     if (!this.editEvent.name?.trim()) {
@@ -281,7 +281,6 @@ export class EventoComponent implements OnInit {
     });
   }
 
-  // Pagination methods for edit mode
   get editAvailableTotalPages(): number {
     return Math.max(1, Math.ceil(this.editAvailableUsers.length / this.editAvailablePageSize));
   }
@@ -339,20 +338,15 @@ export class EventoComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 
-  setSchedule(): void {
+  setSchedule() {
+    if (!this.dateStr) { this.errorMessage = 'Selecciona una fecha.'; return; }
+    const time = this.timeStr || '00:00';
+    const iso = new Date(`${this.dateStr}T${time}:00`).toISOString();
+    this.newEvent.schedule = iso;
     this.errorMessage = '';
-    if (!this.dateStr || !this.timeStr) {
-      this.errorMessage = 'Selecciona fecha y hora.';
-      return;
-    }
-    const slot = `${this.dateStr} ${this.timeStr}`;
-    this.newEvent.schedule = [slot];
   }
-
-  clearSchedule(): void {
-    this.newEvent.schedule = [];
-    this.dateStr = '';
-    this.timeStr = '';
+  clearSchedule() {
+    this.newEvent.schedule = '';
   }
 
   addParticipant(u: User): void {
@@ -378,48 +372,41 @@ export class EventoComponent implements OnInit {
     this.newEvent.participantes = this.selectedUsers.map(u => u._id!).filter(Boolean);
   }
 
-  onSubmit(): void {
+  onSubmit() {
+  this.formSubmitted = true;
   this.errorMessage = '';
 
-  if (!this.newEvent.name?.trim()) {
-    this.errorMessage = 'El título del evento es obligatorio.';
+  if (!this.creatorId) {
+    this.errorMessage = 'Debes seleccionar el creador del evento.';
     return;
   }
-  if (!this.newEvent.schedule?.length) {
-    this.errorMessage = 'Selecciona el horario del evento.';
-    return;
-  }
-  if (!this.newEvent.address?.length) {
-    this.errorMessage = 'Selecciona la dirección del evento.';
+  if (!this.newEvent.name || this.newEvent.name.trim().length < 3) {
+    this.errorMessage = 'El título es obligatorio (mínimo 3 caracteres).';
     return;
   }
 
-  this.eventoService.checkEventNameExists(this.newEvent.name).subscribe({
-    next: (res) => {
-      if (res.exists) {
-        this.errorMessage = '⚠️ Ya existe un evento con este título.';
-        return;
-      }
+  const payload = {
+    ...this.newEvent,
+    creador: this.creatorId,
+    participantes: (this.newEvent.participantes || []).map((u: any) => u._id || u),
+  };
 
-      // Crear el evento si no existe duplicado
-      this.eventoService.addEvento(this.newEvent).subscribe({
-        next: (created) => {
-          const normalized: Evento = {
-            ...created,
-            schedule: Array.isArray(created.schedule)
-              ? created.schedule
-              : (created.schedule ? [created.schedule as any] : []),
-            participantes: Array.isArray((created as any).participantes)
-              ? (created as any).participantes
-              : ((created as any).participants || [])
-          };
-          this.eventos.push(normalized);
-          this.resetForm();
-        },
-        error: () => (this.errorMessage = 'Error al crear el evento. Revisa los datos.')
-      });
+  this.saving = true;
+  this.eventoService.addEvento(payload).subscribe({
+    next: (ev) => {
+      const creadorId = ev?.creador || this.creatorId;
+      this.eventos = [{ ...ev, creador: creadorId }, ...(this.eventos || [])];
+      this.newEvent = { name: '', address: '', schedule: '', participantes: [] };
+      this.creatorId = '';
+      this.dateStr = '';
+      this.timeStr = '';
+      this.formSubmitted = false;
+      this.saving = false;
     },
-    error: () => (this.errorMessage = 'Error al verificar el título del evento.')
+    error: (err) => {
+      this.errorMessage = err?.error?.message || 'No se pudo crear el evento.';
+      this.saving = false;
+    }
   });
 }
 
@@ -456,10 +443,10 @@ export class EventoComponent implements OnInit {
     });
   }
 
-  getScheduleText(e: Evento): string {
-    if (Array.isArray(e.schedule) && e.schedule.length) return this.formatSchedule(e.schedule[0]);
-    if (typeof (e as any).schedule === 'string') return this.formatSchedule((e as any).schedule);
-    return '-';
+  getScheduleText(ev: any): string {
+    if (!ev?.schedule) { return '—'; }
+    const d = new Date(ev.schedule);
+    return isNaN(d.getTime()) ? '—' : d.toLocaleString();
   }
 
   formatSchedule(s: string | undefined | null): string {

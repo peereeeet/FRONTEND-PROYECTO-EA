@@ -1,4 +1,3 @@
-<!-- App bar para homogeneidad (BLANCA como en explorar) -->
 <header class="app-bar">
   <div class="app-bar__content">
     <h1 class="app-bar__title">Crear nuevo evento</h1>
@@ -6,7 +5,6 @@
 </header>
 
 <section class="events-page">
-  <!-- Fondo con brillos azules -->
   <div class="space-background"></div>
 
   <div class="crear-evento-page">
@@ -18,7 +16,6 @@
       <h3 class="card-title-inside">Completa los datos del evento</h3>
 
       <form class="crear-evento-form" (ngSubmit)="onSubmit()">
-        <!-- NEW/CHANGED: rejilla compacta -->
         <div class="form-grid">
           <!-- Título -->
           <div class="form-group">
@@ -73,7 +70,6 @@
             />
           </div>
 
-          <!-- NEW: acciones de horario en línea ocupando columna completa -->
           <div class="form-group form-group--full">
             <div class="schedule-actions">
               <button class="add-slot" type="button" (click)="setSchedule()">📅 Establecer horario</button>
@@ -88,11 +84,8 @@
             </div>
           </div>
         </div>
-
-        <!-- Error general -->
         <div class="msg error" *ngIf="errorMessage">⚠ {{ errorMessage }}</div>
 
-        <!-- CTA -->
         <div class="actions-row">
           <button class="btn-primary" type="submit" [disabled]="saving">
             {{ saving ? 'Guardando…' : '💾 Guardar evento' }}

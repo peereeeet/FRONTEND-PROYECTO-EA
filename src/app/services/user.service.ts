@@ -55,6 +55,10 @@ export class UserService {
     return this.http.put<User>(`${this.apiUrl}/${user._id}`, user, { headers });
   }
 
+  deleteAccountWithPassword(id: string, password: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/usuarios/${id}/delete-with-password`, { password });
+  }
+
   updateMe(id: string, patch: Partial<User & { password?: string }>) {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.put<{ ok: boolean; user: User }>(`${this.apiUrl}/${id}/self`, patch, { headers });

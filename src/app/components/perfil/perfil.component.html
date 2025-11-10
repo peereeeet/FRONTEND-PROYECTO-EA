@@ -19,6 +19,7 @@
             <h2 class="name">{{ me()?.username }}</h2>
             <button class="btn-back" routerLink="/menu">Volver al menú</button>
             <button class="btn-edit" (click)="openEdit()">Modificar datos</button>
+            <button class="btn-danger" (click)="openDelete()">Eliminar cuenta</button>
           </div>
           <div class="status">
             <span class="     dot" [class.online]="me()?.isOnline" [class.offline]="!me()?.isOnline"></span>
@@ -132,6 +133,36 @@
       <button class="btn primary" [disabled]="saving()" (click)="saveEdit()">
           {{ saving() ? 'Guardando…' : 'Guardar' }}
       </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="deleteOpen()" (click)="closeDelete()">
+    <div class="modal danger" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Eliminar cuenta</h3>
+        <button class="btn-close" (click)="closeDelete()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="margin:0 0 10px; color:#374151;">
+          Esta acción es <strong>permanente</strong>. Escribe tu contraseña para confirmar.
+        </p>
+        <div class="form-row">
+          <label>Contraseña</label>
+          <input type="password"
+                 [(ngModel)]="deletePassword"
+                 placeholder="Tu contraseña"
+                 minlength="7" />
+        </div>
+        <div *ngIf="deleteError()" class="msg error">{{ deleteError() }}</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn cancel" (click)="closeDelete()">Cancelar</button>
+        <button class="btn danger" [disabled]="deleting()" (click)="confirmDelete()">
+          {{ deleting() ? 'Eliminando…' : 'Eliminar definitivamente' }}
+        </button>
       </div>
     </div>
   </div>

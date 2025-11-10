@@ -919,3 +919,28 @@
   .btn { flex: 1; }
   .modal { width: 96vw; }
 }
+
+/* Modal como contenedor flex con altura limitada */
+.modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;          /* límite de alto de modal */
+  overflow: hidden;          /* ocultar desbordes globales */
+}
+
+/* Contenido scrollable entre header y acciones */
+.modal-content {
+  flex: 1 1 auto;
+  overflow-y: auto;          /* ← scroll vertical dentro del modal */
+  padding: 8px 0;
+}
+
+/* Header sticky ya existente; lo refuerzo por claridad */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+  box-shadow: 0 1px 0 rgba(0,0,0,.06);
+}
+
