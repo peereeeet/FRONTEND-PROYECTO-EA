@@ -223,19 +223,8 @@
   border:1px solid var(--border);
   border-radius: var(--radius-16);
   box-shadow: var(--shadow-sm);
-  padding:16px;
+  padding:8px;
   margin-bottom:16px;
-}
-
-/* ADDED: grid inferior para colocar eventos (izq) y amigos (dcha) */
-.menu-grid{ /* ADDED */
-  display:grid; /* ADDED */
-  grid-template-columns: 1fr 1fr; /* ADDED */
-  gap:16px; /* ADDED */
-  margin-bottom: 16px; /* ADDED */
-}
-@media (max-width: 900px){ /* ADDED */
-  .menu-grid{ grid-template-columns: 1fr; } /* ADDED */
 }
 
 /* Identidad del usuario */
@@ -431,4 +420,43 @@
   font-size: 1.6rem;
   margin: 0;
 }
+
+/* ====== Eventos con altura fija y scroll interno ====== */
+:root {
+  --events-h: 280px; /* altura desktop */
+}
+
+@media (max-width: 900px) {
+  :root { --events-h: 240px; } /* altura móvil/tabla */
+}
+
+/* Contenedor de tarjeta de eventos ya existe; añadimos variante */
+.events-card.fixed-height {
+  height: var(--events-h);
+  display: flex;
+  margin-bottom: 8px;
+  flex-direction: column;
+  overflow: hidden; /* cortamos overflow global, el interno scrollea */
+}
+
+/* Encabezado y acciones fijos arriba */
+.events-card.fixed-height .events-header,
+.events-card.fixed-height .events-actions {
+  flex: 0 0 auto;
+}
+
+/* Zona con scroll para contenido variable */
+.events-card.fixed-height .events-body {
+  flex: 1 1 auto;
+  min-height: 0;             /* imprescindible para que el flex child scrollee */
+  overflow-y: auto;          /* scroll vertical solo aquí */
+  margin-top: 8px;
+  padding-right: 4px;        /* pequeño respiradero para el scrollbar */
+}
+
+/* (Opcional) Lista rápida dentro de eventos */
+.events-card.fixed-height .quick-list {
+  list-style: none; margin: 0; padding: 0; display: grid; gap: 8px;
+}
+
 

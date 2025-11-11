@@ -13,12 +13,11 @@
       <div class="me">
         <div class="avatar">👤</div>
         <div class="me-info">
-          <h2>{{ me()?.username || 'Usuario' }}</h2>
+          <h2>{{ me()?.username || 'Usuario' }} </h2>
           <div class="status">
             <span class="dot" [class.online]="me()?.isOnline" [class.offline]="!me()?.isOnline"></span>
             <span>{{ meStatusText() }}</span>
           </div>
-          <div class="mail">{{ me()?.gmail }}</div>
         </div>
       </div>
 
@@ -29,7 +28,7 @@
     </header>
 
     <div class="menu-grid">
-      <section class="events-card">
+      <section class="events-card fixed-height">
         <div class="events-header">
           <h3>🎟️ Eventos</h3>
         </div>
@@ -39,18 +38,19 @@
           <button type="button" class="btn" (click)="goToExplorarEventos()">🔍 Explorar eventos</button>
           <button type="button" class="btn secondary" (click)="goToMisEventos()">📅 Mis eventos</button>
         </div>
-        
-        <div *ngIf="loading()" class="msg">Cargando…</div>
-        <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
+
+        <div class="events-body">
+          <div *ngIf="loading()" class="msg">Cargando…</div>
+          <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
+        </div>
       </section>
 
       <section class="friends-card">
         <div class="friends-header">
-          <h3>Amigos</h3>
-          <span class="count">{{ friends()?.length || 0 }}</span>
+          <h3>Amigos <span class="count">{{ friends()?.length || 0 }}</span></h3>
           <div class="actions">
-            <button type="button" class="btn" (click)="openAddFriendsModal()">Explorar usuarios</button>
-            <button type="button" class="btn secondary" (click)="openRequestsModal()">📨 Solicitudes</button>
+            <button type="button" class="btn" (click)="openAddFriendsModal()">🔍 Explorar usuarios</button>
+            <button type="button" class="btn secondary" (click)="openRequestsModal()">📨 Solicitudes recibidas</button>
           </div>
         </div>
 

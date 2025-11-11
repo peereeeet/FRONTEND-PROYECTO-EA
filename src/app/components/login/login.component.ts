@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -19,9 +20,29 @@ export class LoginComponent  {
   private starInterval: any;
   private cometInterval: any;
 
+  forgotOpen = false;
+  resetOpen = false;
+
+  forgotForm!: FormGroup;
+  resetForm!: FormGroup;
+
+  sending = false;
+  resetting = false;
+
+  forgotInfo = '';
+  forgotError = '';
+  resetInfo = '';
+  resetError = '';
+
+  get forgotTouchedInvalid() {
+    const c = this.forgotForm?.get('identifier');
+    return !!(c && c.touched && c.invalid);
+  }
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+  private userService: UserService,
     private router: Router
   ) {
     this.loginForm = this.fb.group({
@@ -37,12 +58,21 @@ export class LoginComponent  {
     else 
       this.router.navigate(['/menu'])
   }
+  
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
 
       const { username, password } = this.loginForm.value;
+
+      this.forgotForm = this.fb.group({
+        identifier: ['', [Validators.required]],
+      });
+      this.resetForm = this.fb.group({
+        token: ['', [Validators.required, Validators.minLength(16)]],
+        newPassword: ['', [Validators.required, Validators.minLength(7)]],
+      });
 
       this.authService.login(username, password)
         .pipe(finalize(() => this.isLoading = false))
@@ -98,4 +128,49 @@ export class LoginComponent  {
 
   get username() { return this.loginForm.get('username'); }
   get password() { return this.loginForm.get('password'); }
+
+  openForgot(){ this.forgotOpen = true; this.forgotInfo=''; this.forgotError=''; this.forgotForm.reset(); }
+  closeForgot(){ this.forgotOpen = false; }
+
+  openReset(){ this.resetOpen = true; this.resetInfo=''; this.resetError=''; this.resetForm.reset(); }
+  closeReset(){ this.resetOpen = false; }
+
+  onForgotSubmit(){
+    if (this.forgotForm.invalid) { this.forgotForm.markAllAsTouched(); return; }
+    this.sending = true; this.forgotInfo=''; this.forgotError='';
+    const identifier = this.forgotForm.value.identifier?.trim();
+
+    this.userService.requestPasswordReset(identifier).subscribe({
+      next: (res:any) => {
+        // En dev, el backend puede devolver devToken para probar sin email
+        this.forgotInfo = res?.message || 'Si el usuario existe, te enviaremos un email con instrucciones.';
+        if (res?.devToken) {
+          this.forgotInfo += `  (Código de prueba: ${res.devToken})`;
+        }
+        this.sending = false;
+      },
+      error: (err:any) => {
+        // Respuesta neutra para no filtrar si existe o no el usuario
+        this.forgotInfo = 'Si el usuario existe, te enviaremos un email con instrucciones.';
+        this.sending = false;
+      }
+    });
+  }
+
+  onResetSubmit(){
+    if (this.resetForm.invalid) { this.resetForm.markAllAsTouched(); return; }
+    this.resetting = true; this.resetError=''; this.resetInfo='';
+
+    const { token, newPassword } = this.resetForm.value;
+    this.userService.resetPassword(token, newPassword).subscribe({
+      next: () => {
+        this.resetInfo = 'Tu contraseña se ha actualizado correctamente. Ya puedes iniciar sesión.';
+        this.resetting = false;
+      },
+      error: (err:any) => {
+        this.resetError = err?.error?.message || 'El código no es válido o ha caducado.';
+        this.resetting = false;
+      }
+    });
+  }
 }

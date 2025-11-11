@@ -52,3 +52,50 @@
 
 .loading-spinner{ width:18px; height:18px; border:3px solid #fff; border-top-color:transparent; border-radius:50%; display:inline-block; margin-right:8px; animation: spin 1s linear infinite; }
 @keyframes spin{ to{ transform: rotate(360deg);} }
+
+/* Enlace "He olvidado mi contraseña" alineado a la derecha del label */
+.row-between{
+  display:flex; align-items:center; justify-content:space-between;
+}
+.link-forgot{
+  background:none; border:none; color:#1d4ed8; text-decoration:underline; cursor:pointer;
+  font-weight:700; padding:0;
+}
+.link-forgot:hover{ color:#0b2a7a; }
+
+/* Link para abrir el modal de token */
+.dev-helper{ margin-top:12px; }
+.link-token{
+  background:none; border:none; color:#374151; text-decoration:underline; cursor:pointer; font-weight:600;
+}
+.link-token:hover{ color:#111827; }
+
+/* Modal genérico (alineado con otros modales de la app) */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.5);
+  display:flex; align-items:center; justify-content:center; z-index:1200;
+}
+.modal{
+  width:90%; max-width:480px; background:#fff; color:#111; border-radius:16px;
+  border:1px solid #eee; box-shadow:0 20px 50px rgba(0,0,0,.2); padding:16px;
+}
+.modal-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding-bottom:8px; border-bottom:1px solid #eee; margin-bottom:8px;
+}
+.btn-close{ background:none; border:none; font-size:20px; cursor:pointer; color:#666; }
+.btn-close:hover{ color:#111; transform:scale(1.05); }
+
+.modal-text{ color:#374151; margin-bottom:10px; }
+.modal-actions{
+  display:flex; justify-content:flex-end; gap:8px; margin-top:8px;
+}
+.btn{ padding:8px 12px; border-radius:10px; font-weight:700; cursor:pointer; border:none; }
+.btn.cancel{ background:#f3f4f6; color:#111827; border:1px solid #e5e7eb; }
+.btn.primary{ background:linear-gradient(135deg,#1e40af,#0b2a7a); color:#fff; }
+.btn.success{ background:linear-gradient(135deg,#059669,#065f46); color:#fff; }
+
+.info-message{
+  background:#ecfeff; color:#0369a1; border:1px solid #bae6fd;
+  padding:8px 10px; border-radius:10px; margin-top:10px; font-weight:600;
+}

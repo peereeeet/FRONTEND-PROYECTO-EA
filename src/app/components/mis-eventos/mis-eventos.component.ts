@@ -98,11 +98,44 @@ export class MisEventosComponent implements OnInit {
     return typeof c === 'string' ? c : (c.username || c.name || c.email || '—');
   }
 
-  getScheduleText(ev: any): string {
-    const sch = ev?.schedule || [];
-    if (!Array.isArray(sch) || sch.length === 0) return '—';
-    return sch.map((s: any) => (typeof s === 'string' ? s : (s?.date || s?.hora || s?.time || ''))).filter(Boolean).join(' · ');
+  private readonly timeZone = 'Europe/Madrid';
+
+  private fromISOtoInputs(iso?: any): { dateStr: string; timeStr: string } {
+    if (!iso) return { dateStr: '', timeStr: '' };
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return { dateStr: '', timeStr: '' };
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const yyyy = d.getFullYear(), mm = pad(d.getMonth() + 1), dd = pad(d.getDate());
+    const hh = pad(d.getHours()), mi = pad(d.getMinutes());
+    return { dateStr: `${yyyy}-${mm}-${dd}`, timeStr: `${hh}:${mi}` };
   }
+
+  private formatSchedule(iso?: any): string {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '—';
+
+    const { dateStr } = this.fromISOtoInputs(iso);
+    const savedAtMidnight =
+      d.getUTCHours() === 0 && d.getUTCMinutes() === 0 &&
+      d.getUTCSeconds() === 0 && d.getUTCMilliseconds() === 0 &&
+      (new Date(`${dateStr}T00:00:00Z`).toISOString() === new Date(iso).toISOString());
+
+    const base = new Intl.DateTimeFormat('es-ES', {
+      weekday: 'short', day: '2-digit', month: 'short', year: 'numeric',
+      timeZone: this.timeZone,
+    }).format(d).replace('.', '');
+
+    if (savedAtMidnight) return `${base} · todo el día`;
+
+    const hm = new Intl.DateTimeFormat('es-ES', {
+      hour: '2-digit', minute: '2-digit', hour12: false, timeZone: this.timeZone,
+    }).format(d);
+
+    return `${base} · ${hm}`;
+  }
+
+  getScheduleText = (ev: any) => this.formatSchedule(ev?.schedule);
 
   isUserCreator(ev: Evento): boolean {
     const cid = (ev as any)?.creador?._id || (ev as any)?.creador || (ev as any)?.owner || (ev as any)?.createdBy;

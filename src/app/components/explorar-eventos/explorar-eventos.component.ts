@@ -148,26 +148,44 @@ export class ExplorarEventosComponent implements OnInit {
     return this.userRole === 'admin';
   }
 
-  getScheduleText(e: Evento): string {
-    if (Array.isArray(e.schedule) && e.schedule.length) {
-      return this.formatSchedule(e.schedule[0]);
-    }
-    return '-';
+  private readonly timeZone = 'Europe/Madrid';
+
+  private fromISOtoInputs(iso?: any): { dateStr: string; timeStr: string } {
+    if (!iso) return { dateStr: '', timeStr: '' };
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return { dateStr: '', timeStr: '' };
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const yyyy = d.getFullYear(), mm = pad(d.getMonth() + 1), dd = pad(d.getDate());
+    const hh = pad(d.getHours()), mi = pad(d.getMinutes());
+    return { dateStr: `${yyyy}-${mm}-${dd}`, timeStr: `${hh}:${mi}` };
   }
 
-  formatSchedule(s: string): string {
-    if (!s) return '-';
-    
-    const sep = s.includes('T') ? 'T' : ' ';
-    const [d, t = ''] = s.split(sep);
-    const [y, m, d2] = d.split('-');
-    const hhmm = t.slice(0, 5);
-    
-    if (y && m && d2) {
-      return `${d2}-${m}-${y}${hhmm ? ' ' + hhmm : ''}`;
-    }
-    return s;
+  private formatSchedule(iso?: any): string {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '—';
+
+    const { dateStr } = this.fromISOtoInputs(iso);
+    const savedAtMidnight =
+      d.getUTCHours() === 0 && d.getUTCMinutes() === 0 &&
+      d.getUTCSeconds() === 0 && d.getUTCMilliseconds() === 0 &&
+      (new Date(`${dateStr}T00:00:00Z`).toISOString() === new Date(iso).toISOString());
+
+    const base = new Intl.DateTimeFormat('es-ES', {
+      weekday: 'short', day: '2-digit', month: 'short', year: 'numeric',
+      timeZone: this.timeZone,
+    }).format(d).replace('.', '');
+
+    if (savedAtMidnight) return `${base} · todo el día`;
+
+    const hm = new Intl.DateTimeFormat('es-ES', {
+      hour: '2-digit', minute: '2-digit', hour12: false, timeZone: this.timeZone,
+    }).format(d);
+
+    return `${base} · ${hm}`;
   }
+
+  getScheduleText = (ev: any) => this.formatSchedule(ev?.schedule);
 
   getCreadorName(evento: Evento): string {
     if (typeof evento.creador === 'object' && evento.creador) {

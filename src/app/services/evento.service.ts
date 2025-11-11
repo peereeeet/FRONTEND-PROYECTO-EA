@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Evento } from '../models/evento.model';
 
 @Injectable({ providedIn: 'root' })
@@ -34,6 +34,16 @@ export class EventoService {
       participantes: [...(newEvent.participantes || [])] 
     };
     return this.http.post<Evento>(this.apiUrl, payload, { headers });
+  }
+
+  createEventoFromPanel(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/create-from-panel`, payload).pipe(
+      map(ev => {
+        const raw = ev?.creador;
+        const creadorId = raw && typeof raw === 'object' && raw._id ? raw._id : (raw || '');
+        return { ...ev, creador: creadorId, creadorInfo: typeof raw === 'object' ? raw : undefined };
+      })
+    );
   }
 
   updateEvento(evento: Evento): Observable<Evento> {

@@ -129,27 +129,72 @@ export class CrearEventosComponent implements OnInit {
     return `${date}T${time}`;
   }
 
-  setSchedule(): void {
-    const iso = this.composeISOFromDateTime(this.dateStr, this.timeStr);
-    this.newEvent.schedule = iso; 
+  private readonly timeZone = 'Europe/Madrid';
+
+  private toISO(dateStr?: string, timeStr?: string): string | null {
+    if (!dateStr) return null;
+    const t = (timeStr && timeStr.trim()) ? timeStr.trim() : '00:00';
+    const local = new Date(`${dateStr}T${t}:00`);
+    if (isNaN(local.getTime())) return null;
+    return local.toISOString();
   }
 
-  clearSchedule(): void {
-    this.newEvent.schedule = '';
-    this.dateStr = '';
-    this.timeStr = '';
+  private fromISOtoInputs(iso?: any): { dateStr: string; timeStr: string } {
+    if (!iso) return { dateStr: '', timeStr: '' };
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return { dateStr: '', timeStr: '' };
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    const mm = pad(d.getMonth() + 1);
+    const dd = pad(d.getDate());
+    const hh = pad(d.getHours());
+    const mi = pad(d.getMinutes());
+    return { dateStr: `${yyyy}-${mm}-${dd}`, timeStr: `${hh}:${mi}` };
   }
 
-  getScheduleText(e: { schedule: string }): string {
-    if (!e?.schedule) return 'Sin horario establecido';
-    try {
-      const d = new Date(e.schedule);
-      if (isNaN(+d)) return e.schedule;
-      return d.toLocaleString();
-    } catch {
-      return e.schedule;
+  formatSchedule(iso?: any): string {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '—';
+
+    const noTime =
+      d.getUTCHours() === 0 &&
+      d.getUTCMinutes() === 0 &&
+      d.getUTCSeconds() === 0 &&
+      d.getUTCMilliseconds() === 0 &&
+      (new Date(`${this.fromISOtoInputs(iso).dateStr}T00:00:00Z`).toISOString() === new Date(iso).toISOString());
+
+    const base = new Intl.DateTimeFormat('es-ES', {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      timeZone: this.timeZone,
+    }).format(d);
+
+    if (noTime) {
+      return `${base.replace('.', '')} · todo el día`;
     }
+
+    const hm = new Intl.DateTimeFormat('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: this.timeZone,
+    }).format(d);
+
+    return `${base.replace('.', '')} · ${hm}`;
   }
+
+  setSchedule() {
+    const iso = this.toISO(this.dateStr, this.timeStr);
+    if (!iso) { this.errorMessage = 'Selecciona al menos la fecha válida.'; return; }
+    this.newEvent.schedule = iso;
+    this.errorMessage = '';
+  }
+  clearSchedule() { this.newEvent.schedule = ''; }
+
+  getScheduleText = (ev: any) => this.formatSchedule(ev?.schedule);
 
   onSubmit(): void {
     this.formSubmitted = true;

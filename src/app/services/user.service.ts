@@ -64,6 +64,14 @@ export class UserService {
     return this.http.put<{ ok: boolean; user: User }>(`${this.apiUrl}/${id}/self`, patch, { headers });
   }
 
+  requestPasswordReset(identifier: string){
+    return this.http.post('/api/usuarios/forgot-password', { emailOrUsername: identifier });
+  }
+
+  resetPassword(token: string, newPassword: string){
+    return this.http.post('/api/usuarios/reset-password', { token, newPassword });
+  }
+
   disableUser(id: string): Observable<User> {
   return this.http.patch<User>(`${this.apiUrl}/${id}/disable`, {});
 }

@@ -172,6 +172,9 @@ export class EventoComponent implements OnInit {
         ) || []
       };
 
+      const parts = this.fromISOtoInputs(this.editEvent?.schedule);
+      this.editDateStr = parts.dateStr;
+      this.editTimeStr = parts.timeStr;
       this.editSelectedUsers = this.users.filter(u =>
         this.editEvent.participantes?.includes(u._id!)
       );
@@ -208,21 +211,12 @@ export class EventoComponent implements OnInit {
     this.editTimeStr = '';
   }
 
-  setEditSchedule(): void {
-    this.errorMessage = '';
-    if (!this.editDateStr || !this.editTimeStr) {
-      this.errorMessage = 'Selecciona fecha y hora.';
-      return;
-    }
-    const slot = `${this.editDateStr} ${this.editTimeStr}`;
-    this.editEvent.schedule = [slot];
+  setEditSchedule() {
+    const iso = this.toISO(this.editDateStr, this.editTimeStr);
+    if (!iso) { return; }
+    this.editEvent.schedule = iso;
   }
-
-  clearEditSchedule(): void {
-    this.editEvent.schedule = [];
-    this.editDateStr = '';
-    this.editTimeStr = '';
-  }
+  clearEditSchedule() { this.editEvent.schedule = ''; }
 
   addEditParticipant(u: User): void {
     if (!u?._id) return;
@@ -338,16 +332,72 @@ export class EventoComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 
+  private readonly timeZone = 'Europe/Madrid';
+
+  private toISO(dateStr?: string, timeStr?: string): string | null {
+    if (!dateStr) return null;
+    const t = (timeStr && timeStr.trim()) ? timeStr.trim() : '00:00';
+    const local = new Date(`${dateStr}T${t}:00`);
+    if (isNaN(local.getTime())) return null;
+    return local.toISOString();
+  }
+
+  private fromISOtoInputs(iso?: any): { dateStr: string; timeStr: string } {
+    if (!iso) return { dateStr: '', timeStr: '' };
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return { dateStr: '', timeStr: '' };
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    const mm = pad(d.getMonth() + 1);
+    const dd = pad(d.getDate());
+    const hh = pad(d.getHours());
+    const mi = pad(d.getMinutes());
+    return { dateStr: `${yyyy}-${mm}-${dd}`, timeStr: `${hh}:${mi}` };
+  }
+
+  formatSchedule(iso?: any): string {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '—';
+
+    const noTime =
+      d.getUTCHours() === 0 &&
+      d.getUTCMinutes() === 0 &&
+      d.getUTCSeconds() === 0 &&
+      d.getUTCMilliseconds() === 0 &&
+      (new Date(`${this.fromISOtoInputs(iso).dateStr}T00:00:00Z`).toISOString() === new Date(iso).toISOString());
+
+    const base = new Intl.DateTimeFormat('es-ES', {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      timeZone: this.timeZone,
+    }).format(d);
+
+    if (noTime) {
+      return `${base.replace('.', '')} · todo el día`;
+    }
+
+    const hm = new Intl.DateTimeFormat('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: this.timeZone,
+    }).format(d);
+
+    return `${base.replace('.', '')} · ${hm}`;
+  }
+
+  getScheduleText = (ev: any) => this.formatSchedule(ev?.schedule);
+
   setSchedule() {
-    if (!this.dateStr) { this.errorMessage = 'Selecciona una fecha.'; return; }
-    const time = this.timeStr || '00:00';
-    const iso = new Date(`${this.dateStr}T${time}:00`).toISOString();
+    const iso = this.toISO(this.dateStr, this.timeStr);
+    if (!iso) { this.errorMessage = 'Selecciona al menos la fecha válida.'; return; }
     this.newEvent.schedule = iso;
     this.errorMessage = '';
   }
-  clearSchedule() {
-    this.newEvent.schedule = '';
-  }
+  clearSchedule() { this.newEvent.schedule = ''; }
 
   addParticipant(u: User): void {
     if (!u?._id) return;
@@ -373,42 +423,42 @@ export class EventoComponent implements OnInit {
   }
 
   onSubmit() {
-  this.formSubmitted = true;
-  this.errorMessage = '';
+    this.formSubmitted = true;
+    this.errorMessage = '';
 
-  if (!this.creatorId) {
-    this.errorMessage = 'Debes seleccionar el creador del evento.';
-    return;
-  }
-  if (!this.newEvent.name || this.newEvent.name.trim().length < 3) {
-    this.errorMessage = 'El título es obligatorio (mínimo 3 caracteres).';
-    return;
-  }
-
-  const payload = {
-    ...this.newEvent,
-    creador: this.creatorId,
-    participantes: (this.newEvent.participantes || []).map((u: any) => u._id || u),
-  };
-
-  this.saving = true;
-  this.eventoService.addEvento(payload).subscribe({
-    next: (ev) => {
-      const creadorId = ev?.creador || this.creatorId;
-      this.eventos = [{ ...ev, creador: creadorId }, ...(this.eventos || [])];
-      this.newEvent = { name: '', address: '', schedule: '', participantes: [] };
-      this.creatorId = '';
-      this.dateStr = '';
-      this.timeStr = '';
-      this.formSubmitted = false;
-      this.saving = false;
-    },
-    error: (err) => {
-      this.errorMessage = err?.error?.message || 'No se pudo crear el evento.';
-      this.saving = false;
+    if (!this.creatorId) {
+      this.errorMessage = 'Debes seleccionar el creador del evento.';
+      return;
     }
-  });
-}
+    if (!this.newEvent.name || this.newEvent.name.trim().length < 3) {
+      this.errorMessage = 'El título es obligatorio (mínimo 3 caracteres).';
+      return;
+    }
+
+    const payload = {
+      ...this.newEvent,
+      creador: this.creatorId,
+      participantes: (this.newEvent.participantes || []).map((u: any) => u._id || u),
+    };
+
+    this.saving = true;
+    this.eventoService.createEventoFromPanel(payload).subscribe({
+      next: (ev) => {
+        this.eventos = [ev, ...(this.eventos || [])];
+
+        this.newEvent = { name: '', address: '', schedule: '', participantes: [] };
+        this.creatorId = '';
+        this.dateStr = '';
+        this.timeStr = '';
+        this.formSubmitted = false;
+        this.saving = false;
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.message || 'No se pudo crear el evento.';
+        this.saving = false;
+      }
+    });
+  }
 
   openDeleteModal(index: number): void {
     this.pendingDeleteIndex = index;
@@ -443,7 +493,7 @@ export class EventoComponent implements OnInit {
     });
   }
 
-  getScheduleText(ev: any): string {
+  /*getScheduleText(ev: any): string {
     if (!ev?.schedule) { return '—'; }
     const d = new Date(ev.schedule);
     return isNaN(d.getTime()) ? '—' : d.toLocaleString();
@@ -457,7 +507,7 @@ export class EventoComponent implements OnInit {
     const hhmm = t.slice(0,5);
     if (y && m && d2) return `${d2}-${m}-${y}${hhmm ? ' ' + hhmm : ''}`;
     return s;
-  }
+  }*/
 
   getEventAddress(e: any): string {
     return e?.address ?? e?.direccion ?? '-';

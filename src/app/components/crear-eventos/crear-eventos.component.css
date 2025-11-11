@@ -1,11 +1,11 @@
-/* ================= Fondo y app-bar (igual que explorar) ================ */
+/* ================= Fondo y app-bar (ALINEADO con menu) ================ */
 
 .events-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
   position: relative;
   overflow: hidden;
-  padding: 16px;
+  /* quitamos padding aquí para que el header se vea idéntico al de menu */
 }
 
 .space-background {
@@ -17,34 +17,43 @@
     radial-gradient(500px 260px at 80% 25%, rgba(67,56,202,.18), transparent 60%);
 }
 
+/* NUEVO: igual que en menu */
+.stars {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* === APP BAR: copiado de menu.component.css === */
 .app-bar {
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-radius: 0;
   position: sticky;
   top: 0;
-  z-index: 5;
+  z-index: 10; /* igual que menu */
 }
 .app-bar__content {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 16px;
 }
 .app-bar__title {
-  margin: 0;
   color: #1e3a8a;
   font-weight: 700;
   font-size: 1.6rem;
+  margin: 0;
 }
 
 /* ================= Contenedor principal ================== */
 
 .crear-evento-page {
   position: relative;
-  z-index: 1;
+  z-index: 2; /* por encima de las estrellas */
   display: grid;
   place-items: center;
+  padding: 16px; /* padding que antes estaba en .events-page */
 }
 
 /* NEW/CHANGED: menos padding y ancho algo menor para densidad visual */
@@ -64,7 +73,7 @@
   margin-bottom: 8px; /* más compacto */
 }
 
-/* Botón volver (estándar de perfil/explorar) */
+/* Botón volver (estándar) */
 .btn-back {
   background: var(--primary-50, #eef2ff);
   color: var(--primary-700, #1d4ed8);
@@ -93,7 +102,7 @@
 
 /* ================= Formulario ================= */
 
-/* NEW/CHANGED: rejilla 2 columnas con auto-fit */
+/* rejilla 2 columnas con auto-fit */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -101,7 +110,7 @@
   align-items: end;
 }
 
-.form-group { margin-bottom: 6px; } /* antes 16px */
+.form-group { margin-bottom: 6px; }
 
 .form-group--full {
   grid-column: 1 / -1; /* ocupa todo el ancho */
@@ -111,7 +120,7 @@
   display: block;
   font-weight: 600;
   color: #374151;
-  margin-bottom: 4px; /* más compacto */
+  margin-bottom: 4px;
   font-size: 0.92rem;
 }
 
@@ -119,10 +128,10 @@
 .crear-evento-form input[type="date"],
 .crear-evento-form input[type="time"] {
   width: 100%;
-  padding: 10px 12px; /* más compacto */
+  padding: 10px 12px;
   border: 2px solid #e5e7eb;
   border-radius: 10px;
-  font-size: 14.5px; /* ligeramente menor */
+  font-size: 14.5px;
   transition: all 0.2s ease;
   background: #f8fafc;
   font-family: inherit;
@@ -139,10 +148,10 @@
 .crear-evento-form small {
   display: block;
   color: #b91c1c;
-  margin-top: 2px; /* más compacto */
+  margin-top: 2px;
 }
 
-/* NEW/CHANGED: acciones de horario en línea y con wrap */
+/* Acciones de horario en línea y con wrap */
 .schedule-actions {
   display: flex;
   align-items: center;
@@ -156,7 +165,7 @@
   background: #1d4ed8;
   color: #fff;
   border: none;
-  padding: 8px 12px; /* más compacto */
+  padding: 8px 12px;
   border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
@@ -166,7 +175,7 @@
 .remove-slot { background: #dc2626; }
 .remove-slot:hover { transform: translateY(-1px); }
 
-/* Preview pill más denso */
+/* Preview pill */
 .schedule-preview {
   display: inline-flex;
   align-items: center;
@@ -175,7 +184,7 @@
   border: 1px solid #c7d2fe;
   color: #1d4ed8;
   border-radius: 999px;
-  padding: 6px 10px; /* más compacto */
+  padding: 6px 10px;
   font-weight: 600;
 }
 
@@ -184,12 +193,12 @@
   background: #fef2f2;
   color: #b91c1c;
   border: 1px solid #fecaca;
-  padding: 8px 10px; /* más compacto */
+  padding: 8px 10px;
   border-radius: 10px;
   margin-top: 6px;
 }
 
-/* NEW: fila de acciones compacta */
+/* Fila de acciones */
 .actions-row {
   display: flex;
   justify-content: flex-end;
@@ -200,7 +209,7 @@
   background: var(--gradient-primary, linear-gradient(135deg, #1e40af, #0b2a7a));
   color: #fff;
   border: none;
-  padding: 10px 14px; /* más compacto */
+  padding: 10px 14px;
   border-radius: 10px;
   cursor: pointer;
   font-weight: 700;
@@ -214,6 +223,7 @@
 
 /* ================= Responsive ================= */
 @media (max-width: 640px) {
+  .crear-evento-page { padding: 14px; }
   .crear-evento-container { padding: 14px; }
   .btn-back { width: 100%; justify-content: center; }
   .actions-row { justify-content: stretch; }

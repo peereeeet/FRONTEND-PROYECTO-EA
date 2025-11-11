@@ -1,11 +1,14 @@
-<header class="app-bar">
-  <div class="app-bar__content">
-    <h1 class="app-bar__title">Crear nuevo evento</h1>
-  </div>
-</header>
-
 <section class="events-page">
+  <!-- Fondo y estrellas como en menu -->
   <div class="space-background"></div>
+  <div class="stars"></div>
+
+  <!-- Header EXACTO al de menu -->
+  <header class="app-bar">
+    <div class="app-bar__content centered">
+      <h1 class="app-bar__title">Crear nuevo evento</h1>
+    </div>
+  </header>
 
   <div class="crear-evento-page">
     <div class="crear-evento-container">
@@ -84,6 +87,7 @@
             </div>
           </div>
         </div>
+
         <div class="msg error" *ngIf="errorMessage">⚠ {{ errorMessage }}</div>
 
         <div class="actions-row">
