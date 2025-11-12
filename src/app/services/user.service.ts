@@ -56,7 +56,7 @@ export class UserService {
   }
 
   deleteAccountWithPassword(id: string, password: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/usuarios/${id}/delete-with-password`, { password });
+    return this.http.patch<void>(`${this.apiUrl}/${id}/delete-with-password`, { password });
   }
 
   updateMe(id: string, patch: Partial<User & { password?: string }>) {
