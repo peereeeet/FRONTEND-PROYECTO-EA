@@ -1,21 +1,53 @@
 @import '../login/login.component.css';
 
 /* Ajustes del registro sobre la base del login */
-.login-card{ max-width:900px; width:90%; }
+.login-card{ 
+  max-width:900px; width:90%;
+  border:2px solid rgba(167,139,250,.5);
+  box-shadow: 0 30px 60px rgba(139,92,246,.3), 0 0 100px rgba(59,130,246,.2);
+}
 
-.form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
-.form-column{ display:flex; flex-direction:column; gap:12px; }
+.form-grid{ 
+  display:grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap:24px; 
+}
+.form-column{ 
+  display:flex; 
+  flex-direction:column; 
+  gap:14px; 
+}
 
-.buttons-row{ display:flex; justify-content:center; align-items:center; gap:14px; margin-top:18px; flex-wrap:wrap; }
-.buttons-row .login-button, .buttons-row .admin-button{ flex:1; max-width:240px; }
+.buttons-row{ 
+  display:flex; 
+  justify-content:center; 
+  align-items:center; 
+  gap:16px; 
+  margin-top:24px; 
+  flex-wrap:wrap; 
+}
+.buttons-row .login-button, 
+.buttons-row .admin-button{ 
+  flex:1; 
+  max-width:240px; 
+}
 
 .form-error{
-  margin-top:16px; padding:12px; background: rgba(239,68,68,.08);
-  border:1px solid var(--error); color:#dc2626; text-align:center; border-radius: var(--radius-10);
+  margin-top:20px; 
+  padding:14px 16px; 
+  background: linear-gradient(135deg, rgba(254,202,202,.3), rgba(252,165,165,.2));
+  border:2px solid #f87171; 
+  color:#b91c1c; 
+  text-align:center; 
+  border-radius:14px;
+  font-weight:700;
+  box-shadow:0 8px 20px rgba(239,68,68,.2);
 }
 
 /* Responsive */
 @media (max-width: 700px){
   .form-grid{ grid-template-columns:1fr; }
   .buttons-row{ flex-direction:column; }
+  .buttons-row .login-button, 
+  .buttons-row .admin-button{ max-width:100%; }
 }

@@ -55,9 +55,21 @@ export class UserService {
     return this.http.put<User>(`${this.apiUrl}/${user._id}`, user, { headers });
   }
 
+  deleteAccountWithPassword(id: string, password: string): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/${id}/delete-with-password`, { password });
+  }
+
   updateMe(id: string, patch: Partial<User & { password?: string }>) {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.put<{ ok: boolean; user: User }>(`${this.apiUrl}/${id}/self`, patch, { headers });
+  }
+
+  checkUserExistsForReset(identifier: string) {
+    return this.http.post<void>(`${this.apiUrl}/usuarios/forgot-password/check`, { emailOrUsername: identifier });
+  }
+
+  directResetPassword(userId: string, newPassword: string) {
+    return this.http.post<void>(`${this.apiUrl}/usuarios/reset-password/direct`, { userId, newPassword });
   }
 
   disableUser(id: string): Observable<User> {

@@ -1,0 +1,101 @@
+<section class="events-page">
+  <!-- Fondo y estrellas como en menu -->
+  <div class="space-background"></div>
+  <div class="stars"></div>
+
+  <!-- Header EXACTO al de menu -->
+  <header class="app-bar">
+    <div class="app-bar__content centered">
+      <h1 class="app-bar__title">Crear nuevo evento</h1>
+    </div>
+  </header>
+
+  <div class="crear-evento-page">
+    <div class="crear-evento-container">
+      <div class="top-row">
+        <button class="btn-back" type="button" (click)="goBackToMenu()">← Volver al menú</button>
+      </div>
+
+      <h3 class="card-title-inside">Completa los datos del evento</h3>
+
+      <form class="crear-evento-form" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <!-- Título -->
+          <div class="form-group">
+            <label for="name">Título del evento</label>
+            <input
+              id="name"
+              type="text"
+              [(ngModel)]="newEvent.name"
+              name="name"
+              placeholder="Ej: Reunión de planificación Q4"
+              required
+              minlength="3"
+            />
+            <small *ngIf="formSubmitted && (!newEvent.name || newEvent.name.trim().length<3)">
+              ⚠ El título es obligatorio (mínimo 3 caracteres).
+            </small>
+          </div>
+
+          <!-- Dirección -->
+          <div class="form-group">
+            <label for="address">Dirección</label>
+            <input
+              id="address"
+              type="text"
+              [(ngModel)]="newEvent.address"
+              name="address"
+              placeholder="Ej: C/ Mallorca 123, Barcelona"
+            />
+          </div>
+
+          <!-- Fecha -->
+          <div class="form-group">
+            <label for="dateStr">Fecha</label>
+            <input
+              id="dateStr"
+              type="date"
+              [(ngModel)]="dateStr"
+              name="dateStr"
+              aria-label="Fecha"
+            />
+          </div>
+
+          <!-- Hora -->
+          <div class="form-group">
+            <label for="timeStr">Hora</label>
+            <input
+              id="timeStr"
+              type="time"
+              [(ngModel)]="timeStr"
+              name="timeStr"
+              aria-label="Hora"
+            />
+          </div>
+
+          <div class="form-group form-group--full">
+            <div class="schedule-actions">
+              <button class="add-slot" type="button" (click)="setSchedule()">📅 Establecer horario</button>
+              <button class="remove-slot" type="button" *ngIf="newEvent.schedule" (click)="clearSchedule()">❌ Quitar</button>
+              <div class="schedule-preview">
+                <strong>Seleccionado:</strong>
+                <span *ngIf="newEvent.schedule; else noHorario">
+                  {{ getScheduleText(newEvent) }}
+                </span>
+                <ng-template #noHorario><em>Sin horario establecido</em></ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg error" *ngIf="errorMessage">⚠ {{ errorMessage }}</div>
+
+        <div class="actions-row">
+          <button class="btn-primary" type="submit" [disabled]="saving">
+            {{ saving ? 'Guardando…' : '💾 Guardar evento' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

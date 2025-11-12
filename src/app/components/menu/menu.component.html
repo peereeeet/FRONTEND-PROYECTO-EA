@@ -1,71 +1,98 @@
 <div class="menu-page">
   <div class="space-background"></div>
   <div class="stars"></div>
+
   <header class="app-bar">
     <div class="app-bar__content centered">
       <h1 class="app-bar__title">Menú principal</h1>
     </div>
   </header>
+
   <section class="menu-container">
     <header class="menu-header">
       <div class="me">
         <div class="avatar">👤</div>
         <div class="me-info">
-          <h2>{{ me()?.username || 'Usuario' }}</h2>
+          <h2>{{ me()?.username || 'Usuario' }} </h2>
           <div class="status">
             <span class="dot" [class.online]="me()?.isOnline" [class.offline]="!me()?.isOnline"></span>
             <span>{{ meStatusText() }}</span>
           </div>
-          <div class="mail">{{ me()?.gmail }}</div>
         </div>
       </div>
 
-      <!-- Acciones a la derecha -->
       <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
         <button class="btn secondary" (click)="goToPerfil()">👤 Mi perfil</button>
         <button class="logout-button" (click)="onLogout()">Cerrar sesión</button>
       </div>
     </header>
 
-    <!-- Mensajes -->
-    <div *ngIf="loading()" class="msg">Cargando…</div>
-    <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
-
-    <!-- Tarjeta Amigos -->
-    <section class="friends-card">
-      <div class="friends-header">
-        <h3>Amigos</h3>
-        <span class="count">{{ friends().length }}</span>
-        <div class="actions">
-          <button type="button" class="btn" (click)="openAddFriendsModal()">Explorar usuarios</button>
-          <button type="button" class="btn secondary" (click)="openRequestsModal()">📨 Solicitudes</button>
+    <div class="menu-grid">
+      <section class="events-card fixed-height">
+        <div class="events-header">
+          <h3>🎟️ Eventos</h3>
         </div>
-      </div>
 
-      <ul class="friends-list" *ngIf="friends().length; else emptyList">
-        <li *ngFor="let f of friends()">
-          <div class="left">
-            <div class="avatar small">🙂</div>
-            <div class="data">
-              <div class="name">{{ f.username }}</div>
-              <div class="mail">{{ f.gmail }}</div>
+        <div class="events-actions">
+          <button class="btn primary" (click)="goToCrearEvento()">➕ Crear evento</button>
+          <button type="button" class="btn" (click)="goToExplorarEventos()">🔍 Explorar eventos</button>
+          <button type="button" class="btn secondary" (click)="goToMisEventos()">📅 Mis eventos</button>
+        </div>
+
+        <div class="events-body">
+          <div *ngIf="loading()" class="msg">Cargando…</div>
+          <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
+        </div>
+      </section>
+
+      <section class="friends-card">
+        <div class="friends-header">
+          <!-- Título + contador + flechas -->
+          <div class="friends-title">
+            <h3>Amigos <span class="count">{{ friends()?.length || 0 }}</span></h3>
+
+            <div class="inline-pager" *ngIf="(friends()?.length || 0) > 0">
+              <button type="button" class="icon-btn"
+                      (click)="friendsPrev()" [disabled]="fPage <= 1" aria-label="Página anterior">«</button>
+              <span class="counter">{{ fPage }} / {{ fTotalPages() }}</span>
+              <button type="button" class="icon-btn"
+                      (click)="friendsNext()" [disabled]="fPage >= fTotalPages()" aria-label="Página siguiente">»</button>
             </div>
           </div>
-          <div class="right">
-            <span class="dot" [class.online]="f.isOnline" [class.offline]="!f.isOnline"></span>
-            <span class="state">{{ f.isOnline ? 'En línea' : 'Desconectado' }}</span>
-            <button type="button" class="btn danger" (click)="quitar(f._id!)">Quitar</button>
+
+          <div class="actions">
+            <button type="button" class="btn" (click)="openAddFriendsModal()">🔍 Explorar usuarios</button>
+            <button type="button" class="btn secondary" (click)="openRequestsModal()">📨 Solicitudes recibidas</button>
           </div>
-        </li>
-      </ul>
+        </div>
 
-      <ng-template #emptyList>
-        <p class="empty">Aún no tienes amigos para mostrar.</p>
-        <button type="button" class="btn" (click)="openAddFriendsModal()">Buscar y agregar amigos</button>
-      </ng-template>
-    </section>
+        <ng-container *ngIf="(friends()?.length || 0) > 0; else emptyList">
+          <ul class="friends-list">
+            <li *ngFor="let f of friendsPaged()">
+              <div class="left">
+                <div class="avatar small">🙂</div>
+                <div class="data">
+                  <div class="name">{{ f.username }}</div>
+                  <div class="mail">{{ f.gmail }}</div>
+                </div>
+              </div>
+              <div class="right">
+                <span class="dot" [class.online]="f.isOnline" [class.offline]="!f.isOnline"></span>
+                <span class="state">{{ f.isOnline ? 'En línea' : 'Desconectado' }}</span>
+                <button type="button" class="btn danger" (click)="quitar(f._id!)">Quitar</button>
+              </div>
+            </li>
+          </ul>
+        </ng-container>
 
-    <!-- ===== Modal Añadir Amigos ===== -->
+        <ng-template #emptyList>
+          <p class="empty">Aún no tienes amigos para mostrar.</p>
+          <button type="button" class="btn" (click)="openAddFriendsModal()">Buscar y agregar amigos</button>
+        </ng-template>
+      </section>
+    </div>
+
+    <!-- MODAL: Explorar usuarios -->
     <div class="modal-overlay" *ngIf="showAddModal()">
       <div class="modal large-modal">
         <div class="modal-header">
@@ -88,14 +115,6 @@
           <div class="participants-column">
             <div class="list-header">
               <h4>Usuarios</h4>
-              <div class="page-size">
-                <label>Tamaño pág.</label>
-                <select [value]="mPageSize()" (change)="onPageSizeChange($event)">
-                  <option [value]="5">5</option>
-                  <option [value]="10">10</option>
-                  <option [value]="20">20</option>
-                </select>
-              </div>
             </div>
 
             <div class="pager">
@@ -142,7 +161,7 @@
       </div>
     </div>
 
-    <!-- ===== Modal Solicitudes de Amistad ===== -->
+    <!-- MODAL: Solicitudes -->
     <div class="modal-overlay" *ngIf="showRequestsModal()">
       <div class="modal medium-modal">
         <div class="modal-header">

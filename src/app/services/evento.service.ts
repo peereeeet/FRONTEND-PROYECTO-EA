@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Evento } from '../models/evento.model';
 
 @Injectable({ providedIn: 'root' })
@@ -9,7 +9,12 @@ export class EventoService {
 
   constructor(private http: HttpClient) {}
 
-  getEventos(page: number = 1, limit: number = 10): Observable<{ data: Evento[]; page: number; totalPages: number; totalItems: number; }> {
+  getEventos(page: number = 1, limit: number = 10): Observable<{ 
+    data: Evento[]; 
+    page: number; 
+    totalPages: number; 
+    totalItems: number; 
+  }> {
     return this.http.get<{ data: Evento[]; page: number; totalPages: number; totalItems: number; }>(
       `${this.apiUrl}?page=${page}&limit=${limit}`
     );
@@ -23,8 +28,22 @@ export class EventoService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const scheduleAsString =
       Array.isArray(newEvent.schedule) ? (newEvent.schedule[0] || '') : (newEvent.schedule as any);
-    const payload: any = { ...newEvent, schedule: scheduleAsString, participantes: [...(newEvent.participantes || [])] };
+    const payload: any = { 
+      ...newEvent, 
+      schedule: scheduleAsString, 
+      participantes: [...(newEvent.participantes || [])] 
+    };
     return this.http.post<Evento>(this.apiUrl, payload, { headers });
+  }
+
+  createEventoFromPanel(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/create-from-panel`, payload).pipe(
+      map(ev => {
+        const raw = ev?.creador;
+        const creadorId = raw && typeof raw === 'object' && raw._id ? raw._id : (raw || '');
+        return { ...ev, creador: creadorId, creadorInfo: typeof raw === 'object' ? raw : undefined };
+      })
+    );
   }
 
   updateEvento(evento: Evento): Observable<Evento> {
@@ -41,6 +60,20 @@ export class EventoService {
 
   deleteEvento(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  joinEvento(id: string): Observable<Evento> {
+    return this.http.post<Evento>(`${this.apiUrl}/${id}/join`, {});
+  }
+
+  leaveEvento(id: string): Observable<Evento> {
+    return this.http.post<Evento>(`${this.apiUrl}/${id}/leave`, {});
+  }
+
+  getMisEventos(): Observable<{ eventosCreados: Evento[]; eventosInscritos: Evento[] }> {
+    return this.http.get<{ eventosCreados: Evento[]; eventosInscritos: Evento[] }>(
+      `${this.apiUrl}/user/my-events`
+    );
   }
 
   checkEventNameExists(name: string): Observable<{ exists: boolean; message?: string }> {

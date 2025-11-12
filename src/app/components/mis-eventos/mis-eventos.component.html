@@ -1,0 +1,236 @@
+<div class="events-page">
+  <div class="space-background"></div>
+  <div class="stars"></div>
+
+  <header class="app-bar">
+    <div class="app-bar__content centered">
+      <h1 class="app-bar__title">Mis eventos</h1>
+    </div>
+  </header>
+
+  <main class="events-wrapper">
+    <section class="events-card">
+      <button class="btn-back" (click)="goBack()">← Volver al menú</button>
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando eventos.</p>
+      </div>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <section class="eventos-section">
+        <h2 class="card-title">📝 Eventos que he creado ({{ eventosCreados.length }})</h2>
+
+        <div *ngIf="eventosCreados.length === 0" class="empty-state">
+          <div class="empty-icon">🗓️</div>
+          <p>Aún no has creado ningún evento</p>
+        </div>
+
+        <ul class="event-list">
+          <li *ngFor="let evento of eventosCreados" class="evento-card">
+            <div class="evento-header">
+              <h3 class="ev-title">{{ evento.name }}</h3>
+              <div class="status-badges">
+                <span class="badge admin">Creador</span>
+              </div>
+            </div>
+
+            <div class="evento-info">
+              <div class="info-row">
+                <span class="icon">📍</span>
+                <span><strong>Dirección:</strong> {{ evento.address || '-' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="icon">🕒</span>
+                <span><strong>Horario:</strong> {{ getScheduleText(evento) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="icon">👥</span>
+                <span><strong>Participantes:</strong> {{ evento.participantes?.length || 0 }}</span>
+              </div>
+              <div class="info-row rating">
+                <span class="icon">⭐</span>
+                <ng-container *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRating1">
+                  <span><strong>{{ evento.avgRating | number:'1.1-2' }}</strong> ({{ evento.ratingsCount }} valoraciones)</span>
+                </ng-container>
+                <ng-template #noRating1><span>Sin valoraciones</span></ng-template>
+              </div>
+            </div>
+
+            <div class="evento-actions">
+              <button class="btn btn-rate" (click)="openRatingsModal(evento)">⭐ Ver valoraciones</button>
+              <button class="btn btn-delete" (click)="openDeleteModal(evento)">🗑️ Eliminar</button>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="eventos-section">
+        <h2 class="card-title">🎯 Eventos en los que estoy inscrito ({{ eventosInscritos.length }})</h2>
+
+        <div *ngIf="eventosInscritos.length === 0" class="empty-state">
+          <div class="empty-icon">📭</div>
+          <p>Aún no estás inscrito en ningún evento</p>
+          <button class="btn btn-primary" routerLink="/explorar-eventos">Explorar eventos</button>
+        </div>
+
+        <ul class="event-list">
+          <li *ngFor="let evento of eventosInscritos" class="evento-card">
+            <div class="evento-header">
+              <h3 class="ev-title">{{ evento.name }}</h3>
+              <div class="status-badges">
+                <span class="badge joined">Inscrito</span>
+              </div>
+            </div>
+
+            <div class="evento-info">
+              <div class="info-row">
+                <span class="icon">👤</span>
+                <span><strong>Creador:</strong> {{ getCreadorName(evento) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="icon">📍</span>
+                <span><strong>Dirección:</strong> {{ evento.address || '-' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="icon">🕒</span>
+                <span><strong>Horario:</strong> {{ getScheduleText(evento) }}</span>
+              </div>
+              <div class="info-row rating">
+                <span class="icon">⭐</span>
+                <ng-container *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRating2">
+                  <span><strong>{{ evento.avgRating | number:'1.1-2' }}</strong> ({{ evento.ratingsCount }} valoraciones)</span>
+                </ng-container>
+                <ng-template #noRating2><span>Sin valoraciones</span></ng-template>
+              </div>
+            </div>
+
+            <div class="evento-actions">
+              <button class="btn btn-rate" (click)="openRatingsModal(evento)">⭐ Ver valoraciones</button>
+
+              <button *ngIf="!isUserCreator(evento)" class="btn btn-leave" (click)="openLeaveModal(evento)">👋 Salir</button>
+              <p *ngIf="isUserCreator(evento)" class="creator-note">ℹ️ Como creador, no puedes salir del evento</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </section>
+  </main>
+</div>
+
+<div class="modal-overlay" *ngIf="showDeleteModal">
+  <div class="modal delete-modal">
+    <div class="modal-header">
+      <h3>Eliminar evento</h3>
+      <button class="btn-close" (click)="closeDeleteModal()">×</button>
+    </div>
+    <p>¿Seguro que quieres eliminar <strong>{{ eventoToDelete?.name }}</strong>?</p>
+    <div class="modal-actions">
+      <button class="btn cancel" (click)="closeDeleteModal()">Cancelar</button>
+      <button class="btn danger prominent" (click)="confirmDelete()">🗑️ Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showLeaveModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Salir del evento</h3>
+      <button class="btn-close" (click)="closeLeaveModal()">×</button>
+    </div>
+    <p>¿Seguro que quieres salir de <strong>{{ eventoToLeave?.name }}</strong>?</p>
+    <div class="modal-actions">
+      <button class="btn cancel" (click)="closeLeaveModal()">Cancelar</button>
+      <button class="btn danger" (click)="confirmLeave()">Salir</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showRatingsModal">
+  <div class="modal modal-ratings">
+    <div class="modal-header sticky-header">
+      <h3>Valoraciones — {{ ratingsEventoName }}</h3>
+      <button class="btn-close" (click)="closeRatingsModal()">×</button>
+    </div>
+
+    <div class="modal-content">
+      <div class="ratings-summary">
+        <div><strong>Media:</strong> {{ ratingsAvg != null ? (ratingsAvg | number:'1.1-2') : '—' }}</div>
+        <div><strong>Total:</strong> {{ ratingsCount != null ? ratingsCount : 0 }}</div>
+      </div>
+
+      <div class="card upsert-card">
+        <h4>Tu valoración</h4>
+        <div class="upsert-row">
+          <label>Puntuación:</label>
+          <div class="stars" (mouseleave)="hover = 0">
+            <button
+              type="button"
+              *ngFor="let s of stars; let i = index"
+              [attr.aria-label]="'Puntuación ' + (i+1)"
+              (mouseenter)="hover = i+1"
+              (click)="setScore(i+1)">
+              <span [ngClass]="{ filled: (hover || myScore) > i }">
+                {{ (hover || myScore) > i ? '★' : '☆' }}
+              </span>
+            </button>
+          </div>
+          <span class="score-text" *ngIf="myScore">({{ myScore }}/5)</span>
+        </div>
+
+        <div class="upsert-row">
+          <label>Comentario (opcional):</label>
+          <textarea [(ngModel)]="myComment" rows="3" maxlength="1000" placeholder="Escribe tu opinión."></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" [disabled]="saving" (click)="saveRating()">
+            {{ saving ? 'Guardando…' : 'Guardar valoración' }}
+          </button>
+        </div>
+
+        <p class="msg error" *ngIf="ratingsError">{{ ratingsError }}</p>
+        <p class="msg" *ngIf="ratingsInfo">{{ ratingsInfo }}</p>
+      </div>
+
+      <div class="tools-row">
+        <input type="text" placeholder="Buscar comentarios…" [(ngModel)]="q" (keyup.enter)="searchRatings()">
+        <button class="btn" (click)="searchRatings()">Buscar</button>
+      </div>
+
+      <div class="list-header" *ngIf="!ratingsLoading">
+        <span class="counter">Página {{ page }} de {{ totalPages }}</span>
+        <span class="total">({{ totalItems }} valoraciones)</span>
+      </div>
+
+      <ul class="ratings-list" *ngIf="!ratingsLoading && ratingsList?.length; else emptyOrLoading">
+        <li *ngFor="let r of (ratingsList | slice: ((page-1)*pageSize) : ((page-1)*pageSize)+pageSize)">
+          <div class="left">
+            <div class="score">⭐ {{ r.puntuacion }}/5</div>
+            <div class="meta">
+              <div class="comment" *ngIf="r.comentario; else noComment">{{ r.comentario }}</div>
+              <ng-template #noComment><span class="muted">Sin comentario</span></ng-template>
+              <div class="date muted">{{ r.createdAt | date:'short' }}</div>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <ng-template #emptyOrLoading>
+        <div class="empty" *ngIf="!ratingsLoading">No hay valoraciones.</div>
+        <div class="loading" *ngIf="ratingsLoading">Cargando…</div>
+      </ng-template>
+
+      <div class="pager" *ngIf="totalPages > 1">
+        <button (click)="changeRatingsPage(-1)" [disabled]="page <= 1">◀︎ Anterior</button>
+        <span>Página {{ page }} / {{ totalPages }}</span>
+        <button (click)="changeRatingsPage(1)" [disabled]="page >= totalPages">Siguiente ▶︎</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn cancel" (click)="closeRatingsModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
