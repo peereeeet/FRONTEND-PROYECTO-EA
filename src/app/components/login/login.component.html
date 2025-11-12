@@ -101,9 +101,35 @@
           <button type="button" class="btn cancel" (click)="closeForgot()">Cancelar</button>
           <button type="submit" class="btn primary" [disabled]="sending || forgotForm.invalid">Recibir instrucciones</button>
         </div>
+      </form>
+    </div>
+  </div>
 
-        <div *ngIf="forgotInfo" class="info-message">{{ forgotInfo }}</div>
-        <div *ngIf="forgotError" class="error-message">⚠ {{ forgotError }}</div>
+  <!-- Modal: Nueva contraseña directa (una sola caja) -->
+  <div class="modal-overlay" *ngIf="directOpen" (click)="closeDirect()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Cambiar contraseña</h3>
+        <button class="btn-close" (click)="closeDirect()">×</button>
+      </div>
+
+      <div *ngIf="foundUserLabel" class="modal-text" style="margin-bottom:6px;">
+        Usuario: <strong>{{ foundUserLabel }}</strong>
+      </div>
+
+      <form [formGroup]="directForm" (ngSubmit)="onDirectResetSubmit()">
+        <div class="form-group">
+          <label class="form-label" for="newPasswordDirect">Nueva contraseña</label>
+          <input id="newPasswordDirect" type="password" class="form-input"
+                placeholder="Mínimo 7 caracteres" formControlName="newPassword" />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn cancel" (click)="closeDirect()">Cancelar</button>
+          <button type="submit" class="btn success" [disabled]="directSaving || directForm.invalid">
+            {{ directSaving ? 'Guardando…' : 'Confirmar' }}
+          </button>
+        </div>
       </form>
     </div>
   </div>

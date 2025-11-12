@@ -43,7 +43,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   allUsers = signal<User[]>([]);
   filteredUsers = signal<User[]>([]);
   mPage = signal(1);
-  mPageSize = signal(4);
+  mPageSize = signal(3);
 
   showRequestsModal = signal(false);
   requestsLoading = signal(false);

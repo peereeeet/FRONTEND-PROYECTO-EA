@@ -47,7 +47,19 @@
 
       <section class="friends-card">
         <div class="friends-header">
-          <h3>Amigos <span class="count">{{ friends()?.length || 0 }}</span></h3>
+          <!-- Título + contador + flechas -->
+          <div class="friends-title">
+            <h3>Amigos <span class="count">{{ friends()?.length || 0 }}</span></h3>
+
+            <div class="inline-pager" *ngIf="(friends()?.length || 0) > 0">
+              <button type="button" class="icon-btn"
+                      (click)="friendsPrev()" [disabled]="fPage <= 1" aria-label="Página anterior">«</button>
+              <span class="counter">{{ fPage }} / {{ fTotalPages() }}</span>
+              <button type="button" class="icon-btn"
+                      (click)="friendsNext()" [disabled]="fPage >= fTotalPages()" aria-label="Página siguiente">»</button>
+            </div>
+          </div>
+
           <div class="actions">
             <button type="button" class="btn" (click)="openAddFriendsModal()">🔍 Explorar usuarios</button>
             <button type="button" class="btn secondary" (click)="openRequestsModal()">📨 Solicitudes recibidas</button>
@@ -71,17 +83,6 @@
               </div>
             </li>
           </ul>
-
-          <div class="pager friends-pager">
-            <button type="button" (click)="friendsPrev()" [disabled]="fPage <= 1">«</button>
-            <span class="counter">Página {{ fPage }} / {{ fTotalPages() }}</span>
-            <button type="button" (click)="friendsNext()" [disabled]="fPage >= fTotalPages()">»</button>
-
-            <div class="page-size">
-              <label for="fsize">Ver</label>
-              <span class="total">Total: {{ friends()?.length || 0 }}</span>
-            </div>
-          </div>
         </ng-container>
 
         <ng-template #emptyList>
@@ -91,6 +92,7 @@
       </section>
     </div>
 
+    <!-- MODAL: Explorar usuarios -->
     <div class="modal-overlay" *ngIf="showAddModal()">
       <div class="modal large-modal">
         <div class="modal-header">
@@ -159,6 +161,7 @@
       </div>
     </div>
 
+    <!-- MODAL: Solicitudes -->
     <div class="modal-overlay" *ngIf="showRequestsModal()">
       <div class="modal medium-modal">
         <div class="modal-header">

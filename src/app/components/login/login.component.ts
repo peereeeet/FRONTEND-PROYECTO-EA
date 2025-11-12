@@ -21,18 +21,14 @@ export class LoginComponent  {
   private cometInterval: any;
 
   forgotOpen = false;
-  resetOpen = false;
-
-  forgotForm!: FormGroup;
-  resetForm!: FormGroup;
-
   sending = false;
-  resetting = false;
+  forgotForm!: FormGroup;
 
-  forgotInfo = '';
-  forgotError = '';
-  resetInfo = '';
-  resetError = '';
+  directOpen = false;           // nuevo modal directo
+  directForm!: FormGroup;       // un solo campo (newPassword)
+  foundUserId: string | null = null;
+  foundUserLabel = '';          // opcional: mostrar “juan23 (juan@correo)”
+  directSaving = false;
 
   get forgotTouchedInvalid() {
     const c = this.forgotForm?.get('identifier');
@@ -69,8 +65,7 @@ export class LoginComponent  {
       this.forgotForm = this.fb.group({
         identifier: ['', [Validators.required]],
       });
-      this.resetForm = this.fb.group({
-        token: ['', [Validators.required, Validators.minLength(16)]],
+      this.directForm = this.fb.group({
         newPassword: ['', [Validators.required, Validators.minLength(7)]],
       });
 
@@ -129,47 +124,65 @@ export class LoginComponent  {
   get username() { return this.loginForm.get('username'); }
   get password() { return this.loginForm.get('password'); }
 
-  openForgot(){ this.forgotOpen = true; this.forgotInfo=''; this.forgotError=''; this.forgotForm.reset(); }
+  openForgot(){ this.forgotOpen = true; this.foundUserId = null; this.directOpen = false; this.forgotForm.reset(); }
   closeForgot(){ this.forgotOpen = false; }
+  openDirect(){ this.directOpen = true; this.directForm.reset(); }
+  closeDirect(){ this.directOpen = false; this.foundUserId = null; }
 
-  openReset(){ this.resetOpen = true; this.resetInfo=''; this.resetError=''; this.resetForm.reset(); }
-  closeReset(){ this.resetOpen = false; }
-
-  onForgotSubmit(){
+  onForgotSubmit() {
     if (this.forgotForm.invalid) { this.forgotForm.markAllAsTouched(); return; }
-    this.sending = true; this.forgotInfo=''; this.forgotError='';
-    const identifier = this.forgotForm.value.identifier?.trim();
+    this.sending = true;
 
-    this.userService.requestPasswordReset(identifier).subscribe({
-      next: (res:any) => {
-        // En dev, el backend puede devolver devToken para probar sin email
-        this.forgotInfo = res?.message || 'Si el usuario existe, te enviaremos un email con instrucciones.';
-        if (res?.devToken) {
-          this.forgotInfo += `  (Código de prueba: ${res.devToken})`;
+    const identifier = (this.forgotForm.value.identifier || '').trim();
+    this.userService.checkUserExistsForReset(identifier).subscribe({
+      next: (res: any) => {
+        this.sending = false;
+
+        // ACEPTA varios nombres por si el backend cambia
+        const exists = !!(res?.exists || res?.exist);
+        const userId = res?.userId || res?._id || res?.id || null;
+
+        if (exists && userId) {
+          this.foundUserId = userId;
+          const u = (res?.username || '').trim();
+          const g = (res?.gmail || '').trim();
+          this.foundUserLabel = (u && g) ? `${u} (${g})` : (u || g || '');
+
+          // Cierra el primer modal y abre el segundo
+          this.forgotOpen = false;
+          this.directOpen = true;
+
+          this.directForm.reset();
+          setTimeout(() => {
+            const el = document.getElementById('newPasswordDirect') as HTMLInputElement | null;
+            if (el) el.focus();
+          }, 0);
+        } else {
+          alert('No existe un usuario con ese email o nombre de usuario.');
         }
-        this.sending = false;
       },
-      error: (err:any) => {
-        // Respuesta neutra para no filtrar si existe o no el usuario
-        this.forgotInfo = 'Si el usuario existe, te enviaremos un email con instrucciones.';
+      error: (err) => {
         this.sending = false;
+        alert('No se pudo comprobar el usuario.');
+        console.error('checkUserExistsForReset error:', err);
       }
     });
   }
 
-  onResetSubmit(){
-    if (this.resetForm.invalid) { this.resetForm.markAllAsTouched(); return; }
-    this.resetting = true; this.resetError=''; this.resetInfo='';
+  onDirectResetSubmit(){
+    if (this.directForm.invalid || !this.foundUserId) { this.directForm.markAllAsTouched(); return; }
+    this.directSaving = true;
+    const pwd = this.directForm.value.newPassword;
 
-    const { token, newPassword } = this.resetForm.value;
-    this.userService.resetPassword(token, newPassword).subscribe({
+    this.userService.directResetPassword(this.foundUserId, pwd).subscribe({
       next: () => {
-        this.resetInfo = 'Tu contraseña se ha actualizado correctamente. Ya puedes iniciar sesión.';
-        this.resetting = false;
+        this.directSaving = false;
+        this.closeDirect();
+        alert('Contraseña actualizada. Ya puedes iniciar sesión.');
       },
       error: (err:any) => {
-        this.resetError = err?.error?.message || 'El código no es válido o ha caducado.';
-        this.resetting = false;
+        this.directSaving = false;
+        alert(err?.error?.message || 'No se pudo actualizar la contraseña.');
       }
     });
   }
