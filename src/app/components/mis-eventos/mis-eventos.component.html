@@ -60,6 +60,7 @@
 
             <div class="evento-actions">
               <button class="btn btn-rate" (click)="openRatingsModal(evento)">⭐ Ver valoraciones</button>
+                <button class="btn btn-edit" (click)="openEditModal(evento)">✏️ Modificar  </button>
               <button class="btn btn-delete" (click)="openDeleteModal(evento)">🗑️ Eliminar</button>
             </div>
           </li>
@@ -232,5 +233,68 @@
     <div class="modal-actions">
       <button class="btn cancel" (click)="closeRatingsModal()">Cerrar</button>
     </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR EVENTO -->
+<div class="modal-overlay" *ngIf="showEditModal">
+ <div class="modal">
+    <div class="modal-header">
+      <h2>Modificar evento</h2>
+      <button class="close-btn" type="button" (click)="closeEditModal()">✖</button>
+    </div>
+
+    <form (ngSubmit)="confirmEdit()">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="editName">Nombre</label>
+          <input
+            id="editName"
+            type="text"
+            [(ngModel)]="editName"
+            name="editName"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editAddress">Dirección</label>
+          <input
+            id="editAddress"
+            type="text"
+            [(ngModel)]="editAddress"
+            name="editAddress"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editDate">Fecha</label>
+          <input
+            id="editDate"
+            type="date"
+            [(ngModel)]="editDate"
+            name="editDate"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editTime">Hora</label>
+          <input
+            id="editTime"
+            type="time"
+            [(ngModel)]="editTime"
+            name="editTime"
+          />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary">
+          Guardar cambios
+        </button>
+      </div>
+    </form>
   </div>
 </div>
