@@ -1,9 +1,7 @@
 <section class="events-page">
-  <!-- Fondo y estrellas como en menu -->
   <div class="space-background"></div>
   <div class="stars"></div>
 
-  <!-- Header EXACTO al de menu -->
   <header class="app-bar">
     <div class="app-bar__content centered">
       <h1 class="app-bar__title">Crear nuevo evento</h1>
@@ -13,14 +11,13 @@
   <div class="crear-evento-page">
     <div class="crear-evento-container">
       <div class="top-row">
-        <button class="btn-back" type="button" (click)="goBackToMenu()">← Volver al menú</button>
+        <button class="btn-back" type="button" (click)="goBackToMenu()">Volver al menú</button>
       </div>
 
       <h3 class="card-title-inside">Completa los datos del evento</h3>
 
       <form class="crear-evento-form" (ngSubmit)="onSubmit()">
         <div class="form-grid">
-          <!-- Título -->
           <div class="form-group">
             <label for="name">Título del evento</label>
             <input
@@ -37,7 +34,6 @@
             </small>
           </div>
 
-          <!-- Dirección -->
           <div class="form-group">
             <label for="address">Dirección</label>
             <input
@@ -49,7 +45,6 @@
             />
           </div>
 
-          <!-- Fecha -->
           <div class="form-group">
             <label for="dateStr">Fecha</label>
             <input

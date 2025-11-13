@@ -47,11 +47,10 @@
 
       <section class="friends-card">
         <div class="friends-header">
-          <!-- Título + contador + flechas -->
           <div class="friends-title">
-            <h3>Amigos <span class="count">{{ friends()?.length || 0 }}</span></h3>
+            <h3>Amigos <span class="count">{{ friends().length || 0 }}</span></h3>
 
-            <div class="inline-pager" *ngIf="(friends()?.length || 0) > 0">
+            <div class="inline-pager" *ngIf="(friends().length || 0) > 0">
               <button type="button" class="icon-btn"
                       (click)="friendsPrev()" [disabled]="fPage <= 1" aria-label="Página anterior">«</button>
               <span class="counter">{{ fPage }} / {{ fTotalPages() }}</span>
@@ -66,7 +65,7 @@
           </div>
         </div>
 
-        <ng-container *ngIf="(friends()?.length || 0) > 0; else emptyList">
+        <ng-container *ngIf="(friends().length || 0) > 0; else emptyList">
           <ul class="friends-list">
             <li *ngFor="let f of friendsPaged()">
               <div class="left">
@@ -92,7 +91,6 @@
       </section>
     </div>
 
-    <!-- MODAL: Explorar usuarios -->
     <div class="modal-overlay" *ngIf="showAddModal()">
       <div class="modal large-modal">
         <div class="modal-header">
@@ -161,7 +159,6 @@
       </div>
     </div>
 
-    <!-- MODAL: Solicitudes -->
     <div class="modal-overlay" *ngIf="showRequestsModal()">
       <div class="modal medium-modal">
         <div class="modal-header">

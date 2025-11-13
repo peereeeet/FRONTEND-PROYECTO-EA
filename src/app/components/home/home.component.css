@@ -1,22 +1,23 @@
-/* ========== FONDO TIPO LOGIN (Mismo esquema) ========== */
-/* ⬇️ Sustituye .home-container por .home-page para unificar */
+/* ========== FONDO TIPO MENÚ ========== */
 .home-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #111827 100%); /* ⬅️ Igual que login/menu/perfil */
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #1e3a8a 100%);
   position: relative;
   overflow: hidden;
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* ⬇️ Nebulosas/luz suave, mismo patrón que login */
+/* Nebulosas/luz suave, mismo patrón que menú/mis-eventos */
 .space-background {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(600px 300px at 20% 60%, rgba(99,102,241,.18), transparent 60%),
-    radial-gradient(500px 260px at 80% 25%, rgba(67,56,202,.18), transparent 60%);
+    radial-gradient(600px 300px at 20% 60%, rgba(167,139,250,.32), transparent 60%),
+    radial-gradient(500px 260px at 80% 25%, rgba(59,130,246,.32), transparent 60%),
+    radial-gradient(450px 250px at 50% 80%, rgba(14,165,233,.2), transparent 65%);
   z-index: 0;
+  animation: breathe 10s ease-in-out infinite;
 }
 
 .stars {
@@ -25,24 +26,28 @@
   z-index: 1;
 }
 
-/* ========== APP BAR BLANCA (coherente con Menú/Perfil) ========== */
+@keyframes breathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.02); }
+}
+
+/* ========== APP BAR VIBRANTE (alineada con MENU) ========== */
 .app-bar {
-  background: #ffffff;                            /* ⬅️ Antes era translúcida */
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  border-radius: 0;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-bottom: 3px solid #c7d2fe;
+  box-shadow: 0 8px 24px rgba(124,58,237,.15), 0 0 40px rgba(59,130,246,.1);
   position: sticky;
   top: 0;
-  z-index: 10;                                    /* por encima del fondo */
+  z-index: 10;
 }
 
 .app-bar__content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
+  justify-content: space-between; /* mantenemos el layout de home */
+  padding: 14px 24px;
   position: relative;
-  z-index: 2;                                     /* sobre espacio/estrellas */
+  z-index: 2;
 }
 
 .app-bar__logo-title {
@@ -57,10 +62,14 @@
 }
 
 .app-bar__title {
-  font-size: 1.6rem;                              /* igual que menú/perfil */
+  font-size: 1.75rem;
   margin: 0;
-  color: #1e3a8a;                                 /* azul consistente */
-  font-weight: 700;
+  color: transparent;
+  font-weight: 900;
+  background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #0ea5e9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(124,58,237,.2);
 }
 
 .app-bar__user {
@@ -70,52 +79,56 @@
 
 /* Botón logout coherente con el resto */
 .logout-button {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   margin-left: 15px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.35);
 }
 .logout-button:hover {
-  background: linear-gradient(135deg, #dc2626, #7f1d1d);
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
   transform: translateY(-2px);
 }
 
-/* ========== MAIN (sin “sobrefondo” blanco) ========== */
+/* ========== MAIN ========== */
 .home-main {
   display: grid;
   grid-template-columns: 1fr 400px;
   gap: 30px;
   max-width: 1200px;
-  margin: 20px auto 0;
+  margin: 24px auto 0;
   position: relative;
-  z-index: 2;                                     /* sobre el fondo */
+  z-index: 2;
 }
 
-/* ========== TARJETAS / SECCIONES (se mantienen) ========== */
+/* ========== TARJETAS / SECCIONES (glass + borde como menú) ========== */
 .hero {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(248,250,252,.96));
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px rgba(15,23,42,.35), 0 0 70px rgba(59,130,246,.25);
+  border: 2px solid rgba(167,139,250,.4);
 }
 
 .hero__content { text-align: center; }
-.hero__icon { font-size: 4rem; margin-bottom: 20px; display: block; }
+
+.hero__icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  display: block;
+}
 
 .hero__title {
   font-size: 2.5rem;
   margin: 0 0 16px 0;
-  color: #1e293b;
-  font-weight: 700;
+  font-weight: 800;
   background: linear-gradient(135deg, #3b82f6, #1e40af);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -124,11 +137,12 @@
 
 .hero__subtitle {
   font-size: 1.2rem;
-  color: #64748b;
+  color: #cbd5f5;
   margin: 0 0 30px 0;
   line-height: 1.6;
 }
 
+/* Stats con mini “cards” vibrantes */
 .hero__stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -140,14 +154,14 @@
   background: linear-gradient(135deg, #3b82f6, #1e40af);
   color: white;
   padding: 20px;
-  border-radius: 12px;
+  border-radius: 14px;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 12px 28px rgba(59,130,246,.4);
 }
 
 .stat-number {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 8px;
 }
 
@@ -156,20 +170,24 @@
   opacity: 0.9;
 }
 
+/* Aside navegación */
 .nav-section {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(248,250,252,.96));
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
   padding: 30px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px rgba(15,23,42,.35), 0 0 70px rgba(59,130,246,.25);
+  border: 2px solid rgba(129,140,248,.4);
 }
 
 .nav__title {
   font-size: 1.8rem;
   margin: 0 0 8px 0;
-  color: #1e293b;
-  font-weight: 700;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .nav__subtitle {
@@ -180,39 +198,52 @@
 
 .nav__actions { display: grid; gap: 16px; }
 
+/* Tarjetas de navegación estilo “quick list” del menú */
 .nav-card {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 24px;
+  padding: 20px;
   background: white;
   border-radius: 16px;
   text-decoration: none;
   color: inherit;
   border: 2px solid transparent;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(15,23,42,.15);
 }
 .nav-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
   border-color: #3b82f6;
-  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 12px 32px rgba(59,130,246,.35);
 }
 
 .nav-card__icon {
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
   background: linear-gradient(135deg, #3b82f6, #1e40af);
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; color: white; flex-shrink: 0;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: white;
+  flex-shrink: 0;
 }
 .nav-card__content { flex: 1; }
 .nav-card__title {
-  font-size: 1.3rem; margin: 0 0 4px 0; color: #1e293b; font-weight: 600;
+  font-size: 1.2rem;
+  margin: 0 0 4px 0;
+  color: #0f172a;
+  font-weight: 700;
 }
-.nav-card__description { color: #64748b; margin: 0; font-size: 0.9rem; }
+.nav-card__description {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.9rem;
+}
 
+/* Quick actions */
 .quick-actions {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -229,10 +260,13 @@
   font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 .quick-action:hover {
-  background: #3b82f6; color: white; transform: translateY(-2px);
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59,130,246,.4);
 }
 
 /* ========== RESPONSIVE ========== */
@@ -242,7 +276,13 @@
 @media (max-width: 768px) {
   .hero__stats { grid-template-columns: 1fr; }
   .quick-actions { grid-template-columns: 1fr; }
-  .app-bar__content { flex-direction: column; gap: 10px; text-align: center; }
-  .hero { padding: 30px 20px; }
+  .app-bar__content {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  .hero {
+    padding: 30px 20px;
+  }
   .hero__title { font-size: 2rem; }
 }

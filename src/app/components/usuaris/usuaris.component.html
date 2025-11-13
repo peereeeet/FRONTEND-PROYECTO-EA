@@ -1,5 +1,4 @@
 <div class="usuaris-container">
-  <!-- Formulario de usuario -->
   <div class="form-container">
     <form (ngSubmit)="agregarElemento(userForm)" #userForm="ngForm">
       <div class="form-header">
@@ -10,9 +9,7 @@
       </div>
 
       <div class="form-grid">
-  <!-- Columna izquierda: datos del usuario -->
   <div class="left-col">
-    <!-- Nombre -->
     <div class="form-group">
       <label for="nombre" class="form-label">Nombre:</label>
       <input
@@ -29,7 +26,6 @@
       <div *ngIf="usernameExists" class="error-message">⚠ Este nombre de usuario ya está en uso.</div>
     </div>
 
-    <!-- Email -->
     <div class="form-group">
       <label for="mail" class="form-label">Email:</label>
       <input
@@ -52,7 +48,6 @@
       </div>
     </div>
 
-    <!-- Contraseña -->
     <div class="form-group">
       <label for="password" class="form-label">Contraseña:</label>
       <input
@@ -75,7 +70,6 @@
   </div>
 
   <div class="right-col">
-    <!-- Confirmar contraseña -->
     <div class="form-group">
       <label for="confirmarPassword" class="form-label">Confirmar Contraseña:</label>
       <input
@@ -102,7 +96,7 @@
         ⚠️ Las contraseñas no coinciden.
       </div>
     </div>
-    <!-- Aniversario -->
+
     <div class="form-group">
       <label for="birthday" class="form-label">Aniversario:</label>
       <input
@@ -121,8 +115,6 @@
       </div>
     </div>
 
-
-    <!-- ✅ Campo Rol -->
     <div class="form-group">
       <label for="rol" class="form-label">Rol:</label>
       <select
@@ -158,7 +150,6 @@
   </div>
 </div>
 
-  <!-- Lista de usuarios -->
   <div class="lista-usuarios">
     <div class="list-header">
       <h2>Lista de Usuarios</h2>
@@ -202,9 +193,7 @@
             <strong>{{ usuario.birthday | date: 'dd-MM-yyyy' }}</strong>
           </p>
 
-
           <p><strong>Rol:</strong> {{ usuario.rol | titlecase }}</p>
-
 
           <div class="user-events">
             <p><strong>Eventos del usuario: </strong> {{ getUserEventNames(usuario) }}</p>
@@ -226,7 +215,6 @@
       </li>
     </ul>
 
-    <!-- Estado vacío -->
     <div *ngIf="usuarios.length === 0" class="empty-state">
       <div class="empty-icon">👥</div>
       <h3>No hay usuarios registrados</h3>
@@ -237,7 +225,6 @@
     </div>
   </div>
 
-  <!-- Modal eliminar -->
   <div class="modal-overlay" *ngIf="showDeleteModal">
   <div class="modal">
     <h3>
@@ -257,8 +244,6 @@
   </div>
 </div>
 
-
-  <!-- Modal actualización -->
   <div class="modal-overlay" *ngIf="showUpdateModal">
     <div class="modal">
       <h3>¿Confirmar actualización?</h3>
@@ -270,7 +255,6 @@
     </div>
   </div>
 
-  <!-- Sección de Tabla Dinámica -->
   <div class="table-section">
     <div class="section-header">
       <h2>Vista de Tabla - Usuarios</h2>

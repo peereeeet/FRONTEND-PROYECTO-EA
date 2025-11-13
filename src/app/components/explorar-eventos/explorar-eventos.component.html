@@ -3,13 +3,13 @@
 
   <header class="app-bar">
     <div class="app-bar__content centered">
-      <h1 class="app-bar__title">🔍 Explorar Eventos</h1>
+      <h1 class="app-bar__title">Explorar Eventos</h1>
     </div>
   </header>
 
   <section class="explorar-container events-container">
     <div class="top-row">
-      <button class="btn-back" type="button" (click)="goBackToMenu()">← Volver al menú</button>
+      <button class="btn-back" type="button" (click)="goBackToMenu()">Volver al menú</button>
     </div>
 
     <div *ngIf="loading" class="loading">
@@ -63,7 +63,7 @@
             <div class="info-row rating">
               <span class="icon">⭐</span>
               <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0">
-                <strong>{{ evento.avgRating | number:'1.1-2' }}</strong> ({{ evento.ratingsCount }} valoraciones)
+                <strong>Valoraciones: {{ evento.avgRating | number:'1.1-2' }}</strong> ({{ evento.ratingsCount }} valoraciones)
               </span>
               <span *ngIf="!evento.ratingsCount || evento.ratingsCount === 0">Sin valoraciones</span>
             </div>

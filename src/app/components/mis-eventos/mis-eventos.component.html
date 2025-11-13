@@ -10,7 +10,7 @@
 
   <main class="events-wrapper">
     <section class="events-card">
-      <button class="btn-back" (click)="goBack()">← Volver al menú</button>
+      <button class="btn-back" (click)="goBack()">Volver al menú</button>
       <div *ngIf="loading" class="loading-state">
         <div class="spinner"></div>
         <p>Cargando eventos.</p>
@@ -52,7 +52,7 @@
               <div class="info-row rating">
                 <span class="icon">⭐</span>
                 <ng-container *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRating1">
-                  <span><strong>{{ evento.avgRating | number:'1.1-2' }}</strong> ({{ evento.ratingsCount }} valoraciones)</span>
+                  <span><strong>Valoraciones: {{ evento.avgRating | number:'1.1-2' }}</strong> ({{ evento.ratingsCount }} valoraciones)</span>
                 </ng-container>
                 <ng-template #noRating1><span>Sin valoraciones</span></ng-template>
               </div>
@@ -101,7 +101,7 @@
               <div class="info-row rating">
                 <span class="icon">⭐</span>
                 <ng-container *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRating2">
-                  <span><strong>{{ evento.avgRating | number:'1.1-2' }}</strong> ({{ evento.ratingsCount }} valoraciones)</span>
+                  <span><strong>Valoraciones: {{ evento.avgRating | number:'1.1-2' }}</strong> ({{ evento.ratingsCount }} valoraciones)</span>
                 </ng-container>
                 <ng-template #noRating2><span>Sin valoraciones</span></ng-template>
               </div>
@@ -149,10 +149,10 @@
 </div>
 
 <div class="modal-overlay" *ngIf="showRatingsModal">
-  <div class="modal modal-ratings">
+  <div class="modal modal-ratings" role="dialog" aria-modal="true" aria-labelledby="ratingsTitle">
     <div class="modal-header sticky-header">
-      <h3>Valoraciones — {{ ratingsEventoName }}</h3>
-      <button class="btn-close" (click)="closeRatingsModal()">×</button>
+      <h3 id="ratingsTitle">Valoraciones — {{ ratingsEventoName }}</h3>
+      <button class="btn-close" (click)="closeRatingsModal()" aria-label="Cerrar">×</button>
     </div>
 
     <div class="modal-content">
@@ -164,25 +164,30 @@
       <div class="card upsert-card">
         <h4>Tu valoración</h4>
         <div class="upsert-row">
-          <label>Puntuación:</label>
-          <div class="stars" (mouseleave)="hover = 0">
-            <button
-              type="button"
-              *ngFor="let s of stars; let i = index"
-              [attr.aria-label]="'Puntuación ' + (i+1)"
-              (mouseenter)="hover = i+1"
-              (click)="setScore(i+1)">
-              <span [ngClass]="{ filled: (hover || myScore) > i }">
-                {{ (hover || myScore) > i ? '★' : '☆' }}
-              </span>
-            </button>
+          <label class="upsert-label">Puntuación:</label>
+          <div class="upsert-right">
+            <span class="score-text" *ngIf="myScore">({{ myScore }}/5)</span>
+            <div class="rating-stars">
+              <button
+                type="button"
+                *ngFor="let s of stars; let i = index"
+                [attr.aria-label]="'Puntuación ' + (i + 1)"
+                [class.active]="myScore >= i + 1"
+                (click)="setScore(i + 1)">
+                <span class="star-icon" [class.filled]="myScore >= i + 1">★</span>
+              </button>
+            </div>
           </div>
-          <span class="score-text" *ngIf="myScore">({{ myScore }}/5)</span>
         </div>
 
         <div class="upsert-row">
-          <label>Comentario (opcional):</label>
-          <textarea [(ngModel)]="myComment" rows="3" maxlength="1000" placeholder="Escribe tu opinión."></textarea>
+          <label for="myComment">Comentario (opcional):</label>
+          <textarea
+            id="myComment"
+            [(ngModel)]="myComment"
+            rows="3"
+            maxlength="1000"
+            placeholder="Escribe tu opinión."></textarea>
         </div>
 
         <div class="actions">
@@ -196,7 +201,12 @@
       </div>
 
       <div class="tools-row">
-        <input type="text" placeholder="Buscar comentarios…" [(ngModel)]="q" (keyup.enter)="searchRatings()">
+        <input
+          type="text"
+          placeholder="Buscar comentarios…"
+          [(ngModel)]="q"
+          (keyup.enter)="searchRatings()"
+          aria-label="Buscar comentarios">
         <button class="btn" (click)="searchRatings()">Buscar</button>
       </div>
 
@@ -205,7 +215,24 @@
         <span class="total">({{ totalItems }} valoraciones)</span>
       </div>
 
-      <ul class="ratings-list" *ngIf="!ratingsLoading && ratingsList?.length; else emptyOrLoading">
+      <ul class="ratings-list" *ngIf="ratingsLoading">
+        <li class="skeleton">
+          <div class="skeleton-score"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w60"></div>
+            <div class="skeleton-line w40"></div>
+          </div>
+        </li>
+        <li class="skeleton">
+          <div class="skeleton-score"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w70"></div>
+            <div class="skeleton-line w35"></div>
+          </div>
+        </li>
+      </ul>
+
+      <ul class="ratings-list" *ngIf="!ratingsLoading && ratingsList.length; else emptyOrLoading">
         <li *ngFor="let r of (ratingsList | slice: ((page-1)*pageSize) : ((page-1)*pageSize)+pageSize)">
           <div class="left">
             <div class="score">⭐ {{ r.puntuacion }}/5</div>
@@ -220,7 +247,6 @@
 
       <ng-template #emptyOrLoading>
         <div class="empty" *ngIf="!ratingsLoading">No hay valoraciones.</div>
-        <div class="loading" *ngIf="ratingsLoading">Cargando…</div>
       </ng-template>
 
       <div class="pager" *ngIf="totalPages > 1">
@@ -236,64 +262,42 @@
   </div>
 </div>
 
-<!-- MODAL EDITAR EVENTO -->
 <div class="modal-overlay" *ngIf="showEditModal">
- <div class="modal">
+  <div class="modal edit-modal" role="dialog" aria-modal="true" aria-labelledby="editTitle">
     <div class="modal-header">
-      <h2>Modificar evento</h2>
-      <button class="close-btn" type="button" (click)="closeEditModal()">✖</button>
+      <div class="modal-title-block">
+        <h2 id="editTitle">Modificar evento</h2>
+        <p class="modal-subtitle">Actualiza los datos principales de tu evento.</p>
+      </div>
+      <button class="close-btn" type="button" (click)="closeEditModal()" aria-label="Cerrar">✖</button>
     </div>
 
-    <form (ngSubmit)="confirmEdit()">
-      <div class="modal-body">
+    <form (ngSubmit)="confirmEdit()" class="modal-form">
+      <div class="modal-body grid-2">
         <div class="form-group">
           <label for="editName">Nombre</label>
-          <input
-            id="editName"
-            type="text"
-            [(ngModel)]="editName"
-            name="editName"
-          />
+          <input id="editName" type="text" [(ngModel)]="editName" name="editName" required />
         </div>
 
         <div class="form-group">
           <label for="editAddress">Dirección</label>
-          <input
-            id="editAddress"
-            type="text"
-            [(ngModel)]="editAddress"
-            name="editAddress"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="editDate">Fecha</label>
-          <input
-            id="editDate"
-            type="date"
-            [(ngModel)]="editDate"
-            name="editDate"
-          />
+          <input id="editAddress" type="text" [(ngModel)]="editAddress" name="editAddress" />
         </div>
 
         <div class="form-group">
           <label for="editTime">Hora</label>
-          <input
-            id="editTime"
-            type="time"
-            [(ngModel)]="editTime"
-            name="editTime"
-          />
+          <input id="editTime" type="time" [(ngModel)]="editTime" name="editTime" />
+        </div>
+
+        <div class="form-group">
+          <label for="editDate">Fecha</label>
+          <input id="editDate" type="date" [(ngModel)]="editDate" name="editDate" />
         </div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">
-          Cancelar
-        </button>
-        <button type="submit" class="btn btn-primary">
-          Guardar cambios
-        </button>
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
       </div>
     </form>
   </div>

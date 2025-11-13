@@ -8,7 +8,6 @@
     <form (ngSubmit)="onSubmit()">
       <div class="form-two-col">
         <div class="left-col">
-          <!-- CREADOR -->
           <div class="form-group">
             <label for="creator" class="form-label">Creador del evento</label>
             <select
@@ -22,7 +21,6 @@
             </select>
           </div>
 
-          <!-- TÍTULO -->
           <div class="form-group">
             <label for="name" class="form-label">Título del evento</label>
             <input
@@ -39,7 +37,6 @@
             </small>
           </div>
 
-          <!-- DIRECCIÓN -->
           <div class="form-group">
             <label for="address" class="form-label">Dirección</label>
             <input
@@ -51,7 +48,6 @@
               placeholder="Ej: C/ Mallorca 123, Barcelona" />
           </div>
 
-          <!-- FECHA / HORA + ACCIONES DE HORARIO -->
           <div class="form-group">
             <label class="form-label">Horario del evento</label>
 
@@ -93,10 +89,8 @@
           </button>
         </div>
 
-        <!-- ===== Participantes (se mantiene como ya lo tenías) ===== -->
         <div class="right-col">
           <div class="participants-wrapper">
-            <!-- Usuarios disponibles -->
             <div class="participants-column">
               <div class="list-header">
                 <h4>👥 Usuarios disponibles</h4>
@@ -118,7 +112,6 @@
               </div>
             </div>
 
-            <!-- Participantes del evento -->
             <div class="participants-column">
               <div class="list-header">
                 <h4>🎯 Participantes del evento</h4>
@@ -145,7 +138,6 @@
     </form>
   </div>
 
-  <!-- Lista de eventos -->
   <div class="evento-list">
     <h1>Lista de Eventos</h1>
     
@@ -171,7 +163,6 @@
           <span>{{ getParticipantsNames(evento) }}</span>
         </p>
 
-<!-- ⭐ Resumen valoraciones -->
 <div class="rating-summary" style="margin-top:8px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
   <strong>⭐ Valoraciones:</strong>
   <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0">
@@ -189,7 +180,6 @@
   </button>
 </div>
 
-
         <div class="actions">
           <button class="btn-edit" (click)="openEditModal(i)">✏️ Modificar Evento</button>
           <button class="btn-delete" (click)="openDeleteModal(i)">🗑️ Eliminar Evento</button>
@@ -199,7 +189,6 @@
   </div>
 </div>
 
-<!-- Modal eliminar -->
 <div class="modal-overlay" *ngIf="showDeleteModal">
   <div class="modal">
     <h3>¿Eliminar evento?</h3>
@@ -211,7 +200,6 @@
   </div>
 </div>
 
-<!-- Modal editar -->
 <div class="modal-overlay" *ngIf="showEditModal">
   <div class="modal large-modal">
     <div class="modal-header">
@@ -293,7 +281,6 @@
 
         <div class="right-col">
           <div class="participants-wrapper">
-            <!-- Edit mode participants management -->
             <div class="participants-column">
               <div class="list-header">
                 <h4>👥 Usuarios disponibles</h4>
@@ -338,7 +325,6 @@
           </div>
         </div>
       </div>
-
       <div class="modal-actions">
         <button type="button" class="btn-cancel" (click)="closeEditModal()">Cancelar</button>
         <button type="submit" class="btn-confirm">💾 Guardar Cambios</button>
