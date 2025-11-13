@@ -662,3 +662,43 @@
   .modal { width: 96vw; }
   .ratings-summary { grid-template-columns: 1fr; }
 }
+
+/* === Cuerpo del modal genérico (editar evento) === */
+.modal-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* === Grupos de campos === */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-weight: 700;
+  color: #111827;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group textarea {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 2px solid #e0e7ff;
+  background: #f8fafc;
+  font-size: 14px;
+  transition: all .2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #7c3aed;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(124,58,237,.15);
+}

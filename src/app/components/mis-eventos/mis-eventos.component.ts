@@ -22,12 +22,15 @@ export class MisEventosComponent implements OnInit {
   errorMessage = '';
   currentUserId = '';
 
+  // Modal eliminar
   showDeleteModal = false;
   eventoToDelete: Evento | null = null;
 
+  // Modal salir de evento
   showLeaveModal = false;
   eventoToLeave: Evento | null = null;
 
+  // Modal valoraciones
   showRatingsModal = false;
   ratingsEventoId: string | null = null;
   ratingsEventoName = '';
@@ -50,6 +53,14 @@ export class MisEventosComponent implements OnInit {
   myScore = 0;
   myComment = '';
   saving = false;
+
+  // 🆕 Modal editar evento
+  showEditModal = false;
+  eventoToEdit: Evento | null = null;
+  editName = '';
+  editAddress = '';
+  editDate = '';   // yyyy-MM-dd
+  editTime = '';   // HH:mm
 
   constructor(
     private eventoService: EventoService,
@@ -110,6 +121,14 @@ export class MisEventosComponent implements OnInit {
     return { dateStr: `${yyyy}-${mm}-${dd}`, timeStr: `${hh}:${mi}` };
   }
 
+  // 🆕 inverso: de inputs a ISO
+  private toISOFromInputs(dateStr: string, timeStr: string): string | null {
+    if (!dateStr) return null;
+    const t = timeStr && timeStr.trim() ? timeStr : '00:00';
+    const iso = new Date(`${dateStr}T${t}:00`).toISOString();
+    return iso;
+  }
+
   private formatSchedule(iso?: any): string {
     if (!iso) return '—';
     const d = new Date(iso);
@@ -147,6 +166,7 @@ export class MisEventosComponent implements OnInit {
     return arr.some((p: any) => (typeof p === 'string' ? p === this.currentUserId : p?._id === this.currentUserId));
   }
 
+  // Modal eliminar
   openDeleteModal(evento: Evento): void { this.eventoToDelete = evento; this.showDeleteModal = true; }
   closeDeleteModal(): void { this.showDeleteModal = false; this.eventoToDelete = null; }
 
@@ -158,6 +178,7 @@ export class MisEventosComponent implements OnInit {
     });
   }
 
+  // Modal salir de evento
   openLeaveModal(evento: Evento): void { this.eventoToLeave = evento; this.showLeaveModal = true; }
   closeLeaveModal(): void { this.showLeaveModal = false; this.eventoToLeave = null; }
 
@@ -288,4 +309,74 @@ export class MisEventosComponent implements OnInit {
       }
     });
   }
+
+  // 🆕 MODAL EDITAR EVENTO
+
+  openEditModal(evento: Evento): void {
+    this.eventoToEdit = evento;
+    this.showEditModal = true;
+
+    // Nombre y dirección
+    this.editName = evento.name || '';
+    this.editAddress = (evento as any).address || '';
+
+    // obtener fecha/hora a partir del primer schedule
+    const schedules = (evento as any).schedule;
+    const firstSchedule = Array.isArray(schedules) ? schedules[0] : schedules;
+
+    const { dateStr, timeStr } = this.fromISOtoInputs(firstSchedule);
+    this.editDate = dateStr;
+    this.editTime = timeStr;
+  }
+
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.eventoToEdit = null;
+    this.editName = '';
+    this.editAddress = '';
+    this.editDate = '';
+    this.editTime = '';
+  }
+
+confirmEdit(): void {
+  if (!this.eventoToEdit?._id) return;
+
+  const scheduleISO = this.toISOFromInputs(this.editDate, this.editTime);
+
+  // Construimos un Evento a partir del original + cambios del formulario
+  const updatedEvento: Evento = {
+    ...this.eventoToEdit,
+    name: this.editName,
+    // @ts-ignore por si tu modelo no tiene 'address' tipado
+    address: this.editAddress,
+    // si hay nueva fecha/hora, la usamos; si no, dejamos la que tenía
+    schedule: (scheduleISO as any) ?? (this.eventoToEdit as any).schedule,
+    participantes: this.eventoToEdit.participantes || []
+  };
+
+  this.eventoService.updateEvento(updatedEvento).subscribe({
+    next: (updated: any) => {
+      // Actualizar SOLO la lista de eventos creados
+      this.eventosCreados = this.eventosCreados.map(ev =>
+        ev._id === updated._id
+          ? {
+              ...updated,
+              schedule: Array.isArray(updated.schedule)
+                ? updated.schedule
+                : (updated.schedule ? [updated.schedule] : []),
+              participantes: Array.isArray(updated.participantes)
+                ? updated.participantes
+                : (updated.participants || [])
+            }
+          : ev
+      );
+
+      this.closeEditModal();
+    },
+    error: (err) => {
+      console.error('Error al actualizar evento', err);
+      this.errorMessage = err?.error?.message || 'No se pudo actualizar el evento.';
+    }
+  });
+}
 }
