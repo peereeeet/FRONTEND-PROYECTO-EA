@@ -117,39 +117,39 @@ export class UserService {
     } catch {}
   }
 
-  listFriends(userId: string, page = 1, limit = 20, q = ''): Observable<Page<User>> {
+  listFriends(id: string, page = 1, limit = 20, q = ''): Observable<Page<User>> {
     const params = new URLSearchParams({
       page: String(page),
       limit: String(limit),
       ...(q ? { q } : {})
     }).toString();
-    return this.http.get<Page<User>>(`${this.apiUrl}/${userId}/friends?${params}`);
+    return this.http.get<Page<User>>(`${this.apiUrl}/${id}/friends?${params}`);
   }
 
-  sendFriendRequest(userId: string, targetId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/friend-request`, { userId, targetId });
+  sendFriendRequest(id: string, targetId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/friend-request`, { id, targetId });
   }
 
-  acceptFriendRequest(userId: string, requesterId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/friend-accept`, { userId, requesterId });
+  acceptFriendRequest(id: string, requesterId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/friend-accept`, { id, requesterId });
   }
 
-  rejectFriendRequest(userId: string, requesterId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/friend-reject`, { userId, requesterId });
+  rejectFriendRequest(id: string, requesterId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/friend-reject`, { id, requesterId });
   }
 
-  getFriendRequests(userId: string): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}/friend-requests/${userId}`);
+  getFriendRequests(id: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}/friend-requests/${id}`);
   }
 
-  getSentRequests(userId: string) {
+  getSentRequests(id: string) {
     return this.http.get<{ ok: boolean; data: any[] }>(
-      `${this.apiUrl}/${userId}/requests/sent`
+      `${this.apiUrl}/${id}/requests/sent`
     );
   }
 
-  removeFriend(myId: string, friendId: string) {
-    return this.http.delete<{ ok: boolean }>(`${this.apiUrl}/${myId}/friends/${friendId}`);
+  removeFriend(id: string, friendId: string) {
+    return this.http.delete<{ ok: boolean }>(`${this.apiUrl}/${id}/friends/${friendId}`);
   }
 
   private friendsBus = new Subject<void>();
