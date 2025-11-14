@@ -181,3 +181,27 @@
   padding:10px 14px; border-radius:12px; margin-top:12px; font-weight:700;
   box-shadow:0 4px 12px rgba(59,130,246,.2);
 }
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-pass {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #7c3aed;
+  padding: 0;
+  transition: transform .2s ease;
+}
+
+.toggle-pass:hover {
+  transform: translateY(-50%) scale(1.15);
+}

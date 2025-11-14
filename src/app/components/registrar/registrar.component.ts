@@ -31,6 +31,9 @@ export class RegistrarComponent {
   isCheckingUsername = false;
   usernameExists = false;
 
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
+
   constructor(private userService: UserService, private router: Router) {
     const today = new Date();
     this.maxDate = today.toISOString().split('T')[0];
@@ -99,6 +102,14 @@ export class RegistrarComponent {
         this.errorMessage = 'Error al verificar el correo.';
       }
     });
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPassword() {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   goToLogin() {

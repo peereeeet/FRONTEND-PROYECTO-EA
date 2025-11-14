@@ -24,10 +24,13 @@ export class LoginComponent  {
   sending = false;
   forgotForm!: FormGroup;
 
-  directOpen = false;           // nuevo modal directo
-  directForm!: FormGroup;       // un solo campo (newPassword)
+  showPassword: boolean = false;
+  showDirectPassword: boolean = false;
+
+  directOpen = false;
+  directForm!: FormGroup;
   foundUserId: string | null = null;
-  foundUserLabel = '';          // opcional: mostrar “juan23 (juan@correo)”
+  foundUserLabel = '';
   directSaving = false;
 
   get forgotTouchedInvalid() {
@@ -121,6 +124,14 @@ export class LoginComponent  {
     });
   }
 
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleDirectPassword() {
+    this.showDirectPassword = !this.showDirectPassword;
+  }
+
   get username() { return this.loginForm.get('username'); }
   get password() { return this.loginForm.get('password'); }
 
@@ -138,7 +149,6 @@ export class LoginComponent  {
       next: (res: any) => {
         this.sending = false;
 
-        // ACEPTA varios nombres por si el backend cambia
         const exists = !!(res?.exists || res?.exist);
         const userId = res?.userId || res?._id || res?.id || null;
 
@@ -148,7 +158,6 @@ export class LoginComponent  {
           const g = (res?.gmail || '').trim();
           this.foundUserLabel = (u && g) ? `${u} (${g})` : (u || g || '');
 
-          // Cierra el primer modal y abre el segundo
           this.forgotOpen = false;
           this.directOpen = true;
 

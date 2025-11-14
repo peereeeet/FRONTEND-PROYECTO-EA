@@ -99,6 +99,17 @@ export class MenuComponent implements OnInit, OnDestroy {
         const myId = this.getId(u);
         if (!myId) return;
 
+        // 🔁 PEDIR SIEMPRE LOS DATOS FRESCOS DEL USUARIO AL ENTRAR EN MENÚ
+        this.userService.getUserDetail(myId).subscribe({
+          next: (fresh) => {
+            const isOnlineFresh = (fresh as any).online ?? (fresh as any).isOnline ?? false;
+            this.me.set({ ...(fresh as any), isOnline: isOnlineFresh });
+          },
+          error: () => {
+            // si falla, dejamos al menos los datos del auth.local
+          }
+        });
+
         this.userService.heartbeat(myId).subscribe({
           next: hb => this.me.set({ ...(this.me() as User), isOnline: !!hb.online }),
           error: () => {}
