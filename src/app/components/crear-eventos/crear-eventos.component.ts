@@ -199,25 +199,33 @@ export class CrearEventosComponent implements OnInit {
   onSubmit(): void {
     this.formSubmitted = true;
     this.errorMessage = '';
+
     if (!this.newEvent.name || this.newEvent.name.trim().length < 3) {
       this.errorMessage = 'El título es obligatorio (mínimo 3 caracteres).';
       return;
     }
 
     if (!this.newEvent.schedule && (this.dateStr || this.timeStr)) {
-      this.newEvent.schedule = this.composeISOFromDateTime(this.dateStr, this.timeStr);
+      this.newEvent.schedule = this.composeISOFromDateTime(
+        this.dateStr,
+        this.timeStr
+      );
     }
 
     if (typeof this.newEvent.schedule !== 'string') {
       this.newEvent.schedule = String(this.newEvent.schedule ?? '');
     }
 
+    if (this.me?._id && !this.newEvent.participants.includes(this.me._id)) {
+      this.newEvent.participants.push(this.me._id);
+    }
+
     const payload: Evento = {
       name: this.newEvent.name.trim(),
-      schedule: this.newEvent.schedule,  
+      schedule: this.newEvent.schedule,
       address: this.newEvent.address?.trim() || '',
-      participants: this.newEvent.participants.slice() 
-    } as Evento;
+      participantes: this.newEvent.participants.slice(),
+    } as any as Evento;
 
     this.saving = true;
     this.eventoService.addEvento(payload).subscribe({
@@ -228,8 +236,10 @@ export class CrearEventosComponent implements OnInit {
       error: (err) => {
         this.saving = false;
         this.errorMessage =
-          err?.error?.message || err?.message || 'No se pudo crear el evento.';
-      }
+          err?.error?.message ||
+          err?.message ||
+          'No se pudo crear el evento.';
+      },
     });
   }
 

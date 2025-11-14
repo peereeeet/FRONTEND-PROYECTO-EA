@@ -317,7 +317,7 @@
 }
 
 .btn-leave {
-  background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+  background: linear-gradient(135deg, #f40202, #e40707);
   color:#fff;
 }
 .btn-leave:hover {

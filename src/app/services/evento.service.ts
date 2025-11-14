@@ -26,22 +26,36 @@ export class EventoService {
 
   addEvento(newEvent: Evento): Observable<Evento> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const scheduleAsString =
-      Array.isArray(newEvent.schedule) ? (newEvent.schedule[0] || '') : (newEvent.schedule as any);
-    const payload: any = { 
-      ...newEvent, 
-      schedule: scheduleAsString, 
-      participantes: [...(newEvent.participantes || [])] 
+
+    const scheduleAsString = Array.isArray(newEvent.schedule)
+      ? (newEvent.schedule[0] || '')
+      : (newEvent.schedule as any);
+
+    const rawParticipants =
+      (newEvent as any).participantes ??
+      (newEvent as any).participants ??
+      [];
+
+    const payload: any = {
+      ...newEvent,
+      schedule: scheduleAsString,
+      participantes: Array.isArray(rawParticipants) ? [...rawParticipants] : [],
     };
+
     return this.http.post<Evento>(this.apiUrl, payload, { headers });
   }
 
   createEventoFromPanel(payload: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/create-from-panel`, payload).pipe(
-      map(ev => {
+      map((ev) => {
         const raw = ev?.creador;
-        const creadorId = raw && typeof raw === 'object' && raw._id ? raw._id : (raw || '');
-        return { ...ev, creador: creadorId, creadorInfo: typeof raw === 'object' ? raw : undefined };
+        const creadorId =
+          raw && typeof raw === 'object' && raw._id ? raw._id : raw || '';
+        return {
+          ...ev,
+          creador: creadorId,
+          creadorInfo: typeof raw === 'object' ? raw : undefined,
+        };
       })
     );
   }

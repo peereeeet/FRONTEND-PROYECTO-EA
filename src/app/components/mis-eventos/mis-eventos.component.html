@@ -59,7 +59,7 @@
             </div>
 
             <div class="evento-actions">
-              <button class="btn btn-rate" (click)="openRatingsModal(evento)">⭐ Ver valoraciones</button>
+              <button class="btn btn-rate" (click)="openRatingsModal(evento)">⭐ Ver/Agregar valoraciones</button>
                 <button class="btn btn-edit" (click)="openEditModal(evento)">✏️ Modificar  </button>
               <button class="btn btn-delete" (click)="openDeleteModal(evento)">🗑️ Eliminar</button>
             </div>
@@ -81,6 +81,7 @@
             <div class="evento-header">
               <h3 class="ev-title">{{ evento.name }}</h3>
               <div class="status-badges">
+                <p *ngIf="isUserCreator(evento)" class="creator-note"><span class="badge admin">Creador</span></p>
                 <span class="badge joined">Inscrito</span>
               </div>
             </div>
@@ -108,10 +109,9 @@
             </div>
 
             <div class="evento-actions">
-              <button class="btn btn-rate" (click)="openRatingsModal(evento)">⭐ Ver valoraciones</button>
+              <button class="btn btn-rate" (click)="openRatingsModal(evento)">⭐ Ver/Agregar valoraciones</button>
 
-              <button *ngIf="!isUserCreator(evento)" class="btn btn-leave" (click)="openLeaveModal(evento)">👋 Salir</button>
-              <p *ngIf="isUserCreator(evento)" class="creator-note">ℹ️ Como creador, no puedes salir del evento</p>
+              <button *ngIf="!isUserCreator(evento)" class="btn btn-leave" (click)="openLeaveModal(evento)">👋 Salir del evento </button>
             </div>
           </li>
         </ul>
@@ -267,7 +267,6 @@
     <div class="modal-header">
       <div class="modal-title-block">
         <h2 id="editTitle">Modificar evento</h2>
-        <p class="modal-subtitle">Actualiza los datos principales de tu evento.</p>
       </div>
       <button class="close-btn" type="button" (click)="closeEditModal()" aria-label="Cerrar">✖</button>
     </div>

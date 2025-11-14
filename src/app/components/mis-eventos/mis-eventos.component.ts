@@ -250,20 +250,27 @@ export class MisEventosComponent implements OnInit {
         next: (res) => {
           this.ratingsList = res.data;
           this.page = res.page;
-          this.totalPages = res.totalPages;
+          this.totalPages = Math.max(1, Math.ceil(this.totalItems / this.pageSize));
           this.totalItems = res.totalItems;
+          if (this.page > this.totalPages) this.page = 1;
           this.ratingsLoading = false;
         },
         error: () => {
           this.ratingsError = 'Error cargando valoraciones';
+          this.ratingsList = [];
+          this.totalItems = 0;
+          this.totalPages = 1;
+          this.page = 1;
           this.ratingsLoading = false;
         }
       });
   }
 
   changeRatingsPage(delta: number) {
-    const p = Math.min(this.totalPages, Math.max(1, this.page + delta));
-    if (p !== this.page) this.page = p;
+    const newPage = this.page + delta;
+    if (newPage >= 1 && newPage <= this.totalPages) {
+      this.page = newPage;
+    }
   }
 
   searchRatings(): void {
@@ -310,17 +317,13 @@ export class MisEventosComponent implements OnInit {
     });
   }
 
-  // 🆕 MODAL EDITAR EVENTO
-
   openEditModal(evento: Evento): void {
     this.eventoToEdit = evento;
     this.showEditModal = true;
 
-    // Nombre y dirección
     this.editName = evento.name || '';
     this.editAddress = (evento as any).address || '';
 
-    // obtener fecha/hora a partir del primer schedule
     const schedules = (evento as any).schedule;
     const firstSchedule = Array.isArray(schedules) ? schedules[0] : schedules;
 
@@ -343,20 +346,16 @@ confirmEdit(): void {
 
   const scheduleISO = this.toISOFromInputs(this.editDate, this.editTime);
 
-  // Construimos un Evento a partir del original + cambios del formulario
   const updatedEvento: Evento = {
     ...this.eventoToEdit,
     name: this.editName,
-    // @ts-ignore por si tu modelo no tiene 'address' tipado
     address: this.editAddress,
-    // si hay nueva fecha/hora, la usamos; si no, dejamos la que tenía
     schedule: (scheduleISO as any) ?? (this.eventoToEdit as any).schedule,
     participantes: this.eventoToEdit.participantes || []
   };
 
   this.eventoService.updateEvento(updatedEvento).subscribe({
     next: (updated: any) => {
-      // Actualizar SOLO la lista de eventos creados
       this.eventosCreados = this.eventosCreados.map(ev =>
         ev._id === updated._id
           ? {
