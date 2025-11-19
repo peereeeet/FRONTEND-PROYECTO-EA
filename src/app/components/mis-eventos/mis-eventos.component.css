@@ -739,3 +739,64 @@
 .msg.error {
   color: #b91c1c;
 }
+
+.info-row .address-text {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-map {
+  margin-left: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: #fff;
+  white-space: nowrap;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-map:disabled {
+  opacity: 0.4;
+  cursor: default;
+  background: #444;
+}
+
+.btn-map:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* --- Modal de mapa --- */
+.map-modal {
+  max-width: 900px;
+  width: 90%;
+}
+
+.map-content {
+  padding: 0;
+}
+
+.map-frame {
+  width: 100%;
+  min-height: 350px;
+  border: 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.map-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: #8ab4ff;
+  text-decoration: none;
+}
+
+.map-link:hover {
+  text-decoration: underline;
+}

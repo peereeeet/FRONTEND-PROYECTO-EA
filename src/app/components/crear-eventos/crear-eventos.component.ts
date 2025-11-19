@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, computed, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,6 +14,8 @@ type NewEventDTO = {
   schedule: string;
   address?: string;
   participants: string[];
+  lat?: number | null; // 🆕
+  lng?: number | null; // 🆕
 };
 
 @Component({
@@ -21,7 +23,7 @@ type NewEventDTO = {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './crear-eventos.component.html',
-  styleUrls: ['./crear-eventos.component.css']
+  styleUrls: ['./crear-eventos.component.css'],
 })
 export class CrearEventosComponent implements OnInit {
   private userService = inject(UserService);
@@ -35,13 +37,19 @@ export class CrearEventosComponent implements OnInit {
 
   newEvent: NewEventDTO = {
     name: '',
-    schedule: '',         
+    schedule: '',
     address: '',
-    participants: []
+    participants: [],
+    lat: null,
+    lng: null,
   };
 
   dateStr = '';
   timeStr = '';
+
+  // 🆕 strings para los inputs de lat/lng
+  latStr = '';
+  lngStr = '';
 
   allUsers: User[] = [];
   me: User | null = null;
@@ -52,7 +60,10 @@ export class CrearEventosComponent implements OnInit {
   availablePage = 1;
   availablePageSize = 8;
   get availableTotalPages(): number {
-    return Math.max(1, Math.ceil(this.availableUsers.length / this.availablePageSize));
+    return Math.max(
+      1,
+      Math.ceil(this.availableUsers.length / this.availablePageSize)
+    );
   }
   get availablePageItems(): User[] {
     const start = (this.availablePage - 1) * this.availablePageSize;
@@ -62,7 +73,10 @@ export class CrearEventosComponent implements OnInit {
   selectedPage = 1;
   selectedPageSize = 8;
   get selectedTotalPages(): number {
-    return Math.max(1, Math.ceil(this.selectedUsers.length / this.selectedPageSize));
+    return Math.max(
+      1,
+      Math.ceil(this.selectedUsers.length / this.selectedPageSize)
+    );
   }
   get selectedPageItems(): User[] {
     const start = (this.selectedPage - 1) * this.selectedPageSize;
@@ -70,7 +84,7 @@ export class CrearEventosComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.auth.currentUser$.subscribe(u => {
+    this.auth.currentUser$.subscribe((u) => {
       if (!u) {
         this.router.navigate(['/login']);
         return;
@@ -83,26 +97,28 @@ export class CrearEventosComponent implements OnInit {
   private loadUsers(): void {
     this.userService.getUsers(1, 200, '').subscribe({
       next: (page) => {
-        this.allUsers = (page?.data ?? []).filter(u => u._id !== this.me?._id);
+        this.allUsers = (page?.data ?? []).filter(
+          (u) => u._id !== this.me?._id
+        );
         this.recomputeLists();
       },
       error: () => {
         this.allUsers = [];
         this.recomputeLists();
-      }
+      },
     });
   }
 
   private recomputeLists(): void {
-    const selectedIds = new Set(this.selectedUsers.map(u => u._id!));
-    this.availableUsers = this.allUsers.filter(u => !selectedIds.has(u._id!));
+    const selectedIds = new Set(this.selectedUsers.map((u) => u._id!));
+    this.availableUsers = this.allUsers.filter((u) => !selectedIds.has(u._id!));
     this.availablePage = Math.min(this.availablePage, this.availableTotalPages);
     this.selectedPage = Math.min(this.selectedPage, this.selectedTotalPages);
   }
 
   addParticipant(u: User): void {
     if (!u?._id) return;
-    if (!this.selectedUsers.find(x => x._id === u._id)) {
+    if (!this.selectedUsers.find((x) => x._id === u._id)) {
       this.selectedUsers.push(u);
       this.newEvent.participants.push(u._id);
       this.recomputeLists();
@@ -111,20 +127,30 @@ export class CrearEventosComponent implements OnInit {
 
   removeParticipant(u: User): void {
     if (!u?._id) return;
-    this.selectedUsers = this.selectedUsers.filter(x => x._id !== u._id);
-    this.newEvent.participants = this.newEvent.participants.filter(id => id !== u._id);
+    this.selectedUsers = this.selectedUsers.filter((x) => x._id !== u._id);
+    this.newEvent.participants = this.newEvent.participants.filter(
+      (id) => id !== u._id
+    );
     this.recomputeLists();
   }
 
-  availablePrevPage(): void { if (this.availablePage > 1) this.availablePage--; }
-  availableNextPage(): void { if (this.availablePage < this.availableTotalPages) this.availablePage++; }
+  availablePrevPage(): void {
+    if (this.availablePage > 1) this.availablePage--;
+  }
+  availableNextPage(): void {
+    if (this.availablePage < this.availableTotalPages) this.availablePage++;
+  }
 
-  selectedPrevPage(): void { if (this.selectedPage > 1) this.selectedPage--; }
-  selectedNextPage(): void { if (this.selectedPage < this.selectedTotalPages) this.selectedPage++; }
+  selectedPrevPage(): void {
+    if (this.selectedPage > 1) this.selectedPage--;
+  }
+  selectedNextPage(): void {
+    if (this.selectedPage < this.selectedTotalPages) this.selectedPage++;
+  }
 
   private composeISOFromDateTime(d: string, t: string): string {
     if (!d && !t) return '';
-    const date = d || new Date().toISOString().slice(0,10);
+    const date = d || new Date().toISOString().slice(0, 10);
     const time = t || '00:00';
     return `${date}T${time}`;
   }
@@ -133,7 +159,7 @@ export class CrearEventosComponent implements OnInit {
 
   private toISO(dateStr?: string, timeStr?: string): string | null {
     if (!dateStr) return null;
-    const t = (timeStr && timeStr.trim()) ? timeStr.trim() : '00:00';
+    const t = timeStr && timeStr.trim() ? timeStr.trim() : '00:00';
     const local = new Date(`${dateStr}T${t}:00`);
     if (isNaN(local.getTime())) return null;
     return local.toISOString();
@@ -162,7 +188,9 @@ export class CrearEventosComponent implements OnInit {
       d.getUTCMinutes() === 0 &&
       d.getUTCSeconds() === 0 &&
       d.getUTCMilliseconds() === 0 &&
-      (new Date(`${this.fromISOtoInputs(iso).dateStr}T00:00:00Z`).toISOString() === new Date(iso).toISOString());
+      new Date(
+        `${this.fromISOtoInputs(iso).dateStr}T00:00:00Z`
+      ).toISOString() === new Date(iso).toISOString();
 
     const base = new Intl.DateTimeFormat('es-ES', {
       weekday: 'short',
@@ -188,11 +216,17 @@ export class CrearEventosComponent implements OnInit {
 
   setSchedule() {
     const iso = this.toISO(this.dateStr, this.timeStr);
-    if (!iso) { this.errorMessage = 'Selecciona al menos la fecha válida.'; return; }
+    if (!iso) {
+      this.errorMessage = 'Selecciona al menos la fecha válida.';
+      return;
+    }
     this.newEvent.schedule = iso;
     this.errorMessage = '';
   }
-  clearSchedule() { this.newEvent.schedule = ''; }
+
+  clearSchedule() {
+    this.newEvent.schedule = '';
+  }
 
   getScheduleText = (ev: any) => this.formatSchedule(ev?.schedule);
 
@@ -220,11 +254,27 @@ export class CrearEventosComponent implements OnInit {
       this.newEvent.participants.push(this.me._id);
     }
 
+    // 🆕 parsear lat/lng si el usuario las ha puesto
+    let lat: number | undefined;
+    let lng: number | undefined;
+
+    if (this.latStr && this.latStr.trim() !== '') {
+      const parsed = parseFloat(this.latStr);
+      if (!Number.isNaN(parsed)) lat = parsed;
+    }
+
+    if (this.lngStr && this.lngStr.trim() !== '') {
+      const parsed = parseFloat(this.lngStr);
+      if (!Number.isNaN(parsed)) lng = parsed;
+    }
+
     const payload: Evento = {
       name: this.newEvent.name.trim(),
       schedule: this.newEvent.schedule,
       address: this.newEvent.address?.trim() || '',
       participantes: this.newEvent.participants.slice(),
+      lat,
+      lng,
     } as any as Evento;
 
     this.saving = true;

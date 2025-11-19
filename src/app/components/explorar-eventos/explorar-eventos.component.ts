@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { EventoService } from '../../services/evento.service';
 import { AuthService } from '../../services/auth.service';
 import { Evento } from '../../models/evento.model';
@@ -24,10 +25,22 @@ export class ExplorarEventosComponent implements OnInit {
   totalPages = 1;
   totalItems = 0;
 
+  selectedMapEvent: Evento | null = null;
+  mapEventoName = '';
+  mapUrl: string | null = null;
+  mapLinkUrl: string | null = null;
+  mapSafeUrl: SafeResourceUrl | null = null;
+
+  showEventModal = false;
+  selectedEvent: Evento | null = null;
+
+  showMapModal = false;
+
   constructor(
     private eventoService: EventoService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -46,6 +59,8 @@ export class ExplorarEventosComponent implements OnInit {
       next: (res) => {
         this.eventos = res.data.map(e => ({
           ...e,
+          lat: e.lat != null ? Number(e.lat) : undefined,
+          lng: e.lng != null ? Number(e.lng) : undefined,
           schedule: Array.isArray(e.schedule) 
             ? e.schedule 
             : [e.schedule as any],
@@ -58,6 +73,16 @@ export class ExplorarEventosComponent implements OnInit {
         this.totalPages = res.totalPages;
         this.totalItems = res.totalItems;
         this.loading = false;
+
+        const firstWithLocation = this.eventos.find(ev => this.hasLocation(ev));
+        if (firstWithLocation) {
+          this.setMapForEvent(firstWithLocation);
+        } else {
+          this.selectedMapEvent = null;
+          this.mapSafeUrl = null;
+          this.mapLinkUrl = null;
+          this.mapEventoName = '';
+        }
       },
       error: (err) => {
         this.errorMessage = 'Error al cargar eventos';
@@ -90,6 +115,8 @@ export class ExplorarEventosComponent implements OnInit {
         if (index !== -1) {
           this.eventos[index] = {
             ...updatedEvento,
+            lat: updatedEvento.lat != null ? Number(updatedEvento.lat) : undefined,
+            lng: updatedEvento.lng != null ? Number(updatedEvento.lng) : undefined,
             schedule: Array.isArray(updatedEvento.schedule)
               ? updatedEvento.schedule
               : [updatedEvento.schedule as any],
@@ -97,6 +124,9 @@ export class ExplorarEventosComponent implements OnInit {
               ? (updatedEvento as any).participantes
               : ((updatedEvento as any).participants || [])
           };
+        }
+        if (this.selectedMapEvent && this.selectedMapEvent._id === evento._id) {
+          this.setMapForEvent(this.eventos[index]);
         }
       },
       error: (err) => {
@@ -115,6 +145,8 @@ export class ExplorarEventosComponent implements OnInit {
         if (index !== -1) {
           this.eventos[index] = {
             ...updatedEvento,
+            lat: updatedEvento.lat != null ? Number(updatedEvento.lat) : undefined,
+            lng: updatedEvento.lng != null ? Number(updatedEvento.lng) : undefined,
             schedule: Array.isArray(updatedEvento.schedule)
               ? updatedEvento.schedule
               : [updatedEvento.schedule as any],
@@ -122,6 +154,9 @@ export class ExplorarEventosComponent implements OnInit {
               ? (updatedEvento as any).participantes
               : ((updatedEvento as any).participants || [])
           };
+        }
+        if (this.selectedMapEvent && this.selectedMapEvent._id === evento._id) {
+          this.setMapForEvent(this.eventos[index]);
         }
       },
       error: (err) => {
@@ -211,5 +246,135 @@ export class ExplorarEventosComponent implements OnInit {
 
   goBackToMenu(): void {
     this.router.navigate(['/menu']);
+  }
+
+  hasLocation(evento: any): boolean {
+    if (!evento) return false;
+    const hasCoords =
+      evento.lat !== null &&
+      evento.lat !== undefined &&
+      evento.lng !== null &&
+      evento.lng !== undefined;
+    const hasAddress = !!evento.address;
+    return hasCoords || hasAddress;
+  }
+
+  setMapForEvent(evento: Evento): void {
+    if (!this.hasLocation(evento)) {
+      this.selectedMapEvent = null;
+      this.mapEventoName = '';
+      this.mapUrl = null;
+      this.mapLinkUrl = null;
+      this.mapSafeUrl = null;
+      return;
+    }
+
+    this.selectedMapEvent = evento;
+    this.mapEventoName = evento.name || '';
+    this.mapUrl = null;
+    this.mapLinkUrl = null;
+    this.mapSafeUrl = null;
+
+    const lat = Number((evento as any).lat);
+    const lng = Number((evento as any).lng);
+
+    if (!isNaN(lat) && !isNaN(lng)) {
+      const delta = 0.005;
+      const south = lat - delta;
+      const north = lat + delta;
+      const west = lng - delta;
+      const east = lng + delta;
+
+      this.mapUrl =
+        'https://www.openstreetmap.org/export/embed.html?bbox=' +
+        `${west},${south},${east},${north}` +
+        '&layer=mapnik&marker=' +
+        `${lat},${lng}`;
+
+      this.mapLinkUrl =
+        'https://www.openstreetmap.org/?mlat=' +
+        `${lat}&mlon=${lng}#map=16/${lat}/${lng}`;
+    } else if ((evento as any).address) {
+      const query = encodeURIComponent((evento as any).address);
+      this.mapUrl = `https://www.google.com/maps?q=${query}&output=embed`;
+      this.mapLinkUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
+    }
+
+    if (this.mapUrl) {
+      this.mapSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.mapUrl);
+    } else {
+      this.mapSafeUrl = null;
+    }
+  }
+
+  openEventModal(evento: Evento): void {
+    this.selectedEvent = evento;
+    this.showEventModal = true;
+  }
+
+  closeEventModal(): void {
+    this.showEventModal = false;
+    this.selectedEvent = null;
+  }
+
+  hasLocation2(evento: any): boolean {
+    if (!evento) return false;
+    const hasCoords =
+      evento.lat !== null &&
+      evento.lat !== undefined &&
+      evento.lng !== null &&
+      evento.lng !== undefined;
+    const hasAddress = !!evento.address;
+    return hasCoords || hasAddress;
+  }
+
+  openMap(evento: any): void {
+    if (!this.hasLocation(evento)) return;
+
+    this.mapEventoName = evento.name || '';
+    this.mapUrl = null;
+    this.mapLinkUrl = null;
+    this.mapSafeUrl = null;
+
+    const lat = Number(evento.lat);
+    const lng = Number(evento.lng);
+
+    if (!isNaN(lat) && !isNaN(lng)) {
+      const delta = 0.005;
+      const south = lat - delta;
+      const north = lat + delta;
+      const west = lng - delta;
+      const east = lng + delta;
+
+      this.mapUrl =
+        'https://www.openstreetmap.org/export/embed.html?bbox=' +
+        `${west},${south},${east},${north}` +
+        '&layer=mapnik&marker=' +
+        `${lat},${lng}`;
+
+      this.mapLinkUrl =
+        'https://www.openstreetmap.org/?mlat=' +
+        `${lat}&mlon=${lng}#map=16/${lat}/${lng}`;
+    } else if (evento.address) {
+      const query = encodeURIComponent(evento.address);
+      this.mapUrl = `https://www.google.com/maps?q=${query}&output=embed`;
+      this.mapLinkUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
+    }
+
+    if (this.mapUrl) {
+      this.mapSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.mapUrl);
+    } else {
+      this.mapSafeUrl = null;
+    }
+
+    this.showMapModal = true;
+  }
+
+  closeMapModal(): void {
+    this.showMapModal = false;
+    this.mapEventoName = '';
+    this.mapUrl = null;
+    this.mapLinkUrl = null;
+    this.mapSafeUrl = null;
   }
 }

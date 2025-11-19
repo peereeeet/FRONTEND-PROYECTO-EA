@@ -21,6 +21,56 @@
       ⚠️ {{ errorMessage }}
     </div>
 
+    <div class="map-section" *ngIf="!loading && eventos.length > 0">
+      <h2 class="map-title">
+        Mapa de eventos
+        <span *ngIf="mapEventoName">— {{ mapEventoName }}</span>
+      </h2>
+
+      <div class="map-container-wrapper">
+        <div class="map-container">
+          <ng-container *ngIf="mapSafeUrl; else mapFallback">
+            <iframe
+              class="map-frame"
+              [src]="mapSafeUrl"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          </ng-container>
+          <ng-template #mapFallback>
+            <div class="no-map">
+              <p>No se ha podido cargar el mapa para estos eventos.</p>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- "Pins" clicables: cada chip centra el mapa y abre el modal -->
+        <div class="map-events-chips">
+          <button
+            *ngFor="let ev of eventos"
+            type="button"
+            class="chip"
+            [class.active]="selectedMapEvent?._id === ev._id"
+            [disabled]="!hasLocation(ev)"
+            (click)="setMapForEvent(ev); openEventModal(ev)">
+            {{ ev.name }}
+          </button>
+        </div>
+
+        <div class="map-footer">
+          <a
+            *ngIf="mapLinkUrl"
+            class="map-link"
+            [href]="mapLinkUrl"
+            target="_blank"
+            rel="noopener noreferrer">
+            Ver en mapa grande
+          </a>
+          <p class="map-hint">Pulsa en un evento para centrar el mapa y ver sus detalles.</p>
+        </div>
+      </div>
+    </div>
+
     <div *ngIf="!loading" class="eventos-section">
       <div *ngIf="eventos.length === 0" class="empty-state">
         <span class="empty-icon">📭</span>
@@ -47,7 +97,16 @@
 
             <div class="info-row">
               <span class="icon">📍</span>
-              <span><strong>Dirección:</strong> {{ evento.address || 'No especificada' }}</span>
+              <span class="address-text">
+                <strong>Dirección:</strong> {{ evento.address || '-' }}
+              </span>
+              <button
+                type="button"
+                class="btn btn-map"
+                (click)="openMap(evento)"
+                [disabled]="!hasLocation(evento)">
+                🗺 Ver mapa
+              </button>
             </div>
 
             <div class="info-row">
@@ -94,4 +153,117 @@
       </div>
     </div>
   </section>
+</div>
+
+<div class="modal-backdrop" *ngIf="showEventModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="eventDetailsTitle">
+    <div class="modal-header">
+      <h2 id="eventDetailsTitle">Detalles del evento</h2>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Cerrar"
+        (click)="closeEventModal()">
+        ✖
+      </button>
+    </div>
+
+    <div class="modal-content">
+      <ng-container *ngIf="selectedEvent">
+        <div class="modal-body">
+          <h3 class="modal-event-title">{{ selectedEvent.name }}</h3>
+
+          <div class="info-row">
+            <span class="icon">👤</span>
+            <span><strong>Creador:</strong> {{ getCreadorName(selectedEvent) }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="icon">📍</span>
+            <span><strong>Dirección:</strong> {{ selectedEvent.address || 'No especificada' }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="icon">🕒</span>
+            <span><strong>Horario:</strong> {{ getScheduleText(selectedEvent) }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="icon">👥</span>
+            <span><strong>Participantes:</strong> {{ selectedEvent.participantes?.length || 0 }}</span>
+          </div>
+
+          <div class="info-row rating">
+            <span class="icon">⭐</span>
+            <span *ngIf="selectedEvent.ratingsCount && selectedEvent.ratingsCount > 0">
+              <strong>Valoraciones: {{ selectedEvent.avgRating | number:'1.1-2' }}</strong>
+              ({{ selectedEvent.ratingsCount }} valoraciones)
+            </span>
+            <span *ngIf="!selectedEvent.ratingsCount || selectedEvent.ratingsCount === 0">
+              Sin valoraciones
+            </span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="modal-actions">
+      <button
+        *ngIf="selectedEvent && !isUserInEvento(selectedEvent) && !isUserCreator(selectedEvent)"
+        class="btn btn-join"
+        (click)="joinEvento(selectedEvent)">
+        ➕ Unirme al evento
+      </button>
+
+      <button
+        *ngIf="selectedEvent && isUserInEvento(selectedEvent) && !isUserCreator(selectedEvent)"
+        class="btn btn-leave"
+        (click)="leaveEvento(selectedEvent)">
+        👋 Salir del evento
+      </button>
+
+      <p
+        *ngIf="selectedEvent && isUserCreator(selectedEvent)"
+        class="creator-note">
+        ℹ️ Como creador, no puedes salir del evento.
+      </p>
+
+      <button type="button" class="btn" (click)="closeEventModal()">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showMapModal">
+  <div class="modal map-modal" role="dialog" aria-modal="true" aria-labelledby="mapTitle">
+    <div class="modal-header">
+      <h3 id="mapTitle">Ubicación del evento — {{ mapEventoName }}</h3>
+      <button class="btn-close" (click)="closeMapModal()" aria-label="Cerrar">×</button>
+    </div>
+    <div class="modal-content map-content">
+      <div *ngIf="mapSafeUrl; else noMap">
+        <iframe
+          class="map-frame"
+          [src]="mapSafeUrl"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+        <a
+          *ngIf="mapLinkUrl"
+          class="map-link"
+          [href]="mapLinkUrl"
+          target="_blank"
+          rel="noopener noreferrer">
+          Ver en mapa grande
+        </a>
+      </div>
+      <ng-template #noMap>
+        <p>No se ha podido mostrar el mapa para este evento.</p>
+      </ng-template>
+    </div>
+    <div class="modal-actions">
+      <button class="btn cancel" (click)="closeMapModal()">Cerrar</button>
+    </div>
+  </div>
 </div>

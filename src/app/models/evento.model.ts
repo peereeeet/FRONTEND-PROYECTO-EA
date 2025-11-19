@@ -3,6 +3,8 @@ export interface Evento {
   name: string;
   schedule: string | string[];
   address?: string;
+  lat?: number;
+  lng?: number;
   participantes?: string[];
   creador?: {        
     _id: string;
