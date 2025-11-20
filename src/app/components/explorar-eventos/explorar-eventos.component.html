@@ -9,7 +9,17 @@
 
   <section class="explorar-container events-container">
     <div class="top-row">
-      <button class="btn-back" type="button" (click)="goBackToMenu()">Volver al menú</button>
+      <button class="btn-back btn-menu" type="button" (click)="goBackToMenu()">
+        Volver al menú
+      </button>
+
+      <button class="btn-back btn-crear" type="button" (click)="goToCrear()">
+        Crear evento nuevo
+      </button>
+
+      <button class="btn-back btn-mis" type="button" (click)="goToMisEventos()">
+        Mis eventos (Creados o inscrito)
+      </button>
     </div>
 
     <div *ngIf="loading" class="loading">
@@ -21,62 +31,27 @@
       ⚠️ {{ errorMessage }}
     </div>
 
-    <div class="map-section" *ngIf="!loading && eventos.length > 0">
-      <h2 class="map-title">
-        Mapa de eventos
-        <span *ngIf="mapEventoName">— {{ mapEventoName }}</span>
-      </h2>
+    <!-- MAPA MAPLIBRE: SIEMPRE VISIBLE (sin *ngIf) -->
+    <div class="map-section">
+      <h2 class="map-title">Mapa de eventos</h2>
 
       <div class="map-container-wrapper">
-        <div class="map-container">
-          <ng-container *ngIf="mapSafeUrl; else mapFallback">
-            <iframe
-              class="map-frame"
-              [src]="mapSafeUrl"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
-          </ng-container>
-          <ng-template #mapFallback>
-            <div class="no-map">
-              <p>No se ha podido cargar el mapa para estos eventos.</p>
-            </div>
-          </ng-template>
-        </div>
-
-        <!-- "Pins" clicables: cada chip centra el mapa y abre el modal -->
-        <div class="map-events-chips">
-          <button
-            *ngFor="let ev of eventos"
-            type="button"
-            class="chip"
-            [class.active]="selectedMapEvent?._id === ev._id"
-            [disabled]="!hasLocation(ev)"
-            (click)="setMapForEvent(ev); openEventModal(ev)">
-            {{ ev.name }}
-          </button>
-        </div>
-
-        <div class="map-footer">
-          <a
-            *ngIf="mapLinkUrl"
-            class="map-link"
-            [href]="mapLinkUrl"
-            target="_blank"
-            rel="noopener noreferrer">
-            Ver en mapa grande
-          </a>
-          <p class="map-hint">Pulsa en un evento para centrar el mapa y ver sus detalles.</p>
-        </div>
+        <!-- Contenedor que usa MapLibre (id usado en el TS) -->
+        <div id="explorar-map" class="map-container"></div>
+        <p class="map-hint">
+          Desplázate y haz zoom en el mapa para ver los eventos de esa zona. Pulsa un pin para ver los detalles.
+        </p>
       </div>
     </div>
 
+    <!-- LISTA DE EVENTOS (según la zona visible del mapa) -->
     <div *ngIf="!loading" class="eventos-section">
       <div *ngIf="eventos.length === 0" class="empty-state">
         <span class="empty-icon">📭</span>
-        <h3>No hay eventos disponibles</h3>
-        <p>Los eventos aparecerán aquí cuando estén disponibles</p>
+        <h3>No hay eventos disponibles en esta zona</h3>
+        <p>Mueve el mapa o cambia el zoom para buscar en otras zonas.</p>
       </div>
+
       <div class="eventos-grid" *ngIf="eventos.length > 0">
         <div *ngFor="let evento of eventos" class="evento-card">
           <div class="badges">
@@ -86,10 +61,10 @@
           </div>
 
           <div class="evento-header">
-            <h3>{{ evento.name }}</h3>
+            <h3 class="clickable-title" (click)="openEventModal(evento)">{{ evento.name }}</h3>
           </div>
 
-          <div class="evento-info">
+          <div class="evento-info" (click)="openEventModal(evento)">
             <div class="info-row">
               <span class="icon">👤</span>
               <span><strong>Creador:</strong> {{ getCreadorName(evento) }}</span>
@@ -100,13 +75,6 @@
               <span class="address-text">
                 <strong>Dirección:</strong> {{ evento.address || '-' }}
               </span>
-              <button
-                type="button"
-                class="btn btn-map"
-                (click)="openMap(evento)"
-                [disabled]="!hasLocation(evento)">
-                🗺 Ver mapa
-              </button>
             </div>
 
             <div class="info-row">
@@ -122,20 +90,25 @@
             <div class="info-row rating">
               <span class="icon">⭐</span>
               <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0">
-                <strong>Valoraciones: {{ evento.avgRating | number:'1.1-2' }}</strong> ({{ evento.ratingsCount }} valoraciones)
+                <strong>Valoraciones: {{ evento.avgRating | number:'1.1-2' }}</strong>
+                ({{ evento.ratingsCount }} valoraciones)
               </span>
               <span *ngIf="!evento.ratingsCount || evento.ratingsCount === 0">Sin valoraciones</span>
             </div>
           </div>
 
           <div class="evento-actions">
-            <button *ngIf="!isUserInEvento(evento) && !isUserCreator(evento)"
-                    class="btn btn-join" (click)="joinEvento(evento)">
+            <button
+              *ngIf="!isUserInEvento(evento) && !isUserCreator(evento)"
+              class="btn btn-join"
+              (click)="joinEvento(evento)">
               ➕ Unirse al evento
             </button>
 
-            <button *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
-                    class="btn btn-leave" (click)="leaveEvento(evento)">
+            <button
+              *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
+              class="btn btn-leave"
+              (click)="leaveEvento(evento)">
               👋 Salir del evento
             </button>
 
@@ -146,7 +119,8 @@
         </div>
       </div>
 
-      <div class="pagination" *ngIf="totalPages > 1">
+      <!-- Paginación sobre los eventos filtrados -->
+      <div class="pagination" *ngIf="totalPages > 1 && eventos.length > 0">
         <button class="btn-page" (click)="prevPage()" [disabled]="page <= 1">« Anterior</button>
         <span class="page-info">Página {{ page }} de {{ totalPages }} ({{ totalItems }} eventos)</span>
         <button class="btn-page" (click)="nextPage()" [disabled]="page >= totalPages">Siguiente »</button>
@@ -155,6 +129,7 @@
   </section>
 </div>
 
+<!-- MODAL DETALLES EVENTO -->
 <div class="modal-backdrop" *ngIf="showEventModal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="eventDetailsTitle">
     <div class="modal-header">
@@ -231,39 +206,6 @@
       <button type="button" class="btn" (click)="closeEventModal()">
         Cerrar
       </button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" *ngIf="showMapModal">
-  <div class="modal map-modal" role="dialog" aria-modal="true" aria-labelledby="mapTitle">
-    <div class="modal-header">
-      <h3 id="mapTitle">Ubicación del evento — {{ mapEventoName }}</h3>
-      <button class="btn-close" (click)="closeMapModal()" aria-label="Cerrar">×</button>
-    </div>
-    <div class="modal-content map-content">
-      <div *ngIf="mapSafeUrl; else noMap">
-        <iframe
-          class="map-frame"
-          [src]="mapSafeUrl"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
-        <a
-          *ngIf="mapLinkUrl"
-          class="map-link"
-          [href]="mapLinkUrl"
-          target="_blank"
-          rel="noopener noreferrer">
-          Ver en mapa grande
-        </a>
-      </div>
-      <ng-template #noMap>
-        <p>No se ha podido mostrar el mapa para este evento.</p>
-      </ng-template>
-    </div>
-    <div class="modal-actions">
-      <button class="btn cancel" (click)="closeMapModal()">Cerrar</button>
     </div>
   </div>
 </div>

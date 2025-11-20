@@ -11,7 +11,17 @@
   <div class="crear-evento-page">
     <div class="crear-evento-container">
       <div class="top-row">
-        <button class="btn-back" type="button" (click)="goBackToMenu()">Volver al menú</button>
+        <button class="btn-back btn-menu" type="button" (click)="goBackToMenu()">
+          Volver al menú
+        </button>
+
+        <button class="btn-back btn-crear" type="button" (click)="goToExplorar()">
+          Explorar eventos (mapa)
+        </button>
+
+        <button class="btn-back btn-mis" type="button" (click)="goToMisEventos()">
+          Mis eventos (Creados o inscrito)
+        </button>
       </div>
 
       <h3 class="card-title-inside">Completa los datos del evento</h3>

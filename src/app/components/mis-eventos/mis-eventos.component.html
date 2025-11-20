@@ -10,7 +10,17 @@
 
   <main class="events-wrapper">
     <section class="events-card">
-      <button class="btn-back" (click)="goBack()">Volver al menú</button>
+      <button class="btn-back btn-menu" type="button" (click)="goBack()">
+        Volver al menú
+      </button>
+
+      <button class="btn-back btn-crear" type="button" (click)="goToCrear()">
+        Crear evento nuevo
+      </button>
+
+      <button class="btn-back btn-mis" type="button" (click)="goToExplorar()">
+        Explorar eventos (mapa)
+      </button>
       <div *ngIf="loading" class="loading-state">
         <div class="spinner"></div>
         <p>Cargando eventos.</p>
@@ -75,7 +85,7 @@
 
             <div class="evento-actions">
               <button class="btn btn-rate" (click)="openRatingsModal(evento)">
-                ⭐ Ver/Agregar valoraciones
+                Ver/Agregar valoraciones
               </button>
               <button class="btn btn-edit" (click)="openEditModal(evento)">
                 ✏️ Modificar
@@ -150,7 +160,7 @@
 
             <div class="evento-actions">
               <button class="btn btn-rate" (click)="openRatingsModal(evento)">
-                ⭐ Ver/Agregar valoraciones
+                Ver/Agregar valoraciones
               </button>
               <button
                 *ngIf="!isUserCreator(evento)"

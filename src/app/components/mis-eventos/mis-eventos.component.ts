@@ -107,6 +107,14 @@ export class MisEventosComponent implements OnInit {
 
   goBack(): void { this.router.navigate(['/menu']); }
 
+  goToCrear(): void {
+    this.router.navigate(['/crear-evento']);
+  }
+
+  goToExplorar(): void {
+    this.router.navigate(['/explorar-eventos']);
+  }
+
   getCreadorName(ev: any): string {
     const c = ev?.creador || ev?.owner || ev?.createdBy;
     if (!c) return '—';
