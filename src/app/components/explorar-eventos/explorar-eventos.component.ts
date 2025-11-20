@@ -1,13 +1,7 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit
-} from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-
 import * as maplibregl from 'maplibre-gl';
-
 import { EventoService } from '../../services/evento.service';
 import { AuthService } from '../../services/auth.service';
 import { Evento } from '../../models/evento.model';
@@ -20,8 +14,6 @@ import { Evento } from '../../models/evento.model';
   styleUrls: ['./explorar-eventos.component.css']
 })
 export class ExplorarEventosComponent implements OnInit, AfterViewInit {
-
-  // ========= ESTADO GENERAL =========
   allEventos: Evento[] = [];
   eventosFiltrados: Evento[] = [];
   eventos: Evento[] = [];
@@ -37,12 +29,10 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
   totalItems = 0;
   totalPages = 1;
 
-  // ========= MAPLIBRE =========
   private map: maplibregl.Map | null = null;
   private markers: maplibregl.Marker[] = [];
   private mapReady = false;
 
-  // ========= MODAL DETALLES =========
   selectedEvent: Evento | null = null;
   showEventModal = false;
 
@@ -51,8 +41,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private router: Router
   ) {}
-
-  // ========= CICLO DE VIDA =========
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
@@ -64,12 +52,9 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     this.initMap();
   }
 
-  // ========= MAPA =========
-
   private initMap(): void {
     this.map = new maplibregl.Map({
       container: 'explorar-map',
-      // Estilo propio usando tiles raster de OpenStreetMap
       style: {
         version: 8,
         sources: {
@@ -90,8 +75,8 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
           }
         ]
       },
-      center: [1.7, 41.3],  // España
-      zoom: 11              // Más cerca para ver calles
+      center: [1.7, 41.3],
+      zoom: 11 
     });
 
     this.map.addControl(new maplibregl.NavigationControl(), 'top-right');
@@ -119,13 +104,10 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     };
   }
 
-  // ========= CARGA DE EVENTOS =========
-
   private loadAllEventos(): void {
     this.loading = true;
     this.errorMessage = '';
 
-    // Cargamos un máximo de 1000 eventos
     this.eventoService.getEventos(1, 1000).subscribe({
       next: (resp: any) => {
         const lista =
@@ -151,8 +133,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
 
         this.actualizarListaSegunMapa();
         this.pintarMarcadores();
-
-        // Ajustar mapa a eventos
         setTimeout(() => {
           this.fitMapToAllEventos();
         }, 300);
@@ -164,8 +144,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
       }
     });
   }
-
-  // ========= FILTRO + PAGINACIÓN =========
 
   private actualizarListaSegunMapa(): void {
     if (!this.mapReady) {
@@ -201,12 +179,9 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
 
   private pintarMarcadores(): void {
     if (!this.map) return;
-
-    // Eliminar anteriores
     this.markers.forEach(m => m.remove());
     this.markers = [];
 
-    // Añadir nuevos
     this.eventosFiltrados.forEach(ev => {
       if (ev.lat == null || ev.lng == null) return;
 
@@ -240,8 +215,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // ========= MODAL DETALLES =========
-
   openEventModal(ev: Evento): void {
     this.selectedEvent = ev;
     this.showEventModal = true;
@@ -251,8 +224,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     this.showEventModal = false;
     this.selectedEvent = null;
   }
-
-  // ========= ACCIONES (UNIRSE / SALIR) =========
 
   joinEvento(ev: Evento): void {
     if (!ev._id) return;
@@ -265,8 +236,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
         }
         this.actualizarListaSegunMapa();
         this.pintarMarcadores();
-
-        // si el modal está abierto, actualizamos también
         if (this.selectedEvent && this.selectedEvent._id === ev._id) {
           this.selectedEvent = updated;
         }
@@ -300,8 +269,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
       }
     });
   }
-
-  // ========= HELPERS USUARIO / ROL =========
 
   isUserCreator(ev: Evento): boolean {
     if (!this.currentUserId || !ev.creador) return false;
@@ -344,8 +311,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
       minute: '2-digit'
     });
   }
-
-  // ========= NAVEGACIÓN / PÁGINAS =========
 
   goBackToMenu(): void {
     this.router.navigate(['/menu']);

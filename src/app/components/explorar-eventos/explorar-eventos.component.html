@@ -31,12 +31,10 @@
       ⚠️ {{ errorMessage }}
     </div>
 
-    <!-- MAPA MAPLIBRE: SIEMPRE VISIBLE (sin *ngIf) -->
     <div class="map-section">
       <h2 class="map-title">Mapa de eventos</h2>
 
       <div class="map-container-wrapper">
-        <!-- Contenedor que usa MapLibre (id usado en el TS) -->
         <div id="explorar-map" class="map-container"></div>
         <p class="map-hint">
           Desplázate y haz zoom en el mapa para ver los eventos de esa zona. Pulsa un pin para ver los detalles.
@@ -44,7 +42,6 @@
       </div>
     </div>
 
-    <!-- LISTA DE EVENTOS (según la zona visible del mapa) -->
     <div *ngIf="!loading" class="eventos-section">
       <div *ngIf="eventos.length === 0" class="empty-state">
         <span class="empty-icon">📭</span>
@@ -119,7 +116,6 @@
         </div>
       </div>
 
-      <!-- Paginación sobre los eventos filtrados -->
       <div class="pagination" *ngIf="totalPages > 1 && eventos.length > 0">
         <button class="btn-page" (click)="prevPage()" [disabled]="page <= 1">« Anterior</button>
         <span class="page-info">Página {{ page }} de {{ totalPages }} ({{ totalItems }} eventos)</span>
@@ -129,7 +125,6 @@
   </section>
 </div>
 
-<!-- MODAL DETALLES EVENTO -->
 <div class="modal-backdrop" *ngIf="showEventModal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="eventDetailsTitle">
     <div class="modal-header">
