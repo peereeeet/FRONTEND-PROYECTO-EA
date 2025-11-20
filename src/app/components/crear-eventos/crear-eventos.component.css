@@ -280,3 +280,76 @@
   .btn-primary { width: 100%; }
   .form-grid { grid-template-columns: 1fr; }
 }
+
+.coords-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.coord-item {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.coord-item input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e0e7ff;
+  border-radius: 12px;
+  font-size: 14px;
+  background: #f9fafb;
+  font-weight: 600;
+  transition: all .2s ease;
+}
+
+.coord-item input:focus {
+  outline: none;
+  border-color: #7c3aed;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(124,58,237,.12);
+}
+
+.coord-item .hint {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* === BOTONES INDIVIDUALMENTE COLOREADOS === */
+
+.btn-back {
+  margin-right: 12px; /* separación entre botones */
+}
+
+/* Botón: Volver al menú → Azul */
+.btn-menu {
+  background: linear-gradient(135deg, #93c5fd, #60a5fa);
+  color: #1e3a8a;
+  border-color: #60a5fa;
+}
+.btn-menu:hover {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+}
+
+/* Botón: Crear evento → Verde */
+.btn-crear {
+  background: linear-gradient(135deg, #6ee7b7, #34d399);
+  color: #064e3b;
+  border-color: #34d399;
+}
+.btn-crear:hover {
+  background: linear-gradient(135deg, #34d399, #059669);
+}
+
+/* Botón: Mis eventos → Naranja */
+.btn-mis {
+  background: linear-gradient(135deg, #fcd34d, #fbbf24);
+  color: #78350f;
+  border-color: #fbbf24;
+}
+.btn-mis:hover {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}

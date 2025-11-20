@@ -36,10 +36,24 @@ export class EventoService {
       (newEvent as any).participants ??
       [];
 
+    let lat = (newEvent as any).lat;
+    let lng = (newEvent as any).lng;
+
+    if (typeof lat === 'string' && lat.trim() !== '') {
+      const parsed = parseFloat(lat);
+      lat = Number.isNaN(parsed) ? undefined : parsed;
+    }
+    if (typeof lng === 'string' && lng.trim() !== '') {
+      const parsed = parseFloat(lng);
+      lng = Number.isNaN(parsed) ? undefined : parsed;
+    }
+
     const payload: any = {
       ...newEvent,
       schedule: scheduleAsString,
       participantes: Array.isArray(rawParticipants) ? [...rawParticipants] : [],
+      lat,
+      lng,
     };
 
     return this.http.post<Evento>(this.apiUrl, payload, { headers });
@@ -62,14 +76,39 @@ export class EventoService {
 
   updateEvento(evento: Evento): Observable<Evento> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const scheduleAsString =
-      Array.isArray(evento.schedule) ? (evento.schedule[0] || '') : (evento.schedule as any);
-    const payload: any = { 
-      ...evento, 
-      schedule: scheduleAsString, 
-      participantes: [...(evento.participantes || [])] 
+
+    const scheduleAsString = Array.isArray(evento.schedule)
+      ? (evento.schedule[0] || '')
+      : (evento.schedule as any);
+
+    const rawParticipants =
+      (evento as any).participantes ??
+      (evento as any).participants ??
+      [];
+
+    let lat = (evento as any).lat;
+    let lng = (evento as any).lng;
+
+    if (typeof lat === 'string' && lat.trim() !== '') {
+      const parsed = parseFloat(lat);
+      lat = Number.isNaN(parsed) ? undefined : parsed;
+    }
+    if (typeof lng === 'string' && lng.trim() !== '') {
+      const parsed = parseFloat(lng);
+      lng = Number.isNaN(parsed) ? undefined : parsed;
+    }
+
+    const payload: any = {
+      ...evento,
+      schedule: scheduleAsString,
+      participantes: Array.isArray(rawParticipants) ? [...rawParticipants] : [],
+      lat,
+      lng,
     };
-    return this.http.put<Evento>(`${this.apiUrl}/${evento._id}`, payload, { headers });
+
+    return this.http.put<Evento>(`${this.apiUrl}/${evento._id}`, payload, {
+      headers,
+    });
   }
 
   deleteEvento(id: string): Observable<void> {

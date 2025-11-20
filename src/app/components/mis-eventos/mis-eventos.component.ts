@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { EventoService } from '../../services/evento.service';
 import { AuthService } from '../../services/auth.service';
 import { Evento } from '../../models/evento.model';
@@ -22,15 +23,12 @@ export class MisEventosComponent implements OnInit {
   errorMessage = '';
   currentUserId = '';
 
-  // Modal eliminar
   showDeleteModal = false;
   eventoToDelete: Evento | null = null;
 
-  // Modal salir de evento
   showLeaveModal = false;
   eventoToLeave: Evento | null = null;
 
-  // Modal valoraciones
   showRatingsModal = false;
   ratingsEventoId: string | null = null;
   ratingsEventoName = '';
@@ -54,19 +52,25 @@ export class MisEventosComponent implements OnInit {
   myComment = '';
   saving = false;
 
-  // 🆕 Modal editar evento
   showEditModal = false;
   eventoToEdit: Evento | null = null;
   editName = '';
   editAddress = '';
-  editDate = '';   // yyyy-MM-dd
-  editTime = '';   // HH:mm
+  editDate = '';
+  editTime = '';
+
+  showMapModal = false;
+  mapEventoName = '';
+  mapUrl: string | null = null;
+  mapLinkUrl: string | null = null;
+  mapSafeUrl: SafeResourceUrl | null = null;
 
   constructor(
     private eventoService: EventoService,
     private authService: AuthService,
     private ratingsSrv: ValoracionService,
-    private router: Router
+    private router: Router,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -102,6 +106,14 @@ export class MisEventosComponent implements OnInit {
   }
 
   goBack(): void { this.router.navigate(['/menu']); }
+
+  goToCrear(): void {
+    this.router.navigate(['/crear-evento']);
+  }
+
+  goToExplorar(): void {
+    this.router.navigate(['/explorar-eventos']);
+  }
 
   getCreadorName(ev: any): string {
     const c = ev?.creador || ev?.owner || ev?.createdBy;
@@ -166,7 +178,6 @@ export class MisEventosComponent implements OnInit {
     return arr.some((p: any) => (typeof p === 'string' ? p === this.currentUserId : p?._id === this.currentUserId));
   }
 
-  // Modal eliminar
   openDeleteModal(evento: Evento): void { this.eventoToDelete = evento; this.showDeleteModal = true; }
   closeDeleteModal(): void { this.showDeleteModal = false; this.eventoToDelete = null; }
 
@@ -178,7 +189,6 @@ export class MisEventosComponent implements OnInit {
     });
   }
 
-  // Modal salir de evento
   openLeaveModal(evento: Evento): void { this.eventoToLeave = evento; this.showLeaveModal = true; }
   closeLeaveModal(): void { this.showLeaveModal = false; this.eventoToLeave = null; }
 
@@ -378,4 +388,64 @@ confirmEdit(): void {
     }
   });
 }
+hasLocation(evento: any): boolean {
+    if (!evento) return false;
+    const hasCoords =
+      evento.lat !== null &&
+      evento.lat !== undefined &&
+      evento.lng !== null &&
+      evento.lng !== undefined;
+    const hasAddress = !!evento.address;
+    return hasCoords || hasAddress;
+  }
+
+  openMap(evento: any): void {
+    if (!this.hasLocation(evento)) return;
+
+    this.mapEventoName = evento.name || '';
+    this.mapUrl = null;
+    this.mapLinkUrl = null;
+    this.mapSafeUrl = null;
+
+    const lat = Number(evento.lat);
+    const lng = Number(evento.lng);
+
+    if (!isNaN(lat) && !isNaN(lng)) {
+      const delta = 0.005;
+      const south = lat - delta;
+      const north = lat + delta;
+      const west = lng - delta;
+      const east = lng + delta;
+
+      this.mapUrl =
+        'https://www.openstreetmap.org/export/embed.html?bbox=' +
+        `${west},${south},${east},${north}` +
+        '&layer=mapnik&marker=' +
+        `${lat},${lng}`;
+
+      this.mapLinkUrl =
+        'https://www.openstreetmap.org/?mlat=' +
+        `${lat}&mlon=${lng}#map=16/${lat}/${lng}`;
+    } else if (evento.address) {
+      const query = encodeURIComponent(evento.address);
+      this.mapUrl = `https://www.google.com/maps?q=${query}&output=embed`;
+      this.mapLinkUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
+    }
+
+    if (this.mapUrl) {
+      this.mapSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.mapUrl);
+    } else {
+      this.mapSafeUrl = null;
+    }
+
+    this.showMapModal = true;
+  }
+
+  closeMapModal(): void {
+    this.showMapModal = false;
+    this.mapEventoName = '';
+    this.mapUrl = null;
+    this.mapLinkUrl = null;
+    this.mapSafeUrl = null;
+  }
 }

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import * as maplibregl from 'maplibre-gl';
 import { EventoService } from '../../services/evento.service';
 import { AuthService } from '../../services/auth.service';
 import { Evento } from '../../models/evento.model';
@@ -12,17 +13,28 @@ import { Evento } from '../../models/evento.model';
   templateUrl: './explorar-eventos.component.html',
   styleUrls: ['./explorar-eventos.component.css']
 })
-export class ExplorarEventosComponent implements OnInit {
+export class ExplorarEventosComponent implements OnInit, AfterViewInit {
+  allEventos: Evento[] = [];
+  eventosFiltrados: Evento[] = [];
   eventos: Evento[] = [];
+
   loading = false;
   errorMessage = '';
-  currentUserId: string = '';
-  userRole: string = '';
-  
+
+  currentUserId = '';
+  currentUserRole = '';
+
   page = 1;
   pageSize = 6;
-  totalPages = 1;
   totalItems = 0;
+  totalPages = 1;
+
+  private map: maplibregl.Map | null = null;
+  private markers: maplibregl.Marker[] = [];
+  private mapReady = false;
+
+  selectedEvent: Evento | null = null;
+  showEventModal = false;
 
   constructor(
     private eventoService: EventoService,
@@ -32,184 +44,297 @@ export class ExplorarEventosComponent implements OnInit {
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
-    this.currentUserId = user?._id || '';
-    this.userRole = user?.rol || 'usuario';
-  
-    this.loadEventos();
+    this.currentUserId = user?._id ?? '';
+    this.currentUserRole = user?.rol ?? 'usuario';
   }
 
-  loadEventos(): void {
+  ngAfterViewInit(): void {
+    this.initMap();
+  }
+
+  private initMap(): void {
+    this.map = new maplibregl.Map({
+      container: 'explorar-map',
+      style: {
+        version: 8,
+        sources: {
+          'osm-tiles': {
+            type: 'raster',
+            tiles: [
+              'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+            ],
+            tileSize: 256,
+            attribution: '© OpenStreetMap contributors'
+          }
+        },
+        layers: [
+          {
+            id: 'osm-tiles-layer',
+            type: 'raster',
+            source: 'osm-tiles'
+          }
+        ]
+      },
+      center: [1.7, 41.3],
+      zoom: 11 
+    });
+
+    this.map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+    this.map.on('load', () => {
+      this.mapReady = true;
+      this.loadAllEventos();
+      this.map?.resize();
+    });
+
+    this.map.on('moveend', () => {
+      this.actualizarListaSegunMapa();
+      this.pintarMarcadores();
+    });
+  }
+
+  private getMapBounds() {
+    if (!this.map) return null;
+    const b = this.map.getBounds();
+    return {
+      north: b.getNorth(),
+      south: b.getSouth(),
+      east: b.getEast(),
+      west: b.getWest()
+    };
+  }
+
+  private loadAllEventos(): void {
     this.loading = true;
     this.errorMessage = '';
 
-    this.eventoService.getEventos(this.page, this.pageSize).subscribe({
-      next: (res) => {
-        this.eventos = res.data.map(e => ({
+    this.eventoService.getEventos(1, 1000).subscribe({
+      next: (resp: any) => {
+        const lista =
+          resp?.eventos ||
+          resp?.data ||
+          resp?.allEventos ||
+          resp?.results ||
+          [];
+
+        this.allEventos = lista.map((e: any) => ({
           ...e,
-          schedule: Array.isArray(e.schedule) 
-            ? e.schedule 
-            : [e.schedule as any],
-          
-          participantes: Array.isArray((e as any).participantes)
-            ? (e as any).participantes
-            : ((e as any).participants || [])
+          lat: e.lat != null ? Number(e.lat) : null,
+          lng: e.lng != null ? Number(e.lng) : null,
+          schedule: Array.isArray(e.schedule)
+            ? e.schedule
+            : (e.schedule ? [e.schedule] : []),
+          participantes: Array.isArray(e.participantes)
+            ? e.participantes
+            : (Array.isArray(e.participants) ? e.participants : [])
         }));
 
-        this.totalPages = res.totalPages;
-        this.totalItems = res.totalItems;
         this.loading = false;
+
+        this.actualizarListaSegunMapa();
+        this.pintarMarcadores();
+        setTimeout(() => {
+          this.fitMapToAllEventos();
+        }, 300);
       },
       error: (err) => {
-        this.errorMessage = 'Error al cargar eventos';
-        this.loading = false;
         console.error(err);
+        this.loading = false;
+        this.errorMessage = 'Error al cargar eventos.';
       }
     });
+  }
+
+  private actualizarListaSegunMapa(): void {
+    if (!this.mapReady) {
+      this.eventosFiltrados = [...this.allEventos];
+    } else {
+      const bounds = this.getMapBounds();
+      if (!bounds) {
+        this.eventosFiltrados = [...this.allEventos];
+      } else {
+        this.eventosFiltrados = this.allEventos.filter(ev => {
+          if (ev.lat == null || ev.lng == null) return false;
+          const lat = Number(ev.lat);
+          const lng = Number(ev.lng);
+          return (
+            lat <= bounds.north &&
+            lat >= bounds.south &&
+            lng >= bounds.west &&
+            lng <= bounds.east
+          );
+        });
+      }
+    }
+
+    this.totalItems = this.eventosFiltrados.length;
+    this.totalPages = Math.max(1, Math.ceil(this.totalItems / this.pageSize));
+
+    if (this.page > this.totalPages) this.page = this.totalPages;
+    if (this.page < 1) this.page = 1;
+
+    const inicio = (this.page - 1) * this.pageSize;
+    this.eventos = this.eventosFiltrados.slice(inicio, inicio + this.pageSize);
+  }
+
+  private pintarMarcadores(): void {
+    if (!this.map) return;
+    this.markers.forEach(m => m.remove());
+    this.markers = [];
+
+    this.eventosFiltrados.forEach(ev => {
+      if (ev.lat == null || ev.lng == null) return;
+
+      const marker = new maplibregl.Marker({ color: '#4f46e5' })
+        .setLngLat([Number(ev.lng), Number(ev.lat)])
+        .addTo(this.map as maplibregl.Map);
+
+      const el = marker.getElement();
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', () => {
+        this.openEventModal(ev);
+      });
+
+      this.markers.push(marker);
+    });
+  }
+
+  private fitMapToAllEventos(): void {
+    if (!this.map || this.allEventos.length === 0) return;
+
+    const bounds = new maplibregl.LngLatBounds();
+
+    this.allEventos.forEach(ev => {
+      if (ev.lat != null && ev.lng != null) {
+        bounds.extend([Number(ev.lng), Number(ev.lat)]);
+      }
+    });
+
+    if (!bounds.isEmpty()) {
+      this.map.fitBounds(bounds, { padding: 60 });
+    }
+  }
+
+  openEventModal(ev: Evento): void {
+    this.selectedEvent = ev;
+    this.showEventModal = true;
+  }
+
+  closeEventModal(): void {
+    this.showEventModal = false;
+    this.selectedEvent = null;
+  }
+
+  joinEvento(ev: Evento): void {
+    if (!ev._id) return;
+
+    this.eventoService.joinEvento(ev._id).subscribe({
+      next: (updated: any) => {
+        const idx = this.allEventos.findIndex(e => e._id === ev._id);
+        if (idx !== -1) {
+          this.allEventos[idx] = updated;
+        }
+        this.actualizarListaSegunMapa();
+        this.pintarMarcadores();
+        if (this.selectedEvent && this.selectedEvent._id === ev._id) {
+          this.selectedEvent = updated;
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.errorMessage = err?.error?.message || 'Error al unirse al evento.';
+      }
+    });
+  }
+
+  leaveEvento(ev: Evento): void {
+    if (!ev._id) return;
+
+    this.eventoService.leaveEvento(ev._id).subscribe({
+      next: (updated: any) => {
+        const idx = this.allEventos.findIndex(e => e._id === ev._id);
+        if (idx !== -1) {
+          this.allEventos[idx] = updated;
+        }
+        this.actualizarListaSegunMapa();
+        this.pintarMarcadores();
+
+        if (this.selectedEvent && this.selectedEvent._id === ev._id) {
+          this.selectedEvent = updated;
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.errorMessage = err?.error?.message || 'Error al salir del evento.';
+      }
+    });
+  }
+
+  isUserCreator(ev: Evento): boolean {
+    if (!this.currentUserId || !ev.creador) return false;
+
+    const c: any = ev.creador;
+    const creadorId = typeof c === 'string' ? c : c?._id;
+    return creadorId === this.currentUserId;
+  }
+
+  isUserInEvento(ev: Evento): boolean {
+    if (!this.currentUserId || !ev.participantes) return false;
+    return (ev.participantes as any[]).some(p =>
+      typeof p === 'string' ? p === this.currentUserId : p?._id === this.currentUserId
+    );
+  }
+
+  isAdmin(): boolean {
+    return this.currentUserRole === 'admin';
+  }
+
+  getCreadorName(ev: any): string {
+    const c = ev.creador;
+    if (!c) return 'Desconocido';
+    if (typeof c === 'string') return c;
+    return c.username || c.gmail || 'Desconocido';
+  }
+
+  getScheduleText(ev: any): string {
+    const s = Array.isArray(ev.schedule) ? ev.schedule[0] : ev.schedule;
+    if (!s) return 'Sin fecha definida';
+
+    const d = new Date(s);
+    if (isNaN(d.getTime())) return 'Horario no válido';
+
+    return d.toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  goBackToMenu(): void {
+    this.router.navigate(['/menu']);
+  }
+
+  goToCrear(): void {
+    this.router.navigate(['/crear-evento']);
+  }
+
+  goToMisEventos(): void {
+    this.router.navigate(['/mis-eventos']);
   }
 
   prevPage(): void {
     if (this.page > 1) {
       this.page--;
-      this.loadEventos();
+      this.actualizarListaSegunMapa();
     }
   }
 
   nextPage(): void {
     if (this.page < this.totalPages) {
       this.page++;
-      this.loadEventos();
+      this.actualizarListaSegunMapa();
     }
-  }
-
-  joinEvento(evento: Evento): void {
-    if (!evento._id) return;
-
-    this.eventoService.joinEvento(evento._id).subscribe({
-      next: (updatedEvento) => {
-        const index = this.eventos.findIndex(e => e._id === evento._id);
-        if (index !== -1) {
-          this.eventos[index] = {
-            ...updatedEvento,
-            schedule: Array.isArray(updatedEvento.schedule)
-              ? updatedEvento.schedule
-              : [updatedEvento.schedule as any],
-            participantes: Array.isArray((updatedEvento as any).participantes)
-              ? (updatedEvento as any).participantes
-              : ((updatedEvento as any).participants || [])
-          };
-        }
-      },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Error al unirse al evento';
-        console.error(err);
-      }
-    });
-  }
-
-  leaveEvento(evento: Evento): void {
-    if (!evento._id) return;
-
-    this.eventoService.leaveEvento(evento._id).subscribe({
-      next: (updatedEvento) => {
-        const index = this.eventos.findIndex(e => e._id === evento._id);
-        if (index !== -1) {
-          this.eventos[index] = {
-            ...updatedEvento,
-            schedule: Array.isArray(updatedEvento.schedule)
-              ? updatedEvento.schedule
-              : [updatedEvento.schedule as any],
-            participantes: Array.isArray((updatedEvento as any).participantes)
-              ? (updatedEvento as any).participantes
-              : ((updatedEvento as any).participants || [])
-          };
-        }
-      },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Error al salir del evento';
-        console.error(err);
-      }
-    });
-  }
-
-  isUserInEvento(evento: Evento): boolean {
-    if (!this.currentUserId || !evento.participantes) return false;
-    return evento.participantes.includes(this.currentUserId);
-  }
-
-  isUserCreator(evento: Evento): boolean {
-    if (!this.currentUserId || !evento.creador) return false;
-    if (typeof evento.creador === 'object') {
-      return evento.creador._id === this.currentUserId;
-    }
-    return evento.creador === this.currentUserId;
-  }
-
-  isAdmin(): boolean {
-    return this.userRole === 'admin';
-  }
-
-  private readonly timeZone = 'Europe/Madrid';
-
-  private fromISOtoInputs(iso?: any): { dateStr: string; timeStr: string } {
-    if (!iso) return { dateStr: '', timeStr: '' };
-    const d = new Date(iso);
-    if (isNaN(d.getTime())) return { dateStr: '', timeStr: '' };
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const yyyy = d.getFullYear(), mm = pad(d.getMonth() + 1), dd = pad(d.getDate());
-    const hh = pad(d.getHours()), mi = pad(d.getMinutes());
-    return { dateStr: `${yyyy}-${mm}-${dd}`, timeStr: `${hh}:${mi}` };
-  }
-
-  private formatSchedule(iso?: any): string {
-    if (!iso) return '—';
-    const d = new Date(iso);
-    if (isNaN(d.getTime())) return '—';
-
-    const { dateStr } = this.fromISOtoInputs(iso);
-    const savedAtMidnight =
-      d.getUTCHours() === 0 && d.getUTCMinutes() === 0 &&
-      d.getUTCSeconds() === 0 && d.getUTCMilliseconds() === 0 &&
-      (new Date(`${dateStr}T00:00:00Z`).toISOString() === new Date(iso).toISOString());
-
-    const base = new Intl.DateTimeFormat('es-ES', {
-      weekday: 'short', day: '2-digit', month: 'short', year: 'numeric',
-      timeZone: this.timeZone,
-    }).format(d).replace('.', '');
-
-    if (savedAtMidnight) return `${base} · todo el día`;
-
-    const hm = new Intl.DateTimeFormat('es-ES', {
-      hour: '2-digit', minute: '2-digit', hour12: false, timeZone: this.timeZone,
-    }).format(d);
-
-    return `${base} · ${hm}`;
-  }
-
-  getScheduleText = (ev: any) => this.formatSchedule(ev?.schedule);
-
-  getCreadorName(evento: Evento): string {
-    if (typeof evento.creador === 'object' && evento.creador) {
-      return evento.creador.username;
-    }
-    return 'Desconocido';
-  }
-
-  goBack(): void {
-    this.router.navigate(['/menu']);
-  }
-
-  goToRatings(evento: Evento): void {
-    if (!evento._id) return;
-    this.router.navigate(['/events', evento._id, 'ratings'], {
-      state: { 
-        eventoName: evento.name,
-        avgRating: evento.avgRating,
-        ratingsCount: evento.ratingsCount
-      }
-    });
-  }
-
-  goBackToMenu(): void {
-    this.router.navigate(['/menu']);
   }
 }
