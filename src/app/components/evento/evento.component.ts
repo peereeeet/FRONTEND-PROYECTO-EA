@@ -24,7 +24,7 @@ export class EventoComponent implements OnInit {
   users: User[] = [];
   availableUsers: User[] = [];
   selectedUsers: User[] = [];
-  newEvent: Evento = { name: '', schedule: [], address: '', participantes: [] };
+  newEvent: Evento = { name: '', schedule: [], categoria: 'Otros', address: '', participantes: [] };
   creatorId: string = '';
   editCreatorId: string = '';
   saving = false;
@@ -41,7 +41,7 @@ export class EventoComponent implements OnInit {
   pendingUpdateEvento: Evento | null = null;
 
   showEditModal = false;
-  editEvent: Evento = { name: '', schedule: [], address: '', participantes: [] };
+  editEvent: Evento = { name: '', schedule: [], categoria: 'Otros', address: '', participantes: [] };
   editAvailableUsers: User[] = [];
   editSelectedUsers: User[] = [];
   editDateStr: string = '';
@@ -145,7 +145,7 @@ export class EventoComponent implements OnInit {
 
   cancelarEdicion(): void {
     this.indiceEdicion = null;
-    this.newEvent = { name: '', schedule: [], address: '', participantes: [] };
+    this.newEvent = { name: '', schedule: [], categoria: 'Otros', address: '', participantes: [] };
     this.selectedUsers = [];
     this.availableUsers = [...this.users];
     this.dateStr = '';
@@ -204,7 +204,7 @@ export class EventoComponent implements OnInit {
   closeEditModal(): void {
     this.showEditModal = false;
     this.pendingEditIndex = null;
-    this.editEvent = { name: '', schedule: [], address: '', participantes: [] };
+    this.editEvent = { name: '', schedule: [], categoria:'Otros', address: '', participantes: [] };
     this.editAvailableUsers = [];
     this.editSelectedUsers = [];
     this.editDateStr = '';
@@ -434,7 +434,10 @@ export class EventoComponent implements OnInit {
       this.errorMessage = 'El título es obligatorio (mínimo 3 caracteres).';
       return;
     }
-
+    if (!this.newEvent.categoria) {
+      this.errorMessage = "Selecciona una categoría.";
+      return;
+    }
     const payload = {
       ...this.newEvent,
       creador: this.creatorId,
@@ -446,7 +449,7 @@ export class EventoComponent implements OnInit {
       next: (ev) => {
         this.eventos = [ev, ...(this.eventos || [])];
 
-        this.newEvent = { name: '', address: '', schedule: '', participantes: [] };
+        this.newEvent = { name: '', address: '', categoria:'Otros', schedule: '', participantes: [] };
         this.creatorId = '';
         this.dateStr = '';
         this.timeStr = '';
@@ -583,7 +586,7 @@ export class EventoComponent implements OnInit {
   }
 
   private resetForm(): void {
-    this.newEvent = { name: '', schedule: [], address: '', participantes: [] };
+    this.newEvent = { name: '', schedule: [], categoria: 'Otros', address: '', participantes: [] };
     this.availableUsers = [...this.users];
     this.selectedUsers = [];
     this.dateStr = '';

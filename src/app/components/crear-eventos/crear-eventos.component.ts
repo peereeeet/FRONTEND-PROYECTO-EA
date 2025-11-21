@@ -12,6 +12,7 @@ import { Evento } from '../../models/evento.model';
 type NewEventDTO = {
   name: string;
   schedule: string;
+  categoria:string;
   address?: string;
   participants: string[];
 };
@@ -35,7 +36,8 @@ export class CrearEventosComponent implements OnInit {
 
   newEvent: NewEventDTO = {
     name: '',
-    schedule: '',         
+    schedule: '',  
+    categoria: '',       
     address: '',
     participants: []
   };
@@ -219,12 +221,18 @@ export class CrearEventosComponent implements OnInit {
     if (this.me?._id && !this.newEvent.participants.includes(this.me._id)) {
       this.newEvent.participants.push(this.me._id);
     }
+    if (!this.newEvent.categoria) {
+       this.errorMessage = 'La categoría es obligatoria.';
+      return;
+    }
+    console.log(this.newEvent.categoria);
 
     const payload: Evento = {
       name: this.newEvent.name.trim(),
       schedule: this.newEvent.schedule,
       address: this.newEvent.address?.trim() || '',
       participantes: this.newEvent.participants.slice(),
+      categoria: this.newEvent.categoria as any
     } as any as Evento;
 
     this.saving = true;

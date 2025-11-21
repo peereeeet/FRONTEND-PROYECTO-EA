@@ -92,6 +92,7 @@ export class MisEventosComponent implements OnInit {
           participantes: Array.isArray(e.participantes) ? e.participantes : (e.participants || [])
         }));
         this.loading = false;
+        categoria: res.categoria || 'No especificada';
       },
       error: (err) => {
         this.errorMessage = 'Error al cargar eventos';

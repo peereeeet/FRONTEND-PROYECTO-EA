@@ -271,6 +271,27 @@
   opacity: 1;
 }
 
+.crear-evento-form select[name="categoria"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #e0e7ff;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  background: #f8fafc;
+  color: #1e40af;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.crear-evento-form select[name="categoria"]:focus {
+  outline: none;
+  border-color: #7c3aed;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(124,58,237,.12), 0 8px 20px rgba(124,58,237,.15);
+  transform: translateY(-2px);
+}         /* Gris */
+
 /* ================= Responsive ================= */
 @media (max-width: 640px) {
   .crear-evento-page { padding: 16px; }

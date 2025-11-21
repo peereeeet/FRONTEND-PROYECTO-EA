@@ -49,6 +49,21 @@
           </div>
 
           <div class="form-group">
+            <label for="categoria" class="form-label">Categoría del evento</label>
+              <select id="categoria"  class="form-input" [(ngModel)]="newEvent.categoria" name="categoria" required>
+                <option value="" disabled>Selecciona una categoría…</option>
+                <option value="Deporte">Deporte</option>
+                <option value="Conciertos">Conciertos</option>
+                <option value="Arte">Arte</option>
+                <option value="Fiestas">Fiestas</option>
+                <option value="Voluntariado">Voluntariado</option>
+                <option value="Tech">Tech</option>
+                <option value="Otros">Otros</option>
+              </select>
+          </div>
+
+
+          <div class="form-group">
             <label class="form-label">Horario del evento</label>
 
             <div class="schedule-row">
@@ -150,6 +165,9 @@
     <ul *ngIf="eventos.length > 0">
       <li *ngFor="let evento of eventos; let i = index">
         <h3>{{ evento.name }}</h3>
+        <div class="badge-categoria" [ngClass]="evento.categoria">
+          {{ evento.categoria }}
+        </div>
 
         <p><strong>📍 Dirección: </strong> {{ getEventAddress(evento) }}</p>
 

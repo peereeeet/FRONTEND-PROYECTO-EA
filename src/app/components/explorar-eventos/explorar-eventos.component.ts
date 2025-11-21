@@ -52,7 +52,8 @@ export class ExplorarEventosComponent implements OnInit {
           
           participantes: Array.isArray((e as any).participantes)
             ? (e as any).participantes
-            : ((e as any).participants || [])
+            : ((e as any).participants || []),
+          categoria: e.categoria || 'No especificada'
         }));
 
         this.totalPages = res.totalPages;

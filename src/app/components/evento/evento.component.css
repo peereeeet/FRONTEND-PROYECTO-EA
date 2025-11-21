@@ -294,6 +294,7 @@ button[type="submit"] {
 }
 button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(79,70,229,.5); }
 
+
 /* Tarjeta lista de eventos */
 .evento-list {
   background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(248,250,252,.96));
@@ -401,6 +402,25 @@ button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 14px 32
 }
 .btn-close:hover { background: var(--surface-card); color: var(--text-primary); }
 
+.badge-categoria {
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 999px;
+  color: #fff;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+/* Colores según categoría */
+.badge-categoria.Deporte { background: linear-gradient(135deg, #34d399, #10b981); }
+.badge-categoria.Conciertos { background: linear-gradient(135deg, #f87171, #ef4444); }
+.badge-categoria.Arte { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.badge-categoria.Fiestas { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+.badge-categoria.Voluntariado { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.badge-categoria.Tech { background: linear-gradient(135deg, #06b6d4, #0ea5e9); }
+.badge-categoria.Otros { background: linear-gradient(135deg, #9ca3af, #6b7280); }
 /* Responsive */
 @media (max-width: 768px) {
   .actions { flex-direction: column; }

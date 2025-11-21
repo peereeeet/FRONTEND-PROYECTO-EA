@@ -730,6 +730,28 @@
   box-shadow: 0 4px 10px rgba(148,163,184,.4);
 }
 
+/* Badges de categorías */
+.badge-categoria {
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 999px;
+  color: #fff;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+
+.badge-categoria.Deporte { background: linear-gradient(135deg, #34d399, #10b981); }
+.badge-categoria.Conciertos { background: linear-gradient(135deg, #f87171, #ef4444); }
+.badge-categoria.Arte { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.badge-categoria.Fiestas { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+.badge-categoria.Voluntariado { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.badge-categoria.Tech { background: linear-gradient(135deg, #06b6d4, #0ea5e9); }
+.badge-categoria.Otros { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+
+
 /* Mensajes */
 .msg {
   margin: 8px 18px 4px;

@@ -35,6 +35,10 @@
                 <span class="badge admin">Creador</span>
               </div>
             </div>
+                        <div class="badge-categoria" [ngClass]="evento.categoria">
+              {{ evento.categoria }}
+            </div>
+            
 
             <div class="evento-info">
               <div class="info-row">
@@ -45,6 +49,7 @@
                 <span class="icon">🕒</span>
                 <span><strong>Horario:</strong> {{ getScheduleText(evento) }}</span>
               </div>
+
               <div class="info-row">
                 <span class="icon">👥</span>
                 <span><strong>Participantes:</strong> {{ evento.participantes?.length || 0 }}</span>
@@ -86,6 +91,10 @@
               </div>
             </div>
 
+            <div class="badge-categoria" [ngClass]="evento.categoria">
+              {{ evento.categoria }}
+            </div>
+            
             <div class="evento-info">
               <div class="info-row">
                 <span class="icon">👤</span>
@@ -95,6 +104,7 @@
                 <span class="icon">📍</span>
                 <span><strong>Dirección:</strong> {{ evento.address || '-' }}</span>
               </div>
+
               <div class="info-row">
                 <span class="icon">🕒</span>
                 <span><strong>Horario:</strong> {{ getScheduleText(evento) }}</span>

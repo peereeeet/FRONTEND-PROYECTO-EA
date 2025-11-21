@@ -2,6 +2,7 @@ export interface Evento {
   _id?: string;
   name: string;
   schedule: string | string[];
+  categoria: 'Deporte' | 'Conciertos' | 'Arte ' | 'Fiestas' | 'Voluntariado' | 'Tech' | 'Otros';
   address?: string;
   participantes?: string[];
   creador?: {        

@@ -438,3 +438,68 @@
 .events-card.fixed-height .quick-list {
   list-style: none; margin: 0; padding: 0; display: grid; gap: 8px;
 }
+
+/* ===== CATEGORÍA DEL EVENTO ===== */
+.badge-categoria {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* Colores por categoría */
+.badge-categoria.Deporte {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: 2px solid #6ee7b7;
+}
+
+.badge-categoria.Conciertos {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border: 2px solid #fdba74;
+}
+
+.badge-categoria.Arte {
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  border: 2px solid #c4b5fd;
+}
+
+.badge-categoria.Fiestas {
+  background: linear-gradient(135deg, #f43f5e, #e11d48);
+  border: 2px solid #fca5a5;
+}
+
+.badge-categoria.Voluntariado {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border: 2px solid #93c5fd;
+}
+
+.badge-categoria.Tech {
+  background: linear-gradient(135deg, #facc15, #eab308);
+  border: 2px solid #fde68a;
+}
+
+.badge-categoria.Otros {
+  background: linear-gradient(135deg, #64748b, #475569);
+  border: 2px solid #94a3b8;
+}
+
+/* Efecto hover */
+.badge-categoria:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+/* Ajuste del espaciado dentro de la card */
+.evento-card .badge-categoria {
+  margin-top: -8px;
+  margin-bottom: 16px;
+  display: block;
+  text-align: center;
+}
+
