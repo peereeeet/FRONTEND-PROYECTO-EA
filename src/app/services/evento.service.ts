@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Evento } from '../models/evento.model';
 
@@ -22,6 +22,35 @@ export class EventoService {
 
   getEventoById(id: string): Observable<Evento> {
     return this.http.get<Evento>(`${this.apiUrl}/${id}`);
+  }
+
+  getEventosByBounds(
+    north: number,
+    south: number,
+    east: number,
+    west: number,
+    page: number = 1,
+    limit: number = 10
+  ): Observable<{
+    data: Evento[];
+    page: number;
+    totalPages: number;
+    totalItems: number;
+  }> {
+    const params = new HttpParams()
+      .set('north', String(north))
+      .set('south', String(south))
+      .set('east', String(east))
+      .set('west', String(west))
+      .set('page', String(page))
+      .set('limit', String(limit));
+
+    return this.http.get<{
+      data: Evento[];
+      page: number;
+      totalPages: number;
+      totalItems: number;
+    }>(`${this.apiUrl}/by-bounds`, { params });
   }
 
   addEvento(newEvent: Evento): Observable<Evento> {

@@ -7,13 +7,14 @@ import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 type EditDTO = { username: string; gmail: string; birthday: string; password?: string };
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.css']
 })
@@ -44,6 +45,15 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   checkingEmail = signal(false);
   emailTaken    = signal(false);
+
+  currentLang: 'es' | 'en' = 'es';
+  showLangMenu = false;
+
+  constructor(private translate: TranslateService) {
+    const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    this.currentLang = savedLang;
+    this.translate.use(savedLang);
+  }
 
   private isValidEmail(v: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
@@ -338,7 +348,19 @@ export class PerfilComponent implements OnInit, OnDestroy {
     });
   }
 
-  /*togglePassword(): void {
-    this.showPassword = !this.showPassword;
-  }*/
+  changeLanguage(lang: 'es' | 'en') {
+    if (this.currentLang === lang) return;
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+  }
+
+  toggleLangMenu() {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en') {
+    this.changeLanguage(lang);
+    this.showLangMenu = false;
+  }
 }

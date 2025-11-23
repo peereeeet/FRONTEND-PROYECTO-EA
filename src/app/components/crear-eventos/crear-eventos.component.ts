@@ -2,26 +2,26 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
 import { Evento } from '../../models/evento.model';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 type NewEventDTO = {
   name: string;
   schedule: string;
   address?: string;
   participants: string[];
-  lat?: number | null; // 🆕
-  lng?: number | null; // 🆕
+  lat?: number | null;
+  lng?: number | null;
 };
 
 @Component({
   selector: 'app-crear-eventos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './crear-eventos.component.html',
   styleUrls: ['./crear-eventos.component.css'],
 })
@@ -47,9 +47,17 @@ export class CrearEventosComponent implements OnInit {
   dateStr = '';
   timeStr = '';
 
-  // 🆕 strings para los inputs de lat/lng
   latStr = '';
   lngStr = '';
+
+  currentLang: 'es' | 'en' = 'es';
+  showLangMenu = false;
+
+  constructor(private translate: TranslateService) {
+    const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    this.currentLang = savedLang;
+    this.translate.use(savedLang);
+  }
 
   allUsers: User[] = [];
   me: User | null = null;
@@ -303,5 +311,21 @@ export class CrearEventosComponent implements OnInit {
 
   goToMisEventos(): void {
     this.router.navigate(['/mis-eventos']);
+  }
+
+  changeLanguage(lang: 'es' | 'en') {
+    if (this.currentLang === lang) return;
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+  }
+
+  toggleLangMenu() {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en') {
+    this.changeLanguage(lang);
+    this.showLangMenu = false;
   }
 }
