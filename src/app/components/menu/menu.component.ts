@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { User } from '../../models/user.model';
 import { Evento } from '../../models/evento.model';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 type FriendLike = User;
 
@@ -21,7 +22,7 @@ interface EventStats {
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css']
 })
@@ -65,6 +66,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   fPage: number = 1;
   fPageSize: number = 3;
 
+  currentLang: 'es' | 'en' = 'es';
+  showLangMenu = false;
+
   get mTotalPages(): number {
     const n = this.filteredUsers().length;
     return Math.max(1, Math.ceil(n / this.mPageSize()));
@@ -87,6 +91,12 @@ export class MenuComponent implements OnInit, OnDestroy {
     return String((u as any)?._id ?? (u as any)?.id ?? '');
   }
 
+  constructor(private translate: TranslateService) {
+    const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    this.currentLang = savedLang;
+    this.translate.use(savedLang);
+  }
+
   ngOnInit(): void {
     this.auth.currentUser$
       .pipe(takeUntil(this.destroy$))
@@ -98,15 +108,12 @@ export class MenuComponent implements OnInit, OnDestroy {
 
         const myId = this.getId(u);
         if (!myId) return;
-
-        // 🔁 PEDIR SIEMPRE LOS DATOS FRESCOS DEL USUARIO AL ENTRAR EN MENÚ
         this.userService.getUserDetail(myId).subscribe({
           next: (fresh) => {
             const isOnlineFresh = (fresh as any).online ?? (fresh as any).isOnline ?? false;
             this.me.set({ ...(fresh as any), isOnline: isOnlineFresh });
           },
           error: () => {
-            // si falla, dejamos al menos los datos del auth.local
           }
         });
 
@@ -545,36 +552,53 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   private _friendsArray(): any[] {
-  const f: any = (this as any).friends;
-  try {
-    const arr = typeof f === 'function' ? f() : Array.isArray(f) ? f : [];
-    return Array.isArray(arr) ? arr : [];
-  } catch {
-    return [];
+    const f: any = (this as any).friends;
+    try {
+      const arr = typeof f === 'function' ? f() : Array.isArray(f) ? f : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch {
+      return [];
+    }
+  }
+
+  fTotalPages(): number {
+    const total = this._friendsArray().length;
+    return Math.max(1, Math.ceil(total / this.fPageSize));
+  }
+
+  friendsPaged(): any[] {
+    const arr = this._friendsArray();
+    const start = (this.fPage - 1) * this.fPageSize;
+    return arr.slice(start, start + this.fPageSize);
+  }
+
+  friendsPrev(): void {
+    if (this.fPage > 1) this.fPage--;
+  }
+
+  friendsNext(): void {
+    const max = this.fTotalPages();
+    if (this.fPage < max) this.fPage++;
+  }
+
+  setFriendsPageSize(val: number): void {
+    this.fPageSize = Number(val) || 3;
+    this.fPage = 1;
+  }
+
+  changeLanguage(lang: 'es' | 'en') {
+    if (this.currentLang === lang) return;
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+  }
+
+  toggleLangMenu() {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en') {
+    this.changeLanguage(lang);
+    this.showLangMenu = false;
   }
 }
-
-fTotalPages(): number {
-  const total = this._friendsArray().length;
-  return Math.max(1, Math.ceil(total / this.fPageSize));
-}
-
-friendsPaged(): any[] {
-  const arr = this._friendsArray();
-  const start = (this.fPage - 1) * this.fPageSize;
-  return arr.slice(start, start + this.fPageSize);
-}
-
-friendsPrev(): void {
-  if (this.fPage > 1) this.fPage--;
-}
-
-friendsNext(): void {
-  const max = this.fTotalPages();
-  if (this.fPage < max) this.fPage++;
-}
-
-setFriendsPageSize(val: number): void {
-  this.fPageSize = Number(val) || 3;
-  this.fPage = 1;
-}}

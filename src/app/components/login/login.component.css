@@ -205,3 +205,102 @@
 .toggle-pass:hover {
   transform: translateY(-50%) scale(1.15);
 }
+
+/* 🔁 Selector de idioma */
+/* 🔁 Selector de idioma (toggle desplegable) */
+.lang-switcher {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 5;
+}
+
+/* Botón principal */
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(248, 250, 252, 0.95);
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  transition: all 0.2s ease;
+}
+
+.lang-toggle:hover {
+  background: #eef2ff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(129, 140, 248, 0.25);
+}
+
+.lang-icon {
+  font-size: 13px;
+}
+
+.lang-current {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lang-arrow {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* Dropdown */
+.lang-dropdown {
+  margin-top: 6px;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+  overflow: hidden;
+  min-width: 130px;
+  animation: langFadeIn 0.15s ease-out;
+}
+
+.lang-option {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.lang-option:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.lang-option.active {
+  background: #e0ecff;
+  color: #1d4ed8;
+}
+
+@keyframes langFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

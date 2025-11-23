@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-registrar',
   standalone: true,            
-  imports: [CommonModule, FormsModule], 
+  imports: [CommonModule, FormsModule, TranslateModule], 
   templateUrl: './registrar.component.html',
   styleUrls: ['./registrar.component.css']
 })
@@ -34,9 +35,15 @@ export class RegistrarComponent {
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
-  constructor(private userService: UserService, private router: Router) {
+  currentLang: 'es' | 'en' = 'es';
+  showLangMenu = false;
+
+  constructor(private userService: UserService, private router: Router, private translate: TranslateService) {
     const today = new Date();
     this.maxDate = today.toISOString().split('T')[0];
+    const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    this.currentLang = savedLang;
+    this.translate.use(savedLang);
   }
 
   isFutureDate(): boolean {
@@ -110,6 +117,17 @@ export class RegistrarComponent {
 
   toggleConfirmPassword() {
     this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
+  toggleLangMenu(): void {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en'): void {
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+    this.showLangMenu = false;
   }
 
   goToLogin() {

@@ -8,11 +8,12 @@ import { AuthService } from '../../services/auth.service';
 import { Evento } from '../../models/evento.model';
 import { ValoracionService } from '../../services/valoracion.service';
 import { Valoracion } from '../../models/valoracion.model';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-mis-eventos',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule],
   templateUrl: './mis-eventos.component.html',
   styleUrls: ['./mis-eventos.component.css']
 })
@@ -65,13 +66,22 @@ export class MisEventosComponent implements OnInit {
   mapLinkUrl: string | null = null;
   mapSafeUrl: SafeResourceUrl | null = null;
 
+  currentLang: 'es' | 'en' = 'es';
+  showLangMenu = false;
+
   constructor(
     private eventoService: EventoService,
     private authService: AuthService,
     private ratingsSrv: ValoracionService,
     private router: Router,
-    private sanitizer: DomSanitizer
-  ) {}
+    private sanitizer: DomSanitizer,
+    private translate: TranslateService
+  ) 
+  {
+    const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    this.currentLang = savedLang;
+    this.translate.use(savedLang);
+  }
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
@@ -447,5 +457,21 @@ hasLocation(evento: any): boolean {
     this.mapUrl = null;
     this.mapLinkUrl = null;
     this.mapSafeUrl = null;
+  }
+
+  changeLanguage(lang: 'es' | 'en') {
+    if (this.currentLang === lang) return;
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+  }
+
+  toggleLangMenu() {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en') {
+    this.changeLanguage(lang);
+    this.showLangMenu = false;
   }
 }

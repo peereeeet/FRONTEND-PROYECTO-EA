@@ -1,0 +1,331 @@
+{
+  "LOGIN": {
+    "TITLE": "Bienvenido",
+    "SUBTITLE": "Inicia sesión en tu cuenta",
+    "USERNAME_LABEL": "Nombre de usuario",
+    "USERNAME_PLACEHOLDER": "Ingresa tu usuario",
+    "USERNAME_REQUIRED": "El usuario es requerido",
+    "USERNAME_MIN": "Mínimo 3 caracteres",
+    "PASSWORD_LABEL": "Contraseña",
+    "PASSWORD_PLACEHOLDER": "Ingresa tu contraseña",
+    "PASSWORD_REQUIRED": "La contraseña es requerida",
+    "PASSWORD_MIN": "Mínimo 4 caracteres",
+    "FORGOT": "¿Has olvidado tu contraseña?",
+    "BUTTON": "Iniciar sesión",
+    "BUTTON_LOADING": "Iniciando sesión...",
+    "NO_ACCOUNT": "¿No tienes cuenta? Regístrate aquí.",
+    "CREATE_USER": "Crear usuario",
+    "FORGOT_TITLE": "Restablecer contraseña",
+    "FORGOT_TEXT": "Introduce tu <strong>email</strong> o <strong>usuario</strong>. Si existe en el sistema, te enviaremos instrucciones para restablecer la contraseña.",
+    "FORGOT_IDENTIFIER_LABEL": "Email o usuario",
+    "FORGOT_IDENTIFIER_PLACEHOLDER": "ej: juan@correo.com o juan23",
+    "FORGOT_REQUIRED": "Este campo es obligatorio",
+    "FORGOT_CANCEL": "Cancelar",
+    "FORGOT_SUBMIT": "Recibir instrucciones",
+    "DIRECT_TITLE": "Cambiar contraseña",
+    "DIRECT_USER_PREFIX": "Usuario:",
+    "DIRECT_NEW_PASSWORD_LABEL": "Nueva contraseña",
+    "DIRECT_NEW_PASSWORD_PLACEHOLDER": "Mínimo 7 caracteres",
+    "DIRECT_CANCEL": "Cancelar",
+    "DIRECT_CONFIRM": "Confirmar",
+    "DIRECT_SAVING": "Guardando…",
+    "ERROR_GENERIC": "Error al iniciar sesión. Verifica tus credenciales."
+  },
+
+  "REGISTER": {
+    "TITLE": "Crear una nueva cuenta",
+    "SUBTITLE": "Regístrate para continuar",
+    "USERNAME_LABEL": "Nombre de usuario",
+    "USERNAME_PLACEHOLDER": "Tu nombre de usuario",
+    "USERNAME_REQUIRED": "El nombre es obligatorio.",
+    "USERNAME_MIN": "Mínimo 3 caracteres.",
+    "USERNAME_EXISTS": "Este nombre de usuario ya está en uso.",
+    "EMAIL_LABEL": "Email",
+    "EMAIL_PLACEHOLDER": "ejemplo@correo.com",
+    "EMAIL_REQUIRED": "El correo es obligatorio.",
+    "EMAIL_INVALID": "Formato no válido.",
+    "EMAIL_EXISTS": "Este correo ya está registrado.",
+    "PASSWORD_LABEL": "Contraseña",
+    "PASSWORD_PLACEHOLDER": "Crea una contraseña",
+    "PASSWORD_REQUIRED": "La contraseña es obligatoria.",
+    "PASSWORD_MIN": "Mínimo 7 caracteres.",
+    "CONFIRM_PASSWORD_LABEL": "Confirmar contraseña",
+    "CONFIRM_PASSWORD_PLACEHOLDER": "Repite la contraseña",
+    "CONFIRM_PASSWORD_MISMATCH": "Las contraseñas no coinciden.",
+    "BIRTHDAY_LABEL": "Aniversario",
+    "BIRTHDAY_REQUIRED": "La fecha es obligatoria.",
+    "BIRTHDAY_FUTURE": "Debe ser anterior a hoy.",
+    "BUTTON": "Registrar",
+    "BUTTON_LOADING": "Registrando...",
+    "BACK_TO_LOGIN": "Volver al Login"
+  },
+
+  "LANG": {
+    "SWITCH_LABEL": "Idioma",
+    "ES": "Español",
+    "EN": "Inglés"
+  },
+
+  "STATUS": {
+    "ONLINE": "En línea",
+    "OFFLINE": "Desconectado"
+  },
+
+  "COMMON": {
+    "BACK_TO_MENU": "Volver al menú",
+    "CLOSE": "Cerrar",
+    "CANCEL": "Cancelar",
+    "SAVE": "Guardar",
+    "SAVING": "Guardando…",
+    "DELETE": "Eliminar",
+    "CONFIRM": "Confirmar",
+    "LOADING": "Cargando…",
+    "YES": "Sí",
+    "NO": "No",
+    "ERROR_GENERIC": "Ha ocurrido un error.",
+    "SEARCH": "Buscar",
+    "PAGE": "Página",
+    "OF": "de",
+    "TOTAL": "Total",
+    "NO_RESULTS": "Sin resultados.",
+    "MAP": "Mapa",
+    "OPEN_LARGE_MAP": "Ver en mapa grande",
+    "NOT_AVAILABLE": "No disponible"
+  },
+
+  "MENU": {
+    "TITLE": "Menú principal",
+    "USER_FALLBACK": "Usuario",
+    "PROFILE_BUTTON": "Mi perfil",
+    "LOGOUT_BUTTON": "Cerrar sesión",
+
+    "EVENTS_TITLE": "Eventos",
+    "EVENTS_CREATE": "Crear evento nuevo",
+    "EVENTS_EXPLORE_MAP": "Explorar eventos (mapa)",
+    "EVENTS_MY": "Mis eventos (Creados o inscrito)",
+    "LOADING": "Cargando…",
+
+    "FRIENDS_TITLE": "Amigos",
+    "FRIENDS_BUTTON_EXPLORE_USERS": "Explorar usuarios",
+    "FRIENDS_BUTTON_REQUESTS": "Solicitudes recibidas",
+    "FRIENDS_ONLINE": "En línea",
+    "FRIENDS_OFFLINE": "Desconectado",
+    "FRIENDS_REMOVE": "Quitar",
+    "FRIENDS_EMPTY": "Aún no tienes amigos para mostrar.",
+    "FRIENDS_SEARCH_ADD": "Buscar y agregar amigos",
+
+    "MODAL_EXPLORE_TITLE": "Explorar usuarios",
+    "MODAL_SEARCH_PLACEHOLDER": "Buscar por usuario o correo",
+    "MODAL_SEARCH_BUTTON": "Buscar",
+    "MODAL_USERS_TITLE": "Usuarios",
+    "MODAL_PAGE_LABEL": "Página",
+    "MODAL_TOTAL_LABEL": "Total",
+    "MODAL_REQUEST_PENDING": "Solicitud pendiente",
+    "MODAL_REQUEST_SENT": "Solicitud enviada",
+    "MODAL_ADD_BUTTON": "Añadir",
+    "MODAL_NO_USERS": "No hay usuarios para mostrar (o ya son amigos).",
+    "MODAL_CLOSE": "Cerrar",
+
+    "REQUESTS_TITLE": "Solicitudes de amistad",
+    "REQUESTS_LOADING": "Cargando solicitudes...",
+    "REQUESTS_EMPTY": "No tienes solicitudes pendientes 😄",
+    "REQUESTS_ACCEPT": "Aceptar",
+    "REQUESTS_REJECT": "Rechazar"
+  },
+
+  "FRIENDS": {
+    "STATE_ONLINE": "En línea",
+    "STATE_OFFLINE": "Desconectado",
+    "REMOVE": "Quitar",
+    "EMPTY_LIST": "Aún no tienes amigos para mostrar."
+  },
+
+  "PROFILE": {
+    "TITLE": "Mi perfil",
+    "LOADING": "Cargando…",
+
+    "BACK_TO_MENU": "Volver al menú",
+    "EDIT_BUTTON": "Modificar datos",
+    "DELETE_BUTTON": "Eliminar cuenta",
+
+    "STATUS_ONLINE": "En línea",
+    "STATUS_OFFLINE": "Desconectado",
+
+    "FIELD_USERNAME": "Nombre de usuario",
+    "FIELD_EMAIL": "Correo",
+    "FIELD_BIRTHDAY": "Cumpleaños",
+    "FIELD_PASSWORD": "Contraseña",
+
+    "EVENTS_TITLE": "Eventos en los que participo",
+    "EVENTS_EMPTY": "No participas en ningún evento.",
+
+    "EDIT_MODAL_TITLE": "Modificar datos",
+    "EDIT_USERNAME_LABEL": "Nombre de usuario",
+    "EDIT_USERNAME_CHECKING": "Comprobando nombre…",
+    "EDIT_USERNAME_TAKEN": "⚠ Este nombre de usuario ya está en uso.",
+    "EDIT_EMAIL_LABEL": "Correo",
+    "EDIT_EMAIL_CHECKING": "Comprobando correo…",
+    "EDIT_EMAIL_TAKEN": "⚠ Este correo ya está registrado.",
+    "EDIT_BIRTHDAY_LABEL": "Cumpleaños",
+    "EDIT_NEW_PASSWORD_LABEL": "Nueva contraseña",
+    "EDIT_NEW_PASSWORD_PLACEHOLDER": "Déjalo vacío para no cambiarla",
+    "EDIT_ERROR_GENERIC": "Error al guardar los cambios.",
+    "EDIT_CANCEL": "Cancelar",
+    "EDIT_SAVE": "Guardar",
+    "EDIT_SAVING": "Guardando…",
+
+    "DELETE_MODAL_TITLE": "Eliminar cuenta",
+    "DELETE_MODAL_TEXT": "Esta acción es <strong>permanente</strong>. Escribe tu contraseña para confirmar.",
+    "DELETE_PASSWORD_LABEL": "Contraseña",
+    "DELETE_PASSWORD_PLACEHOLDER": "Tu contraseña",
+    "DELETE_CANCEL": "Cancelar",
+    "DELETE_CONFIRM": "Eliminar definitivamente",
+    "DELETE_DELETING": "Eliminando…"
+  },
+
+  "EVENTS": {
+    "LABEL_CREATOR": "Creador:",
+    "LABEL_ADDRESS": "Dirección:",
+    "LABEL_SCHEDULE": "Horario:",
+    "LABEL_PARTICIPANTS": "Participantes:",
+    "LABEL_RATINGS": "Valoraciones:",
+    "LABEL_RATINGS_COUNT_SUFFIX": "valoraciones",
+    "LABEL_RATINGS_NONE": "Sin valoraciones",
+    "YOU_ARE_CREATOR": "Tú eres el creador",
+    "ADMIN_BADGE": "Admin",
+    "JOINED_BADGE": "Inscrito",
+    "BUTTON_JOIN": "Unirse al evento",
+    "BUTTON_LEAVE": "Salir del evento",
+    "CREATOR_CANNOT_LEAVE": "Como creador, no puedes salir del evento."
+  },
+
+  "EXPLORE": {
+    "TITLE": "Explorar eventos",
+    "BACK_TO_MENU": "Volver al menú",
+    "GO_TO_CREATE": "Crear evento nuevo",
+    "GO_TO_MY_EVENTS": "Mis eventos (Creados o inscrito)",
+
+    "LOADING_EVENTS": "Cargando eventos...",
+    "MAP_TITLE": "Mapa de eventos",
+    "MAP_HINT": "Desplázate y haz zoom en el mapa para ver los eventos de esa zona. Pulsa un pin para ver los detalles.",
+
+    "EMPTY_TITLE": "No hay eventos disponibles en esta zona",
+    "EMPTY_TEXT": "Mueve el mapa o cambia el zoom para buscar en otras zonas.",
+
+    "CARD_BADGE_CREATOR": "Tú eres el creador",
+    "CARD_BADGE_ADMIN": "Admin",
+    "CARD_BADGE_JOINED": "Inscrito",
+
+    "PAGINATION_PREV": "« Anterior",
+    "PAGINATION_NEXT": "Siguiente »",
+    "PAGINATION_INFO_PREFIX": "Página",
+    "PAGINATION_INFO_OF": "de",
+
+    "MODAL_TITLE": "Detalles del evento",
+    "MODAL_ADDRESS_FALLBACK": "No especificada",
+    "MODAL_CREATOR_NOTE": "Como creador, no puedes salir del evento.",
+    "MODAL_BUTTON_JOIN": "Unirme al evento",
+    "MODAL_BUTTON_LEAVE": "Salir del evento",
+    "MODAL_BUTTON_CLOSE": "Cerrar"
+  },
+
+  "CREATE_EVENT": {
+    "TITLE": "Crear nuevo evento",
+    "BACK_TO_MENU": "Volver al menú",
+    "GO_TO_EXPLORE": "Explorar eventos (mapa)",
+    "GO_TO_MY_EVENTS": "Mis eventos (Creados o inscrito)",
+
+    "FORM_TITLE": "Completa los datos del evento",
+
+    "FIELD_NAME_LABEL": "Título del evento",
+    "FIELD_NAME_PLACEHOLDER": "Ej: Reunión de planificación Q4",
+    "FIELD_NAME_ERROR_MIN": "⚠ El título es obligatorio (mínimo 3 caracteres).",
+
+    "FIELD_ADDRESS_LABEL": "Dirección",
+    "FIELD_ADDRESS_PLACEHOLDER": "Ej: C/ Mallorca 123, Barcelona",
+
+    "FIELD_DATE_LABEL": "Fecha",
+    "FIELD_TIME_LABEL": "Hora",
+
+    "SCHEDULE_SET": "📅 Establecer horario",
+    "SCHEDULE_CLEAR": "❌ Quitar",
+    "SCHEDULE_SELECTED": "Seleccionado:",
+    "SCHEDULE_NONE": "Sin horario establecido",
+
+    "ERROR_MESSAGE_PREFIX": "⚠",
+    "SUBMIT_DEFAULT": "💾 Guardar evento",
+    "SUBMIT_SAVING": "Guardando…"
+  },
+
+  "MY_EVENTS": {
+    "TITLE": "Mis eventos",
+    "BACK_TO_MENU": "Volver al menú",
+    "GO_TO_CREATE": "Crear evento nuevo",
+    "GO_TO_EXPLORE": "Explorar eventos (mapa)",
+    "LOADING": "Cargando eventos.",
+    "ERROR_MESSAGE_PREFIX": "Error:",
+
+    "CREATED_TITLE": "📝 Eventos que he creado ({{count}})",
+    "CREATED_EMPTY_TEXT": "Aún no has creado ningún evento",
+    "BADGE_CREATOR": "Creador",
+
+    "FIELD_ADDRESS": "Dirección:",
+    "BUTTON_VIEW_MAP": "🗺 Ver mapa",
+    "FIELD_SCHEDULE": "Horario:",
+    "FIELD_PARTICIPANTS": "Participantes:",
+
+    "RATINGS_LABEL": "Valoraciones:",
+    "RATINGS_NONE": "Sin valoraciones",
+    "BUTTON_VIEW_RATINGS": "Ver/Agregar valoraciones",
+    "BUTTON_EDIT": "✏️ Modificar",
+    "BUTTON_DELETE": "🗑️ Eliminar",
+
+    "JOINED_TITLE": "🎯 Eventos en los que estoy inscrito ({{count}})",
+    "JOINED_EMPTY_TEXT": "Aún no estás inscrito en ningún evento",
+    "JOINED_BUTTON_EXPLORE": "Explorar eventos",
+
+    "BADGE_JOINED": "Inscrito",
+
+    "BUTTON_LEAVE": "👋 Salir del evento",
+
+    "DELETE_MODAL_TITLE": "Eliminar evento",
+    "DELETE_MODAL_TEXT": "¿Seguro que quieres eliminar <strong>{{name}}</strong>?",
+    "DELETE_MODAL_CANCEL": "Cancelar",
+    "DELETE_MODAL_CONFIRM": "🗑️ Eliminar",
+
+    "LEAVE_MODAL_TITLE": "Salir del evento",
+    "LEAVE_MODAL_TEXT": "¿Seguro que quieres salir de <strong>{{name}}</strong>?",
+    "LEAVE_MODAL_CANCEL": "Cancelar",
+    "LEAVE_MODAL_CONFIRM": "Salir"
+  },
+
+  "RATINGS": {
+    "MODAL_TITLE_PREFIX": "Valoraciones —",
+    "SUMMARY_AVG": "Media:",
+    "SUMMARY_TOTAL": "Total:",
+    "YOUR_RATING_TITLE": "Tu valoración",
+    "YOUR_RATING_SCORE_LABEL": "Puntuación:",
+    "YOUR_RATING_SCORE_TEXT": "({{score}}/5)",
+    "YOUR_RATING_COMMENT_LABEL": "Comentario (opcional):",
+    "YOUR_RATING_COMMENT_PLACEHOLDER": "Escribe tu opinión.",
+    "YOUR_RATING_SAVE_BUTTON": "Guardar valoración",
+    "ERROR": "Error al guardar la valoración.",
+    "INFO": "Valoración guardada correctamente.",
+    "SEARCH_PLACEHOLDER": "Buscar comentarios…",
+    "SEARCH_BUTTON": "Buscar",
+    "LIST_PAGE_INFO": "Página {{page}} de {{totalPages}}",
+    "LIST_TOTAL_ITEMS": "({{total}} valoraciones)",
+    "LIST_NO_COMMENT": "Sin comentario",
+    "LIST_NO_RATINGS": "No hay valoraciones.",
+    "PAGER_PREV": "◀︎ Anterior",
+    "PAGER_NEXT": "Siguiente ▶︎",
+    "CLOSE_BUTTON": "Cerrar"
+  },
+
+  "MAP": {
+    "MODAL_TITLE_PREFIX": "Ubicación del evento —",
+    "NO_MAP": "No se ha podido mostrar el mapa para este evento.",
+    "OPEN_LARGE": "Ver en mapa grande",
+    "CLOSE": "Cerrar"
+  }
+}
