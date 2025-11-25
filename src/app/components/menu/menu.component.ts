@@ -68,6 +68,9 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   currentLang: 'es' | 'en' = 'es';
   showLangMenu = false;
+  theme: string = 'light';
+
+
 
   get mTotalPages(): number {
     const n = this.filteredUsers().length;
@@ -164,6 +167,10 @@ export class MenuComponent implements OnInit, OnDestroy {
         const myId = this.getId(m);
         if (myId) this.cargarAmigos(myId);
       });
+
+      const saved = localStorage.getItem('theme') || 'light';
+      this.theme = saved;
+      document.body.classList.add(`${this.theme}-theme`);
   }
 
   ngOnDestroy(): void {
@@ -601,4 +608,18 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.changeLanguage(lang);
     this.showLangMenu = false;
   }
+  toggleTheme() {
+  const saved = localStorage.getItem('theme');
+  this.theme = saved ? saved : 'light';
+
+  const isDark = this.theme === 'dark';
+  this.theme = isDark ? 'light' : 'dark';
+
+  document.body.classList.remove('light-theme', 'dark-theme');
+  document.body.classList.add(`${this.theme}-theme`);
+
+  localStorage.setItem('theme', this.theme);
 }
+}
+
+

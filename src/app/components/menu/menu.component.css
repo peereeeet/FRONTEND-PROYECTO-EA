@@ -516,6 +516,21 @@
   transition: background 0.15s ease;
 }
 
+.theme-toggle {
+  margin-left: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  color: inherit;
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.2);
+}
+
+
 .lang-option:hover {
   background: #eff6ff;
   color: #1d4ed8;

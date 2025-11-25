@@ -24,6 +24,7 @@
             (click)="selectLanguage('es')">
             🇪🇸 {{ 'LANG.ES' | translate }}
           </button>
+      
 
           <button
             type="button"
@@ -33,10 +34,16 @@
             🇬🇧 {{ 'LANG.EN' | translate }}
           </button>
         </div>
-      </div>
+        <button class="theme-toggle" (click)="toggleTheme()">
+            {{ theme === 'dark' ? '☀️' : '🌙' }}
+          </button>
+        </div>
       <h1 class="app-bar__title">{{ 'MENU.TITLE' | translate }}</h1>
     </div>
+    
   </header>
+
+
 
   <section class="menu-container">
     <header class="menu-header">
@@ -286,4 +293,3 @@
       </div>
     </div>
   </section>
-</div>
