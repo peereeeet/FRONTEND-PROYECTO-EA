@@ -50,10 +50,12 @@ export class CrearEventosComponent implements OnInit {
   latStr = '';
   lngStr = '';
 
-  currentLang: 'es' | 'en' = 'es';
+  currentLang: 'es' | 'en' | 'cat' | 'fr' =
+    (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
   constructor(private translate: TranslateService) {
+    this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
@@ -320,12 +322,14 @@ export class CrearEventosComponent implements OnInit {
     localStorage.setItem('lang', lang);
   }
 
-  toggleLangMenu() {
+  toggleLangMenu(): void {
     this.showLangMenu = !this.showLangMenu;
   }
 
-  selectLanguage(lang: 'es' | 'en') {
-    this.changeLanguage(lang);
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
     this.showLangMenu = false;
   }
 }

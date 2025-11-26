@@ -1,0 +1,333 @@
+{
+  "LOGIN": {
+    "TITLE": "Benvingut",
+    "SUBTITLE": "Inicia sessió al teu compte",
+    "USERNAME_LABEL": "Nom d'usuari",
+    "USERNAME_PLACEHOLDER": "Introdueix el teu usuari",
+    "USERNAME_REQUIRED": "El nom d'usuari és obligatori",
+    "USERNAME_MIN": "Mínim 3 caràcters",
+    "PASSWORD_LABEL": "Contrasenya",
+    "PASSWORD_PLACEHOLDER": "Introdueix la teva contrasenya",
+    "PASSWORD_REQUIRED": "La contrasenya és obligatòria",
+    "PASSWORD_MIN": "Mínim 4 caràcters",
+    "FORGOT": "Has oblidat la contrasenya?",
+    "BUTTON": "Inicia sessió",
+    "BUTTON_LOADING": "Iniciant sessió...",
+    "NO_ACCOUNT": "No tens compte? Registra't aquí.",
+    "CREATE_USER": "Crear usuari",
+    "FORGOT_TITLE": "Restablir contrasenya",
+    "FORGOT_TEXT": "Introdueix el teu <strong>email</strong> o <strong>usuari</strong>. Si existeix, t'enviarem instruccions.",
+    "FORGOT_IDENTIFIER_LABEL": "Email o usuari",
+    "FORGOT_IDENTIFIER_PLACEHOLDER": "ex: joan@mail.com o joan23",
+    "FORGOT_REQUIRED": "Aquest camp és obligatori",
+    "FORGOT_CANCEL": "Cancel·lar",
+    "FORGOT_SUBMIT": "Rebre instruccions",
+    "DIRECT_TITLE": "Canviar contrasenya",
+    "DIRECT_USER_PREFIX": "Usuari:",
+    "DIRECT_NEW_PASSWORD_LABEL": "Nova contrasenya",
+    "DIRECT_NEW_PASSWORD_PLACEHOLDER": "Mínim 7 caràcters",
+    "DIRECT_CANCEL": "Cancel·lar",
+    "DIRECT_CONFIRM": "Confirmar",
+    "DIRECT_SAVING": "Desant…",
+    "ERROR_GENERIC": "Error en iniciar sessió. Verifica les credencials."
+  },
+
+  "REGISTER": {
+    "TITLE": "Crear un compte nou",
+    "SUBTITLE": "Registra't per continuar",
+    "USERNAME_LABEL": "Nom d'usuari",
+    "USERNAME_PLACEHOLDER": "El teu nom d'usuari",
+    "USERNAME_REQUIRED": "El nom és obligatori.",
+    "USERNAME_MIN": "Mínim 3 caràcters.",
+    "USERNAME_EXISTS": "Aquest nom d'usuari ja està en ús.",
+    "EMAIL_LABEL": "Email",
+    "EMAIL_PLACEHOLDER": "exemple@correu.com",
+    "EMAIL_REQUIRED": "El correu és obligatori.",
+    "EMAIL_INVALID": "Format no vàlid.",
+    "EMAIL_EXISTS": "Aquest correu ja està registrat.",
+    "PASSWORD_LABEL": "Contrasenya",
+    "PASSWORD_PLACEHOLDER": "Crea una contrasenya",
+    "PASSWORD_REQUIRED": "La contrasenya és obligatòria.",
+    "PASSWORD_MIN": "Mínim 7 caràcters.",
+    "CONFIRM_PASSWORD_LABEL": "Confirmar contrasenya",
+    "CONFIRM_PASSWORD_PLACEHOLDER": "Repeteix la contrasenya",
+    "CONFIRM_PASSWORD_MISMATCH": "Les contrasenyes no coincideixen.",
+    "BIRTHDAY_LABEL": "Aniversari",
+    "BIRTHDAY_REQUIRED": "La data és obligatòria.",
+    "BIRTHDAY_FUTURE": "Ha de ser anterior a avui.",
+    "BUTTON": "Registrar",
+    "BUTTON_LOADING": "Registrant...",
+    "BACK_TO_LOGIN": "Tornar al Login"
+  },
+
+  "LANG": {
+    "SWITCH_LABEL": "Idioma",
+    "ES": "Espanyol",
+    "EN": "Anglès",
+    "CAT": "Català",
+    "FR": "Francès"
+  },
+
+  "STATUS": {
+    "ONLINE": "En línia",
+    "OFFLINE": "Desconnectat"
+  },
+
+  "COMMON": {
+    "BACK_TO_MENU": "Tornar al menú",
+    "CLOSE": "Tancar",
+    "CANCEL": "Cancel·lar",
+    "SAVE": "Desar",
+    "SAVING": "Desant…",
+    "DELETE": "Eliminar",
+    "CONFIRM": "Confirmar",
+    "LOADING": "Carregant…",
+    "YES": "Sí",
+    "NO": "No",
+    "ERROR_GENERIC": "S'ha produït un error.",
+    "SEARCH": "Cercar",
+    "PAGE": "Pàgina",
+    "OF": "de",
+    "TOTAL": "Total",
+    "NO_RESULTS": "Sense resultats.",
+    "MAP": "Mapa",
+    "OPEN_LARGE_MAP": "Veure en mapa gran",
+    "NOT_AVAILABLE": "No disponible"
+  },
+
+  "MENU": {
+    "TITLE": "Menú principal",
+    "USER_FALLBACK": "Usuari",
+    "PROFILE_BUTTON": "El meu perfil",
+    "LOGOUT_BUTTON": "Tancar sessió",
+
+    "EVENTS_TITLE": "Esdeveniments",
+    "EVENTS_CREATE": "Crear nou esdeveniment",
+    "EVENTS_EXPLORE_MAP": "Explorar esdeveniments (mapa)",
+    "EVENTS_MY": "Els meus esdeveniments (creats o inscrits)",
+    "LOADING": "Carregant…",
+
+    "FRIENDS_TITLE": "Amics",
+    "FRIENDS_BUTTON_EXPLORE_USERS": "Explorar usuaris",
+    "FRIENDS_BUTTON_REQUESTS": "Sol·licituds rebudes",
+    "FRIENDS_ONLINE": "En línia",
+    "FRIENDS_OFFLINE": "Fora de línia",
+    "FRIENDS_REMOVE": "Eliminar",
+    "FRIENDS_EMPTY": "Encara no tens amics per mostrar.",
+    "FRIENDS_SEARCH_ADD": "Cercar i afegir amics",
+
+    "MODAL_EXPLORE_TITLE": "Explorar usuaris",
+    "MODAL_SEARCH_PLACEHOLDER": "Cercar per usuari o correu",
+    "MODAL_SEARCH_BUTTON": "Cercar",
+    "MODAL_USERS_TITLE": "Usuaris",
+    "MODAL_PAGE_LABEL": "Pàgina",
+    "MODAL_TOTAL_LABEL": "Total",
+    "MODAL_REQUEST_PENDING": "Sol·licitud pendent",
+    "MODAL_REQUEST_SENT": "Sol·licitud enviada",
+    "MODAL_ADD_BUTTON": "Afegir",
+    "MODAL_NO_USERS": "No hi ha usuaris per mostrar (o ja són amics).",
+    "MODAL_CLOSE": "Tancar",
+
+    "REQUESTS_TITLE": "Sol·licituds d'amistat",
+    "REQUESTS_LOADING": "Carregant sol·licituds...",
+    "REQUESTS_EMPTY": "No tens sol·licituds pendents 😄",
+    "REQUESTS_ACCEPT": "Acceptar",
+    "REQUESTS_REJECT": "Rebutjar"
+  },
+
+  "FRIENDS": {
+    "STATE_ONLINE": "En línia",
+    "STATE_OFFLINE": "Desconnectat",
+    "REMOVE": "Eliminar",
+    "EMPTY_LIST": "Encara no tens amics per mostrar."
+  },
+
+  "PROFILE": {
+    "TITLE": "El meu perfil",
+    "LOADING": "Carregant…",
+
+    "BACK_TO_MENU": "Tornar al menú",
+    "EDIT_BUTTON": "Modificar dades",
+    "DELETE_BUTTON": "Eliminar compte",
+
+    "STATUS_ONLINE": "En línia",
+    "STATUS_OFFLINE": "Desconnectat",
+
+    "FIELD_USERNAME": "Nom d'usuari",
+    "FIELD_EMAIL": "Correu",
+    "FIELD_BIRTHDAY": "Aniversari",
+    "FIELD_PASSWORD": "Contrasenya",
+
+    "EVENTS_TITLE": "Esdeveniments en què participo",
+    "EVENTS_EMPTY": "No participes en cap esdeveniment.",
+
+    "EDIT_MODAL_TITLE": "Modificar dades",
+    "EDIT_USERNAME_LABEL": "Nom d'usuari",
+    "EDIT_USERNAME_CHECKING": "Comprovant nom…",
+    "EDIT_USERNAME_TAKEN": "⚠ Aquest nom ja està en ús.",
+    "EDIT_EMAIL_LABEL": "Correu",
+    "EDIT_EMAIL_CHECKING": "Comprovant correu…",
+    "EDIT_EMAIL_TAKEN": "⚠ Aquest correu ja està registrat.",
+    "EDIT_BIRTHDAY_LABEL": "Aniversari",
+    "EDIT_NEW_PASSWORD_LABEL": "Nova contrasenya",
+    "EDIT_NEW_PASSWORD_PLACEHOLDER": "Deixa-ho buit per no canviar-la",
+    "EDIT_ERROR_GENERIC": "Error en desar els canvis.",
+    "EDIT_CANCEL": "Cancel·lar",
+    "EDIT_SAVE": "Desar",
+    "EDIT_SAVING": "Desant…",
+
+    "DELETE_MODAL_TITLE": "Eliminar compte",
+    "DELETE_MODAL_TEXT": "Aquesta acció és <strong>permanent</strong>. Introdueix la teva contrasenya per confirmar.",
+    "DELETE_PASSWORD_LABEL": "Contrasenya",
+    "DELETE_PASSWORD_PLACEHOLDER": "La teva contrasenya",
+    "DELETE_CANCEL": "Cancel·lar",
+    "DELETE_CONFIRM": "Eliminar definitivament",
+    "DELETE_DELETING": "Eliminant…"
+  },
+
+  "EVENTS": {
+    "LABEL_CREATOR": "Creador:",
+    "LABEL_ADDRESS": "Adreça:",
+    "LABEL_SCHEDULE": "Horari:",
+    "LABEL_PARTICIPANTS": "Participants:",
+    "LABEL_RATINGS": "Valoracions:",
+    "LABEL_RATINGS_COUNT_SUFFIX": "valoracions",
+    "LABEL_RATINGS_NONE": "Sense valoracions",
+    "YOU_ARE_CREATOR": "Tu ets el creador",
+    "ADMIN_BADGE": "Admin",
+    "JOINED_BADGE": "Inscrit",
+    "BUTTON_JOIN": "Unir-se a l'esdeveniment",
+    "BUTTON_LEAVE": "Sortir de l'esdeveniment",
+    "CREATOR_CANNOT_LEAVE": "Com a creador no pots sortir de l'esdeveniment."
+  },
+
+  "EXPLORE": {
+    "TITLE": "Explorar esdeveniments",
+    "BACK_TO_MENU": "Tornar al menú",
+    "GO_TO_CREATE": "Crear esdeveniment nou",
+    "GO_TO_MY_EVENTS": "Els meus esdeveniments (creats o inscrits)",
+
+    "LOADING_EVENTS": "Carregant esdeveniments...",
+    "MAP_TITLE": "Mapa d'esdeveniments",
+    "MAP_HINT": "Mou-te i fes zoom al mapa per veure els esdeveniments de la zona. Toca un punt per veure'n els detalls.",
+
+    "EMPTY_TITLE": "No hi ha esdeveniments disponibles en aquesta zona",
+    "EMPTY_TEXT": "Mou el mapa o canvia el zoom per cercar en altres zones.",
+
+    "CARD_BADGE_CREATOR": "Tu ets el creador",
+    "CARD_BADGE_ADMIN": "Admin",
+    "CARD_BADGE_JOINED": "Inscrit",
+
+    "PAGINATION_PREV": "« Anterior",
+    "PAGINATION_NEXT": "Següent »",
+    "PAGINATION_INFO_PREFIX": "Pàgina",
+    "PAGINATION_INFO_OF": "de",
+
+    "MODAL_TITLE": "Detalls de l'esdeveniment",
+    "MODAL_ADDRESS_FALLBACK": "No especificada",
+    "MODAL_CREATOR_NOTE": "Com a creador no pots sortir de l'esdeveniment.",
+    "MODAL_BUTTON_JOIN": "Unir-me a l'esdeveniment",
+    "MODAL_BUTTON_LEAVE": "Sortir de l'esdeveniment",
+    "MODAL_BUTTON_CLOSE": "Tancar"
+  },
+
+  "CREATE_EVENT": {
+    "TITLE": "Crear un nou esdeveniment",
+    "BACK_TO_MENU": "Tornar al menú",
+    "GO_TO_EXPLORE": "Explorar esdeveniments (mapa)",
+    "GO_TO_MY_EVENTS": "Els meus esdeveniments (creats o inscrits)",
+
+    "FORM_TITLE": "Completa les dades de l'esdeveniment",
+
+    "FIELD_NAME_LABEL": "Títol de l'esdeveniment",
+    "FIELD_NAME_PLACEHOLDER": "Ex: Reunió de planificació Q4",
+    "FIELD_NAME_ERROR_MIN": "⚠ El títol és obligatori (mínim 3 caràcters).",
+
+    "FIELD_ADDRESS_LABEL": "Adreça",
+    "FIELD_ADDRESS_PLACEHOLDER": "Ex: C/ Mallorca 123, Barcelona",
+
+    "FIELD_DATE_LABEL": "Data",
+    "FIELD_TIME_LABEL": "Hora",
+
+    "SCHEDULE_SET": "📅 Establir horari",
+    "SCHEDULE_CLEAR": "❌ Treure",
+    "SCHEDULE_SELECTED": "Seleccionat:",
+    "SCHEDULE_NONE": "Sense horari establert",
+
+    "ERROR_MESSAGE_PREFIX": "⚠",
+    "SUBMIT_DEFAULT": "💾 Desar esdeveniment",
+    "SUBMIT_SAVING": "Desant…"
+  },
+
+  "MY_EVENTS": {
+    "TITLE": "Els meus esdeveniments",
+    "BACK_TO_MENU": "Tornar al menú",
+    "GO_TO_CREATE": "Crear nou esdeveniment",
+    "GO_TO_EXPLORE": "Explorar esdeveniments (mapa)",
+    "LOADING": "Carregant esdeveniments.",
+    "ERROR_MESSAGE_PREFIX": "Error:",
+
+    "CREATED_TITLE": "📝 Esdeveniments que he creat ({{count}})",
+    "CREATED_EMPTY_TEXT": "Encara no has creat cap esdeveniment",
+    "BADGE_CREATOR": "Creador",
+
+    "FIELD_ADDRESS": "Adreça:",
+    "BUTTON_VIEW_MAP": "🗺 Veure mapa",
+    "FIELD_SCHEDULE": "Horari:",
+    "FIELD_PARTICIPANTS": "Participants:",
+
+    "RATINGS_LABEL": "Valoracions:",
+    "RATINGS_NONE": "Sense valoracions",
+    "BUTTON_VIEW_RATINGS": "Veure/Afegir valoracions",
+    "BUTTON_EDIT": "✏️ Modificar",
+    "BUTTON_DELETE": "🗑️ Eliminar",
+
+    "JOINED_TITLE": "🎯 Esdeveniments als quals estic inscrit ({{count}})",
+    "JOINED_EMPTY_TEXT": "Encara no estàs inscrit en cap esdeveniment",
+    "JOINED_BUTTON_EXPLORE": "Explorar esdeveniments",
+
+    "BADGE_JOINED": "Inscrit",
+
+    "BUTTON_LEAVE": "👋 Sortir de l'esdeveniment",
+
+    "DELETE_MODAL_TITLE": "Eliminar esdeveniment",
+    "DELETE_MODAL_TEXT": "Segur que vols eliminar <strong>{{name}}</strong>?",
+    "DELETE_MODAL_CANCEL": "Cancel·lar",
+    "DELETE_MODAL_CONFIRM": "🗑️ Eliminar",
+
+    "LEAVE_MODAL_TITLE": "Sortir de l'esdeveniment",
+    "LEAVE_MODAL_TEXT": "Segur que vols sortir de <strong>{{name}}</strong>?",
+    "LEAVE_MODAL_CANCEL": "Cancel·lar",
+    "LEAVE_MODAL_CONFIRM": "Sortir"
+  },
+
+  "RATINGS": {
+    "MODAL_TITLE_PREFIX": "Valoracions —",
+    "SUMMARY_AVG": "Mitjana:",
+    "SUMMARY_TOTAL": "Total:",
+    "YOUR_RATING_TITLE": "La teva valoració",
+    "YOUR_RATING_SCORE_LABEL": "Puntuació:",
+    "YOUR_RATING_SCORE_TEXT": "({{score}}/5)",
+    "YOUR_RATING_COMMENT_LABEL": "Comentari (opcional):",
+    "YOUR_RATING_COMMENT_PLACEHOLDER": "Escriu la teva opinió.",
+    "YOUR_RATING_SAVE_BUTTON": "Desar valoració",
+    "ERROR": "Error en desar la valoració.",
+    "INFO": "Valoració desada correctament.",
+    "SEARCH_PLACEHOLDER": "Cercar comentaris…",
+    "SEARCH_BUTTON": "Cercar",
+    "LIST_PAGE_INFO": "Pàgina {{page}} de {{totalPages}}",
+    "LIST_TOTAL_ITEMS": "({{total}} valoracions)",
+    "LIST_NO_COMMENT": "Sense comentari",
+    "LIST_NO_RATINGS": "No hi ha valoracions.",
+    "PAGER_PREV": "◀︎ Anterior",
+    "PAGER_NEXT": "Següent ▶︎",
+    "CLOSE_BUTTON": "Tancar"
+  },
+
+  "MAP": {
+    "MODAL_TITLE_PREFIX": "Ubicació de l'esdeveniment —",
+    "NO_MAP": "No s'ha pogut mostrar el mapa per aquest esdeveniment.",
+    "OPEN_LARGE": "Veure en mapa gran",
+    "CLOSE": "Tancar"
+  }
+}

@@ -63,7 +63,9 @@
   "LANG": {
     "SWITCH_LABEL": "Idioma",
     "ES": "Español",
-    "EN": "Inglés"
+    "EN": "Inglés",
+    "CAT": "Catalán",
+    "FR": "Francés"
   },
 
   "STATUS": {

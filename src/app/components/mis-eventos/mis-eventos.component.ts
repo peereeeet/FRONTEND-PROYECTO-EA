@@ -66,7 +66,8 @@ export class MisEventosComponent implements OnInit {
   mapLinkUrl: string | null = null;
   mapSafeUrl: SafeResourceUrl | null = null;
 
-  currentLang: 'es' | 'en' = 'es';
+  currentLang: 'es' | 'en' | 'cat' | 'fr' =
+    (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
   constructor(
@@ -78,6 +79,7 @@ export class MisEventosComponent implements OnInit {
     private translate: TranslateService
   ) 
   {
+    this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
@@ -466,12 +468,14 @@ hasLocation(evento: any): boolean {
     localStorage.setItem('lang', lang);
   }
 
-  toggleLangMenu() {
+  toggleLangMenu(): void {
     this.showLangMenu = !this.showLangMenu;
   }
 
-  selectLanguage(lang: 'es' | 'en') {
-    this.changeLanguage(lang);
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
     this.showLangMenu = false;
   }
 }

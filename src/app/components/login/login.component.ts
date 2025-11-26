@@ -18,8 +18,6 @@ export class LoginComponent {
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';
-  private starInterval: any;
-  private cometInterval: any;
 
   forgotOpen = false;
   sending = false;
@@ -34,7 +32,7 @@ export class LoginComponent {
   foundUserLabel = '';
   directSaving = false;
 
-  currentLang: 'es' | 'en' = 'es';
+  currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
   get forgotTouchedInvalid() {
@@ -61,6 +59,7 @@ export class LoginComponent {
       newPassword: ['', [Validators.required, Validators.minLength(7)]],
     });
 
+    this.translate.use(this.currentLang);
     this.translate.addLangs(['es', 'en']);
     this.translate.setDefaultLang('es');
 
@@ -239,12 +238,14 @@ export class LoginComponent {
     });
   }
 
-  toggleLangMenu() {
+  toggleLangMenu(): void {
     this.showLangMenu = !this.showLangMenu;
   }
 
-  selectLanguage(lang: 'es' | 'en') {
-    this.changeLanguage(lang);
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
     this.showLangMenu = false;
   }
 }

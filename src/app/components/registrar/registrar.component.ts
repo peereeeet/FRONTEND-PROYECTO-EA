@@ -35,12 +35,13 @@ export class RegistrarComponent {
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
-  currentLang: 'es' | 'en' = 'es';
+  currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
   constructor(private userService: UserService, private router: Router, private translate: TranslateService) {
     const today = new Date();
     this.maxDate = today.toISOString().split('T')[0];
+    this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
@@ -123,10 +124,10 @@ export class RegistrarComponent {
     this.showLangMenu = !this.showLangMenu;
   }
 
-  selectLanguage(lang: 'es' | 'en'): void {
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
     this.currentLang = lang;
-    this.translate.use(lang);
     localStorage.setItem('lang', lang);
+    this.translate.use(lang);
     this.showLangMenu = false;
   }
 
