@@ -1,7 +1,8 @@
 /* ========== FONDO TIPO MENÚ ========== */
 .home-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #1e3a8a 100%);
+  /* CAMBIO: Usar variable para el fondo */
+  background: var(--background);
   position: relative;
   overflow: hidden;
   padding: 20px;
@@ -9,9 +10,13 @@
 }
 
 /* Nebulosas/luz suave, mismo patrón que menú/mis-eventos */
+/* NOTA: Estos gradientes radiales se dejan fijos o se ajustan para el modo oscuro, pero el cambio principal ocurre en el background del body. */
 .space-background {
   position: absolute;
   inset: 0;
+  /* Estos gradientes radiales ya usan RGBA y se mezclan bien con el fondo.
+     Si deseas un cambio más drástico, puedes usar variables aquí también.
+     Por ahora, los mantenemos para no romper el efecto 'espacial'. */
   background:
     radial-gradient(600px 300px at 20% 60%, rgba(167,139,250,.32), transparent 60%),
     radial-gradient(500px 260px at 80% 25%, rgba(59,130,246,.32), transparent 60%),
@@ -33,9 +38,11 @@
 
 /* ========== APP BAR VIBRANTE (alineada con MENU) ========== */
 .app-bar {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border-bottom: 3px solid #c7d2fe;
-  box-shadow: 0 8px 24px rgba(124,58,237,.15), 0 0 40px rgba(59,130,246,.1);
+  /* CAMBIO: Usar variables para el fondo y borde */
+  background: var(--surface-gradient);
+  border-bottom: 3px solid var(--border);
+  /* CAMBIO: Usar variable de sombra */
+  box-shadow: var(--shadow-lg); 
   position: sticky;
   top: 0;
   z-index: 10;
@@ -44,7 +51,7 @@
 .app-bar__content {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* mantenemos el layout de home */
+  justify-content: space-between;
   padding: 14px 24px;
   position: relative;
   z-index: 2;
@@ -66,19 +73,23 @@
   margin: 0;
   color: transparent;
   font-weight: 900;
+  /* CAMBIO: Mantener el degradado para el título, pero puedes usar var(--primary-X) si lo deseas */
   background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #0ea5e9 100%);
   -webkit-background-clip: text;
   background-clip: text;
+  /* CAMBIO: Usar un color de sombra para el texto más neutral o primario */
   text-shadow: 0 0 30px rgba(124,58,237,.2);
 }
 
 .app-bar__user {
-  color: #1e3a8a;
+  /* CAMBIO: Usar color de texto secundario/débil */
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
 /* Botón logout coherente con el resto */
 .logout-button {
+  /* Mantener este botón rojo/peligro fijo por coherencia UX (logout) */
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
   border: none;
@@ -109,15 +120,18 @@
 
 /* ========== TARJETAS / SECCIONES (glass + borde como menú) ========== */
 .hero {
-  background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(248,250,252,.96));
-  backdrop-filter: blur(12px);
+  /* CAMBIO: Usar superficie y fondo/blur dinámico */
+  background: var(--surface-glass);
+  backdrop-filter: var(--backdrop-blur);
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 20px 40px rgba(15,23,42,.35), 0 0 70px rgba(59,130,246,.25);
-  border: 2px solid rgba(167,139,250,.4);
+  /* CAMBIO: Usar variable de sombra */
+  box-shadow: var(--shadow-xl); 
+  /* CAMBIO: Usar borde dinámico */
+  border: 2px solid var(--border);
 }
 
-.hero__content { text-align: center; }
+.hero__content { color: var(--text-primary); text-align: center; }
 
 .hero__icon {
   font-size: 4rem;
@@ -129,7 +143,8 @@
   font-size: 2.5rem;
   margin: 0 0 16px 0;
   font-weight: 800;
-  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  /* CAMBIO: Usar gradiente para el título (si quieres que cambie, usa variables para los colores dentro del linear-gradient) */
+  background: var(--gradient-primary); 
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -137,7 +152,8 @@
 
 .hero__subtitle {
   font-size: 1.2rem;
-  color: #cbd5f5;
+  /* CAMBIO: Usar color de texto secundario */
+  color: var(--text-secondary);
   margin: 0 0 30px 0;
   line-height: 1.6;
 }
@@ -151,12 +167,13 @@
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #3b82f6, #1e40af);
-  color: white;
+  /* CAMBIO: Usar gradiente de color primario */
+  background: var(--gradient-primary);
+  color: white; /* El texto se mantiene blanco sobre el primario */
   padding: 20px;
   border-radius: 14px;
   text-align: center;
-  box-shadow: 0 12px 28px rgba(59,130,246,.4);
+  box-shadow: 0 12px 28px rgba(59,130,246,.4); /* Mantener sombra de color */
 }
 
 .stat-number {
@@ -172,26 +189,31 @@
 
 /* Aside navegación */
 .nav-section {
-  background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(248,250,252,.96));
-  backdrop-filter: blur(12px);
+  /* CAMBIO: Usar superficie y fondo/blur dinámico */
+  background: var(--surface-glass);
+  backdrop-filter: var(--backdrop-blur);
   border-radius: 24px;
   padding: 30px;
-  box-shadow: 0 20px 40px rgba(15,23,42,.35), 0 0 70px rgba(59,130,246,.25);
-  border: 2px solid rgba(129,140,248,.4);
+  /* CAMBIO: Usar variable de sombra */
+  box-shadow: var(--shadow-xl);
+  /* CAMBIO: Usar borde dinámico */
+  border: 2px solid var(--border);
 }
 
 .nav__title {
   font-size: 1.8rem;
   margin: 0 0 8px 0;
   font-weight: 800;
-  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  /* CAMBIO: Usar gradiente primario */
+  background: var(--gradient-primary); 
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .nav__subtitle {
-  color: #64748b;
+  /* CAMBIO: Usar color de texto secundario */
+  color: var(--text-secondary);
   margin: 0 0 30px 0;
   font-size: 1rem;
 }
@@ -204,24 +226,29 @@
   align-items: center;
   gap: 16px;
   padding: 20px;
-  background: white;
+  /* CAMBIO: Usar superficie de tarjeta/elemento */
+  background: var(--surface);
   border-radius: 16px;
   text-decoration: none;
   color: inherit;
   border: 2px solid transparent;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 16px rgba(15,23,42,.15);
+  /* CAMBIO: Usar variable de sombra */
+  box-shadow: var(--shadow-md);
 }
 .nav-card:hover {
   transform: translateY(-4px);
-  border-color: #3b82f6;
-  box-shadow: 0 12px 32px rgba(59,130,246,.35);
+  /* CAMBIO: Usar color primario para el borde al hacer hover */
+  border-color: var(--primary-500);
+  /* CAMBIO: Usar variable de sombra */
+  box-shadow: var(--shadow-xl);
 }
 
 .nav-card__icon {
   width: 52px;
   height: 52px;
-  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  /* CAMBIO: Usar gradiente primario */
+  background: var(--gradient-primary);
   border-radius: 14px;
   display: flex;
   align-items: center;
@@ -234,11 +261,13 @@
 .nav-card__title {
   font-size: 1.2rem;
   margin: 0 0 4px 0;
-  color: #0f172a;
+  /* CAMBIO: Usar color de texto primario */
+  color: var(--text-primary);
   font-weight: 700;
 }
 .nav-card__description {
-  color: #64748b;
+  /* CAMBIO: Usar color de texto secundario */
+  color: var(--text-secondary);
   margin: 0;
   font-size: 0.9rem;
 }
@@ -252,21 +281,25 @@
 }
 .quick-action {
   padding: 12px 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  /* CAMBIO: Usar superficie de tarjeta/elemento */
+  background: var(--surface);
+  /* CAMBIO: Usar borde dinámico */
+  border: 1px solid var(--border);
   border-radius: 10px;
   text-decoration: none;
-  color: #475569;
+  /* CAMBIO: Usar color de texto secundario */
+  color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
   transition: all 0.25s ease;
 }
 .quick-action:hover {
-  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  /* CAMBIO: Usar gradiente primario al hacer hover */
+  background: var(--gradient-primary);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59,130,246,.4);
+  box-shadow: 0 8px 20px rgba(59,130,246,.4); /* Mantener sombra de color */
 }
 
 /* ========== RESPONSIVE ========== */

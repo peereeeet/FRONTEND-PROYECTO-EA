@@ -1,295 +1,292 @@
 <div class="menu-page">
-  <div class="space-background"></div>
-  <div class="stars"></div>
+    <div class="space-background"></div>
+    <div class="stars"></div>
 
-  <header class="app-bar">
-    <div class="app-bar__content centered" style="position: relative;">
-      <div class="lang-switcher-menu">
-        <button
-          type="button"
-          class="lang-toggle"
-          (click)="toggleLangMenu()">
-          <span class="lang-icon">🌐</span>
-          <span class="lang-current">
-            {{ currentLang === 'es' ? ('LANG.ES' | translate) : ('LANG.EN' | translate) }}
-          </span>
-          <span class="lang-arrow">▾</span>
-        </button>
+    <header class="app-bar">
+        <div class="app-bar__content centered" style="position: relative;">
+            <div class="lang-switcher-menu">
+                <button
+                    type="button"
+                    class="lang-toggle"
+                    (click)="toggleLangMenu()">
+                    <span class="lang-icon">🌐</span>
+                    <span class="lang-current">
+                        {{ currentLang === 'es' ? ('LANG.ES' | translate) : ('LANG.EN' | translate) }}
+                    </span>
+                    <span class="lang-arrow">▾</span>
+                </button>
 
-        <div class="lang-dropdown" *ngIf="showLangMenu">
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'es'"
-            (click)="selectLanguage('es')">
-            🇪🇸 {{ 'LANG.ES' | translate }}
-          </button>
-      
-
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'en'"
-            (click)="selectLanguage('en')">
-            🇬🇧 {{ 'LANG.EN' | translate }}
-          </button>
+                <div class="lang-dropdown" *ngIf="showLangMenu">
+                    <button
+                        type="button"
+                        class="lang-option"
+                        [class.active]="currentLang === 'es'"
+                        (click)="selectLanguage('es')">
+                        🇪🇸 {{ 'LANG.ES' | translate }}
+                    </button>
+                
+                    <button
+                        type="button"
+                        class="lang-option"
+                        [class.active]="currentLang === 'en'"
+                        (click)="selectLanguage('en')">
+                        🇬🇧 {{ 'LANG.EN' | translate }}
+                    </button>
+                </div>
+                
+                <button class="theme-toggle" (click)="toggleTheme()">
+                    {{ theme() === 'dark' ? '☀️' : '🌙' }}
+                </button>
+            </div>
+            <h1 class="app-bar__title">{{ 'MENU.TITLE' | translate }}</h1>
         </div>
-        <button class="theme-toggle" (click)="toggleTheme()">
-            {{ theme === 'dark' ? '☀️' : '🌙' }}
-          </button>
-        </div>
-      <h1 class="app-bar__title">{{ 'MENU.TITLE' | translate }}</h1>
-    </div>
-    
-  </header>
-
-
-
-  <section class="menu-container">
-    <header class="menu-header">
-      <div class="me">
-        <div class="avatar">👤</div>
-        <div class="me-info">
-          <h2>{{ me()?.username || ('MENU.USER_FALLBACK' | translate) }}</h2>
-          <div class="status">
-            <span class="dot" [class.online]="me()?.isOnline" [class.offline]="!me()?.isOnline"></span>
-            <span>
-              {{ me()?.isOnline ? ('STATUS.ONLINE' | translate) : ('STATUS.OFFLINE' | translate) }}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-        <button class="btn secondary" (click)="goToPerfil()">👤 {{ 'MENU.PROFILE_BUTTON' | translate }}</button>
-        <button class="logout-button" (click)="onLogout()">
-          {{ 'MENU.LOGOUT_BUTTON' | translate }}
-        </button>
-      </div>
     </header>
 
-    <div class="menu-grid">
-      <section class="events-card fixed-height">
-        <div class="events-header">
-          <h3>🎟️ {{ 'MENU.EVENTS_TITLE' | translate }}</h3>
-        </div>
 
-        <div class="events-actions">
-          <button class="btn primary" (click)="goToCrearEvento()">
-            ➕ {{ 'MENU.EVENTS_CREATE' | translate }}
-          </button>
-          <button type="button" class="btn" (click)="goToExplorarEventos()">
-            🔍 {{ 'MENU.EVENTS_EXPLORE_MAP' | translate }}
-          </button>
-          <button type="button" class="btn secondary" (click)="goToMisEventos()">
-            📅 {{ 'MENU.EVENTS_MY' | translate }}
-          </button>
-        </div>
-
-        <div class="events-body">
-          <div *ngIf="loading()" class="msg">{{ 'MENU.LOADING' | translate }}</div>
-          <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
-        </div>
-      </section>
-
-      <section class="friends-card">
-        <div class="friends-header">
-          <div class="friends-title">
-            <h3>
-              {{ 'MENU.FRIENDS_TITLE' | translate }}
-              <span class="count">{{ friends().length || 0 }}</span>
-            </h3>
-
-            <div class="inline-pager" *ngIf="(friends().length || 0) > 0">
-              <button
-                type="button"
-                class="icon-btn"
-                (click)="friendsPrev()"
-                [disabled]="fPage <= 1"
-                aria-label="Página anterior">
-                «
-              </button>
-              <span class="counter">{{ fPage }} / {{ fTotalPages() }}</span>
-              <button
-                type="button"
-                class="icon-btn"
-                (click)="friendsNext()"
-                [disabled]="fPage >= fTotalPages()"
-                aria-label="Página siguiente">
-                »
-              </button>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button type="button" class="btn" (click)="openAddFriendsModal()">
-              🔍 {{ 'MENU.FRIENDS_BUTTON_EXPLORE_USERS' | translate }}
-            </button>
-            <button type="button" class="btn secondary" (click)="openRequestsModal()">
-              📨 {{ 'MENU.FRIENDS_BUTTON_REQUESTS' | translate }}
-            </button>
-          </div>
-        </div>
-
-        <ng-container *ngIf="(friends().length || 0) > 0; else emptyList">
-          <ul class="friends-list">
-            <li *ngFor="let f of friendsPaged()">
-              <div class="left">
-                <div class="avatar small">🙂</div>
-                <div class="data">
-                  <div class="name">{{ f.username }}</div>
-                  <div class="mail">{{ f.gmail }}</div>
+    <section class="menu-container">
+        <header class="menu-header">
+            <div class="me">
+                <div class="avatar">👤</div>
+                <div class="me-info">
+                    <h2>{{ me()?.username || ('MENU.USER_FALLBACK' | translate) }}</h2>
+                    <div class="status">
+                        <span class="dot" [class.online]="me()?.isOnline" [class.offline]="!me()?.isOnline"></span>
+                        <span>
+                            {{ me()?.isOnline ? ('STATUS.ONLINE' | translate) : ('STATUS.OFFLINE' | translate) }}
+                        </span>
+                    </div>
                 </div>
-              </div>
-              <div class="right">
-                <span class="dot" [class.online]="f.isOnline" [class.offline]="!f.isOnline"></span>
-                <span class="state">
-                  {{ f.isOnline ? ('STATUS.ONLINE' | translate) : ('STATUS.OFFLINE' | translate) }}
-                </span>
-                <button type="button" class="btn danger" (click)="quitar(f._id!)">
-                  {{ 'MENU.FRIENDS_REMOVE' | translate }}
-                </button>
-              </div>
-            </li>
-          </ul>
-        </ng-container>
-
-        <ng-template #emptyList>
-          <p class="empty">{{ 'MENU.FRIENDS_EMPTY' | translate }}</p>
-          <button type="button" class="btn" (click)="openAddFriendsModal()">
-            {{ 'MENU.FRIENDS_SEARCH_ADD' | translate }}
-          </button>
-        </ng-template>
-      </section>
-    </div>
-
-    <!-- Modal explorar usuarios -->
-    <div class="modal-overlay" *ngIf="showAddModal()">
-      <div class="modal large-modal">
-        <div class="modal-header">
-          <h3>👥 {{ 'MENU.MODAL_EXPLORE_TITLE' | translate }}</h3>
-          <button class="btn-close" (click)="closeAddFriendsModal()">×</button>
-        </div>
-
-        <div class="search-row">
-          <input
-            type="text"
-            [placeholder]="'MENU.MODAL_SEARCH_PLACEHOLDER' | translate"
-            [value]="modalSearch()"
-            (input)="onModalSearchInput($event)" />
-          <button type="button" class="btn" (click)="buscarPersonas()">
-            {{ 'MENU.MODAL_SEARCH_BUTTON' | translate }}
-          </button>
-        </div>
-
-        <div *ngIf="modalError()" class="msg error">
-          ⚠️ {{ modalError() }}
-        </div>
-
-        <div class="participants-wrapper">
-          <div class="participants-column">
-            <div class="list-header">
-              <h4>{{ 'MENU.MODAL_USERS_TITLE' | translate }}</h4>
             </div>
 
-            <div class="pager">
-              <button type="button" (click)="modalPrev()" [disabled]="mPage()<=1">«</button>
-              <span class="counter">
-                {{ 'MENU.MODAL_PAGE_LABEL' | translate }} {{ mPage() }} / {{ mTotalPages }}
-              </span>
-              <button type="button" (click)="modalNext()" [disabled]="mPage()>=mTotalPages">»</button>
-              <span class="total">
-                {{ 'MENU.MODAL_TOTAL_LABEL' | translate }}: {{ filteredUsers().length }}
-              </span>
-            </div>
-
-            <div class="user-row" *ngFor="let u of modalPageItems">
-              <span class="user-name">
-                {{ u.username }}
-                <small style="color:#666">({{ u.gmail }})</small>
-              </span>
-
-              <ng-container *ngIf="isPendingFrom(u._id!); else checkSent">
-                <button type="button" class="btn-pending" (click)="openRequestsModal()">
-                  📨 {{ 'MENU.MODAL_REQUEST_PENDING' | translate }}
+            <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+                <button class="btn secondary" (click)="goToPerfil()">👤 {{ 'MENU.PROFILE_BUTTON' | translate }}</button>
+                <button class="logout-button" (click)="onLogout()">
+                    {{ 'MENU.LOGOUT_BUTTON' | translate }}
                 </button>
-              </ng-container>
+            </div>
+        </header>
 
-              <ng-template #checkSent>
-                <ng-container *ngIf="isPendingTo(u._id!); else canAddTpl">
-                  <span class="sent-text">
-                    ✅ {{ 'MENU.MODAL_REQUEST_SENT' | translate }}
-                  </span>
+        <div class="menu-grid">
+            <section class="events-card fixed-height">
+                <div class="events-header">
+                    <h3>🎟️ {{ 'MENU.EVENTS_TITLE' | translate }}</h3>
+                </div>
+
+                <div class="events-actions">
+                    <button class="btn primary" (click)="goToCrearEvento()">
+                        ➕ {{ 'MENU.EVENTS_CREATE' | translate }}
+                    </button>
+                    <button type="button" class="btn" (click)="goToExplorarEventos()">
+                        🔍 {{ 'MENU.EVENTS_EXPLORE_MAP' | translate }}
+                    </button>
+                    <button type="button" class="btn secondary" (click)="goToMisEventos()">
+                        📅 {{ 'MENU.EVENTS_MY' | translate }}
+                    </button>
+                </div>
+
+                <div class="events-body">
+                    <div *ngIf="loading()" class="msg">{{ 'MENU.LOADING' | translate }}</div>
+                    <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
+                </div>
+            </section>
+
+            <section class="friends-card">
+                <div class="friends-header">
+                    <div class="friends-title">
+                        <h3>
+                            {{ 'MENU.FRIENDS_TITLE' | translate }}
+                            <span class="count">{{ friends().length || 0 }}</span>
+                        </h3>
+
+                        <div class="inline-pager" *ngIf="(friends().length || 0) > 0">
+                            <button
+                                type="button"
+                                class="icon-btn"
+                                (click)="friendsPrev()"
+                                [disabled]="fPage <= 1"
+                                aria-label="Página anterior">
+                                «
+                            </button>
+                            <span class="counter">{{ fPage }} / {{ fTotalPages() }}</span>
+                            <button
+                                type="button"
+                                class="icon-btn"
+                                (click)="friendsNext()"
+                                [disabled]="fPage >= fTotalPages()"
+                                aria-label="Página siguiente">
+                                »
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="button" class="btn" (click)="openAddFriendsModal()">
+                            🔍 {{ 'MENU.FRIENDS_BUTTON_EXPLORE_USERS' | translate }}
+                        </button>
+                        <button type="button" class="btn secondary" (click)="openRequestsModal()">
+                            📨 {{ 'MENU.FRIENDS_BUTTON_REQUESTS' | translate }}
+                        </button>
+                    </div>
+                </div>
+
+                <ng-container *ngIf="(friends().length || 0) > 0; else emptyList">
+                    <ul class="friends-list">
+                        <li *ngFor="let f of friendsPaged()">
+                            <div class="left">
+                                <div class="avatar small">🙂</div>
+                                <div class="data">
+                                    <div class="name">{{ f.username }}</div>
+                                    <div class="mail">{{ f.gmail }}</div>
+                                </div>
+                            </div>
+                            <div class="right">
+                                <span class="dot" [class.online]="f.isOnline" [class.offline]="!f.isOnline"></span>
+                                <span class="state">
+                                    {{ f.isOnline ? ('STATUS.ONLINE' | translate) : ('STATUS.OFFLINE' | translate) }}
+                                </span>
+                                <button type="button" class="btn danger" (click)="quitar(f._id!)">
+                                    {{ 'MENU.FRIENDS_REMOVE' | translate }}
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
                 </ng-container>
-              </ng-template>
 
-              <ng-template #canAddTpl>
-                <button type="button" class="btn-add" (click)="addFromModal(u._id!)">
-                  ➕ {{ 'MENU.MODAL_ADD_BUTTON' | translate }}
-                </button>
-              </ng-template>
-            </div>
-
-            <div class="empty" *ngIf="!filteredUsers().length">
-              {{ 'MENU.MODAL_NO_USERS' | translate }}
-            </div>
-          </div>
+                <ng-template #emptyList>
+                    <p class="empty">{{ 'MENU.FRIENDS_EMPTY' | translate }}</p>
+                    <button type="button" class="btn" (click)="openAddFriendsModal()">
+                        {{ 'MENU.FRIENDS_SEARCH_ADD' | translate }}
+                    </button>
+                </ng-template>
+            </section>
         </div>
 
-        <div class="modal-actions" style="margin-top:16px;">
-          <button class="btn-cancel" (click)="closeAddFriendsModal()">
-            {{ 'MENU.MODAL_CLOSE' | translate }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal solicitudes -->
-    <div class="modal-overlay" *ngIf="showRequestsModal()">
-      <div class="modal medium-modal">
-        <div class="modal-header">
-          <h3>📨 {{ 'MENU.REQUESTS_TITLE' | translate }}</h3>
-          <button class="btn-close" (click)="closeRequestsModal()">×</button>
-        </div>
-
-        <div class="modal-body">
-          <p *ngIf="requestsLoading()">
-            {{ 'MENU.REQUESTS_LOADING' | translate }}
-          </p>
-          <p *ngIf="requestsError() && !requestsLoading()" class="msg error">
-            {{ requestsError() }}
-          </p>
-
-          <ul *ngIf="!requestsLoading() && requestsList().length">
-            <li *ngFor="let u of requestsList()">
-              <div class="left">
-                <div class="avatar small">👤</div>
-                <div class="data">
-                  <div class="name">{{ u.username }}</div>
-                  <div class="mail">{{ u.gmail }}</div>
+        <div class="modal-overlay" *ngIf="showAddModal()">
+            <div class="modal large-modal">
+                <div class="modal-header">
+                    <h3>👥 {{ 'MENU.MODAL_EXPLORE_TITLE' | translate }}</h3>
+                    <button class="btn-close" (click)="closeAddFriendsModal()">×</button>
                 </div>
-              </div>
-              <div class="right">
-                <button class="btn accept" (click)="acceptRequest(u._id!)">
-                  {{ 'MENU.REQUESTS_ACCEPT' | translate }}
-                </button>
-                <button class="btn reject" (click)="rejectRequest(u._id!)">
-                  {{ 'MENU.REQUESTS_REJECT' | translate }}
-                </button>
-              </div>
-            </li>
-          </ul>
 
-          <p *ngIf="!requestsLoading() && !requestsList().length && !requestsError()">
-            {{ 'MENU.REQUESTS_EMPTY' | translate }}
-          </p>
+                <div class="search-row">
+                    <input
+                        type="text"
+                        [placeholder]="'MENU.MODAL_SEARCH_PLACEHOLDER' | translate"
+                        [value]="modalSearch()"
+                        (input)="onModalSearchInput($event)" />
+                    <button type="button" class="btn" (click)="buscarPersonas()">
+                        {{ 'MENU.MODAL_SEARCH_BUTTON' | translate }}
+                    </button>
+                </div>
+
+                <div *ngIf="modalError()" class="msg error">
+                    ⚠️ {{ modalError() }}
+                </div>
+
+                <div class="participants-wrapper">
+                    <div class="participants-column">
+                        <div class="list-header">
+                            <h4>{{ 'MENU.MODAL_USERS_TITLE' | translate }}</h4>
+                        </div>
+
+                        <div class="pager">
+                            <button type="button" (click)="modalPrev()" [disabled]="mPage()<=1">«</button>
+                            <span class="counter">
+                                {{ 'MENU.MODAL_PAGE_LABEL' | translate }} {{ mPage() }} / {{ mTotalPages }}
+                            </span>
+                            <button type="button" (click)="modalNext()" [disabled]="mPage()>=mTotalPages">»</button>
+                            <span class="total">
+                                {{ 'MENU.MODAL_TOTAL_LABEL' | translate }}: {{ filteredUsers().length }}
+                            </span>
+                        </div>
+
+                        <div class="user-row" *ngFor="let u of modalPageItems">
+                            <span class="user-name">
+                                {{ u.username }}
+                                <small style="color:#666">({{ u.gmail }})</small>
+                            </span>
+
+                            <ng-container *ngIf="isPendingFrom(u._id!); else checkSent">
+                                <button type="button" class="btn-pending" (click)="openRequestsModal()">
+                                    📨 {{ 'MENU.MODAL_REQUEST_PENDING' | translate }}
+                                </button>
+                            </ng-container>
+
+                            <ng-template #checkSent>
+                                <ng-container *ngIf="isPendingTo(u._id!); else canAddTpl">
+                                    <span class="sent-text">
+                                        ✅ {{ 'MENU.MODAL_REQUEST_SENT' | translate }}
+                                    </span>
+                                </ng-container>
+                            </ng-template>
+
+                            <ng-template #canAddTpl>
+                                <button type="button" class="btn-add" (click)="addFromModal(u._id!)">
+                                    ➕ {{ 'MENU.MODAL_ADD_BUTTON' | translate }}
+                                </button>
+                            </ng-template>
+                        </div>
+
+                        <div class="empty" *ngIf="!filteredUsers().length">
+                            {{ 'MENU.MODAL_NO_USERS' | translate }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions" style="margin-top:16px;">
+                    <button class="btn-cancel" (click)="closeAddFriendsModal()">
+                        {{ 'MENU.MODAL_CLOSE' | translate }}
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="modal-actions" style="margin-top:16px;">
-          <button class="btn-cancel" (click)="closeRequestsModal()">
-            {{ 'MENU.MODAL_CLOSE' | translate }}
-          </button>
+        <div class="modal-overlay" *ngIf="showRequestsModal()">
+            <div class="modal medium-modal">
+                <div class="modal-header">
+                    <h3>📨 {{ 'MENU.REQUESTS_TITLE' | translate }}</h3>
+                    <button class="btn-close" (click)="closeRequestsModal()">×</button>
+                </div>
+
+                <div class="modal-body">
+                    <p *ngIf="requestsLoading()">
+                        {{ 'MENU.REQUESTS_LOADING' | translate }}
+                    </p>
+                    <p *ngIf="requestsError() && !requestsLoading()" class="msg error">
+                        {{ requestsError() }}
+                    </p>
+
+                    <ul *ngIf="!requestsLoading() && requestsList().length">
+                        <li *ngFor="let u of requestsList()">
+                            <div class="left">
+                                <div class="avatar small">👤</div>
+                                <div class="data">
+                                    <div class="name">{{ u.username }}</div>
+                                    <div class="mail">{{ u.gmail }}</div>
+                                </div>
+                            </div>
+                            <div class="right">
+                                <button class="btn accept" (click)="acceptRequest(u._id!)">
+                                    {{ 'MENU.REQUESTS_ACCEPT' | translate }}
+                                </button>
+                                <button class="btn reject" (click)="rejectRequest(u._id!)">
+                                    {{ 'MENU.REQUESTS_REJECT' | translate }}
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <p *ngIf="!requestsLoading() && !requestsList().length && !requestsError()">
+                        {{ 'MENU.REQUESTS_EMPTY' | translate }}
+                    </p>
+                </div>
+
+                <div class="modal-actions" style="margin-top:16px;">
+                    <button class="btn-cancel" (click)="closeRequestsModal()">
+                        {{ 'MENU.MODAL_CLOSE' | translate }}
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
+</div>

@@ -1,320 +1,342 @@
 @import "maplibre-gl/dist/maplibre-gl.css";
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
 
 /* =========================================================
-   VARIABLES BASE (Modo Claro)
-   ========================================================= */
+    VARIABLES BASE (Modo Claro)
+    ========================================================= */
 :root {
-  /* Colores primarios */
-  --primary-50: #eff6ff;
-  --primary-100: #dbeafe;
-  --primary-200: #bfdbfe;
-  --primary-300: #93c5fd;
-  --primary-400: #60a5fa;
-  --primary-500: #3b82f6;
-  --primary-600: #2563eb;
-  --primary-700: #1d4ed8;
-  --primary-800: #1e40af;
-  --primary-900: #1e3a8a;
+  /* =========================================================
+       🎨 PALETA VIBRANTE — MODO CLARO
+       ========================================================= */
 
-  /* Texto y superficies */
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
-  --surface: #ffffff;
-  --surface-card: #f8fafc;
-  --surface-elev: #f1f5f9;
-  --border: #e2e8f0;
-  --background-primary: #f1f5f9;
+    /* PURPLE (vibrant) */
+    --purple-50:  #faf5ff;
+    --purple-100: #f3e8ff;
+    --purple-200: #e9d5ff;
+    --purple-300: #d8b4fe;
+    --purple-400: #c084fc;
+    --purple-500: #a855f7; /* tu vibrante medio */
+    --purple-600: #9333ea;
+    --purple-700: #7c3aed; /* tu púrpura principal */
+    --purple-800: #6d28d9;
+    --purple-900: #5b21b6;
 
-  /* Gradientes */
-  --gradient-primary: linear-gradient(135deg, #3b82f6, #1e40af);
+    /* BLUE ACCENT */
+    --accent-blue: #3b82f6;
+    --accent-blue-light: #93c5fd;
+    --accent-blue-dark: #1d4ed8;
 
-  /* Sombras */
-  --shadow-sm: 0 4px 10px rgba(0,0,0,.06);
-  --shadow-md: 0 10px 20px rgba(0,0,0,.10);
-  --shadow-lg: 0 18px 40px rgba(0,0,0,.12);
-  --shadow-xl: 0 22px 55px rgba(0,0,0,.16);
+    /* CYAN ACCENT */
+    --accent-cyan: #0ea5e9;
+    --accent-cyan-light: #67e8f9;
+    --accent-cyan-dark: #0284c7;
 
-  /* App bar + botones */
-  --app-bar-bg: rgba(255,255,255,0.7);
-  --btn-bg: #f7f7fb;
-  --btn-text: #1f2937;
+    /* GLOWS */
+    --glow-purple: rgba(124, 58, 237, .25);
+    --glow-purple-strong: rgba(124, 58, 237, .45);
+    --glow-blue: rgba(59, 130, 246, .20);
+    --glow-blue-strong: rgba(59, 130, 246, .35);
+    --glow-cyan: rgba(14, 165, 233, .25);
 
-  /* Fondo dinámico - MODO CLARO (azul vibrante) */
-  --bg-gradient-start: #4b6cb7;
-  --bg-gradient-end: #182848;
+    /* BACKGROUNDS vibrantes */
+    --menu-bg-1: #1e1b4b;
+    --menu-bg-2: #312e81;
+    --menu-bg-3: #1e3a8a;
 
-  /* Radios */
-  --radius-8: 8px;
-  --radius-10: 10px;
-  --radius-12: 12px;
-  --radius-16: 16px;
-  --radius-20: 20px;
+    /* GLASS EFFECT */
+    --glass-light: rgba(255,255,255,.95);
 }
 
 /* =========================================================
-   MODO OSCURO - MEJORADO CON FONDO REALMENTE OSCURO
-   ========================================================= */
+    MODO OSCURO - MEJORADO
+    ========================================================= */
 .dark-theme {
-  /* Texto - Mayor contraste */
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
+ /* PURPLE (neon) */
+    --purple-50:  #261c3f;
+    --purple-100: #341b50;
+    --purple-200: #452067;
+    --purple-300: #552a7e;
+    --purple-400: #6d38a3;
+    --purple-500: #9d4edd;
+    --purple-600: #b86bff;
+    --purple-700: #c4a1ff;
+    --purple-800: #ddcaff;
+    --purple-900: #f5e8ff;
 
-  /* Superficies - Tonos oscuros */
-  --surface: #1e293b;
-  --surface-card: #273548;
-  --surface-elev: #334155;
+    /* BLUE neon */
+    --accent-blue: #60a5fa;
+    --accent-blue-light: #93c5fd;
+    --accent-blue-dark: #1e3a8a;
 
-  /* Borde más visible */
-  --border: #475569;
-  --background-primary: #0f172a;
+    /* CYAN neon */
+    --accent-cyan: #38bdf8;
+    --accent-cyan-light: #67e8f9;
+    --accent-cyan-dark: #0e7490;
 
-  /* Primarios - Mantener colores vibrantes en modo oscuro */
-  --primary-50: #1e3a8a;
-  --primary-100: #1e40af;
-  --primary-200: #1d4ed8;
-  --primary-300: #2563eb;
-  --primary-400: #3b82f6;
-  --primary-500: #60a5fa;
-  --primary-600: #93c5fd;
-  --primary-700: #bfdbfe;
-  --primary-800: #dbeafe;
-  --primary-900: #eff6ff;
+    /* GLOWS neon */
+    --glow-purple: rgba(157, 78, 221, .40);
+    --glow-purple-strong: rgba(157, 78, 221, .70);
+    --glow-blue: rgba(96, 165, 250, .35);
+    --glow-blue-strong: rgba(96, 165, 250, .55);
+    --glow-cyan: rgba(56, 189, 248, .40);
 
-  /* Gradiente actualizado para modo oscuro */
-  --gradient-primary: linear-gradient(135deg, #60a5fa, #3b82f6);
+    /* BACKGROUND neon */
+    --menu-bg-1: #0b0a2a;
+    --menu-bg-2: #15133a;
+    --menu-bg-3: #0f1e4a;
 
-  /* Sombras más intensas */
-  --shadow-sm: 0 4px 10px rgba(0,0,0,.5);
-  --shadow-md: 0 10px 20px rgba(0,0,0,.6);
-  --shadow-lg: 0 18px 40px rgba(0,0,0,.7);
-  --shadow-xl: 0 22px 55px rgba(0,0,0,.8);
-
-  /* App bar + botones oscuros */
-  --app-bar-bg: rgba(30, 41, 59, 0.8);
-  --btn-bg: #334155;
-  --btn-text: #f8fafc;
-
-  /* ⭐ FONDO OSCURO REAL - Negro/Gris muy oscuro ⭐ */
-  --bg-gradient-start: #0a0e1a;
-  --bg-gradient-end: #1a1f2e;
+    /* GLASS EFFECT */
+    --glass-light: rgba(15, 23, 42, .65);
 }
 
 /* =========================================================
-   RESET + BODY
-   ========================================================= */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+    RESET + BASE
+    ========================================================= */
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
 
-html, body { height: 100%; }
+html, body { 
+    height: 100%; 
+}
 
 body {
-  font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial;
-  color: var(--text-primary);
-  background: var(--background-primary);
-  transition: background 0.3s ease, color 0.3s ease;
+    font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial;
+    color: var(--text-primary);
+    background: var(--background-primary);
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* =========================================================
-   FONDO ESPACIAL DINÁMICO
-   ========================================================= */
+    FONDO ESPACIAL DINÁMICO
+    ========================================================= */
+/* Contenedor del degradado */
 .space-background {
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-  z-index: -2;
-  transition: background 0.4s ease;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    z-index: -2;
+    transition: background 0.4s ease;
 }
 
+/* Capa de estrellas */
 .stars {
-  position: fixed;
-  inset: 0;
-  background-image: url('/assets/stars.png');
-  opacity: 0.25;
-  pointer-events: none;
-  z-index: -1;
-  transition: opacity 0.3s ease;
+    position: fixed;
+    inset: 0;
+    /* Asegúrate de que esta ruta '/assets/stars.png' sea correcta */
+    background-image: url('/assets/stars.png');
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: -1;
+    transition: opacity 0.3s ease;
 }
 
 .dark-theme .stars {
-  opacity: 0.5;
+    opacity: 0.5; /* Más visibles en modo oscuro */
 }
 
 /* =========================================================
-   APP BAR
-   ========================================================= */
+    APP BAR / HEADER
+    ========================================================= */
 .app-bar {
-  background: var(--app-bar-bg);
-  backdrop-filter: blur(10px);
-  border-radius: var(--radius-16);
-  margin: 0 auto 24px;
-  border: 1px solid rgba(255,255,255,.2);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.3s ease;
+    background: var(--app-bar-bg);
+    backdrop-filter: blur(10px);
+    /* Se quita el margin auto y se establece el padding para que el componente
+       contenedor se encargue de la centralización y el margen del layout. */
+    border-radius: var(--radius-16);
+    border: 1px solid rgba(255,255,255,.2);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
 }
 
 .dark-theme .app-bar {
-  border: 1px solid rgba(255,255,255,.1);
-  background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(255,255,255,.1);
+    background: var(--app-bar-bg); /* Uso de la variable del tema oscuro */
 }
 
 .app-bar__content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Ajustado para mejor distribución de elementos */
+    padding: 12px 16px;
+    width: 100%;
 }
 
 .app-bar__title {
-  margin: 0;
-  font-weight: 800;
-  font-size: 1.6rem;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+    margin: 0;
+    font-weight: 800;
+    font-size: 1.6rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 /* =========================================================
-   TARJETAS
-   ========================================================= */
+    TARJETAS (CARD)
+    ========================================================= */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-16);
-  box-shadow: var(--shadow-sm);
-  padding: 16px;
-  transition: all 0.3s ease;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-16);
+    box-shadow: var(--shadow-sm);
+    padding: 16px;
+    transition: all 0.3s ease;
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
 }
 
 .dark-theme .card {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: rgba(71, 85, 105, 0.5);
+    background: var(--surface);
+    border-color: rgba(71, 85, 105, 0.5);
 }
 
 /* =========================================================
-   INPUTS
-   ========================================================= */
+    INPUTS & FORMULARIOS
+    ========================================================= */
+/* Agrupación de todos los selectores de input */
 .input,
 input[type="text"],
 input[type="email"],
 input[type="password"],
-input[type="date"] {
-  width: 100%;
-  padding: 12px 14px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-10);
-  background: var(--surface-elev);
-  color: var(--text-primary);
-  font-size: 14px;
-  transition: all .2s ease;
+input[type="date"],
+textarea, select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-10);
+    background: var(--surface-elev);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: all .2s ease;
 }
 
 .input:focus,
-input:focus {
-  outline: none;
-  border-color: var(--primary-500);
-  background: var(--surface);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
 }
 
 .dark-theme .input:focus,
-.dark-theme input:focus {
-  background: var(--surface-card);
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, .2);
+.dark-theme input:focus,
+.dark-theme textarea:focus,
+.dark-theme select:focus {
+    background: var(--surface-card);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, .2);
 }
 
 /* =========================================================
-   BOTONES
-   ========================================================= */
+    BOTONES (BTN)
+    ========================================================= */
 .btn {
-  appearance: none;
-  border: 1px solid var(--border);
-  padding: 10px 14px;
-  border-radius: var(--radius-10);
-  cursor: pointer;
-  background: var(--btn-bg);
-  color: var(--btn-text);
-  font-weight: 700;
-  transition: all .2s ease;
+    appearance: none;
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    border-radius: var(--radius-10);
+    cursor: pointer;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    font-weight: 700;
+    transition: all .2s ease;
+    text-decoration: none; /* Asegura que funcione en tags <a> */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-  filter: brightness(1.05);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+    filter: brightness(1.05);
 }
 
 .btn.primary {
-  border: none;
-  background: var(--gradient-primary);
-  color: #fff;
-  box-shadow: 0 8px 16px rgba(59, 130, 246, .25);
+    border: none;
+    background: var(--gradient-primary);
+    color: #fff;
+    box-shadow: 0 8px 16px rgba(59, 130, 246, .25);
 }
 
 .dark-theme .btn.primary {
-  box-shadow: 0 8px 16px rgba(96, 165, 250, .3);
+    box-shadow: 0 8px 16px rgba(96, 165, 250, .3);
 }
 
 .btn.primary:hover {
-  box-shadow: 0 12px 24px rgba(59, 130, 246, .35);
+    box-shadow: 0 12px 24px rgba(59, 130, 246, .35);
 }
 
 .dark-theme .btn.primary:hover {
-  box-shadow: 0 12px 24px rgba(96, 165, 250, .4);
+    box-shadow: 0 12px 24px rgba(96, 165, 250, .4);
 }
 
 .btn.secondary {
-  background: var(--primary-50);
-  border-color: var(--primary-200);
-  color: var(--primary-700);
+    background: var(--primary-50);
+    border-color: var(--primary-200);
+    color: var(--primary-700);
 }
 
 .dark-theme .btn.secondary {
-  background: rgba(51, 65, 85, 0.8);
-  border-color: var(--primary-600);
-  color: var(--primary-400);
+    background: rgba(51, 65, 85, 0.8);
+    border-color: var(--primary-600);
+    color: var(--primary-400);
 }
 
 /* =========================================================
-   MODALES
-   ========================================================= */
+    MODALES
+    ========================================================= */
 .modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1200;
-  backdrop-filter: blur(4px);
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+    backdrop-filter: blur(4px);
 }
 
 .dark-theme .modal-overlay {
-  background: rgba(0,0,0,.7);
-  backdrop-filter: blur(6px);
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(6px);
 }
 
 .modal {
-  background: var(--surface);
-  color: var(--text-primary);
-  width: 90%;
-  max-width: 560px;
-  border-radius: var(--radius-20);
-  padding: 20px;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border);
-  transition: all 0.3s ease;
+    background: var(--surface);
+    color: var(--text-primary);
+    width: 90%;
+    max-width: 560px;
+    border-radius: var(--radius-20);
+    padding: 20px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
 }
 
 /* =========================================================
-   RESPONSIVE
-   ========================================================= */
+    RESPONSIVE / UTILIDADES
+    ========================================================= */
+/* Contenedor para limitar el ancho y centrar el contenido, útil para el layout */
+.container {
+    max-width: 1200px;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 @media (max-width: 680px) {
-  .hide-sm { display: none !important; }
+    .hide-sm { 
+        display: none !important; 
+    }
 }

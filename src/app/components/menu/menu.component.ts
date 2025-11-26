@@ -10,6 +10,7 @@ import { User } from '../../models/user.model';
 import { Evento } from '../../models/evento.model';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 
 type FriendLike = User;
 
@@ -32,6 +33,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private eventoService = inject(EventoService);
   private router = inject(Router);
+  private themeService = inject(ThemeService);
+    theme = this.themeService.theme;
 
   loading = signal(false);
   errorMsg = signal('');
@@ -68,7 +71,6 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   currentLang: 'es' | 'en' = 'es';
   showLangMenu = false;
-  theme: string = 'light';
 
 
 
@@ -167,10 +169,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         const myId = this.getId(m);
         if (myId) this.cargarAmigos(myId);
       });
-
-      const saved = localStorage.getItem('theme') || 'light';
-      this.theme = saved;
-      document.body.classList.add(`${this.theme}-theme`);
   }
 
   ngOnDestroy(): void {
@@ -609,17 +607,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.showLangMenu = false;
   }
   toggleTheme() {
-  const saved = localStorage.getItem('theme');
-  this.theme = saved ? saved : 'light';
+        this.themeService.toggleTheme();
+    }
 
-  const isDark = this.theme === 'dark';
-  this.theme = isDark ? 'light' : 'dark';
-
-  document.body.classList.remove('light-theme', 'dark-theme');
-  document.body.classList.add(`${this.theme}-theme`);
-
-  localStorage.setItem('theme', this.theme);
-}
 }
 
 
