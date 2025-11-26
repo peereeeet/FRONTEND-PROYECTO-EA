@@ -112,7 +112,7 @@
     "FRIENDS_BUTTON_REQUESTS": "Solicitudes recibidas",
     "FRIENDS_ONLINE": "En línea",
     "FRIENDS_OFFLINE": "Desconectado",
-    "FRIENDS_REMOVE": "Quitar",
+    "FRIENDS_REMOVE": "Eliminar",
     "FRIENDS_EMPTY": "Aún no tienes amigos para mostrar.",
     "FRIENDS_SEARCH_ADD": "Buscar y agregar amigos",
 
@@ -138,7 +138,7 @@
   "FRIENDS": {
     "STATE_ONLINE": "En línea",
     "STATE_OFFLINE": "Desconectado",
-    "REMOVE": "Quitar",
+    "REMOVE": "Eliminar",
     "EMPTY_LIST": "Aún no tienes amigos para mostrar."
   },
 

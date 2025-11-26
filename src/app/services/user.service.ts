@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable, Subject } from 'rxjs';
-import { User } from '../models/user.model';
+import { User, ChatMessage  } from '../models/user.model';
 
 export interface Page<T> {
   data: T[];
@@ -30,18 +30,11 @@ export class UserService {
   }
 
   getUserEvents(userId: string) {
-    // ajusta this.api si tu base ya apunta a /api/user
     return this.http.get<any>(`${this.apiUrl}/${userId}/events`);
   }
 
   getUserDetail(userId: string): Observable<User>  {
     return this.http.get<User>(`${this.apiUrl}/detail/${userId}`);
-  }
-
-  getPlainPassword(userId: string) {
-    return this.http.get<{ ok: boolean; plainPassword?: string; hashed?: boolean }>(
-      `${this.apiUrl}/${userId}/plain-password`
-    );
   }
 
   addUser(user: User): Observable<User> {
@@ -73,8 +66,8 @@ export class UserService {
   }
 
   disableUser(id: string): Observable<User> {
-  return this.http.patch<User>(`${this.apiUrl}/${id}/disable`, {});
-}
+    return this.http.patch<User>(`${this.apiUrl}/${id}/disable`, {});
+  }
 
   addEventToUser(userId: string, eventId: string): Observable<User> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -89,7 +82,6 @@ export class UserService {
   checkUsernameExists(username: string, userId?: string): Observable<{ exists: boolean }> {
     const body = userId ? { username, userId } : { username };
     return this.http.post<{ exists: boolean }>(`${this.apiUrl}/check-username`, body);
-
   }
 
   updateUserRole(id: string, rol: 'admin' | 'usuario'): Observable<User> {
@@ -107,14 +99,6 @@ export class UserService {
 
   setOffline(userId: string): Observable<{ ok: boolean; online: boolean }> {
     return this.http.put<{ ok: boolean; online: boolean }>(`${this.apiUrl}/${userId}/offline`, {});
-  }
-
-  beaconOffline(userId: string): void {
-    try {
-      const url = `${this.apiUrl}/${userId}/offline`;
-      const blob = new Blob([JSON.stringify({})], { type: 'application/json' });
-      (navigator as any).sendBeacon?.(url, blob);
-    } catch {}
   }
 
   listFriends(id: string, page = 1, limit = 20, q = ''): Observable<Page<User>> {
@@ -153,6 +137,19 @@ export class UserService {
   }
 
   private friendsBus = new Subject<void>();
-  notifyFriendsChanged(): void { this.friendsBus.next(); }
-  onFriendsChanged() { return this.friendsBus.asObservable(); }
+  notifyFriendsChanged(): void { 
+    this.friendsBus.next(); 
+  }
+
+  onFriendsChanged() { 
+    return this.friendsBus.asObservable(); 
+  }
+
+  getChatWithFriend(myId: string, friendId: string) {
+    return this.http.get<ChatMessage[]>(`${this.apiUrl}/${myId}/chat/${friendId}`);
+  }
+
+  saveChatMessage(myId: string, friendId: string, text: string) {
+    return this.http.post<ChatMessage>(`${this.apiUrl}/${myId}/chat/${friendId}`, { text });
+  }
 }

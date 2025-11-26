@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subject, interval, Subscription, fromEvent } from 'rxjs';
-import { switchMap, takeUntil } from 'rxjs/operators';
+import { Subject, Subscription, fromEvent } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
@@ -10,6 +10,8 @@ import { User } from '../../models/user.model';
 import { Evento } from '../../models/evento.model';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { SocketService } from '../../services/socket.service';
+import { ChatMessage } from '../../models/user.model';
 
 type FriendLike = User;
 
@@ -32,6 +34,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private eventoService = inject(EventoService);
   private router = inject(Router);
+  private socketService = inject(SocketService);
+  @ViewChild('chatMessagesContainer') chatMessagesContainer?: ElementRef<HTMLDivElement>;
 
   loading = signal(false);
   errorMsg = signal('');
@@ -52,6 +56,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   requestsList = signal<User[]>([]);
   sentRequests = signal<any[]>([]);
 
+  private socketsInitialized = false;
+
   eventStats = signal<EventStats>({
     eventosCreados: 0,
     eventosInscritos: 0,
@@ -68,6 +74,14 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
+
+  chatOpen = signal(false);
+  chatFriend = signal<any | null>(null);
+  chatMessages = signal<ChatMessage[]>([]);
+  chatLoading = signal(false);
+  chatError = signal('');
+  chatText = signal('');
+  private chatSocketsInitialized = false;
 
   get mTotalPages(): number {
     const n = this.filteredUsers().length;
@@ -118,18 +132,9 @@ export class MenuComponent implements OnInit, OnDestroy {
           }
         });
 
-        this.userService.heartbeat(myId).subscribe({
-          next: hb => this.me.set({ ...(this.me() as User), isOnline: !!hb.online }),
-          error: () => {}
-        });
-
-        interval(30000)
-          .pipe(takeUntil(this.destroy$), switchMap(() => this.userService.heartbeat(myId)))
-          .subscribe({
-            next: hb => this.me.set({ ...(this.me() as User), isOnline: !!hb.online }),
-            error: () => {}
-          });
-
+        this.socketService.connect(myId);
+        this.initFriendOnlineListeners(myId);
+        this.initChatListener(myId);
         this.cargarAmigos(myId);
         this.cargarEstadisticasEventos(myId);
 
@@ -147,14 +152,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           .subscribe(() => {
             this.cargarAmigos(myId);
             this.cargarEstadisticasEventos(myId);
-          });
-
-        this.friendsPollSub = interval(60000)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(() => {
-            this.cargarAmigos(myId);
-            this.cargarEstadisticasEventos(myId);
-          });
+        });
       });
 
     this.userService.onFriendsChanged()
@@ -173,6 +171,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.visibilitySub?.unsubscribe();
     this.focusSub?.unsubscribe();
     this.friendsPollSub?.unsubscribe();
+    this.socketService.disconnect();
   }
 
   private cargarEstadisticasEventos(userId: string): void {
@@ -603,5 +602,128 @@ export class MenuComponent implements OnInit, OnDestroy {
     localStorage.setItem('lang', lang);
     this.translate.use(lang);
     this.showLangMenu = false;
+  }
+
+  private initFriendOnlineListeners(myId: string): void {
+    if (this.socketsInitialized) return;
+    this.socketsInitialized = true;
+
+    this.socketService
+      .onUserOnline()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ userId }) => {
+        if (userId === myId) {
+          const me = this.me();
+          if (me) {
+            this.me.set({ ...me, isOnline: true });
+          }
+        }
+
+        this.friends.update(list =>
+          list.map(f =>
+            f._id === userId
+              ? { ...f, isOnline: true }
+              : f
+          )
+        );
+      });
+
+    this.socketService
+      .onUserOffline()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ userId }) => {
+        if (userId === myId) {
+          const me = this.me();
+          if (me) {
+            this.me.set({ ...me, isOnline: false });
+          }
+        }
+        this.friends.update(list =>
+          list.map(f =>
+            f._id === userId
+              ? { ...f, isOnline: false }
+              : f
+        )
+      );
+    });
+  }
+
+  private initChatListener(myId: string): void {
+    if (this.chatSocketsInitialized) return;
+    this.chatSocketsInitialized = true;
+
+    this.socketService
+      .onChatMessage()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((msg) => {
+        const me = this.me();
+        const friend = this.chatFriend();
+        if (!me || !friend) return;
+
+        const pair = [me._id, friend._id];
+        if (pair.includes(msg.from) && pair.includes(msg.to)) {
+          this.chatMessages.update(list => [...list, msg]);
+          this.scrollChatToBottom(); // 👈 aquí
+        }
+      });
+  }
+
+  openChat(friend: any): void {
+    const me = this.me();
+    if (!me || !friend || !friend._id || !me._id) return;
+
+    this.chatFriend.set(friend);
+    this.chatOpen.set(true);
+    this.chatLoading.set(true);
+    this.chatError.set('');
+    this.chatMessages.set([]);
+
+    this.socketService.joinChat(me._id, friend._id);
+
+    this.userService.getChatWithFriend(me._id, friend._id).subscribe({
+      next: (messages) => {
+        this.chatMessages.set(messages || []);
+        this.chatLoading.set(false);
+        this.scrollChatToBottom(); // 👈 aquí
+      },
+      error: (err) => {
+        console.error('Error al cargar chat', err);
+        this.chatError.set('No se pudo cargar la conversación');
+        this.chatLoading.set(false);
+      }
+    });
+  }
+
+  closeChat(): void {
+    this.chatOpen.set(false);
+    this.chatFriend.set(null);
+    this.chatMessages.set([]);
+    this.chatText.set('');
+  }
+
+  onChatInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.chatText.set(value);
+  }
+
+  sendChat(): void {
+    const text = this.chatText().trim();
+    if (!text) return;
+
+    const me = this.me();
+    const friend = this.chatFriend();
+    if (!me || !friend || !me._id || !friend._id) return;
+
+    this.chatText.set('');
+
+    this.socketService.sendChatMessage(me._id, friend._id, text);
+  }
+
+  private scrollChatToBottom(): void {
+    setTimeout(() => {
+      const el = this.chatMessagesContainer?.nativeElement;
+      if (!el) return;
+      el.scrollTop = el.scrollHeight;
+    }, 0);
   }
 }

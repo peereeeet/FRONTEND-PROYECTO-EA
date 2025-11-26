@@ -17,3 +17,11 @@ export interface User {
   friendRequest?: Array<string | { _id: string; username: string; gmail: string }>;
   sentRequests?: Array<string | { _id: string; username: string; gmail: string }>;
 }
+
+export interface ChatMessage {
+  _id?: string;
+  from: string;
+  to: string;
+  text: string;
+  createdAt: string;
+}
