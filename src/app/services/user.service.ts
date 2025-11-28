@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable, Subject } from 'rxjs';
-import { User, ChatMessage  } from '../models/user.model';
+import { User, ChatMessage, EventChatMessage  } from '../models/user.model';
 
 export interface Page<T> {
   data: T[];
@@ -151,5 +151,17 @@ export class UserService {
 
   saveChatMessage(myId: string, friendId: string, text: string) {
     return this.http.post<ChatMessage>(`${this.apiUrl}/${myId}/chat/${friendId}`, { text });
+  }
+
+  getEventChat(eventId: string) {
+    return this.http.get<EventChatMessage[]>(`${this.apiUrl}/events/${eventId}/chat`);
+  }
+
+  postEventChatMessage(eventId: string, userId: string, username: string, text: string) {
+    return this.http.post<EventChatMessage>(`${this.apiUrl}/events/${eventId}/chat`, {
+      userId,
+      username,
+      text
+    });
   }
 }

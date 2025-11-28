@@ -132,7 +132,12 @@
     "REQUESTS_LOADING": "Chargement des demandes...",
     "REQUESTS_EMPTY": "Aucune demande en attente 😄",
     "REQUESTS_ACCEPT": "Accepter",
-    "REQUESTS_REJECT": "Refuser"
+    "REQUESTS_REJECT": "Refuser",
+
+    "CHAT_TITLE_PREFIX": "Discussion avec",
+    "CHAT_LOADING": "Chargement de la conversation...",
+    "CHAT_EMPTY": "Pas encore de messages. Écrivez le premier !",
+    "CHAT_PLACEHOLDER": "Écrivez un message..."
   },
 
   "FRIENDS": {
@@ -298,7 +303,13 @@
     "LEAVE_MODAL_TITLE": "Quitter l'événement",
     "LEAVE_MODAL_TEXT": "Êtes-vous sûr de vouloir quitter <strong>{{name}}</strong> ?",
     "LEAVE_MODAL_CANCEL": "Annuler",
-    "LEAVE_MODAL_CONFIRM": "Quitter"
+    "LEAVE_MODAL_CONFIRM": "Quitter",
+
+    "BUTTON_EVENT_CHAT": "Chat de l'événement",
+    "EVENT_CHAT_TITLE": "Chat de l'événement",
+    "EVENT_CHAT_LOADING": "Chargement des messages de l'événement...",
+    "EVENT_CHAT_EMPTY": "Il n'y a pas encore de messages pour cet événement.",
+    "EVENT_CHAT_PLACEHOLDER": "Écrivez un message pour cet événement..."
   },
 
   "RATINGS": {

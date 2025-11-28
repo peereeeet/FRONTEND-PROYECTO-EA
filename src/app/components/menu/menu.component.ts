@@ -68,6 +68,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private visibilitySub?: Subscription;
   private focusSub?: Subscription;
   private friendsPollSub?: Subscription;
+  newFriendRequests = signal(0);
 
   fPage: number = 1;
   fPageSize: number = 3;
@@ -153,6 +154,18 @@ export class MenuComponent implements OnInit, OnDestroy {
             this.cargarAmigos(myId);
             this.cargarEstadisticasEventos(myId);
         });
+
+        this.socketService
+          .onFriendRequestReceived()
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((payload) => {
+            console.log('Nueva solicitud de amistad recibida vía WS', payload);
+            this.newFriendRequests.update(v => v + 1);
+
+            if (this.showRequestsModal()) {
+              this.refreshRequests();
+            }
+          });
       });
 
     this.userService.onFriendsChanged()
@@ -444,6 +457,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.userService.getFriendRequests(String(me._id)).subscribe({
       next: (list) => {
         this.requestsList?.set(list ?? []);
+        this.newFriendRequests.set(list?.length ?? 0);
         this.requestsLoading?.set(false);
       },
       error: (err) => {
@@ -502,6 +516,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     const myId = this.getId(meUser);
     if (!myId) return;
     this.cargarAmigos(myId);
+    this.refreshRequests(); 
   }
 
   acceptRequest(userId: string): void {
@@ -518,6 +533,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.requestsList.set(
             this.requestsList().filter((u) => this.getId(u) !== userId)
           );
+          this.newFriendRequests.set(this.requestsList().length);
           this.cargarAmigos(myId);
         },
         error: () => this.requestsError.set('Error al aceptar la solicitud'),
@@ -538,6 +554,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.requestsList.set(
             this.requestsList().filter((u) => this.getId(u) !== userId)
           );
+          this.newFriendRequests.set(this.requestsList().length);
         },
         error: () => this.requestsError.set('Error al rechazar la solicitud'),
       });

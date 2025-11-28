@@ -132,7 +132,12 @@
     "REQUESTS_LOADING": "Carregant sol·licituds...",
     "REQUESTS_EMPTY": "No tens sol·licituds pendents 😄",
     "REQUESTS_ACCEPT": "Acceptar",
-    "REQUESTS_REJECT": "Rebutjar"
+    "REQUESTS_REJECT": "Rebutjar",
+
+    "CHAT_TITLE_PREFIX": "Xat amb",
+    "CHAT_LOADING": "Carregant la conversa...",
+    "CHAT_EMPTY": "Encara no hi ha missatges. Escriu el primer!",
+    "CHAT_PLACEHOLDER": "Escriu un missatge..."
   },
 
   "FRIENDS": {
@@ -298,7 +303,13 @@
     "LEAVE_MODAL_TITLE": "Sortir de l'esdeveniment",
     "LEAVE_MODAL_TEXT": "Segur que vols sortir de <strong>{{name}}</strong>?",
     "LEAVE_MODAL_CANCEL": "Cancel·lar",
-    "LEAVE_MODAL_CONFIRM": "Sortir"
+    "LEAVE_MODAL_CONFIRM": "Sortir",
+
+    "BUTTON_EVENT_CHAT": "Xat de l'esdeveniment",
+    "EVENT_CHAT_TITLE": "Xat de l'esdeveniment",
+    "EVENT_CHAT_LOADING": "Carregant els missatges de l'esdeveniment...",
+    "EVENT_CHAT_EMPTY": "Encara no hi ha missatges en aquest esdeveniment.",
+    "EVENT_CHAT_PLACEHOLDER": "Escriu un missatge per a aquest esdeveniment..."
   },
 
   "RATINGS": {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -9,6 +9,11 @@ import { Evento } from '../../models/evento.model';
 import { ValoracionService } from '../../services/valoracion.service';
 import { Valoracion } from '../../models/valoracion.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { SocketService } from '../../services/socket.service';
+import { UserService } from '../../services/user.service';
+import { EventChatMessage } from '../../models/user.model';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-mis-eventos',
@@ -23,6 +28,7 @@ export class MisEventosComponent implements OnInit {
   loading = false;
   errorMessage = '';
   currentUserId = '';
+  currentUsername = '';
 
   showDeleteModal = false;
   eventoToDelete: Evento | null = null;
@@ -66,6 +72,18 @@ export class MisEventosComponent implements OnInit {
   mapLinkUrl: string | null = null;
   mapSafeUrl: SafeResourceUrl | null = null;
 
+  private socketService = inject(SocketService);
+  private destroy$ = new Subject<void>();
+  eventChatOpen = signal(false);
+  eventChatEvento = signal<Evento | null>(null);
+  eventChatMessages = signal<EventChatMessage[]>([]);
+  eventChatText = signal('');
+  eventChatLoading = signal(false);
+  eventChatError = signal('');
+
+  @ViewChild('eventChatMessagesContainer')
+  eventChatMessagesContainer?: ElementRef<HTMLDivElement>;
+
   currentLang: 'es' | 'en' | 'cat' | 'fr' =
     (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
@@ -76,7 +94,8 @@ export class MisEventosComponent implements OnInit {
     private ratingsSrv: ValoracionService,
     private router: Router,
     private sanitizer: DomSanitizer,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private userService: UserService
   ) 
   {
     this.translate.use(this.currentLang);
@@ -88,7 +107,33 @@ export class MisEventosComponent implements OnInit {
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     this.currentUserId = user?._id || '';
+
+    if (this.currentUserId) {
+      this.socketService.connect(this.currentUserId);
+    }
+
+    this.socketService
+      .onEventChatMessage()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(msg => {
+        const ev = this.eventChatEvento();
+        if (!ev || !msg) return;
+        if (msg.eventId !== ev._id) return;
+
+        this.eventChatMessages.update(list => {
+          if (msg._id && list.some(m => m._id === msg._id)) return list;
+          return [...list, msg];
+        });
+
+        this.scrollEventChatToBottom();
+      });
+
     this.loadMisEventos();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadMisEventos(): void {
@@ -145,7 +190,6 @@ export class MisEventosComponent implements OnInit {
     return { dateStr: `${yyyy}-${mm}-${dd}`, timeStr: `${hh}:${mi}` };
   }
 
-  // 🆕 inverso: de inputs a ISO
   private toISOFromInputs(dateStr: string, timeStr: string): string | null {
     if (!dateStr) return null;
     const t = timeStr && timeStr.trim() ? timeStr : '00:00';
@@ -477,5 +521,79 @@ hasLocation(evento: any): boolean {
     localStorage.setItem('lang', lang);
     this.translate.use(lang);
     this.showLangMenu = false;
+  }
+
+  openEventChat(evento: Evento): void {
+    if (!evento || !evento._id) return;
+    this.eventChatEvento.set(evento);
+    this.eventChatOpen.set(true);
+    this.eventChatLoading.set(true);
+    this.eventChatError.set('');
+    this.eventChatText.set('');
+    this.eventChatMessages.set([]);
+    this.socketService.joinEventChat(evento._id);
+
+    this.userService
+      .getEventChat(evento._id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (msgs) => {
+          const ordered = (msgs || []).slice().sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() -
+              new Date(b.createdAt).getTime()
+          );
+          this.eventChatMessages.set(ordered);
+          this.eventChatLoading.set(false);
+          this.scrollEventChatToBottom();
+        },
+        error: () => {
+          this.eventChatError.set(
+            this.translate.instant('MY_EVENTS.EVENT_CHAT_LOAD_ERROR') ||
+              'Error al cargar el chat.'
+          );
+          this.eventChatMessages.set([]);
+          this.eventChatLoading.set(false);
+        }
+      });
+  }
+
+  closeEventChat(): void {
+    this.eventChatOpen.set(false);
+    this.eventChatEvento.set(null);
+    this.eventChatMessages.set([]);
+    this.eventChatText.set('');
+    this.eventChatError.set('');
+    this.eventChatLoading.set(false);
+  }
+
+  onEventChatInput(ev: Event): void {
+    const value = (ev.target as HTMLInputElement).value;
+    this.eventChatText.set(value);
+  }
+
+  sendEventChat(): void {
+    const text = (this.eventChatText() || '').trim();
+    const evento = this.eventChatEvento();
+    if (!text || !evento?._id || !this.currentUserId) return;
+
+    const user = this.authService.getCurrentUser();
+    const username = user?.username || 'Yo';
+
+    this.eventChatText.set('');
+    this.socketService.sendEventChatMessage(
+      evento._id,
+      this.currentUserId,
+      username,
+      text
+    );
+  }
+
+  private scrollEventChatToBottom(): void {
+    setTimeout(() => {
+      const el = this.eventChatMessagesContainer?.nativeElement;
+      if (!el) return;
+      el.scrollTop = el.scrollHeight;
+    }, 0);
   }
 }

@@ -7,6 +7,8 @@ export class SocketService {
   private socket: any = null;
   private readonly url = 'http://localhost:3000';
 
+  constructor() {}
+
   connect(userId: string): void {
     if (this.socket && this.socket.connected) {
       return;
@@ -82,6 +84,57 @@ export class SocketService {
       return () => {
         if (this.socket) {
           this.socket.off('chat:message', handler);
+        }
+      };
+    });
+  }
+
+  joinEventChat(eventId: string): void {
+    if (!this.socket) return;
+    this.socket.emit('eventChat:join', { eventId });
+  }
+
+  sendEventChatMessage(eventId: string, userId: string, username: string, text: string): void {
+    if (!this.socket) return;
+    this.socket.emit('eventChat:message', { eventId, userId, username, text });
+  }
+
+  onEventChatMessage(): Observable<{
+    _id?: string;
+    eventId: string;
+    userId: string;
+    username: string;
+    text: string;
+    createdAt: string;
+  }> {
+    return new Observable(sub => {
+      if (!this.socket) return;
+
+      const handler = (msg: any) => sub.next(msg);
+      this.socket.on('eventChat:message', handler);
+
+      return () => {
+        if (this.socket) {
+          this.socket.off('eventChat:message', handler);
+        }
+      };
+    });
+  }
+
+  onFriendRequestReceived(): Observable<{
+    fromUserId: string;
+    fromUsername: string;
+    fromGmail: string;
+  }> {
+    return new Observable(sub => {
+      if (!this.socket) return;
+
+      const handler = (payload: any) => sub.next(payload);
+      this.socket.on('friendRequest:received', handler);
+
+      return () => {
+        if (this.socket) {
+          this.socket.off('friendRequest:received', handler);
         }
       };
     });

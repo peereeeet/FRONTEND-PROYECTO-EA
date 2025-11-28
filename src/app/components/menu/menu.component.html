@@ -144,6 +144,11 @@
             </button>
             <button type="button" class="btn secondary" (click)="openRequestsModal()">
               📨 {{ 'MENU.FRIENDS_BUTTON_REQUESTS' | translate }}
+              <span
+                class="notif-badge"
+                *ngIf="newFriendRequests() > 0">
+                {{ newFriendRequests() }}
+              </span>
             </button>
           </div>
         </div>
@@ -322,9 +327,9 @@
       <div class="modal chat-modal">
         <div class="modal-header">
           <h3>
-            💬 Chat con
+            💬 {{ 'MENU.CHAT_TITLE_PREFIX' | translate }}
             <span class="chat-friend-name">
-              {{ chatFriend()?.username || chatFriend()?.gmail || 'Amigo' }}
+              {{ chatFriend()?.username || chatFriend()?.gmail || ('MENU.USER_FALLBACK' | translate) }}
             </span>
           </h3>
           <button class="btn-close" (click)="closeChat()">×</button>
@@ -332,7 +337,7 @@
 
         <div class="modal-body chat-body">
           <div *ngIf="chatLoading()" class="msg">
-            Cargando conversación...
+            {{ 'MENU.CHAT_LOADING' | translate }}
           </div>
           <div *ngIf="chatError()" class="msg error">
             {{ chatError() }}
@@ -353,7 +358,7 @@
             </div>
 
             <div *ngIf="!chatMessages().length && !chatLoading()" class="empty">
-              Aún no hay mensajes. ¡Escribe el primero!
+              {{ 'MENU.CHAT_EMPTY' | translate }}
             </div>
           </div>
         </div>
@@ -365,7 +370,7 @@
             [value]="chatText()"
             (input)="onChatInput($event)"
             (keyup.enter)="sendChat()"
-            placeholder="Escribe un mensaje..." />
+            [placeholder]="'MENU.CHAT_PLACEHOLDER' | translate" />
           <button type="button" class="btn send-btn" (click)="sendChat()">
             ➤
           </button>

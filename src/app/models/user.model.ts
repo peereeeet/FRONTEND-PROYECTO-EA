@@ -25,3 +25,12 @@ export interface ChatMessage {
   text: string;
   createdAt: string;
 }
+
+export interface EventChatMessage {
+  _id?: string;
+  eventId: string;
+  userId: string;
+  username: string;
+  text: string;
+  createdAt: string;
+}

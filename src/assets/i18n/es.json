@@ -132,7 +132,12 @@
     "REQUESTS_LOADING": "Cargando solicitudes...",
     "REQUESTS_EMPTY": "No tienes solicitudes pendientes 😄",
     "REQUESTS_ACCEPT": "Aceptar",
-    "REQUESTS_REJECT": "Rechazar"
+    "REQUESTS_REJECT": "Rechazar",
+
+    "CHAT_TITLE_PREFIX": "Chat con",
+    "CHAT_LOADING": "Cargando conversación...",
+    "CHAT_EMPTY": "Aún no hay mensajes. ¡Escribe el primero!",
+    "CHAT_PLACEHOLDER": "Escribe un mensaje..."
   },
 
   "FRIENDS": {
@@ -298,7 +303,13 @@
     "LEAVE_MODAL_TITLE": "Salir del evento",
     "LEAVE_MODAL_TEXT": "¿Seguro que quieres salir de <strong>{{name}}</strong>?",
     "LEAVE_MODAL_CANCEL": "Cancelar",
-    "LEAVE_MODAL_CONFIRM": "Salir"
+    "LEAVE_MODAL_CONFIRM": "Salir",
+
+    "BUTTON_EVENT_CHAT": "Chat del evento",
+    "EVENT_CHAT_TITLE": "Chat del evento",
+    "EVENT_CHAT_LOADING": "Cargando mensajes del evento...",
+    "EVENT_CHAT_EMPTY": "Todavía no hay mensajes en este evento.",
+    "EVENT_CHAT_PLACEHOLDER": "Escribe un mensaje para este evento..."
   },
 
   "RATINGS": {
