@@ -328,4 +328,26 @@ export class CrearEventosComponent implements OnInit {
     this.changeLanguage(lang);
     this.showLangMenu = false;
   }
+
+  themeState: 'light' | 'dark' = (localStorage.getItem('theme') as any) || 'light';
+
+  theme() {
+  return this.themeState;
 }
+
+
+  toggleTheme() {
+  this.themeState = this.themeState === 'dark' ? 'light' : 'dark';
+
+  // Guardar preferencia
+  localStorage.setItem('theme', this.themeState);
+
+  // Aplicar al documento
+  if (this.themeState === 'dark') {
+    document.documentElement.classList.add('dark-theme');
+  } else {
+    document.documentElement.classList.remove('dark-theme');
+  }
+}
+}
+

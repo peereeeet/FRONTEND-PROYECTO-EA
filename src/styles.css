@@ -1,342 +1,199 @@
 @import "maplibre-gl/dist/maplibre-gl.css";
-html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-}
 
 /* =========================================================
-    VARIABLES BASE (Modo Claro)
-    ========================================================= */
+    VARIABLES BASE (Modo CLARO - Neon suave futurista)
+   ========================================================= */
 :root {
-  /* =========================================================
-       🎨 PALETA VIBRANTE — MODO CLARO
-       ========================================================= */
-
-    /* PURPLE (vibrant) */
-    --purple-50:  #faf5ff;
-    --purple-100: #f3e8ff;
-    --purple-200: #e9d5ff;
-    --purple-300: #d8b4fe;
-    --purple-400: #c084fc;
-    --purple-500: #a855f7; /* tu vibrante medio */
+    /* PURPLES neon suaves */
+    --purple-500: #a855f7;
     --purple-600: #9333ea;
-    --purple-700: #7c3aed; /* tu púrpura principal */
+    --purple-700: #7c3aed;
     --purple-800: #6d28d9;
-    --purple-900: #5b21b6;
 
-    /* BLUE ACCENT */
+    /* BLUE & CYAN accents */
     --accent-blue: #3b82f6;
-    --accent-blue-light: #93c5fd;
-    --accent-blue-dark: #1d4ed8;
-
-    /* CYAN ACCENT */
     --accent-cyan: #0ea5e9;
-    --accent-cyan-light: #67e8f9;
-    --accent-cyan-dark: #0284c7;
 
-    /* GLOWS */
-    --glow-purple: rgba(124, 58, 237, .25);
-    --glow-purple-strong: rgba(124, 58, 237, .45);
-    --glow-blue: rgba(59, 130, 246, .20);
-    --glow-blue-strong: rgba(59, 130, 246, .35);
-    --glow-cyan: rgba(14, 165, 233, .25);
+    /* GLOWS suaves */
+    --glow-purple: rgba(124,58,237,.25);
+    --glow-blue: rgba(59,130,246,.25);
 
-    /* BACKGROUNDS vibrantes */
+    /* BACKGROUND futurista suave */
     --menu-bg-1: #1e1b4b;
     --menu-bg-2: #312e81;
     --menu-bg-3: #1e3a8a;
 
-    /* GLASS EFFECT */
-    --glass-light: rgba(255,255,255,.95);
+    /* SUPERFICIES glass suaves */
+    --surface: rgba(255,255,255,0.08);
+    --surface-elev: rgba(255,255,255,0.15);
+    --surface-card: rgba(255,255,255,0.22);
+
+    /* TEXTO */
+    --text-primary: #e2e8f0;
+    --text-secondary: #cbd5e1;
+
+    /* BORDES crystal */
+    --border: rgba(255,255,255,0.14);
+
+    /* BOTONES por defecto */
+    --btn-bg: rgba(255,255,255,0.1);
+    --btn-text: #ffffff;
+
+    /* APP BAR */
+    --app-bar-bg: rgba(255,255,255,0.06);
+
+    /* GRADIENT PRINCIPAL TITULOS */
+    --gradient-primary: linear-gradient(135deg, #7c3aed, #3b82f6, #0ea5e9);
+
+    /* FONDO ESPACIAL */
+    --bg-gradient-start: #1e1b4b;
+    --bg-gradient-end: #1e3a8a;
+
+    --shadow-sm: 0 6px 14px rgba(0,0,30,.25);
+    --shadow-md: 0 12px 28px rgba(0,0,40,.35);
+    --shadow-lg: 0 18px 50px rgba(0,0,60,.45);
 }
 
 /* =========================================================
-    MODO OSCURO - MEJORADO
-    ========================================================= */
+    MODO OSCURO (Neon intenso)
+   ========================================================= */
 .dark-theme {
- /* PURPLE (neon) */
-    --purple-50:  #261c3f;
-    --purple-100: #341b50;
-    --purple-200: #452067;
-    --purple-300: #552a7e;
-    --purple-400: #6d38a3;
     --purple-500: #9d4edd;
     --purple-600: #b86bff;
     --purple-700: #c4a1ff;
-    --purple-800: #ddcaff;
-    --purple-900: #f5e8ff;
 
-    /* BLUE neon */
     --accent-blue: #60a5fa;
-    --accent-blue-light: #93c5fd;
-    --accent-blue-dark: #1e3a8a;
-
-    /* CYAN neon */
     --accent-cyan: #38bdf8;
-    --accent-cyan-light: #67e8f9;
-    --accent-cyan-dark: #0e7490;
 
-    /* GLOWS neon */
-    --glow-purple: rgba(157, 78, 221, .40);
-    --glow-purple-strong: rgba(157, 78, 221, .70);
-    --glow-blue: rgba(96, 165, 250, .35);
-    --glow-blue-strong: rgba(96, 165, 250, .55);
-    --glow-cyan: rgba(56, 189, 248, .40);
+    /* GLOWS fuertes */
+    --glow-purple: rgba(157,78,221,.45);
+    --glow-blue: rgba(96,165,250,.45);
 
-    /* BACKGROUND neon */
+    /* BACKGROUND futurista profundo */
     --menu-bg-1: #0b0a2a;
     --menu-bg-2: #15133a;
     --menu-bg-3: #0f1e4a;
 
-    /* GLASS EFFECT */
-    --glass-light: rgba(15, 23, 42, .65);
+    /* Glass oscuro */
+    --surface: rgba(15,23,42,0.25);
+    --surface-elev: rgba(15,23,42,0.35);
+    --surface-card: rgba(15,23,42,0.45);
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #c7d2fe;
+
+    --border: rgba(124,58,237,0.35);
+
+    --btn-bg: linear-gradient(135deg, #9d4edd, #6366f1);
+    --btn-text: #ffffff;
+
+    --app-bar-bg: rgba(15,23,42,0.55);
+
+    --gradient-primary: linear-gradient(135deg, #a855f7, #6366f1, #0ea5e9);
+
+    --bg-gradient-start: #0b0a2a;
+    --bg-gradient-end: #15133a;
+
+    --shadow-sm: 0 6px 18px rgba(157,78,221,.35);
+    --shadow-md: 0 14px 32px rgba(96,165,250,.45);
+    --shadow-lg: 0 22px 60px rgba(79,70,229,.6);
 }
 
 /* =========================================================
-    RESET + BASE
-    ========================================================= */
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
-}
-
-html, body { 
-    height: 100%; 
-}
+    RESET
+   ========================================================= */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
 
 body {
     font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial;
     color: var(--text-primary);
-    background: var(--background-primary);
-    transition: background 0.3s ease, color 0.3s ease;
+    background: transparent;
 }
 
 /* =========================================================
-    FONDO ESPACIAL DINÁMICO
-    ========================================================= */
-/* Contenedor del degradado */
+    FONDO ESPACIAL
+   ========================================================= */
 .space-background {
     position: fixed;
     inset: 0;
-    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    background: linear-gradient(135deg, var(--menu-bg-1), var(--menu-bg-2), var(--menu-bg-3));
     z-index: -2;
     transition: background 0.4s ease;
 }
 
-/* Capa de estrellas */
-.stars {
-    position: fixed;
-    inset: 0;
-    /* Asegúrate de que esta ruta '/assets/stars.png' sea correcta */
-    background-image: url('/assets/stars.png');
-    opacity: 0.25;
-    pointer-events: none;
-    z-index: -1;
-    transition: opacity 0.3s ease;
-}
-
-.dark-theme .stars {
-    opacity: 0.5; /* Más visibles en modo oscuro */
-}
-
 /* =========================================================
-    APP BAR / HEADER
-    ========================================================= */
+    APP BAR
+   ========================================================= */
 .app-bar {
     background: var(--app-bar-bg);
-    backdrop-filter: blur(10px);
-    /* Se quita el margin auto y se establece el padding para que el componente
-       contenedor se encargue de la centralización y el margen del layout. */
-    border-radius: var(--radius-16);
-    border: 1px solid rgba(255,255,255,.2);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(14px);
+    border-radius: 14px;
     box-shadow: var(--shadow-sm);
-    transition: all 0.3s ease;
-}
-
-.dark-theme .app-bar {
-    border: 1px solid rgba(255,255,255,.1);
-    background: var(--app-bar-bg); /* Uso de la variable del tema oscuro */
-}
-
-.app-bar__content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Ajustado para mejor distribución de elementos */
-    padding: 12px 16px;
-    width: 100%;
 }
 
 .app-bar__title {
-    margin: 0;
-    font-weight: 800;
-    font-size: 1.6rem;
     background: var(--gradient-primary);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    font-size: 1.8rem;
+    font-weight: 900;
 }
 
 /* =========================================================
-    TARJETAS (CARD)
-    ========================================================= */
+    CARD futuristic glass
+   ========================================================= */
 .card {
-    background: var(--surface);
+    background: var(--surface-card);
     border: 1px solid var(--border);
-    border-radius: var(--radius-16);
-    box-shadow: var(--shadow-sm);
-    padding: 16px;
-    transition: all 0.3s ease;
-}
-
-.card:hover {
+    backdrop-filter: blur(14px);
+    border-radius: 18px;
+    padding: 18px;
     box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-}
-
-.dark-theme .card {
-    background: var(--surface);
-    border-color: rgba(71, 85, 105, 0.5);
 }
 
 /* =========================================================
-    INPUTS & FORMULARIOS
-    ========================================================= */
-/* Agrupación de todos los selectores de input */
-.input,
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="date"],
-textarea, select {
-    width: 100%;
-    padding: 12px 14px;
-    border: 2px solid var(--border);
-    border-radius: var(--radius-10);
+    INPUTS
+   ========================================================= */
+input, select, textarea {
     background: var(--surface-elev);
     color: var(--text-primary);
-    font-size: 14px;
-    transition: all .2s ease;
-}
-
-.input:focus,
-input:focus,
-textarea:focus,
-select:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    background: var(--surface);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
-}
-
-.dark-theme .input:focus,
-.dark-theme input:focus,
-.dark-theme textarea:focus,
-.dark-theme select:focus {
-    background: var(--surface-card);
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, .2);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    border-radius: 12px;
+    backdrop-filter: blur(12px);
 }
 
 /* =========================================================
-    BOTONES (BTN)
-    ========================================================= */
+    BOTONES
+   ========================================================= */
 .btn {
-    appearance: none;
-    border: 1px solid var(--border);
-    padding: 10px 14px;
-    border-radius: var(--radius-10);
-    cursor: pointer;
+    padding: 10px 16px;
     background: var(--btn-bg);
     color: var(--btn-text);
+    border-radius: 12px;
+    border: 1px solid var(--border);
     font-weight: 700;
-    transition: all .2s ease;
-    text-decoration: none; /* Asegura que funcione en tags <a> */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    transition: .2s;
+    cursor: pointer;
 }
 
 .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-    filter: brightness(1.05);
-}
-
-.btn.primary {
-    border: none;
-    background: var(--gradient-primary);
-    color: #fff;
-    box-shadow: 0 8px 16px rgba(59, 130, 246, .25);
-}
-
-.dark-theme .btn.primary {
-    box-shadow: 0 8px 16px rgba(96, 165, 250, .3);
-}
-
-.btn.primary:hover {
-    box-shadow: 0 12px 24px rgba(59, 130, 246, .35);
-}
-
-.dark-theme .btn.primary:hover {
-    box-shadow: 0 12px 24px rgba(96, 165, 250, .4);
-}
-
-.btn.secondary {
-    background: var(--primary-50);
-    border-color: var(--primary-200);
-    color: var(--primary-700);
-}
-
-.dark-theme .btn.secondary {
-    background: rgba(51, 65, 85, 0.8);
-    border-color: var(--primary-600);
-    color: var(--primary-400);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 /* =========================================================
     MODALES
-    ========================================================= */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1200;
-    backdrop-filter: blur(4px);
-}
-
-.dark-theme .modal-overlay {
-    background: rgba(0,0,0,.7);
-    backdrop-filter: blur(6px);
-}
-
+   ========================================================= */
 .modal {
-    background: var(--surface);
+    background: var(--surface-card);
     color: var(--text-primary);
-    width: 90%;
-    max-width: 560px;
-    border-radius: var(--radius-20);
-    padding: 20px;
-    box-shadow: var(--shadow-lg);
     border: 1px solid var(--border);
-    transition: all 0.3s ease;
-}
-
-/* =========================================================
-    RESPONSIVE / UTILIDADES
-    ========================================================= */
-/* Contenedor para limitar el ancho y centrar el contenido, útil para el layout */
-.container {
-    max-width: 1200px;
-    width: 95%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-@media (max-width: 680px) {
-    .hide-sm { 
-        display: none !important; 
-    }
+    backdrop-filter: blur(18px);
+    border-radius: 18px;
+    padding: 20px;
 }
