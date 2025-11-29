@@ -1,136 +1,125 @@
 @import "maplibre-gl/dist/maplibre-gl.css";
 
 /* =========================================================
-    VARIABLES BASE (Modo CLARO - Neon suave futurista)
+    VARIABLES BASE (Modo CLARO - Limpio, Blanco y Profesional)
    ========================================================= */
 :root {
-    /* PURPLES neon suaves */
+    /* ACENTOS DE COLOR (Se mantienen vivos para botones/acciones) */
     --purple-500: #a855f7;
     --purple-600: #9333ea;
     --purple-700: #7c3aed;
     --purple-800: #6d28d9;
 
-    /* BLUE & CYAN accents */
     --accent-blue: #3b82f6;
     --accent-cyan: #0ea5e9;
 
-    /* GLOWS suaves */
-    --glow-purple: rgba(124,58,237,.25);
-    --glow-blue: rgba(59,130,246,.25);
+    /* GLOWS (En modo claro, los glows son sombras tenues y elegantes) */
+    --glow-purple: rgba(124, 58, 237, 0.1); 
+    --glow-blue: rgba(59, 130, 246, 0.1);
+    --glow-cyan: rgba(14, 165, 233, 0.1);
 
-    /* BACKGROUND futurista suave */
-    --menu-bg-1: #1e1b4b;
-    --menu-bg-2: #312e81;
-    --menu-bg-3: #1e3a8a;
+    /* BACKGROUND - CLARO PURO */
+    --bg-gradient-start: #ffffff; 
+    --bg-gradient-end: #f8fafc; /* Un gris muy sutil para dar profundidad */
 
-    /* SUPERFICIES glass suaves */
-    --surface: rgba(255,255,255,0.08);
-    --surface-elev: rgba(255,255,255,0.15);
-    --surface-card: rgba(255,255,255,0.22);
+    /* SUPERFICIES (Glass Blanco) */
+    --surface: #ffffff;
+    --surface-elev: #f1f5f9; /* Fondo para inputs */
+    --surface-card: #ffffff; /* Tarjeta blanca sólida o con mínima transparencia */
 
-    /* TEXTO */
-    --text-primary: #e2e8f0;
-    --text-secondary: #cbd5e1;
+    /* TEXTO (Alto contraste para legibilidad) */
+    --text-primary: #0f172a; /* Azul noche casi negro */
+    --text-secondary: #64748b; /* Gris pizarra */
 
-    /* BORDES crystal */
-    --border: rgba(255,255,255,0.14);
-
-    /* BOTONES por defecto */
-    --btn-bg: rgba(255,255,255,0.1);
-    --btn-text: #ffffff;
+    /* BORDES */
+    --border: #e2e8f0; /* Gris muy claro */
 
     /* APP BAR */
-    --app-bar-bg: rgba(255,255,255,0.06);
+    --app-bar-bg: rgba(255, 255, 255, 0.95);
 
-    /* GRADIENT PRINCIPAL TITULOS */
-    --gradient-primary: linear-gradient(135deg, #7c3aed, #3b82f6, #0ea5e9);
+    /* GRADIENT TITULOS (Se mantiene vibrante para identidad de marca) */
+    --gradient-primary: linear-gradient(135deg, #7c3aed, #2563eb);
 
-    /* FONDO ESPACIAL */
-    --bg-gradient-start: #1e1b4b;
-    --bg-gradient-end: #1e3a8a;
-
-    --shadow-sm: 0 6px 14px rgba(0,0,30,.25);
-    --shadow-md: 0 12px 28px rgba(0,0,40,.35);
-    --shadow-lg: 0 18px 50px rgba(0,0,60,.45);
+    /* SOMBRAS (Sutiles y limpias, estilo moderno) */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* =========================================================
-    MODO OSCURO (Neon intenso)
+    MODO OSCURO (Neon intenso - Deep Space - INTACTO)
    ========================================================= */
 .dark-theme {
-    --purple-500: #9d4edd;
-    --purple-600: #b86bff;
-    --purple-700: #c4a1ff;
+    /* PURPLES (Brillantes sobre oscuro) */
+    --purple-500: #d8b4fe;
+    --purple-600: #c084fc;
+    --purple-700: #a855f7;
 
-    --accent-blue: #60a5fa;
-    --accent-cyan: #38bdf8;
+    /* GLOWS (Intensos y difusos) */
+    --glow-purple: rgba(139, 92, 246, 0.5);
+    --glow-blue: rgba(59, 130, 246, 0.5);
+    --glow-cyan: rgba(6, 182, 212, 0.5);
 
-    /* GLOWS fuertes */
-    --glow-purple: rgba(157,78,221,.45);
-    --glow-blue: rgba(96,165,250,.45);
+    /* BACKGROUND Espacial Profundo */
+    --bg-gradient-start: #0f172a;
+    --bg-gradient-end: #1e1b4b;
 
-    /* BACKGROUND futurista profundo */
-    --menu-bg-1: #0b0a2a;
-    --menu-bg-2: #15133a;
-    --menu-bg-3: #0f1e4a;
+    /* SUPERFICIES (Glass Oscuro) */
+    --surface: rgba(30, 41, 59, 0.4);
+    --surface-elev: rgba(30, 41, 59, 0.6);
+    --surface-card: rgba(15, 23, 42, 0.6);
 
-    /* Glass oscuro */
-    --surface: rgba(15,23,42,0.25);
-    --surface-elev: rgba(15,23,42,0.35);
-    --surface-card: rgba(15,23,42,0.45);
+    /* TEXTO */
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
 
-    --text-primary: #f1f5f9;
-    --text-secondary: #c7d2fe;
+    /* BORDES (Neon sutil) */
+    --border: rgba(124, 58, 237, 0.2);
 
-    --border: rgba(124,58,237,0.35);
+    /* APP BAR */
+    --app-bar-bg: rgba(15, 23, 42, 0.7);
 
-    --btn-bg: linear-gradient(135deg, #9d4edd, #6366f1);
-    --btn-text: #ffffff;
+    /* GRADIENT */
+    --gradient-primary: linear-gradient(135deg, #a78bfa, #60a5fa, #38bdf8);
 
-    --app-bar-bg: rgba(15,23,42,0.55);
-
-    --gradient-primary: linear-gradient(135deg, #a855f7, #6366f1, #0ea5e9);
-
-    --bg-gradient-start: #0b0a2a;
-    --bg-gradient-end: #15133a;
-
-    --shadow-sm: 0 6px 18px rgba(157,78,221,.35);
-    --shadow-md: 0 14px 32px rgba(96,165,250,.45);
-    --shadow-lg: 0 22px 60px rgba(79,70,229,.6);
+    /* SOMBRAS DE COLOR */
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.7);
 }
 
 /* =========================================================
-    RESET
+    RESET & BASE
    ========================================================= */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { height: 100%; }
 
 body {
-    font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     color: var(--text-primary);
-    background: transparent;
+    background: var(--bg-gradient-start);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* =========================================================
-    FONDO ESPACIAL
-   ========================================================= */
+/* El contenedor del fondo espacial (se controla visibilidad por componente/tema) */
 .space-background {
     position: fixed;
     inset: 0;
-    background: linear-gradient(135deg, var(--menu-bg-1), var(--menu-bg-2), var(--menu-bg-3));
+    /* En modo claro es blanco/gradiente sutil */
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
     z-index: -2;
     transition: background 0.4s ease;
 }
 
 /* =========================================================
-    APP BAR
+    COMPONENTES GLOBALES
    ========================================================= */
 .app-bar {
     background: var(--app-bar-bg);
-    border: 1px solid var(--border);
-    backdrop-filter: blur(14px);
-    border-radius: 14px;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
     box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
 }
 
 .app-bar__title {
@@ -138,62 +127,156 @@ body {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 900;
 }
 
-/* =========================================================
-    CARD futuristic glass
-   ========================================================= */
 .card {
     background: var(--surface-card);
     border: 1px solid var(--border);
-    backdrop-filter: blur(14px);
-    border-radius: 18px;
-    padding: 18px;
+    backdrop-filter: blur(16px);
+    border-radius: 20px;
+    padding: 24px;
     box-shadow: var(--shadow-md);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* =========================================================
-    INPUTS
-   ========================================================= */
 input, select, textarea {
     background: var(--surface-elev);
     color: var(--text-primary);
     border: 1px solid var(--border);
-    padding: 10px 14px;
+    padding: 12px 16px;
     border-radius: 12px;
-    backdrop-filter: blur(12px);
+    width: 100%;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--purple-600);
+    box-shadow: 0 0 0 3px var(--glow-purple); 
+    background: var(--surface);
 }
 
 /* =========================================================
-    BOTONES
+    BOTONES GLOBALES (Base)
    ========================================================= */
 .btn {
-    padding: 10px 16px;
-    background: var(--btn-bg);
-    color: var(--btn-text);
+    padding: 10px 20px;
     border-radius: 12px;
-    border: 1px solid var(--border);
     font-weight: 700;
-    box-shadow: var(--shadow-sm);
-    transition: .2s;
     cursor: pointer;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    border: 1px solid transparent;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
 }
 
 /* =========================================================
-    MODALES
+    BOTONES ESPECÍFICOS (INTACTOS - SIEMPRE VIBRANTES)
+    Estos conservan su color fijo sea cual sea el tema.
    ========================================================= */
-.modal {
-    background: var(--surface-card);
-    color: var(--text-primary);
+
+/* 1. Volver / Menú (AZUL) */
+.btn-menu {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    border: none;
+}
+.btn-menu:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+    filter: brightness(1.1);
+}
+
+/* 2. Crear / Explorar (VERDE) */
+.btn-crear {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    border: none;
+}
+.btn-crear:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+    filter: brightness(1.1);
+}
+
+/* 3. Mis Eventos (NARANJA) */
+.btn-mis {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+    border: none;
+}
+.btn-mis:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+    filter: brightness(1.1);
+}
+
+/* 4. Primario (GRADIENTE PRINCIPAL) */
+.btn-primary {
+    background: linear-gradient(135deg, #7c3aed, #3b82f6, #0ea5e9);
+    color: #ffffff;
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.3); /* Sombra base */
+    border: none;
+}
+/* En modo oscuro, el glow se intensifica usando la variable */
+.dark-theme .btn-primary {
+    box-shadow: 0 6px 20px var(--glow-purple);
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 10px 30px var(--glow-purple);
+}
+
+/* 5. Slots (Pequeños) */
+.add-slot {
+    background: #7c3aed;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    border: none;
+}
+.remove-slot {
+    background: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    border: none;
+}
+
+/* =========================================================
+    THEME TOGGLE BUTTON
+   ========================================================= */
+.theme-toggle-btn {
+    background: var(--surface-elev);
     border: 1px solid var(--border);
-    backdrop-filter: blur(18px);
-    border-radius: 18px;
-    padding: 20px;
+    color: var(--text-secondary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle-btn:hover {
+    transform: rotate(20deg) scale(1.1);
+    color: var(--purple-600);
+    border-color: var(--purple-600);
+    background: var(--surface);
+}
+
+.dark-theme .theme-toggle-btn {
+    color: #fbbf24; /* Amarillo Sol */
+    border-color: #fbbf24;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
 }
