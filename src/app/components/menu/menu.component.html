@@ -144,6 +144,11 @@
             </button>
             <button type="button" class="btn secondary" (click)="openRequestsModal()">
               📨 {{ 'MENU.FRIENDS_BUTTON_REQUESTS' | translate }}
+              <span
+                class="notif-badge"
+                *ngIf="newFriendRequests() > 0">
+                {{ newFriendRequests() }}
+              </span>
             </button>
           </div>
         </div>
@@ -163,6 +168,13 @@
                 <span class="state">
                   {{ f.isOnline ? ('STATUS.ONLINE' | translate) : ('STATUS.OFFLINE' | translate) }}
                 </span>
+                <button
+                  type="button"
+                  class="btn chat-btn"
+                  (click)="openChat(f)"
+                  title="Abrir chat">
+                  💬
+                </button>
                 <button type="button" class="btn danger" (click)="quitar(f._id!)">
                   {{ 'MENU.FRIENDS_REMOVE' | translate }}
                 </button>
@@ -305,6 +317,62 @@
         <div class="modal-actions" style="margin-top:16px;">
           <button class="btn-cancel" (click)="closeRequestsModal()">
             {{ 'MENU.MODAL_CLOSE' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de chat entre amigos -->
+    <div class="modal-overlay" *ngIf="chatOpen()">
+      <div class="modal chat-modal">
+        <div class="modal-header">
+          <h3>
+            💬 {{ 'MENU.CHAT_TITLE_PREFIX' | translate }}
+            <span class="chat-friend-name">
+              {{ chatFriend()?.username || chatFriend()?.gmail || ('MENU.USER_FALLBACK' | translate) }}
+            </span>
+          </h3>
+          <button class="btn-close" (click)="closeChat()">×</button>
+        </div>
+
+        <div class="modal-body chat-body">
+          <div *ngIf="chatLoading()" class="msg">
+            {{ 'MENU.CHAT_LOADING' | translate }}
+          </div>
+          <div *ngIf="chatError()" class="msg error">
+            {{ chatError() }}
+          </div>
+
+          <div class="chat-messages" #chatMessagesContainer *ngIf="!chatLoading()">
+            <div
+              *ngFor="let m of chatMessages()"
+              class="chat-message"
+              [class.from-me]="m.from === me()?._id"
+              [class.from-them]="m.from !== me()?._id">
+              <div class="bubble">
+                <div class="text">{{ m.text }}</div>
+                <div class="time">
+                  {{ m.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="!chatMessages().length && !chatLoading()" class="empty">
+              {{ 'MENU.CHAT_EMPTY' | translate }}
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-row">
+          <input
+            type="text"
+            class="chat-input"
+            [value]="chatText()"
+            (input)="onChatInput($event)"
+            (keyup.enter)="sendChat()"
+            [placeholder]="'MENU.CHAT_PLACEHOLDER' | translate" />
+          <button type="button" class="btn send-btn" (click)="sendChat()">
+            ➤
           </button>
         </div>
       </div>

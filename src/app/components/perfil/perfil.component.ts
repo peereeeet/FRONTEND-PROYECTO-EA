@@ -185,7 +185,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.saveError.set('');
     this.editOpen.set(true);
   }
-  closeEdit() { this.editOpen.set(false); }
+  closeEdit() { 
+    this.editOpen.set(false); 
+  }
 
   saveEdit(): void {
     const u = this.me();
