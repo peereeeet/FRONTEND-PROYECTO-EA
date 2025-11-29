@@ -59,7 +59,7 @@
             </div>
 
             <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-                <button class="btn secondary" (click)="goToPerfil()">👤 {{ 'MENU.PROFILE_BUTTON' | translate }}</button>
+                <button class="btn btn-profile" (click)="goToPerfil()">👤 {{ 'MENU.PROFILE_BUTTON' | translate }}</button>
                 <button class="btn btn-logout" (click)="onLogout()">
                     {{ 'MENU.LOGOUT_BUTTON' | translate }}
                 </button>
@@ -73,13 +73,15 @@
                 </div>
 
                 <div class="events-actions">
-                    <button class="btn primary" (click)="goToCrearEvento()">
+                    <button class="btn btn-create" (click)="goToCrearEvento()">
                         ➕ {{ 'MENU.EVENTS_CREATE' | translate }}
                     </button>
-                    <button type="button" class="btn" (click)="goToExplorarEventos()">
+
+                    <button type="button" class="btn btn-mapmenu" (click)="goToExplorarEventos()">
                         🔍 {{ 'MENU.EVENTS_EXPLORE_MAP' | translate }}
                     </button>
-                    <button type="button" class="btn secondary" (click)="goToMisEventos()">
+
+                    <button type="button" class="btn btn-myevents" (click)="goToMisEventos()">
                         📅 {{ 'MENU.EVENTS_MY' | translate }}
                     </button>
                 </div>
@@ -99,31 +101,18 @@
                         </h3>
 
                         <div class="inline-pager" *ngIf="(friends().length || 0) > 0">
-                            <button
-                                type="button"
-                                class="icon-btn"
-                                (click)="friendsPrev()"
-                                [disabled]="fPage <= 1"
-                                aria-label="Página anterior">
-                                «
-                            </button>
+                            <button type="button" class="icon-btn" (click)="friendsPrev()" [disabled]="fPage <= 1">«</button>
                             <span class="counter">{{ fPage }} / {{ fTotalPages() }}</span>
-                            <button
-                                type="button"
-                                class="icon-btn"
-                                (click)="friendsNext()"
-                                [disabled]="fPage >= fTotalPages()"
-                                aria-label="Página siguiente">
-                                »
-                            </button>
+                            <button type="button" class="icon-btn" (click)="friendsNext()" [disabled]="fPage >= fTotalPages()">»</button>
                         </div>
                     </div>
 
                     <div class="actions">
-                        <button type="button" class="btn" (click)="openAddFriendsModal()">
+                        <button type="button" class="btn btn-add-friend" (click)="openAddFriendsModal()">
                             🔍 {{ 'MENU.FRIENDS_BUTTON_EXPLORE_USERS' | translate }}
                         </button>
-                        <button type="button" class="btn secondary" (click)="openRequestsModal()">
+
+                        <button type="button" class="btn btn-requests" (click)="openRequestsModal()">
                             📨 {{ 'MENU.FRIENDS_BUTTON_REQUESTS' | translate }}
                         </button>
                     </div>
@@ -144,7 +133,8 @@
                                 <span class="state">
                                     {{ f.isOnline ? ('STATUS.ONLINE' | translate) : ('STATUS.OFFLINE' | translate) }}
                                 </span>
-                                <button type="button" class="btn danger" (click)="quitar(f._id!)">
+
+                                <button type="button" class="btn btn-danger" (click)="quitar(f._id!)">
                                     {{ 'MENU.FRIENDS_REMOVE' | translate }}
                                 </button>
                             </div>
@@ -154,13 +144,14 @@
 
                 <ng-template #emptyList>
                     <p class="empty">{{ 'MENU.FRIENDS_EMPTY' | translate }}</p>
-                    <button type="button" class="btn" (click)="openAddFriendsModal()">
+                    <button type="button" class="btn btn-add-friend" (click)="openAddFriendsModal()">
                         {{ 'MENU.FRIENDS_SEARCH_ADD' | translate }}
                     </button>
                 </ng-template>
             </section>
         </div>
 
+        <!-- MODAL EXPLORAR USUARIOS -->
         <div class="modal-overlay" *ngIf="showAddModal()">
             <div class="modal large-modal">
                 <div class="modal-header">
@@ -174,7 +165,8 @@
                         [placeholder]="'MENU.MODAL_SEARCH_PLACEHOLDER' | translate"
                         [value]="modalSearch()"
                         (input)="onModalSearchInput($event)" />
-                    <button type="button" class="btn" (click)="buscarPersonas()">
+
+                    <button type="button" class="btn btn-requests" (click)="buscarPersonas()">
                         {{ 'MENU.MODAL_SEARCH_BUTTON' | translate }}
                     </button>
                 </div>
@@ -191,13 +183,9 @@
 
                         <div class="pager">
                             <button type="button" (click)="modalPrev()" [disabled]="mPage()<=1">«</button>
-                            <span class="counter">
-                                {{ 'MENU.MODAL_PAGE_LABEL' | translate }} {{ mPage() }} / {{ mTotalPages }}
-                            </span>
+                            <span class="counter">{{ 'MENU.MODAL_PAGE_LABEL' | translate }} {{ mPage() }} / {{ mTotalPages }}</span>
                             <button type="button" (click)="modalNext()" [disabled]="mPage()>=mTotalPages">»</button>
-                            <span class="total">
-                                {{ 'MENU.MODAL_TOTAL_LABEL' | translate }}: {{ filteredUsers().length }}
-                            </span>
+                            <span class="total">{{ 'MENU.MODAL_TOTAL_LABEL' | translate }}: {{ filteredUsers().length }}</span>
                         </div>
 
                         <div class="user-row" *ngFor="let u of modalPageItems">
@@ -207,21 +195,19 @@
                             </span>
 
                             <ng-container *ngIf="isPendingFrom(u._id!); else checkSent">
-                                <button type="button" class="btn-pending" (click)="openRequestsModal()">
+                                <button type="button" class="btn btn-pending" (click)="openRequestsModal()">
                                     📨 {{ 'MENU.MODAL_REQUEST_PENDING' | translate }}
                                 </button>
                             </ng-container>
 
                             <ng-template #checkSent>
                                 <ng-container *ngIf="isPendingTo(u._id!); else canAddTpl">
-                                    <span class="sent-text">
-                                        ✅ {{ 'MENU.MODAL_REQUEST_SENT' | translate }}
-                                    </span>
+                                    <span class="sent-text">✅ {{ 'MENU.MODAL_REQUEST_SENT' | translate }}</span>
                                 </ng-container>
                             </ng-template>
 
                             <ng-template #canAddTpl>
-                                <button type="button" class="btn-add" (click)="addFromModal(u._id!)">
+                                <button type="button" class="btn btn-add-friend" (click)="addFromModal(u._id!)">
                                     ➕ {{ 'MENU.MODAL_ADD_BUTTON' | translate }}
                                 </button>
                             </ng-template>
@@ -234,13 +220,14 @@
                 </div>
 
                 <div class="modal-actions" style="margin-top:16px;">
-                    <button class="btn-cancel" (click)="closeAddFriendsModal()">
+                    <button class="btn btn-myevents" (click)="closeAddFriendsModal()">
                         {{ 'MENU.MODAL_CLOSE' | translate }}
                     </button>
                 </div>
             </div>
         </div>
 
+        <!-- MODAL SOLICITUDES -->
         <div class="modal-overlay" *ngIf="showRequestsModal()">
             <div class="modal medium-modal">
                 <div class="modal-header">
@@ -249,9 +236,8 @@
                 </div>
 
                 <div class="modal-body">
-                    <p *ngIf="requestsLoading()">
-                        {{ 'MENU.REQUESTS_LOADING' | translate }}
-                    </p>
+                    <p *ngIf="requestsLoading()">{{ 'MENU.REQUESTS_LOADING' | translate }}</p>
+
                     <p *ngIf="requestsError() && !requestsLoading()" class="msg error">
                         {{ requestsError() }}
                     </p>
@@ -266,10 +252,11 @@
                                 </div>
                             </div>
                             <div class="right">
-                                <button class="btn accept" (click)="acceptRequest(u._id!)">
+                                <button class="btn btn-accept" (click)="acceptRequest(u._id!)">
                                     {{ 'MENU.REQUESTS_ACCEPT' | translate }}
                                 </button>
-                                <button class="btn reject" (click)="rejectRequest(u._id!)">
+
+                                <button class="btn btn-reject" (click)="rejectRequest(u._id!)">
                                     {{ 'MENU.REQUESTS_REJECT' | translate }}
                                 </button>
                             </div>
@@ -282,11 +269,12 @@
                 </div>
 
                 <div class="modal-actions" style="margin-top:16px;">
-                    <button class="btn-cancel" (click)="closeRequestsModal()">
+                    <button class="btn btn-myevents" (click)="closeRequestsModal()">
                         {{ 'MENU.MODAL_CLOSE' | translate }}
                     </button>
                 </div>
             </div>
         </div>
+
     </section>
 </div>

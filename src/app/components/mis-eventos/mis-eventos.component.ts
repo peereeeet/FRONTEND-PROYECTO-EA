@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -9,6 +9,7 @@ import { Evento } from '../../models/evento.model';
 import { ValoracionService } from '../../services/valoracion.service';
 import { Valoracion } from '../../models/valoracion.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-mis-eventos',
@@ -18,6 +19,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   styleUrls: ['./mis-eventos.component.css']
 })
 export class MisEventosComponent implements OnInit {
+  private themeService = inject(ThemeService);
+  theme = this.themeService.theme;
+
   eventosCreados: Evento[] = [];
   eventosInscritos: Evento[] = [];
   loading = false;
@@ -473,5 +477,9 @@ hasLocation(evento: any): boolean {
   selectLanguage(lang: 'es' | 'en') {
     this.changeLanguage(lang);
     this.showLangMenu = false;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }

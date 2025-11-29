@@ -4,63 +4,72 @@
     VARIABLES BASE (Modo CLARO - Limpio, Blanco y Profesional)
    ========================================================= */
 :root {
-    /* ACENTOS DE COLOR (Se mantienen vivos para botones/acciones) */
+    /* ACENTOS DE COLOR */
     --purple-500: #a855f7;
     --purple-600: #9333ea;
     --purple-700: #7c3aed;
     --purple-800: #6d28d9;
+    --purple-300: #d8b4fe;
 
     --accent-blue: #3b82f6;
+    --accent-blue-light: #60a5fa;
     --accent-cyan: #0ea5e9;
 
-    /* GLOWS (En modo claro, los glows son sombras tenues y elegantes) */
+    /* GLOWS (Sutiles en modo claro) */
     --glow-purple: rgba(124, 58, 237, 0.1); 
     --glow-blue: rgba(59, 130, 246, 0.1);
     --glow-cyan: rgba(14, 165, 233, 0.1);
+    --glow-purple-strong: rgba(124, 58, 237, 0.3);
 
     /* BACKGROUND - CLARO PURO */
     --bg-gradient-start: #ffffff; 
-    --bg-gradient-end: #f8fafc; /* Un gris muy sutil para dar profundidad */
+    --bg-gradient-end: #f8fafc;
 
     /* SUPERFICIES (Glass Blanco) */
     --surface: #ffffff;
     --surface-elev: #f1f5f9; /* Fondo para inputs */
-    --surface-card: #ffffff; /* Tarjeta blanca sólida o con mínima transparencia */
+    --surface-card: #ffffff; /* Tarjeta blanca */
 
-    /* TEXTO (Alto contraste para legibilidad) */
-    --text-primary: #0f172a; /* Azul noche casi negro */
-    --text-secondary: #64748b; /* Gris pizarra */
+    /* TEXTO (Alto contraste) */
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
 
     /* BORDES */
-    --border: #e2e8f0; /* Gris muy claro */
+    --border: #e2e8f0;
 
     /* APP BAR */
     --app-bar-bg: rgba(255, 255, 255, 0.95);
 
-    /* GRADIENT TITULOS (Se mantiene vibrante para identidad de marca) */
+    /* GRADIENT TITULOS */
     --gradient-primary: linear-gradient(135deg, #7c3aed, #2563eb);
 
-    /* SOMBRAS (Sutiles y limpias, estilo moderno) */
+    /* SOMBRAS */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* =========================================================
-    MODO OSCURO (Neon intenso - Deep Space - INTACTO)
+    MODO OSCURO (Neon intenso - Deep Space)
    ========================================================= */
 .dark-theme {
-    /* PURPLES (Brillantes sobre oscuro) */
+    /* PURPLES */
+    --purple-300: #f3e8ff;
     --purple-500: #d8b4fe;
     --purple-600: #c084fc;
     --purple-700: #a855f7;
 
-    /* GLOWS (Intensos y difusos) */
+    /* ACCENT BLUES */
+    --accent-blue: #3b82f6;
+    --accent-blue-light: #60a5fa;
+
+    /* GLOWS (Intensos) */
     --glow-purple: rgba(139, 92, 246, 0.5);
     --glow-blue: rgba(59, 130, 246, 0.5);
     --glow-cyan: rgba(6, 182, 212, 0.5);
+    --glow-purple-strong: rgba(139, 92, 246, 0.7);
 
-    /* BACKGROUND Espacial Profundo */
+    /* BACKGROUND Espacial */
     --bg-gradient-start: #0f172a;
     --bg-gradient-end: #1e1b4b;
 
@@ -73,7 +82,7 @@
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
 
-    /* BORDES (Neon sutil) */
+    /* BORDES */
     --border: rgba(124, 58, 237, 0.2);
 
     /* APP BAR */
@@ -101,11 +110,10 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* El contenedor del fondo espacial (se controla visibilidad por componente/tema) */
+/* Contenedor del fondo espacial (Controlado localmente) */
 .space-background {
     position: fixed;
     inset: 0;
-    /* En modo claro es blanco/gradiente sutil */
     background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
     z-index: -2;
     transition: background 0.4s ease;
@@ -159,7 +167,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* =========================================================
-    BOTONES GLOBALES (Base)
+    BOTONES GLOBALES (Solo Base y Funcionales)
    ========================================================= */
 .btn {
     padding: 10px 20px;
@@ -174,58 +182,13 @@ input:focus, select:focus, textarea:focus {
     text-decoration: none;
 }
 
-/* =========================================================
-    BOTONES ESPECÍFICOS (INTACTOS - SIEMPRE VIBRANTES)
-    Estos conservan su color fijo sea cual sea el tema.
-   ========================================================= */
-
-/* 1. Volver / Menú (AZUL) */
-.btn-menu {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: #ffffff;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-    border: none;
-}
-.btn-menu:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
-    filter: brightness(1.1);
-}
-
-/* 2. Crear / Explorar (VERDE) */
-.btn-crear {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: #ffffff;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-    border: none;
-}
-.btn-crear:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
-    filter: brightness(1.1);
-}
-
-/* 3. Mis Eventos (NARANJA) */
-.btn-mis {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: #ffffff;
-    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-    border: none;
-}
-.btn-mis:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
-    filter: brightness(1.1);
-}
-
-/* 4. Primario (GRADIENTE PRINCIPAL) */
+/* 4. Primario (GRADIENTE PRINCIPAL - Se suele mantener global) */
 .btn-primary {
     background: linear-gradient(135deg, #7c3aed, #3b82f6, #0ea5e9);
     color: #ffffff;
-    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.3); /* Sombra base */
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.3);
     border: none;
 }
-/* En modo oscuro, el glow se intensifica usando la variable */
 .dark-theme .btn-primary {
     box-shadow: 0 6px 20px var(--glow-purple);
 }
@@ -235,7 +198,7 @@ input:focus, select:focus, textarea:focus {
     box-shadow: 0 10px 30px var(--glow-purple);
 }
 
-/* 5. Slots (Pequeños) */
+/* 5. Slots (Pequeños funcionales) */
 .add-slot {
     background: #7c3aed;
     color: #ffffff;
@@ -250,7 +213,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* =========================================================
-    THEME TOGGLE BUTTON
+    THEME TOGGLE BUTTON (Global)
    ========================================================= */
 .theme-toggle-btn {
     background: var(--surface-elev);

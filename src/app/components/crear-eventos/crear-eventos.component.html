@@ -32,11 +32,11 @@
             (click)="selectLanguage('en')">
             🇬🇧 {{ 'LANG.EN' | translate }}
           </button>
-          <button class="theme-toggle-crear" (click)="toggleTheme()">
-  {{ theme() === 'dark' ? '☀️' : '🌙' }}
-</button>
-          
         </div>
+
+        <button class="theme-toggle-crear" (click)="toggleTheme()">
+          {{ theme() === 'dark' ? '☀️' : '🌙' }}
+        </button>
       </div>
       <h1 class="app-bar__title">{{ 'CREATE_EVENT.TITLE' | translate }}</h1>
     </div>    

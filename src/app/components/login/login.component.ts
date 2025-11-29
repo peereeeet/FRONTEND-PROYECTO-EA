@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -6,6 +6,7 @@ import { finalize } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
+  private themeService = inject(ThemeService);
+  theme = this.themeService.theme;
+
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';
@@ -80,6 +84,10 @@ export class LoginComponent {
     } else {
       this.router.navigate(['/menu']);
     }
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
   changeLanguage(lang: 'es' | 'en') {

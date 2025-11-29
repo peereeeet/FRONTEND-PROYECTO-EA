@@ -1,8 +1,11 @@
 /* ========== FONDO TIPO MENÚ ========== */
 .home-page {
   min-height: 100vh;
-  /* CAMBIO: Usar variable para el fondo */
-  background: var(--background);
+  background: linear-gradient(
+    135deg,
+    var(--bg-gradient-start),
+    var(--bg-gradient-end)
+  );
   position: relative;
   overflow: hidden;
   padding: 20px;
@@ -10,17 +13,13 @@
 }
 
 /* Nebulosas/luz suave, mismo patrón que menú/mis-eventos */
-/* NOTA: Estos gradientes radiales se dejan fijos o se ajustan para el modo oscuro, pero el cambio principal ocurre en el background del body. */
 .space-background {
   position: absolute;
   inset: 0;
-  /* Estos gradientes radiales ya usan RGBA y se mezclan bien con el fondo.
-     Si deseas un cambio más drástico, puedes usar variables aquí también.
-     Por ahora, los mantenemos para no romper el efecto 'espacial'. */
   background:
-    radial-gradient(600px 300px at 20% 60%, rgba(167,139,250,.32), transparent 60%),
-    radial-gradient(500px 260px at 80% 25%, rgba(59,130,246,.32), transparent 60%),
-    radial-gradient(450px 250px at 50% 80%, rgba(14,165,233,.2), transparent 65%);
+    radial-gradient(600px 300px at 20% 60%, var(--glow-purple), transparent 60%),
+    radial-gradient(500px 260px at 80% 25%, var(--glow-blue), transparent 60%),
+    radial-gradient(450px 250px at 50% 80%, var(--glow-cyan), transparent 65%);
   z-index: 0;
   animation: breathe 10s ease-in-out infinite;
 }
@@ -38,11 +37,10 @@
 
 /* ========== APP BAR VIBRANTE (alineada con MENU) ========== */
 .app-bar {
-  /* CAMBIO: Usar variables para el fondo y borde */
-  background: var(--surface-gradient);
+  background: var(--app-bar-bg);
+  backdrop-filter: blur(14px);
   border-bottom: 3px solid var(--border);
-  /* CAMBIO: Usar variable de sombra */
-  box-shadow: var(--shadow-lg); 
+  box-shadow: var(--shadow-lg);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -73,23 +71,26 @@
   margin: 0;
   color: transparent;
   font-weight: 900;
-  /* CAMBIO: Mantener el degradado para el título, pero puedes usar var(--primary-X) si lo deseas */
-  background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #0ea5e9 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
-  /* CAMBIO: Usar un color de sombra para el texto más neutral o primario */
-  text-shadow: 0 0 30px rgba(124,58,237,.2);
+  text-shadow: 0 0 30px var(--glow-purple);
 }
 
 .app-bar__user {
-  /* CAMBIO: Usar color de texto secundario/débil */
   color: var(--text-secondary);
   font-weight: 600;
 }
 
+/* Contenedor de botones (tema + logout) */
+.app-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 /* Botón logout coherente con el resto */
 .logout-button {
-  /* Mantener este botón rojo/peligro fijo por coherencia UX (logout) */
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
   border: none;
@@ -105,6 +106,7 @@
 .logout-button:hover {
   background: linear-gradient(135deg, #dc2626, #b91c1c);
   transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(220, 38, 38, 0.45);
 }
 
 /* ========== MAIN ========== */
@@ -120,18 +122,18 @@
 
 /* ========== TARJETAS / SECCIONES (glass + borde como menú) ========== */
 .hero {
-  /* CAMBIO: Usar superficie y fondo/blur dinámico */
-  background: var(--surface-glass);
-  backdrop-filter: var(--backdrop-blur);
+  background: var(--surface-card);
+  backdrop-filter: blur(16px);
   border-radius: 24px;
   padding: 40px;
-  /* CAMBIO: Usar variable de sombra */
-  box-shadow: var(--shadow-xl); 
-  /* CAMBIO: Usar borde dinámico */
+  box-shadow: var(--shadow-lg);
   border: 2px solid var(--border);
 }
 
-.hero__content { color: var(--text-primary); text-align: center; }
+.hero__content {
+  color: var(--text-primary);
+  text-align: center;
+}
 
 .hero__icon {
   font-size: 4rem;
@@ -143,8 +145,7 @@
   font-size: 2.5rem;
   margin: 0 0 16px 0;
   font-weight: 800;
-  /* CAMBIO: Usar gradiente para el título (si quieres que cambie, usa variables para los colores dentro del linear-gradient) */
-  background: var(--gradient-primary); 
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -152,13 +153,12 @@
 
 .hero__subtitle {
   font-size: 1.2rem;
-  /* CAMBIO: Usar color de texto secundario */
   color: var(--text-secondary);
   margin: 0 0 30px 0;
   line-height: 1.6;
 }
 
-/* Stats con mini “cards” vibrantes */
+/* Stats con mini "cards" vibrantes */
 .hero__stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -167,13 +167,12 @@
 }
 
 .stat-card {
-  /* CAMBIO: Usar gradiente de color primario */
   background: var(--gradient-primary);
-  color: white; /* El texto se mantiene blanco sobre el primario */
+  color: white;
   padding: 20px;
   border-radius: 14px;
   text-align: center;
-  box-shadow: 0 12px 28px rgba(59,130,246,.4); /* Mantener sombra de color */
+  box-shadow: 0 12px 28px rgba(59,130,246,.4);
 }
 
 .stat-number {
@@ -189,14 +188,11 @@
 
 /* Aside navegación */
 .nav-section {
-  /* CAMBIO: Usar superficie y fondo/blur dinámico */
-  background: var(--surface-glass);
-  backdrop-filter: var(--backdrop-blur);
+  background: var(--surface-card);
+  backdrop-filter: blur(16px);
   border-radius: 24px;
   padding: 30px;
-  /* CAMBIO: Usar variable de sombra */
-  box-shadow: var(--shadow-xl);
-  /* CAMBIO: Usar borde dinámico */
+  box-shadow: var(--shadow-lg);
   border: 2px solid var(--border);
 }
 
@@ -204,50 +200,46 @@
   font-size: 1.8rem;
   margin: 0 0 8px 0;
   font-weight: 800;
-  /* CAMBIO: Usar gradiente primario */
-  background: var(--gradient-primary); 
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .nav__subtitle {
-  /* CAMBIO: Usar color de texto secundario */
   color: var(--text-secondary);
   margin: 0 0 30px 0;
   font-size: 1rem;
 }
 
-.nav__actions { display: grid; gap: 16px; }
+.nav__actions {
+  display: grid;
+  gap: 16px;
+}
 
-/* Tarjetas de navegación estilo “quick list” del menú */
+/* Tarjetas de navegación estilo "quick list" del menú */
 .nav-card {
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 20px;
-  /* CAMBIO: Usar superficie de tarjeta/elemento */
   background: var(--surface);
   border-radius: 16px;
   text-decoration: none;
   color: inherit;
   border: 2px solid transparent;
   transition: all 0.25s ease;
-  /* CAMBIO: Usar variable de sombra */
   box-shadow: var(--shadow-md);
 }
 .nav-card:hover {
   transform: translateY(-4px);
-  /* CAMBIO: Usar color primario para el borde al hacer hover */
-  border-color: var(--primary-500);
-  /* CAMBIO: Usar variable de sombra */
-  box-shadow: var(--shadow-xl);
+  border-color: var(--purple-600);
+  box-shadow: var(--shadow-lg);
 }
 
 .nav-card__icon {
   width: 52px;
   height: 52px;
-  /* CAMBIO: Usar gradiente primario */
   background: var(--gradient-primary);
   border-radius: 14px;
   display: flex;
@@ -257,16 +249,19 @@
   color: white;
   flex-shrink: 0;
 }
-.nav-card__content { flex: 1; }
+
+.nav-card__content {
+  flex: 1;
+}
+
 .nav-card__title {
   font-size: 1.2rem;
   margin: 0 0 4px 0;
-  /* CAMBIO: Usar color de texto primario */
   color: var(--text-primary);
   font-weight: 700;
 }
+
 .nav-card__description {
-  /* CAMBIO: Usar color de texto secundario */
   color: var(--text-secondary);
   margin: 0;
   font-size: 0.9rem;
@@ -279,15 +274,13 @@
   gap: 15px;
   margin-top: 25px;
 }
+
 .quick-action {
   padding: 12px 16px;
-  /* CAMBIO: Usar superficie de tarjeta/elemento */
   background: var(--surface);
-  /* CAMBIO: Usar borde dinámico */
   border: 1px solid var(--border);
   border-radius: 10px;
   text-decoration: none;
-  /* CAMBIO: Usar color de texto secundario */
   color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 500;
@@ -295,27 +288,39 @@
   transition: all 0.25s ease;
 }
 .quick-action:hover {
-  /* CAMBIO: Usar gradiente primario al hacer hover */
   background: var(--gradient-primary);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59,130,246,.4); /* Mantener sombra de color */
+  box-shadow: 0 8px 20px rgba(59,130,246,.4);
 }
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
-  .home-main { grid-template-columns: 1fr; }
+  .home-main {
+    grid-template-columns: 1fr;
+  }
 }
+
 @media (max-width: 768px) {
-  .hero__stats { grid-template-columns: 1fr; }
-  .quick-actions { grid-template-columns: 1fr; }
+  .hero__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
   .app-bar__content {
     flex-direction: column;
     gap: 10px;
     text-align: center;
   }
+
   .hero {
     padding: 30px 20px;
   }
-  .hero__title { font-size: 2rem; }
+
+  .hero__title {
+    font-size: 2rem;
+  }
 }

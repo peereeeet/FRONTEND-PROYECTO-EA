@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import * as maplibregl from 'maplibre-gl';
@@ -6,6 +6,7 @@ import { EventoService } from '../../services/evento.service';
 import { AuthService } from '../../services/auth.service';
 import { Evento } from '../../models/evento.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-explorar-eventos',
@@ -15,6 +16,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   styleUrls: ['./explorar-eventos.component.css']
 })
 export class ExplorarEventosComponent implements OnInit, AfterViewInit {
+  private themeService = inject(ThemeService);
+  theme = this.themeService.theme;
+
   allEventos: Evento[] = [];
   eventosFiltrados: Evento[] = [];
   eventos: Evento[] = [];
@@ -37,7 +41,8 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
   selectedEvent: Evento | null = null;
   showEventModal = false;
 
-  currentLang: 'es' | 'en' = 'es';
+  currentLang: 'es' | 'en' | 'cat' | 'fr' =
+    (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
   constructor(
@@ -46,6 +51,7 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     private router: Router,
     private translate: TranslateService
   ) {
+    this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
@@ -92,17 +98,14 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
 
     this.map.on('load', () => {
       this.mapReady = true;
-      // Cargamos eventos de la vista actual (backend con /by-bounds)
-      this.fetchEventosForCurrentView();
+      this.fetchEventosForCurrentView(false);
       this.map?.resize();
     });
 
     this.map.on('moveend', () => {
-      // Cada vez que mueves el mapa, pedimos al backend los eventos de esa zona
       this.actualizarListaSegunMapa();
     });
   }
-
 
   private getMapBounds() {
     if (!this.map) return null;
@@ -115,12 +118,20 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     };
   }
 
-  private fetchEventosForCurrentView(): void {
+  private fetchEventosForCurrentView(fromMapMove: boolean = false): void {
     if (!this.map) return;
 
     const bounds = this.getMapBounds();
-    this.loading = true;
+    if (!fromMapMove) {
+      this.loading = true;
+    }
     this.errorMessage = '';
+
+    const finalizar = () => {
+      if (!fromMapMove) {
+        this.loading = false;
+      }
+    };
 
     if (!bounds) {
       this.eventoService.getEventos(this.page, this.pageSize).subscribe({
@@ -156,12 +167,11 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
 
           this.eventos = mapped;
 
-          this.loading = false;
           this.pintarMarcadores();
+          finalizar();
         },
         error: (err) => {
           console.error(err);
-          this.loading = false;
           this.eventos = [];
           this.allEventos = [];
           this.eventosFiltrados = [];
@@ -170,6 +180,7 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
           this.errorMessage =
             err?.error?.message || 'Error al cargar eventos desde el servidor.';
           this.limpiarMarcadores();
+          finalizar();
         },
       });
 
@@ -218,12 +229,11 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
 
           this.eventos = mapped;
 
-          this.loading = false;
           this.pintarMarcadores();
+          finalizar();
         },
         error: (err) => {
           console.error(err);
-          this.loading = false;
           this.eventos = [];
           this.allEventos = [];
           this.eventosFiltrados = [];
@@ -232,6 +242,7 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
           this.errorMessage =
             err?.error?.message || 'Error al cargar eventos desde el servidor.';
           this.limpiarMarcadores();
+          finalizar();
         },
       });
   }
@@ -276,7 +287,7 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
 
   private actualizarListaSegunMapa(): void {
     if (!this.mapReady) return;
-    this.fetchEventosForCurrentView();
+    this.fetchEventosForCurrentView(true);
   }
 
   private pintarMarcadores(): void {
@@ -432,17 +443,17 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/mis-eventos']);
   }
 
-  prevPage(): void {
-    if (this.page > 1) {
-      this.page--;
-      this.actualizarListaSegunMapa();
-    }
-  }
-
   nextPage(): void {
     if (this.page < this.totalPages) {
       this.page++;
-      this.actualizarListaSegunMapa();
+      this.fetchEventosForCurrentView(true);
+    }
+  }
+
+  prevPage(): void {
+    if (this.page > 1) {
+      this.page--;
+      this.fetchEventosForCurrentView(true);
     }
   }
 
@@ -453,12 +464,18 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     localStorage.setItem('lang', lang);
   }
 
-  toggleLangMenu() {
+  toggleLangMenu(): void {
     this.showLangMenu = !this.showLangMenu;
   }
 
-  selectLanguage(lang: 'es' | 'en') {
-    this.changeLanguage(lang);
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
     this.showLangMenu = false;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }
