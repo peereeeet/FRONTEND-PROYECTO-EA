@@ -1,4 +1,3 @@
-/* ===== MIS EVENTOS - Usando variables globales ===== */
 
 .events-page {
   min-height: 100vh;
@@ -34,7 +33,6 @@
   50% { opacity: 0.9; }
 }
 
-/* ===== App bar ===== */
 .app-bar {
   background: var(--app-bar-bg);
   border-bottom: 3px solid var(--border);
@@ -63,7 +61,6 @@
   text-shadow: 0 0 30px var(--glow-purple);
 }
 
-/* ===== Contenedor principal ===== */
 .events-wrapper {
   position: relative;
   z-index: 1;
@@ -83,7 +80,6 @@
   backdrop-filter: blur(20px);
 }
 
-/* ===== Botones navegación ===== */
 .btn-back {
   border: none;
   padding: 12px 22px;
@@ -129,7 +125,6 @@
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
 }
 
-/* ===== Loading & Error ===== */
 .loading-state {
   text-align: center;
   padding: 60px 20px;
@@ -167,7 +162,6 @@
   text-align: center;
 }
 
-/* ===== Secciones de eventos ===== */
 .eventos-section {
   margin-bottom: 48px;
 }
@@ -182,7 +176,6 @@
   color: transparent;
 }
 
-/* ===== Empty state ===== */
 .empty-state {
   text-align: center;
   padding: 60px 20px;
@@ -205,7 +198,6 @@
   margin: 0;
 }
 
-/* ===== Lista de eventos ===== */
 .event-list {
   list-style: none;
   padding: 0;
@@ -256,7 +248,6 @@
   color: var(--text-primary);
 }
 
-/* ===== Badges ===== */
 .status-badges {
   display: flex;
   gap: 8px;
@@ -285,7 +276,6 @@
   border: 2px solid #6ee7b7;
 }
 
-/* ===== Evento info ===== */
 .evento-info {
   margin-bottom: 20px;
 }
@@ -311,7 +301,6 @@
   font-weight: 800;
 }
 
-/* ===== Botones de acción ===== */
 .evento-actions {
   display: flex;
   gap: 12px;
@@ -508,7 +497,6 @@
   box-shadow: 0 10px 24px rgba(239,68,68,.4);
 }
 
-/* ===== Modal de valoraciones ===== */
 .modal.ratings-modal {
   width: min(800px, 92vw);
 }
@@ -579,7 +567,6 @@
   font-style: italic;
 }
 
-/* ===== Selector de idioma y tema ===== */
 .lang-switcher-menu {
   position: absolute;
   right: 16px;
@@ -705,7 +692,6 @@
   box-shadow: 0 8px 22px var(--glow-purple-strong);
 }
 
-/* ===== Responsive ===== */
 @media (max-width: 768px) {
   .events-card {
     padding: 20px;
@@ -759,7 +745,6 @@
   }
 }
 
-/* ===== MODAL DE VALORACIONES - ESTILOS COMPLETOS ===== */
 
 .modal-overlay {
   position: fixed;

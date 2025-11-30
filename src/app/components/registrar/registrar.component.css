@@ -1,4 +1,3 @@
-/* ===== REGISTRAR - Usando variables globales ===== */
 
 .register-page {
   min-height: 100vh;
@@ -208,7 +207,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* Selector de idioma y tema */
 .lang-switcher-register {
   position: absolute;
   top: 20px;
@@ -347,11 +345,7 @@
     right: 10px;
   }
 }
-/* ===== RESTO DEL CSS SE MANTIENE IGUAL ===== */
 
-/* ... todo el CSS anterior ... */
-
-/* ⭐ REEMPLAZA .login-link CON ESTO: */
 .login-button-container {
   text-align: center;
   margin-top: 24px;
@@ -392,4 +386,3 @@
   box-shadow: 0 10px 24px rgba(59,130,246,.5);
 }
 
-/* ===== RESTO DEL CSS (Selector de idioma, responsive, etc.) ===== */

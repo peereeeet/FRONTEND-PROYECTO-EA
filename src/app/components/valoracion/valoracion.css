@@ -1,4 +1,3 @@
-/* ===== VALORACION - Usando variables globales ===== */
 
 .valoracion-page {
   min-height: 100vh;
@@ -120,7 +119,6 @@
   box-shadow: 0 8px 20px rgba(59,130,246,.35);
 }
 
-/* Estadísticas */
 .stats-section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -163,7 +161,6 @@
   font-size: 1.5rem;
 }
 
-/* Tu valoración */
 .your-rating-section {
   margin-bottom: 32px;
 }
@@ -258,7 +255,6 @@
   cursor: not-allowed;
 }
 
-/* Lista de valoraciones */
 .ratings-list-section {
   margin-top: 32px;
 }
@@ -309,7 +305,6 @@
   margin: 0;
 }
 
-/* Estados */
 .loading-state,
 .empty-state {
   text-align: center;
@@ -343,7 +338,6 @@
   font-weight: 600;
 }
 
-/* Selector de idioma y tema */
 .lang-switcher-menu {
   position: absolute;
   right: 16px;
@@ -469,7 +463,6 @@
   box-shadow: 0 8px 22px var(--glow-purple-strong);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .valoracion-card {
     padding: 20px;

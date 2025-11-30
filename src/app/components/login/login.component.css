@@ -13,7 +13,6 @@
   overflow: hidden;
 }
 
-/* Fondo con halos más vibrantes */
 .space-background {
   position: absolute;
   inset: 0;
@@ -224,7 +223,6 @@
   text-decoration: underline;
 }
 
-/* Password toggle */
 .password-wrapper {
   position: relative;
   display: flex;
@@ -249,7 +247,6 @@
   transform: translateY(-50%) scale(1.15);
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -371,7 +368,6 @@
   box-shadow: 0 4px 12px rgba(59,130,246,.2);
 }
 
-/* Selector de idioma y tema */
 .top-controls {
   position: absolute;
   top: 14px;
@@ -411,7 +407,6 @@
   box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
 }
 
-/* Selector de idioma */
 .lang-switcher {
   position: relative;
   display: flex;
@@ -456,7 +451,6 @@
   opacity: 0.7;
 }
 
-/* Dropdown */
 .lang-dropdown {
   margin-top: 6px;
   background: var(--surface-card);
@@ -508,7 +502,6 @@
   }
 }
 
-/* Responsive */
 @media (max-width: 480px) {
   .login-card {
     padding: 28px 24px;

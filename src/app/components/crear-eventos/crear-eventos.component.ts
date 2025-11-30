@@ -332,7 +332,6 @@ export class CrearEventosComponent implements OnInit {
     this.showLangMenu = false;
   }
 
-  // ⭐ SOLO ESTE MÉTODO DE THEME
   toggleTheme(): void {
     this.themeService.toggleTheme();
   }
