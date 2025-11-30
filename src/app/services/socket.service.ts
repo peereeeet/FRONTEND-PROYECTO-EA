@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+// @ts-ignore
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../environments/environment';
 import { logger } from '../utils/logger';
