@@ -7,13 +7,15 @@ import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 
 type EditDTO = { username: string; gmail: string; birthday: string; password?: string };
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.css']
 })
@@ -21,6 +23,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
   private userService = inject(UserService);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private themeService = inject(ThemeService);
+  
+  theme = this.themeService.theme;
 
   me = signal<User | null>(null);
   eventos = signal<any[]>([]);
@@ -45,14 +50,25 @@ export class PerfilComponent implements OnInit, OnDestroy {
   checkingEmail = signal(false);
   emailTaken    = signal(false);
 
-  private isValidEmail(v: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-  }
+  currentLang: 'es' | 'en' | 'cat' | 'fr' =
+  (localStorage.getItem('lang') as any) || 'es';
+  showLangMenu = false;
 
   editOpen = signal(false);
   saving   = signal(false);
   saveError = signal('');
   edit = signal<EditDTO>({ username: '', gmail: '', birthday: '' });
+  
+  constructor(private translate: TranslateService) {
+    this.translate.use(this.currentLang);
+    const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    this.currentLang = savedLang;
+    this.translate.use(savedLang);
+  }
+
+  private isValidEmail(v: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  }
 
   private getId(u: any): string {
     return String(u?._id ?? u?.id ?? '');
@@ -173,7 +189,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.saveError.set('');
     this.editOpen.set(true);
   }
-  closeEdit() { this.editOpen.set(false); }
+  closeEdit() { 
+    this.editOpen.set(false); 
+  }
 
   saveEdit(): void {
     const u = this.me();
@@ -338,7 +356,25 @@ export class PerfilComponent implements OnInit, OnDestroy {
     });
   }
 
-  /*togglePassword(): void {
-    this.showPassword = !this.showPassword;
-  }*/
+  changeLanguage(lang: 'es' | 'en') {
+    if (this.currentLang === lang) return;
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+  }
+
+  toggleLangMenu(): void {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
+    this.showLangMenu = false;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
 }

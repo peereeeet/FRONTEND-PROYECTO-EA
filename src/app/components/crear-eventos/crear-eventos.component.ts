@@ -2,26 +2,27 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
 import { Evento } from '../../models/evento.model';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service'; // ⭐ IMPORT
 
 type NewEventDTO = {
   name: string;
   schedule: string;
   address?: string;
   participants: string[];
-  lat?: number | null; // 🆕
-  lng?: number | null; // 🆕
+  lat?: number | null;
+  lng?: number | null;
 };
 
 @Component({
   selector: 'app-crear-eventos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './crear-eventos.component.html',
   styleUrls: ['./crear-eventos.component.css'],
 })
@@ -30,6 +31,9 @@ export class CrearEventosComponent implements OnInit {
   private auth = inject(AuthService);
   private eventoService = inject(EventoService);
   private router = inject(Router);
+  private themeService = inject(ThemeService); // ⭐ INJECT
+  
+  theme = this.themeService.theme; // ⭐ SIGNAL
 
   formSubmitted = false;
   saving = false;
@@ -47,9 +51,19 @@ export class CrearEventosComponent implements OnInit {
   dateStr = '';
   timeStr = '';
 
-  // 🆕 strings para los inputs de lat/lng
   latStr = '';
   lngStr = '';
+
+  currentLang: 'es' | 'en' | 'cat' | 'fr' =
+    (localStorage.getItem('lang') as any) || 'es';
+  showLangMenu = false;
+
+  constructor(private translate: TranslateService) {
+    this.translate.use(this.currentLang);
+    const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    this.currentLang = savedLang;
+    this.translate.use(savedLang);
+  }
 
   allUsers: User[] = [];
   me: User | null = null;
@@ -254,7 +268,6 @@ export class CrearEventosComponent implements OnInit {
       this.newEvent.participants.push(this.me._id);
     }
 
-    // 🆕 parsear lat/lng si el usuario las ha puesto
     let lat: number | undefined;
     let lng: number | undefined;
 
@@ -303,5 +316,27 @@ export class CrearEventosComponent implements OnInit {
 
   goToMisEventos(): void {
     this.router.navigate(['/mis-eventos']);
+  }
+
+  changeLanguage(lang: 'es' | 'en') {
+    if (this.currentLang === lang) return;
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+  }
+
+  toggleLangMenu(): void {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
+    this.showLangMenu = false;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }

@@ -1,24 +1,27 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
-import { finalize } from 'rxjs/operators';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent  {
+export class LoginComponent {
+  private themeService = inject(ThemeService);
+  theme = this.themeService.theme;
+
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';
-  private starInterval: any;
-  private cometInterval: any;
 
   forgotOpen = false;
   sending = false;
@@ -33,6 +36,9 @@ export class LoginComponent  {
   foundUserLabel = '';
   directSaving = false;
 
+  currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
+  showLangMenu = false;
+
   get forgotTouchedInvalid() {
     const c = this.forgotForm?.get('identifier');
     return !!(c && c.touched && c.invalid);
@@ -41,23 +47,55 @@ export class LoginComponent  {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-  private userService: UserService,
-    private router: Router
+    private userService: UserService,
+    private router: Router,
+    private translate: TranslateService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(4)]]
     });
+
+    this.forgotForm = this.fb.group({
+      identifier: ['', [Validators.required]],
+    });
+    this.directForm = this.fb.group({
+      newPassword: ['', [Validators.required, Validators.minLength(7)]],
+    });
+
+    this.translate.use(this.currentLang);
+    this.translate.addLangs(['es', 'en']);
+    this.translate.setDefaultLang('es');
+
+    const stored = (localStorage.getItem('lang') as 'es' | 'en' | null);
+    const browserLang = this.translate.getBrowserLang();
+    const langToUse: 'es' | 'en' =
+      stored || (browserLang === 'en' ? 'en' : 'es');
+
+    this.currentLang = langToUse;
+    this.translate.use(langToUse);
   }
- ngOnInit(): void {
-  const user = this.authService.getCurrentUser();
+
+  ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
     if (this.authService.isLoggedIn() && user?.rol == 'admin') {
       this.router.navigate(['/home']);
+    } else {
+      this.router.navigate(['/menu']);
     }
-    else 
-      this.router.navigate(['/menu'])
   }
-  
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  changeLanguage(lang: 'es' | 'en') {
+    if (this.currentLang === lang) return;
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+  }
+
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;
@@ -65,30 +103,24 @@ export class LoginComponent  {
 
       const { username, password } = this.loginForm.value;
 
-      this.forgotForm = this.fb.group({
-        identifier: ['', [Validators.required]],
-      });
-      this.directForm = this.fb.group({
-        newPassword: ['', [Validators.required, Validators.minLength(7)]],
-      });
-
       this.authService.login(username, password)
         .pipe(finalize(() => this.isLoading = false))
         .subscribe({
           next: (response) => {
             const role = response.user.rol;
             if (role === 'admin') {
-            this.router.navigate(['/home']);
-          } else if (role === 'usuario') {
-            this.router.navigate(['/menu']);
-          } else {
-            // fallback por si en el futuro hay más roles
-            this.router.navigate(['/home']);
-          }
+              this.router.navigate(['/home']);
+            } else if (role === 'usuario') {
+              this.router.navigate(['/menu']);
+            } else {
+              this.router.navigate(['/home']);
+            }
           },
           error: (error) => {
             console.error('Error en login:', error);
-            this.errorMessage = error.error?.message || 'Error al iniciar sesión. Verifica tus credenciales.';
+            this.errorMessage =
+              error.error?.message ||
+              this.translate.instant('LOGIN.ERROR_GENERIC');
           }
         });
     } else {
@@ -101,7 +133,7 @@ export class LoginComponent  {
       next: (response) => {
         console.log('Admin creado:', response);
         alert('Usuario admin creado exitosamente. Ahora puedes iniciar sesión con usuario: "admin" y contraseña: "admin"');
-        
+
         this.loginForm.patchValue({
           username: 'admin',
           password: 'admin'
@@ -135,13 +167,28 @@ export class LoginComponent  {
   get username() { return this.loginForm.get('username'); }
   get password() { return this.loginForm.get('password'); }
 
-  openForgot(){ this.forgotOpen = true; this.foundUserId = null; this.directOpen = false; this.forgotForm.reset(); }
-  closeForgot(){ this.forgotOpen = false; }
-  openDirect(){ this.directOpen = true; this.directForm.reset(); }
-  closeDirect(){ this.directOpen = false; this.foundUserId = null; }
+  openForgot() {
+    this.forgotOpen = true;
+    this.foundUserId = null;
+    this.directOpen = false;
+    this.forgotForm.reset();
+  }
+  closeForgot() { this.forgotOpen = false; }
+
+  openDirect() {
+    this.directOpen = true;
+    this.directForm.reset();
+  }
+  closeDirect() {
+    this.directOpen = false;
+    this.foundUserId = null;
+  }
 
   onForgotSubmit() {
-    if (this.forgotForm.invalid) { this.forgotForm.markAllAsTouched(); return; }
+    if (this.forgotForm.invalid) {
+      this.forgotForm.markAllAsTouched();
+      return;
+    }
     this.sending = true;
 
     const identifier = (this.forgotForm.value.identifier || '').trim();
@@ -178,8 +225,11 @@ export class LoginComponent  {
     });
   }
 
-  onDirectResetSubmit(){
-    if (this.directForm.invalid || !this.foundUserId) { this.directForm.markAllAsTouched(); return; }
+  onDirectResetSubmit() {
+    if (this.directForm.invalid || !this.foundUserId) {
+      this.directForm.markAllAsTouched();
+      return;
+    }
     this.directSaving = true;
     const pwd = this.directForm.value.newPassword;
 
@@ -189,10 +239,21 @@ export class LoginComponent  {
         this.closeDirect();
         alert('Contraseña actualizada. Ya puedes iniciar sesión.');
       },
-      error: (err:any) => {
+      error: (err: any) => {
         this.directSaving = false;
         alert(err?.error?.message || 'No se pudo actualizar la contraseña.');
       }
     });
+  }
+
+  toggleLangMenu(): void {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
+    this.showLangMenu = false;
   }
 }

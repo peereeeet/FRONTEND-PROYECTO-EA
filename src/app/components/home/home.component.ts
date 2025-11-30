@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
 import { EventoService } from '../../services/evento.service';
 import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-home',
@@ -13,6 +14,8 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  private themeService = inject(ThemeService);
+  theme = this.themeService.theme;
   
   constructor(
     private userService: UserService,
@@ -58,10 +61,13 @@ export class HomeComponent implements OnInit {
       element.textContent = Math.floor(current).toString();
     }, 30);
   }
-   onLogout() {
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  onLogout(): void {
     this.authService.logout(); 
     this.router.navigate(['login']);
   }
-
 }
- 

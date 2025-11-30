@@ -1,30 +1,88 @@
+
 <div class="events-page">
   <div class="space-background"></div>
 
   <header class="app-bar">
-    <div class="app-bar__content centered">
-      <h1 class="app-bar__title">Explorar Eventos</h1>
+    <div class="app-bar__content centered" style="position: relative;">
+      <div class="lang-switcher-menu">
+        <button
+          type="button"
+          class="lang-toggle"
+          (click)="toggleLangMenu()">
+          <span class="lang-icon">🌐</span>
+          <span class="lang-current">
+            {{
+              currentLang === 'es'
+                ? ('LANG.ES' | translate)
+                : currentLang === 'en'
+                ? ('LANG.EN' | translate)
+                : currentLang === 'cat'
+                ? ('LANG.CAT' | translate)
+                : ('LANG.FR' | translate)
+            }}
+          </span>
+          <span class="lang-arrow">▾</span>
+        </button>
+
+        <div class="lang-dropdown" *ngIf="showLangMenu">
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'es'"
+            (click)="selectLanguage('es')">
+            {{ 'LANG.ES' | translate }}
+          </button>
+
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'en'"
+            (click)="selectLanguage('en')">
+            {{ 'LANG.EN' | translate }}
+          </button>
+
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'cat'"
+            (click)="selectLanguage('cat')">
+            {{ 'LANG.CAT' | translate }}
+          </button>
+
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'fr'"
+            (click)="selectLanguage('fr')">
+            {{ 'LANG.FR' | translate }}
+          </button>
+        </div>
+        <button class="theme-toggle" (click)="toggleTheme()">
+          {{ theme() === 'dark' ? '☀️' : '🌙' }}
+        </button>
+      </div>
+      <h1 class="app-bar__title">{{ 'EXPLORE.TITLE' | translate }}</h1>
     </div>
   </header>
 
   <section class="explorar-container events-container">
     <div class="top-row">
       <button class="btn-back btn-menu" type="button" (click)="goBackToMenu()">
-        Volver al menú
+        {{ 'EXPLORE.BACK_TO_MENU' | translate }}
       </button>
 
       <button class="btn-back btn-crear" type="button" (click)="goToCrear()">
-        Crear evento nuevo
+        {{ 'EXPLORE.GO_TO_CREATE' | translate }}
       </button>
 
       <button class="btn-back btn-mis" type="button" (click)="goToMisEventos()">
-        Mis eventos (Creados o inscrito)
+        {{ 'EXPLORE.GO_TO_MY_EVENTS' | translate }}
       </button>
     </div>
 
     <div *ngIf="loading" class="loading">
       <div class="spinner"></div>
-      <p>Cargando eventos...</p>
+      <p>{{ 'EXPLORE.LOADING_EVENTS' | translate }}</p>
     </div>
 
     <div *ngIf="errorMessage" class="error-message">
@@ -32,12 +90,12 @@
     </div>
 
     <div class="map-section">
-      <h2 class="map-title">Mapa de eventos</h2>
+      <h2 class="map-title">{{ 'EXPLORE.MAP_TITLE' | translate }}</h2>
 
       <div class="map-container-wrapper">
         <div id="explorar-map" class="map-container"></div>
         <p class="map-hint">
-          Desplázate y haz zoom en el mapa para ver los eventos de esa zona. Pulsa un pin para ver los detalles.
+          {{ 'EXPLORE.MAP_HINT' | translate }}
         </p>
       </div>
     </div>
@@ -45,52 +103,77 @@
     <div *ngIf="!loading" class="eventos-section">
       <div *ngIf="eventos.length === 0" class="empty-state">
         <span class="empty-icon">📭</span>
-        <h3>No hay eventos disponibles en esta zona</h3>
-        <p>Mueve el mapa o cambia el zoom para buscar en otras zonas.</p>
+        <h3>{{ 'EXPLORE.EMPTY_TITLE' | translate }}</h3>
+        <p>{{ 'EXPLORE.EMPTY_TEXT' | translate }}</p>
       </div>
 
       <div class="eventos-grid" *ngIf="eventos.length > 0">
         <div *ngFor="let evento of eventos" class="evento-card">
           <div class="badges">
-            <span *ngIf="isUserCreator(evento)" class="badge badge-creator">👑 Tú eres el creador</span>
-            <span *ngIf="isAdmin()" class="badge badge-admin">🛡️ Admin</span>
-            <span *ngIf="isUserInEvento(evento) && !isUserCreator(evento)" class="badge badge-joined">✅ Inscrito</span>
+            <span *ngIf="isUserCreator(evento)" class="badge badge-creator">
+              👑 {{ 'EXPLORE.CARD_BADGE_CREATOR' | translate }}
+            </span>
+            <span *ngIf="isAdmin()" class="badge badge-admin">
+              🛡️ {{ 'EVENTS.ADMIN_BADGE' | translate }}
+            </span>
+            <span
+              *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
+              class="badge badge-joined">
+              ✅ {{ 'EXPLORE.CARD_BADGE_JOINED' | translate }}
+            </span>
           </div>
 
           <div class="evento-header">
-            <h3 class="clickable-title" (click)="openEventModal(evento)">{{ evento.name }}</h3>
+            <h3 class="clickable-title" (click)="openEventModal(evento)">
+              {{ evento.name }}
+            </h3>
           </div>
 
           <div class="evento-info" (click)="openEventModal(evento)">
             <div class="info-row">
               <span class="icon">👤</span>
-              <span><strong>Creador:</strong> {{ getCreadorName(evento) }}</span>
+              <span>
+                <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
+                {{ getCreadorName(evento) }}
+              </span>
             </div>
 
             <div class="info-row">
               <span class="icon">📍</span>
               <span class="address-text">
-                <strong>Dirección:</strong> {{ evento.address || '-' }}
+                <strong>{{ 'EVENTS.LABEL_ADDRESS' | translate }}</strong>
+                {{ evento.address || '-' }}
               </span>
             </div>
 
             <div class="info-row">
               <span class="icon">🕒</span>
-              <span><strong>Horario:</strong> {{ getScheduleText(evento) }}</span>
+              <span>
+                <strong>{{ 'EVENTS.LABEL_SCHEDULE' | translate }}</strong>
+                {{ getScheduleText(evento) }}
+              </span>
             </div>
 
             <div class="info-row">
               <span class="icon">👥</span>
-              <span><strong>Participantes:</strong> {{ evento.participantes?.length || 0 }}</span>
+              <span>
+                <strong>{{ 'EVENTS.LABEL_PARTICIPANTS' | translate }}</strong>
+                {{ evento.participantes?.length || 0 }}
+              </span>
             </div>
 
             <div class="info-row rating">
               <span class="icon">⭐</span>
-              <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0">
-                <strong>Valoraciones: {{ evento.avgRating | number:'1.1-2' }}</strong>
-                ({{ evento.ratingsCount }} valoraciones)
+              <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRatingsCard">
+                <strong>
+                  {{ 'EVENTS.LABEL_RATINGS' | translate }}
+                  {{ evento.avgRating | number:'1.1-2' }}
+                </strong>
+                ({{ evento.ratingsCount }} {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
               </span>
-              <span *ngIf="!evento.ratingsCount || evento.ratingsCount === 0">Sin valoraciones</span>
+              <ng-template #noRatingsCard>
+                <span>{{ 'EVENTS.LABEL_RATINGS_NONE' | translate }}</span>
+              </ng-template>
             </div>
           </div>
 
@@ -99,36 +182,47 @@
               *ngIf="!isUserInEvento(evento) && !isUserCreator(evento)"
               class="btn btn-join"
               (click)="joinEvento(evento)">
-              ➕ Unirse al evento
+              ➕ {{ 'EVENTS.BUTTON_JOIN' | translate }}
             </button>
 
             <button
               *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
               class="btn btn-leave"
               (click)="leaveEvento(evento)">
-              👋 Salir del evento
+              👋 {{ 'EVENTS.BUTTON_LEAVE' | translate }}
             </button>
 
             <p *ngIf="isUserCreator(evento)" class="creator-note">
-              ℹ️ Como creador, no puedes salir del evento
+              ℹ️ {{ 'EVENTS.CREATOR_CANNOT_LEAVE' | translate }}
             </p>
           </div>
         </div>
       </div>
 
       <div class="pagination" *ngIf="totalPages > 1 && eventos.length > 0">
-        <button class="btn-page" (click)="prevPage()" [disabled]="page <= 1">« Anterior</button>
-        <span class="page-info">Página {{ page }} de {{ totalPages }} ({{ totalItems }} eventos)</span>
-        <button class="btn-page" (click)="nextPage()" [disabled]="page >= totalPages">Siguiente »</button>
+        <button class="btn-page" (click)="prevPage()" [disabled]="page <= 1">
+          {{ 'EXPLORE.PAGINATION_PREV' | translate }}
+        </button>
+        <span class="page-info">
+          {{ 'EXPLORE.PAGINATION_INFO_PREFIX' | translate }}
+          {{ page }}
+          {{ 'EXPLORE.PAGINATION_INFO_OF' | translate }}
+          {{ totalPages }}
+          ({{ 'COMMON.TOTAL' | translate }}: {{ totalItems }})
+        </span>
+        <button class="btn-page" (click)="nextPage()" [disabled]="page >= totalPages">
+          {{ 'EXPLORE.PAGINATION_NEXT' | translate }}
+        </button>
       </div>
     </div>
   </section>
 </div>
 
+<!-- Modal detalles de evento -->
 <div class="modal-backdrop" *ngIf="showEventModal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="eventDetailsTitle">
     <div class="modal-header">
-      <h2 id="eventDetailsTitle">Detalles del evento</h2>
+      <h2 id="eventDetailsTitle">{{ 'EXPLORE.MODAL_TITLE' | translate }}</h2>
       <button
         type="button"
         class="btn-close"
@@ -145,33 +239,48 @@
 
           <div class="info-row">
             <span class="icon">👤</span>
-            <span><strong>Creador:</strong> {{ getCreadorName(selectedEvent) }}</span>
+            <span>
+              <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
+              {{ getCreadorName(selectedEvent) }}
+            </span>
           </div>
 
           <div class="info-row">
             <span class="icon">📍</span>
-            <span><strong>Dirección:</strong> {{ selectedEvent.address || 'No especificada' }}</span>
+            <span>
+              <strong>{{ 'EVENTS.LABEL_ADDRESS' | translate }}</strong>
+              {{ selectedEvent.address || ('EXPLORE.MODAL_ADDRESS_FALLBACK' | translate) }}
+            </span>
           </div>
 
           <div class="info-row">
             <span class="icon">🕒</span>
-            <span><strong>Horario:</strong> {{ getScheduleText(selectedEvent) }}</span>
+            <span>
+              <strong>{{ 'EVENTS.LABEL_SCHEDULE' | translate }}</strong>
+              {{ getScheduleText(selectedEvent) }}
+            </span>
           </div>
 
           <div class="info-row">
             <span class="icon">👥</span>
-            <span><strong>Participantes:</strong> {{ selectedEvent.participantes?.length || 0 }}</span>
+            <span>
+              <strong>{{ 'EVENTS.LABEL_PARTICIPANTS' | translate }}</strong>
+              {{ selectedEvent.participantes?.length || 0 }}
+            </span>
           </div>
 
           <div class="info-row rating">
             <span class="icon">⭐</span>
-            <span *ngIf="selectedEvent.ratingsCount && selectedEvent.ratingsCount > 0">
-              <strong>Valoraciones: {{ selectedEvent.avgRating | number:'1.1-2' }}</strong>
-              ({{ selectedEvent.ratingsCount }} valoraciones)
+            <span *ngIf="selectedEvent.ratingsCount && selectedEvent.ratingsCount > 0; else noRatingsModal">
+              <strong>
+                {{ 'EVENTS.LABEL_RATINGS' | translate }}
+                {{ selectedEvent.avgRating | number:'1.1-2' }}
+              </strong>
+              ({{ selectedEvent.ratingsCount }} {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
             </span>
-            <span *ngIf="!selectedEvent.ratingsCount || selectedEvent.ratingsCount === 0">
-              Sin valoraciones
-            </span>
+            <ng-template #noRatingsModal>
+              <span>{{ 'EVENTS.LABEL_RATINGS_NONE' | translate }}</span>
+            </ng-template>
           </div>
         </div>
       </ng-container>
@@ -182,24 +291,24 @@
         *ngIf="selectedEvent && !isUserInEvento(selectedEvent) && !isUserCreator(selectedEvent)"
         class="btn btn-join"
         (click)="joinEvento(selectedEvent)">
-        ➕ Unirme al evento
+        ➕ {{ 'EXPLORE.MODAL_BUTTON_JOIN' | translate }}
       </button>
 
       <button
         *ngIf="selectedEvent && isUserInEvento(selectedEvent) && !isUserCreator(selectedEvent)"
         class="btn btn-leave"
         (click)="leaveEvento(selectedEvent)">
-        👋 Salir del evento
+        👋 {{ 'EXPLORE.MODAL_BUTTON_LEAVE' | translate }}
       </button>
 
       <p
         *ngIf="selectedEvent && isUserCreator(selectedEvent)"
         class="creator-note">
-        ℹ️ Como creador, no puedes salir del evento.
+        ℹ️ {{ 'EXPLORE.MODAL_CREATOR_NOTE' | translate }}
       </p>
 
       <button type="button" class="btn" (click)="closeEventModal()">
-        Cerrar
+        {{ 'EXPLORE.MODAL_BUTTON_CLOSE' | translate }}
       </button>
     </div>
   </div>

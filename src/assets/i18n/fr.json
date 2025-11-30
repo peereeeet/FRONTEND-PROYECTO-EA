@@ -1,0 +1,354 @@
+{
+  "LOGIN": {
+    "TITLE": "Bienvenue",
+    "SUBTITLE": "Connectez-vous à votre compte",
+    "USERNAME_LABEL": "Nom d'utilisateur",
+    "USERNAME_PLACEHOLDER": "Entrez votre nom d'utilisateur",
+    "USERNAME_REQUIRED": "Le nom d'utilisateur est obligatoire",
+    "USERNAME_MIN": "Minimum 3 caractères",
+    "PASSWORD_LABEL": "Mot de passe",
+    "PASSWORD_PLACEHOLDER": "Entrez votre mot de passe",
+    "PASSWORD_REQUIRED": "Le mot de passe est obligatoire",
+    "PASSWORD_MIN": "Minimum 4 caractères",
+    "FORGOT": "Mot de passe oublié ?",
+    "BUTTON": "Se connecter",
+    "BUTTON_LOADING": "Connexion...",
+    "NO_ACCOUNT": "Pas de compte ? Inscrivez-vous ici.",
+    "CREATE_USER": "Créer un utilisateur",
+    "FORGOT_TITLE": "Réinitialiser le mot de passe",
+    "FORGOT_TEXT": "Entrez votre <strong>email</strong> ou <strong>utilisateur</strong>. Si le compte existe, nous vous enverrons des instructions.",
+    "FORGOT_IDENTIFIER_LABEL": "Email ou utilisateur",
+    "FORGOT_IDENTIFIER_PLACEHOLDER": "ex: jean@mail.com ou jean23",
+    "FORGOT_REQUIRED": "Ce champ est obligatoire",
+    "FORGOT_CANCEL": "Annuler",
+    "FORGOT_SUBMIT": "Recevoir les instructions",
+    "DIRECT_TITLE": "Changer le mot de passe",
+    "DIRECT_USER_PREFIX": "Utilisateur:",
+    "DIRECT_NEW_PASSWORD_LABEL": "Nouveau mot de passe",
+    "DIRECT_NEW_PASSWORD_PLACEHOLDER": "Minimum 7 caractères",
+    "DIRECT_CANCEL": "Annuler",
+    "DIRECT_CONFIRM": "Confirmer",
+    "DIRECT_SAVING": "Enregistrement…",
+    "ERROR_GENERIC": "Erreur lors de la connexion. Vérifiez vos informations."
+  },
+
+  "REGISTER": {
+    "TITLE": "Créer un nouveau compte",
+    "SUBTITLE": "Inscrivez-vous pour continuer",
+    "USERNAME_LABEL": "Nom d'utilisateur",
+    "USERNAME_PLACEHOLDER": "Votre nom d'utilisateur",
+    "USERNAME_REQUIRED": "Le nom est obligatoire.",
+    "USERNAME_MIN": "Minimum 3 caractères.",
+    "USERNAME_EXISTS": "Ce nom d'utilisateur est déjà utilisé.",
+    "EMAIL_LABEL": "Email",
+    "EMAIL_PLACEHOLDER": "exemple@courriel.com",
+    "EMAIL_REQUIRED": "L'email est obligatoire.",
+    "EMAIL_INVALID": "Format invalide.",
+    "EMAIL_EXISTS": "Cet email est déjà enregistré.",
+    "PASSWORD_LABEL": "Mot de passe",
+    "PASSWORD_PLACEHOLDER": "Créez un mot de passe",
+    "PASSWORD_REQUIRED": "Le mot de passe est obligatoire.",
+    "PASSWORD_MIN": "Minimum 7 caractères.",
+    "CONFIRM_PASSWORD_LABEL": "Confirmer le mot de passe",
+    "CONFIRM_PASSWORD_PLACEHOLDER": "Répétez le mot de passe",
+    "CONFIRM_PASSWORD_MISMATCH": "Les mots de passe ne correspondent pas.",
+    "BIRTHDAY_LABEL": "Anniversaire",
+    "BIRTHDAY_REQUIRED": "La date est obligatoire.",
+    "BIRTHDAY_FUTURE": "Doit être antérieure à aujourd'hui.",
+    "BUTTON": "S'inscrire",
+    "BUTTON_LOADING": "Enregistrement...",
+    "BACK_TO_LOGIN": "Retour à la connexion"
+  },
+
+  "LANG": {
+    "SWITCH_LABEL": "Langue",
+    "ES": "Espagnol",
+    "EN": "Anglais",
+    "CAT": "Catalan",
+    "FR": "Français"
+  },
+
+  "STATUS": {
+    "ONLINE": "En ligne",
+    "OFFLINE": "Hors ligne"
+  },
+
+  "COMMON": {
+    "BACK_TO_MENU": "Retour au menu",
+    "CLOSE": "Fermer",
+    "CANCEL": "Annuler",
+    "SAVE": "Enregistrer",
+    "SAVING": "Enregistrement…",
+    "DELETE": "Supprimer",
+    "CONFIRM": "Confirmer",
+    "LOADING": "Chargement…",
+    "YES": "Oui",
+    "NO": "Non",
+    "ERROR_GENERIC": "Une erreur est survenue.",
+    "SEARCH": "Rechercher",
+    "PAGE": "Page",
+    "OF": "de",
+    "TOTAL": "Total",
+    "NO_RESULTS": "Aucun résultat.",
+    "MAP": "Carte",
+    "OPEN_LARGE_MAP": "Voir en grand",
+    "NOT_AVAILABLE": "Indisponible"
+  },
+
+  "MENU": {
+    "TITLE": "Menu principal",
+    "USER_FALLBACK": "Utilisateur",
+    "PROFILE_BUTTON": "Mon profil",
+    "LOGOUT_BUTTON": "Déconnexion",
+
+    "EVENTS_TITLE": "Événements",
+    "EVENTS_CREATE": "Créer un nouvel événement",
+    "EVENTS_EXPLORE_MAP": "Explorer les événements (carte)",
+    "EVENTS_MY": "Mes événements (créés ou inscrits)",
+    "LOADING": "Chargement…",
+
+    "FRIENDS_TITLE": "Amis",
+    "FRIENDS_BUTTON_EXPLORE_USERS": "Explorer les utilisateurs",
+    "FRIENDS_BUTTON_REQUESTS": "Demandes reçues",
+    "FRIENDS_ONLINE": "En ligne",
+    "FRIENDS_OFFLINE": "Hors ligne",
+    "FRIENDS_REMOVE": "Supprimer",
+    "FRIENDS_EMPTY": "Vous n'avez pas encore d'amis à afficher.",
+    "FRIENDS_SEARCH_ADD": "Rechercher et ajouter des amis",
+
+    "MODAL_EXPLORE_TITLE": "Explorer les utilisateurs",
+    "MODAL_SEARCH_PLACEHOLDER": "Rechercher par utilisateur ou email",
+    "MODAL_SEARCH_BUTTON": "Rechercher",
+    "MODAL_USERS_TITLE": "Utilisateurs",
+    "MODAL_PAGE_LABEL": "Page",
+    "MODAL_TOTAL_LABEL": "Total",
+    "MODAL_REQUEST_PENDING": "Demande en attente",
+    "MODAL_REQUEST_SENT": "Demande envoyée",
+    "MODAL_ADD_BUTTON": "Ajouter",
+    "MODAL_NO_USERS": "Aucun utilisateur à afficher (ou déjà ami).",
+    "MODAL_CLOSE": "Fermer",
+
+    "REQUESTS_TITLE": "Demandes d'amitié",
+    "REQUESTS_LOADING": "Chargement des demandes...",
+    "REQUESTS_EMPTY": "Aucune demande en attente 😄",
+    "REQUESTS_ACCEPT": "Accepter",
+    "REQUESTS_REJECT": "Refuser",
+
+    "CHAT_TITLE_PREFIX": "Discussion avec",
+    "CHAT_LOADING": "Chargement de la conversation...",
+    "CHAT_EMPTY": "Pas encore de messages. Écrivez le premier !",
+    "CHAT_PLACEHOLDER": "Écrivez un message...",
+
+    "CHAT_EVENT_INVITE_TITLE": "Invitation à un événement",
+    "CHAT_EVENT_INVITE_JOIN": "Rejoindre",
+    "CHAT_EVENT_INVITE_ALREADY_IN": "Tu es déjà dedans"
+  },
+
+  "FRIENDS": {
+    "STATE_ONLINE": "En ligne",
+    "STATE_OFFLINE": "Hors ligne",
+    "REMOVE": "Supprimer",
+    "EMPTY_LIST": "Vous n'avez pas encore d'amis à afficher."
+  },
+
+  "PROFILE": {
+    "TITLE": "Mon profil",
+    "LOADING": "Chargement…",
+
+    "BACK_TO_MENU": "Retour au menu",
+    "EDIT_BUTTON": "Modifier les données",
+    "DELETE_BUTTON": "Supprimer le compte",
+
+    "STATUS_ONLINE": "En ligne",
+    "STATUS_OFFLINE": "Hors ligne",
+
+    "FIELD_USERNAME": "Nom d'utilisateur",
+    "FIELD_EMAIL": "Email",
+    "FIELD_BIRTHDAY": "Date de naissance",
+    "FIELD_PASSWORD": "Mot de passe",
+
+    "EVENTS_TITLE": "Événements auxquels je participe",
+    "EVENTS_EMPTY": "Vous ne participez à aucun événement.",
+
+    "EDIT_MODAL_TITLE": "Modifier les données",
+    "EDIT_USERNAME_LABEL": "Nom d'utilisateur",
+    "EDIT_USERNAME_CHECKING": "Vérification du nom…",
+    "EDIT_USERNAME_TAKEN": "⚠ Ce nom est déjà utilisé.",
+    "EDIT_EMAIL_LABEL": "Email",
+    "EDIT_EMAIL_CHECKING": "Vérification de l'email…",
+    "EDIT_EMAIL_TAKEN": "⚠ Cet email est déjà enregistré.",
+    "EDIT_BIRTHDAY_LABEL": "Date de naissance",
+    "EDIT_NEW_PASSWORD_LABEL": "Nouveau mot de passe",
+    "EDIT_NEW_PASSWORD_PLACEHOLDER": "Laisser vide pour ne pas changer",
+    "EDIT_ERROR_GENERIC": "Erreur lors de l'enregistrement.",
+    "EDIT_CANCEL": "Annuler",
+    "EDIT_SAVE": "Enregistrer",
+    "EDIT_SAVING": "Enregistrement…",
+
+    "DELETE_MODAL_TITLE": "Supprimer le compte",
+    "DELETE_MODAL_TEXT": "Cette action est <strong>permanente</strong>. Entrez votre mot de passe pour confirmer.",
+    "DELETE_PASSWORD_LABEL": "Mot de passe",
+    "DELETE_PASSWORD_PLACEHOLDER": "Votre mot de passe",
+    "DELETE_CANCEL": "Annuler",
+    "DELETE_CONFIRM": "Supprimer définitivement",
+    "DELETE_DELETING": "Suppression…"
+  },
+
+  "EVENTS": {
+    "LABEL_CREATOR": "Créateur:",
+    "LABEL_ADDRESS": "Adresse:",
+    "LABEL_SCHEDULE": "Horaire:",
+    "LABEL_PARTICIPANTS": "Participants:",
+    "LABEL_RATINGS": "Avis:",
+    "LABEL_RATINGS_COUNT_SUFFIX": "avis",
+    "LABEL_RATINGS_NONE": "Aucun avis",
+    "YOU_ARE_CREATOR": "Vous êtes le créateur",
+    "ADMIN_BADGE": "Admin",
+    "JOINED_BADGE": "Inscrit",
+    "BUTTON_JOIN": "Rejoindre l'événement",
+    "BUTTON_LEAVE": "Quitter l'événement",
+    "CREATOR_CANNOT_LEAVE": "En tant que créateur, vous ne pouvez pas quitter l'événement."
+  },
+
+  "EXPLORE": {
+    "TITLE": "Explorer les événements",
+    "BACK_TO_MENU": "Retour au menu",
+    "GO_TO_CREATE": "Créer un nouvel événement",
+    "GO_TO_MY_EVENTS": "Mes événements (créés ou inscrits)",
+
+    "LOADING_EVENTS": "Chargement des événements...",
+    "MAP_TITLE": "Carte des événements",
+    "MAP_HINT": "Déplacez-vous et zoomez sur la carte pour voir les événements de la zone. Cliquez sur un point pour les détails.",
+
+    "EMPTY_TITLE": "Aucun événement disponible dans cette zone",
+    "EMPTY_TEXT": "Déplacez la carte ou changez le zoom pour chercher dans d’autres zones.",
+
+    "CARD_BADGE_CREATOR": "Vous êtes le créateur",
+    "CARD_BADGE_ADMIN": "Admin",
+    "CARD_BADGE_JOINED": "Inscrit",
+
+    "PAGINATION_PREV": "« Précédent",
+    "PAGINATION_NEXT": "Suivant »",
+    "PAGINATION_INFO_PREFIX": "Page",
+    "PAGINATION_INFO_OF": "de",
+
+    "MODAL_TITLE": "Détails de l'événement",
+    "MODAL_ADDRESS_FALLBACK": "Non spécifiée",
+    "MODAL_CREATOR_NOTE": "En tant que créateur, vous ne pouvez pas quitter l'événement.",
+    "MODAL_BUTTON_JOIN": "Rejoindre",
+    "MODAL_BUTTON_LEAVE": "Quitter",
+    "MODAL_BUTTON_CLOSE": "Fermer"
+  },
+
+  "CREATE_EVENT": {
+    "TITLE": "Créer un nouvel événement",
+    "BACK_TO_MENU": "Retour au menu",
+    "GO_TO_EXPLORE": "Explorer les événements (carte)",
+    "GO_TO_MY_EVENTS": "Mes événements (créés ou inscrits)",
+
+    "FORM_TITLE": "Complétez les informations de l'événement",
+
+    "FIELD_NAME_LABEL": "Titre de l'événement",
+    "FIELD_NAME_PLACEHOLDER": "Ex: Réunion de planification Q4",
+    "FIELD_NAME_ERROR_MIN": "⚠ Le titre est obligatoire (minimum 3 caractères).",
+
+    "FIELD_ADDRESS_LABEL": "Adresse",
+    "FIELD_ADDRESS_PLACEHOLDER": "Ex: Rue Mallorca 123, Barcelone",
+
+    "FIELD_DATE_LABEL": "Date",
+    "FIELD_TIME_LABEL": "Heure",
+
+    "SCHEDULE_SET": "📅 Définir l'horaire",
+    "SCHEDULE_CLEAR": "❌ Supprimer",
+    "SCHEDULE_SELECTED": "Sélectionné:",
+    "SCHEDULE_NONE": "Aucun horaire défini",
+
+    "ERROR_MESSAGE_PREFIX": "⚠",
+    "SUBMIT_DEFAULT": "💾 Enregistrer l'événement",
+    "SUBMIT_SAVING": "Enregistrement…"
+  },
+
+  "MY_EVENTS": {
+    "TITLE": "Mes événements",
+    "BACK_TO_MENU": "Retour au menu",
+    "GO_TO_CREATE": "Créer un nouvel événement",
+    "GO_TO_EXPLORE": "Explorer les événements (carte)",
+    "LOADING": "Chargement des événements.",
+    "ERROR_MESSAGE_PREFIX": "Erreur:",
+
+    "CREATED_TITLE": "📝 Événements que j'ai créés ({{count}})",
+    "CREATED_EMPTY_TEXT": "Vous n'avez encore créé aucun événement",
+    "BADGE_CREATOR": "Créateur",
+
+    "FIELD_ADDRESS": "Adresse:",
+    "BUTTON_VIEW_MAP": "🗺 Voir sur la carte",
+    "FIELD_SCHEDULE": "Horaire:",
+    "FIELD_PARTICIPANTS": "Participants:",
+
+    "RATINGS_LABEL": "Avis:",
+    "RATINGS_NONE": "Aucun avis",
+    "BUTTON_VIEW_RATINGS": "Voir/Ajouter des avis",
+    "BUTTON_EDIT": "✏️ Modifier",
+    "BUTTON_DELETE": "🗑️ Supprimer",
+
+    "JOINED_TITLE": "🎯 Événements auxquels je suis inscrit ({{count}})",
+    "JOINED_EMPTY_TEXT": "Vous n'êtes inscrit à aucun événement",
+    "JOINED_BUTTON_EXPLORE": "Explorer les événements",
+
+    "BADGE_JOINED": "Inscrit",
+
+    "BUTTON_LEAVE": "👋 Quitter l'événement",
+
+    "DELETE_MODAL_TITLE": "Supprimer l'événement",
+    "DELETE_MODAL_TEXT": "Êtes-vous sûr de vouloir supprimer <strong>{{name}}</strong> ?",
+    "DELETE_MODAL_CANCEL": "Annuler",
+    "DELETE_MODAL_CONFIRM": "🗑️ Supprimer",
+
+    "LEAVE_MODAL_TITLE": "Quitter l'événement",
+    "LEAVE_MODAL_TEXT": "Êtes-vous sûr de vouloir quitter <strong>{{name}}</strong> ?",
+    "LEAVE_MODAL_CANCEL": "Annuler",
+    "LEAVE_MODAL_CONFIRM": "Quitter",
+
+    "BUTTON_SHARE_EVENT": "Envoyer à un ami",
+    "SHARE_EVENT_TITLE": "Partager l'événement",
+    "SHARE_EVENT_LOADING": "Chargement des amis...",
+    "SHARE_EVENT_NO_FRIENDS": "Vous n'avez aucun ami à qui envoyer cet événement.",
+    "SHARE_EVENT_SEND": "Envoyer",
+
+    "BUTTON_EVENT_CHAT": "Chat de l'événement",
+    "EVENT_CHAT_TITLE": "Chat de l'événement",
+    "EVENT_CHAT_LOADING": "Chargement des messages de l'événement...",
+    "EVENT_CHAT_EMPTY": "Il n'y a pas encore de messages pour cet événement.",
+    "EVENT_CHAT_PLACEHOLDER": "Écrivez un message pour cet événement..."
+  },
+
+  "RATINGS": {
+    "MODAL_TITLE_PREFIX": "Avis —",
+    "SUMMARY_AVG": "Moyenne:",
+    "SUMMARY_TOTAL": "Total:",
+    "YOUR_RATING_TITLE": "Votre avis",
+    "YOUR_RATING_SCORE_LABEL": "Note:",
+    "YOUR_RATING_SCORE_TEXT": "({{score}}/5)",
+    "YOUR_RATING_COMMENT_LABEL": "Commentaire (optionnel):",
+    "YOUR_RATING_COMMENT_PLACEHOLDER": "Écrivez votre avis.",
+    "YOUR_RATING_SAVE_BUTTON": "Enregistrer l'avis",
+    "ERROR": "Erreur lors de l'enregistrement.",
+    "INFO": "Avis enregistré avec succès.",
+    "SEARCH_PLACEHOLDER": "Rechercher des commentaires…",
+    "SEARCH_BUTTON": "Rechercher",
+    "LIST_PAGE_INFO": "Page {{page}} sur {{totalPages}}",
+    "LIST_TOTAL_ITEMS": "({{total}} avis)",
+    "LIST_NO_COMMENT": "Pas de commentaire",
+    "LIST_NO_RATINGS": "Aucun avis.",
+    "PAGER_PREV": "◀︎ Précédent",
+    "PAGER_NEXT": "Suivant ▶︎",
+    "CLOSE_BUTTON": "Fermer"
+  },
+
+  "MAP": {
+    "MODAL_TITLE_PREFIX": "Localisation de l'événement —",
+    "NO_MAP": "Impossible d'afficher la carte pour cet événement.",
+    "OPEN_LARGE": "Voir en grand",
+    "CLOSE": "Fermer"
+  }
+}

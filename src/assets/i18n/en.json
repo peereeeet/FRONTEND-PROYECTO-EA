@@ -1,0 +1,354 @@
+{
+  "LOGIN": {
+    "TITLE": "Welcome",
+    "SUBTITLE": "Sign in to your account",
+    "USERNAME_LABEL": "Username",
+    "USERNAME_PLACEHOLDER": "Enter your username",
+    "USERNAME_REQUIRED": "Username is required",
+    "USERNAME_MIN": "Minimum 3 characters",
+    "PASSWORD_LABEL": "Password",
+    "PASSWORD_PLACEHOLDER": "Enter your password",
+    "PASSWORD_REQUIRED": "Password is required",
+    "PASSWORD_MIN": "Minimum 4 characters",
+    "FORGOT": "Forgot your password?",
+    "BUTTON": "Sign in",
+    "BUTTON_LOADING": "Signing in...",
+    "NO_ACCOUNT": "Don’t have an account? Sign up here.",
+    "CREATE_USER": "Create user",
+    "FORGOT_TITLE": "Reset password",
+    "FORGOT_TEXT": "Enter your <strong>email</strong> or <strong>username</strong>. If it exists in the system, we’ll send you instructions to reset your password.",
+    "FORGOT_IDENTIFIER_LABEL": "Email or username",
+    "FORGOT_IDENTIFIER_PLACEHOLDER": "e.g. john@mail.com or john23",
+    "FORGOT_REQUIRED": "This field is required",
+    "FORGOT_CANCEL": "Cancel",
+    "FORGOT_SUBMIT": "Send instructions",
+    "DIRECT_TITLE": "Change password",
+    "DIRECT_USER_PREFIX": "User:",
+    "DIRECT_NEW_PASSWORD_LABEL": "New password",
+    "DIRECT_NEW_PASSWORD_PLACEHOLDER": "At least 7 characters",
+    "DIRECT_CANCEL": "Cancel",
+    "DIRECT_CONFIRM": "Confirm",
+    "DIRECT_SAVING": "Saving…",
+    "ERROR_GENERIC": "Login failed. Please check your credentials."
+  },
+
+  "REGISTER": {
+    "TITLE": "Create a new account",
+    "SUBTITLE": "Sign up to continue",
+    "USERNAME_LABEL": "Username",
+    "USERNAME_PLACEHOLDER": "Your username",
+    "USERNAME_REQUIRED": "Username is required.",
+    "USERNAME_MIN": "Minimum 3 characters.",
+    "USERNAME_EXISTS": "This username is already taken.",
+    "EMAIL_LABEL": "Email",
+    "EMAIL_PLACEHOLDER": "example@email.com",
+    "EMAIL_REQUIRED": "Email is required.",
+    "EMAIL_INVALID": "Invalid email format.",
+    "EMAIL_EXISTS": "This email is already registered.",
+    "PASSWORD_LABEL": "Password",
+    "PASSWORD_PLACEHOLDER": "Create a password",
+    "PASSWORD_REQUIRED": "Password is required.",
+    "PASSWORD_MIN": "Minimum 7 characters.",
+    "CONFIRM_PASSWORD_LABEL": "Confirm password",
+    "CONFIRM_PASSWORD_PLACEHOLDER": "Repeat the password",
+    "CONFIRM_PASSWORD_MISMATCH": "Passwords do not match.",
+    "BIRTHDAY_LABEL": "Birthday",
+    "BIRTHDAY_REQUIRED": "Date is required.",
+    "BIRTHDAY_FUTURE": "Must be before today.",
+    "BUTTON": "Register",
+    "BUTTON_LOADING": "Registering...",
+    "BACK_TO_LOGIN": "Back to login"
+  },
+
+  "LANG": {
+    "SWITCH_LABEL": "Language",
+    "ES": "Spanish",
+    "EN": "English",
+    "CAT": "Catalan",
+    "FR": "French"
+  },
+
+  "STATUS": {
+    "ONLINE": "Online",
+    "OFFLINE": "Offline"
+  },
+
+  "COMMON": {
+    "BACK_TO_MENU": "Back to menu",
+    "CLOSE": "Close",
+    "CANCEL": "Cancel",
+    "SAVE": "Save",
+    "SAVING": "Saving…",
+    "DELETE": "Delete",
+    "CONFIRM": "Confirm",
+    "LOADING": "Loading…",
+    "YES": "Yes",
+    "NO": "No",
+    "ERROR_GENERIC": "An error has occurred.",
+    "SEARCH": "Search",
+    "PAGE": "Page",
+    "OF": "of",
+    "TOTAL": "Total",
+    "NO_RESULTS": "No results.",
+    "MAP": "Map",
+    "OPEN_LARGE_MAP": "Open large map",
+    "NOT_AVAILABLE": "Not available"
+  },
+
+  "MENU": {
+    "TITLE": "Main menu",
+    "USER_FALLBACK": "User",
+    "PROFILE_BUTTON": "My profile",
+    "LOGOUT_BUTTON": "Log out",
+
+    "EVENTS_TITLE": "Events",
+    "EVENTS_CREATE": "Create new event",
+    "EVENTS_EXPLORE_MAP": "Explore events (map)",
+    "EVENTS_MY": "My events (created or joined)",
+    "LOADING": "Loading…",
+
+    "FRIENDS_TITLE": "Friends",
+    "FRIENDS_BUTTON_EXPLORE_USERS": "Explore users",
+    "FRIENDS_BUTTON_REQUESTS": "Received requests",
+    "FRIENDS_ONLINE": "Online",
+    "FRIENDS_OFFLINE": "Offline",
+    "FRIENDS_REMOVE": "Remove",
+    "FRIENDS_EMPTY": "You don't have any friends to show yet.",
+    "FRIENDS_SEARCH_ADD": "Search and add friends",
+
+    "MODAL_EXPLORE_TITLE": "Explore users",
+    "MODAL_SEARCH_PLACEHOLDER": "Search by username or email",
+    "MODAL_SEARCH_BUTTON": "Search",
+    "MODAL_USERS_TITLE": "Users",
+    "MODAL_PAGE_LABEL": "Page",
+    "MODAL_TOTAL_LABEL": "Total",
+    "MODAL_REQUEST_PENDING": "Pending request",
+    "MODAL_REQUEST_SENT": "Request sent",
+    "MODAL_ADD_BUTTON": "Add",
+    "MODAL_NO_USERS": "There are no users to show (or they are already friends).",
+    "MODAL_CLOSE": "Close",
+
+    "REQUESTS_TITLE": "Friend requests",
+    "REQUESTS_LOADING": "Loading requests...",
+    "REQUESTS_EMPTY": "You have no pending requests 😄",
+    "REQUESTS_ACCEPT": "Accept",
+    "REQUESTS_REJECT": "Reject",
+
+    "CHAT_TITLE_PREFIX": "Chat with",
+    "CHAT_LOADING": "Loading conversation...",
+    "CHAT_EMPTY": "No messages yet. Write the first one!",
+    "CHAT_PLACEHOLDER": "Type a message...",
+
+    "CHAT_EVENT_INVITE_TITLE": "Event invitation",
+    "CHAT_EVENT_INVITE_JOIN": "Join",
+    "CHAT_EVENT_INVITE_ALREADY_IN": "You’re already in"
+  },
+
+  "FRIENDS": {
+    "STATE_ONLINE": "Online",
+    "STATE_OFFLINE": "Offline",
+    "REMOVE": "Remove",
+    "EMPTY_LIST": "You don't have any friends to show yet."
+  },
+
+  "PROFILE": {
+    "TITLE": "My profile",
+    "LOADING": "Loading…",
+
+    "BACK_TO_MENU": "Back to menu",
+    "EDIT_BUTTON": "Edit data",
+    "DELETE_BUTTON": "Delete account",
+
+    "STATUS_ONLINE": "Online",
+    "STATUS_OFFLINE": "Offline",
+
+    "FIELD_USERNAME": "Username",
+    "FIELD_EMAIL": "Email",
+    "FIELD_BIRTHDAY": "Birthday",
+    "FIELD_PASSWORD": "Password",
+
+    "EVENTS_TITLE": "Events I participate in",
+    "EVENTS_EMPTY": "You are not participating in any event.",
+
+    "EDIT_MODAL_TITLE": "Edit data",
+    "EDIT_USERNAME_LABEL": "Username",
+    "EDIT_USERNAME_CHECKING": "Checking username…",
+    "EDIT_USERNAME_TAKEN": "⚠ This username is already in use.",
+    "EDIT_EMAIL_LABEL": "Email",
+    "EDIT_EMAIL_CHECKING": "Checking email…",
+    "EDIT_EMAIL_TAKEN": "⚠ This email is already registered.",
+    "EDIT_BIRTHDAY_LABEL": "Birthday",
+    "EDIT_NEW_PASSWORD_LABEL": "New password",
+    "EDIT_NEW_PASSWORD_PLACEHOLDER": "Leave it empty to keep it unchanged",
+    "EDIT_ERROR_GENERIC": "Error while saving changes.",
+    "EDIT_CANCEL": "Cancel",
+    "EDIT_SAVE": "Save",
+    "EDIT_SAVING": "Saving…",
+
+    "DELETE_MODAL_TITLE": "Delete account",
+    "DELETE_MODAL_TEXT": "This action is <strong>permanent</strong>. Type your password to confirm.",
+    "DELETE_PASSWORD_LABEL": "Password",
+    "DELETE_PASSWORD_PLACEHOLDER": "Your password",
+    "DELETE_CANCEL": "Cancel",
+    "DELETE_CONFIRM": "Delete permanently",
+    "DELETE_DELETING": "Deleting…"
+  },
+
+  "EVENTS": {
+    "LABEL_CREATOR": "Creator:",
+    "LABEL_ADDRESS": "Address:",
+    "LABEL_SCHEDULE": "Schedule:",
+    "LABEL_PARTICIPANTS": "Participants:",
+    "LABEL_RATINGS": "Ratings:",
+    "LABEL_RATINGS_COUNT_SUFFIX": "ratings",
+    "LABEL_RATINGS_NONE": "No ratings",
+    "YOU_ARE_CREATOR": "You are the creator",
+    "ADMIN_BADGE": "Admin",
+    "JOINED_BADGE": "Joined",
+    "BUTTON_JOIN": "Join event",
+    "BUTTON_LEAVE": "Leave event",
+    "CREATOR_CANNOT_LEAVE": "As the creator, you can't leave the event."
+  },
+
+  "EXPLORE": {
+    "TITLE": "Explore events",
+    "BACK_TO_MENU": "Back to menu",
+    "GO_TO_CREATE": "Create new event",
+    "GO_TO_MY_EVENTS": "My events (created or joined)",
+
+    "LOADING_EVENTS": "Loading events...",
+    "MAP_TITLE": "Events map",
+    "MAP_HINT": "Move and zoom the map to see events in that area. Tap a pin to see its details.",
+
+    "EMPTY_TITLE": "There are no events available in this area",
+    "EMPTY_TEXT": "Move the map or change the zoom to search in other areas.",
+
+    "CARD_BADGE_CREATOR": "You are the creator",
+    "CARD_BADGE_ADMIN": "Admin",
+    "CARD_BADGE_JOINED": "Joined",
+
+    "PAGINATION_PREV": "« Previous",
+    "PAGINATION_NEXT": "Next »",
+    "PAGINATION_INFO_PREFIX": "Page",
+    "PAGINATION_INFO_OF": "of",
+
+    "MODAL_TITLE": "Event details",
+    "MODAL_ADDRESS_FALLBACK": "Not specified",
+    "MODAL_CREATOR_NOTE": "As the creator, you can't leave the event.",
+    "MODAL_BUTTON_JOIN": "Join event",
+    "MODAL_BUTTON_LEAVE": "Leave event",
+    "MODAL_BUTTON_CLOSE": "Close"
+  },
+
+  "CREATE_EVENT": {
+    "TITLE": "Create new event",
+    "BACK_TO_MENU": "Back to menu",
+    "GO_TO_EXPLORE": "Explore events (map)",
+    "GO_TO_MY_EVENTS": "My events (created or joined)",
+
+    "FORM_TITLE": "Fill in the event details",
+
+    "FIELD_NAME_LABEL": "Event title",
+    "FIELD_NAME_PLACEHOLDER": "E.g. Q4 planning meeting",
+    "FIELD_NAME_ERROR_MIN": "⚠ The title is mandatory (minimum 3 characters).",
+
+    "FIELD_ADDRESS_LABEL": "Address",
+    "FIELD_ADDRESS_PLACEHOLDER": "E.g. Mallorca St 123, Barcelona",
+
+    "FIELD_DATE_LABEL": "Date",
+    "FIELD_TIME_LABEL": "Time",
+
+    "SCHEDULE_SET": "📅 Set schedule",
+    "SCHEDULE_CLEAR": "❌ Remove",
+    "SCHEDULE_SELECTED": "Selected:",
+    "SCHEDULE_NONE": "No schedule set",
+
+    "ERROR_MESSAGE_PREFIX": "⚠",
+    "SUBMIT_DEFAULT": "💾 Save event",
+    "SUBMIT_SAVING": "Saving…"
+  },
+
+  "MY_EVENTS": {
+    "TITLE": "My events",
+    "BACK_TO_MENU": "Back to menu",
+    "GO_TO_CREATE": "Create new event",
+    "GO_TO_EXPLORE": "Explore events (map)",
+    "LOADING": "Loading events.",
+    "ERROR_MESSAGE_PREFIX": "Error:",
+
+    "CREATED_TITLE": "Events I created ({{count}})",
+    "CREATED_EMPTY_TEXT": "You haven't created any events yet.",
+    "BADGE_CREATOR": "Creator",
+
+    "FIELD_ADDRESS": "Address:",
+    "BUTTON_VIEW_MAP": "🗺 View map",
+    "FIELD_SCHEDULE": "Schedule:",
+    "FIELD_PARTICIPANTS": "Participants:",
+
+    "RATINGS_LABEL": "Ratings:",
+    "RATINGS_NONE": "No ratings",
+    "BUTTON_VIEW_RATINGS": "View/Add ratings",
+    "BUTTON_EDIT": "✏️ Edit",
+    "BUTTON_DELETE": "🗑️ Delete",
+
+    "JOINED_TITLE": "Events I'm joined to ({{count}})",
+    "JOINED_EMPTY_TEXT": "You are not joined to any event yet.",
+    "JOINED_BUTTON_EXPLORE": "Explore events",
+
+    "BADGE_JOINED": "Joined",
+
+    "BUTTON_LEAVE": "Leave event",
+
+    "DELETE_MODAL_TITLE": "Delete event",
+    "DELETE_MODAL_TEXT": "Are you sure you want to delete <strong>{{name}}</strong>?",
+    "DELETE_MODAL_CANCEL": "Cancel",
+    "DELETE_MODAL_CONFIRM": "🗑️ Delete",
+
+    "LEAVE_MODAL_TITLE": "Leave event",
+    "LEAVE_MODAL_TEXT": "Are you sure you want to leave <strong>{{name}}</strong>?",
+    "LEAVE_MODAL_CANCEL": "Cancel",
+    "LEAVE_MODAL_CONFIRM": "Leave",
+
+    "BUTTON_SHARE_EVENT": "Send to a friend",
+    "SHARE_EVENT_TITLE": "Share event",
+    "SHARE_EVENT_LOADING": "Loading friends...",
+    "SHARE_EVENT_NO_FRIENDS": "You have no friends to send this event to.",
+    "SHARE_EVENT_SEND": "Send",
+
+    "BUTTON_EVENT_CHAT": "Event chat",
+    "EVENT_CHAT_TITLE": "Event chat",
+    "EVENT_CHAT_LOADING": "Loading event messages...",
+    "EVENT_CHAT_EMPTY": "There are no messages in this event yet.",
+    "EVENT_CHAT_PLACEHOLDER": "Write a message for this event..."
+  },
+
+  "RATINGS": {
+    "MODAL_TITLE_PREFIX": "Ratings —",
+    "SUMMARY_AVG": "Average:",
+    "SUMMARY_TOTAL": "Total:",
+    "YOUR_RATING_TITLE": "Your rating",
+    "YOUR_RATING_SCORE_LABEL": "Score:",
+    "YOUR_RATING_SCORE_TEXT": "({{score}}/5)",
+    "YOUR_RATING_COMMENT_LABEL": "Comment (optional):",
+    "YOUR_RATING_COMMENT_PLACEHOLDER": "Write your opinion.",
+    "YOUR_RATING_SAVE_BUTTON": "Save rating",
+    "ERROR": "Error saving rating.",
+    "INFO": "Rating saved correctly.",
+    "SEARCH_PLACEHOLDER": "Search comments…",
+    "SEARCH_BUTTON": "Search",
+    "LIST_PAGE_INFO": "Page {{page}} of {{totalPages}}",
+    "LIST_TOTAL_ITEMS": "({{total}} ratings)",
+    "LIST_NO_COMMENT": "No comment",
+    "LIST_NO_RATINGS": "There are no ratings.",
+    "PAGER_PREV": "◀︎ Previous",
+    "PAGER_NEXT": "Next ▶︎",
+    "CLOSE_BUTTON": "Close"
+  },
+
+  "MAP": {
+    "MODAL_TITLE_PREFIX": "Event location —",
+    "NO_MAP": "The map could not be displayed for this event.",
+    "OPEN_LARGE": "View in large map",
+    "CLOSE": "Close"
+  }
+}

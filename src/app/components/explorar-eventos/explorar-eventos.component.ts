@@ -1,19 +1,24 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import * as maplibregl from 'maplibre-gl';
 import { EventoService } from '../../services/evento.service';
 import { AuthService } from '../../services/auth.service';
 import { Evento } from '../../models/evento.model';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-explorar-eventos',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './explorar-eventos.component.html',
   styleUrls: ['./explorar-eventos.component.css']
 })
 export class ExplorarEventosComponent implements OnInit, AfterViewInit {
+  private themeService = inject(ThemeService);
+  theme = this.themeService.theme;
+
   allEventos: Evento[] = [];
   eventosFiltrados: Evento[] = [];
   eventos: Evento[] = [];
@@ -36,11 +41,21 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
   selectedEvent: Evento | null = null;
   showEventModal = false;
 
+  currentLang: 'es' | 'en' | 'cat' | 'fr' =
+    (localStorage.getItem('lang') as any) || 'es';
+  showLangMenu = false;
+
   constructor(
     private eventoService: EventoService,
     private authService: AuthService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private translate: TranslateService
+  ) {
+    this.translate.use(this.currentLang);
+    const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    this.currentLang = savedLang;
+    this.translate.use(savedLang);
+  }
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
@@ -76,22 +91,22 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
         ]
       },
       center: [1.7, 41.3],
-      zoom: 11 
+      zoom: 11
     });
 
     this.map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
     this.map.on('load', () => {
       this.mapReady = true;
-      this.loadAllEventos();
+      this.fetchEventosForCurrentView(false);
       this.map?.resize();
     });
 
     this.map.on('moveend', () => {
       this.actualizarListaSegunMapa();
-      this.pintarMarcadores();
     });
   }
+
 
   private getMapBounds() {
     if (!this.map) return null;
@@ -102,6 +117,135 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
       east: b.getEast(),
       west: b.getWest()
     };
+  }
+
+  private fetchEventosForCurrentView(fromMapMove: boolean = false): void {
+    if (!this.map) return;
+
+    const bounds = this.getMapBounds();
+    if (!fromMapMove) {
+      this.loading = true;
+    }
+    this.errorMessage = '';
+
+    const finalizar = () => {
+      if (!fromMapMove) {
+        this.loading = false;
+      }
+    };
+
+    if (!bounds) {
+      this.eventoService.getEventos(this.page, this.pageSize).subscribe({
+        next: (resp) => {
+          const lista = resp?.data ?? [];
+          const mapped = lista.map((raw: any) => {
+            const schedules = Array.isArray(raw.schedule)
+              ? raw.schedule
+              : raw.schedule
+              ? [raw.schedule]
+              : [];
+
+            return {
+              ...raw,
+              lat: raw.lat != null ? Number(raw.lat) : undefined,
+              lng: raw.lng != null ? Number(raw.lng) : undefined,
+              schedule: schedules,
+              participantes: Array.isArray(raw.participantes)
+                ? raw.participantes
+                : raw.participantes
+                ? [raw.participantes]
+                : [],
+            } as Evento;
+          });
+
+          this.allEventos = mapped;
+          this.eventosFiltrados = mapped;
+          this.totalItems = resp.totalItems ?? mapped.length;
+          this.totalPages =
+            resp.totalPages ??
+            Math.max(1, Math.ceil(this.totalItems / this.pageSize));
+          if (this.page > this.totalPages) this.page = this.totalPages || 1;
+
+          this.eventos = mapped;
+
+          this.pintarMarcadores();
+          finalizar();
+        },
+        error: (err) => {
+          console.error(err);
+          this.eventos = [];
+          this.allEventos = [];
+          this.eventosFiltrados = [];
+          this.totalItems = 0;
+          this.totalPages = 1;
+          this.errorMessage =
+            err?.error?.message || 'Error al cargar eventos desde el servidor.';
+          this.limpiarMarcadores();
+          finalizar();
+        },
+      });
+
+      return;
+    }
+
+    this.eventoService
+      .getEventosByBounds(
+        bounds.north,
+        bounds.south,
+        bounds.east,
+        bounds.west,
+        this.page,
+        this.pageSize
+      )
+      .subscribe({
+        next: (resp) => {
+          const lista = resp?.data ?? [];
+          const mapped = lista.map((raw: any) => {
+            const schedules = Array.isArray(raw.schedule)
+              ? raw.schedule
+              : raw.schedule
+              ? [raw.schedule]
+              : [];
+
+            return {
+              ...raw,
+              lat: raw.lat != null ? Number(raw.lat) : undefined,
+              lng: raw.lng != null ? Number(raw.lng) : undefined,
+              schedule: schedules,
+              participantes: Array.isArray(raw.participantes)
+                ? raw.participantes
+                : raw.participantes
+                ? [raw.participantes]
+                : [],
+            } as Evento;
+          });
+
+          this.allEventos = mapped;
+          this.eventosFiltrados = mapped;
+          this.totalItems = resp.totalItems ?? mapped.length;
+          this.totalPages =
+            resp.totalPages ??
+            Math.max(1, Math.ceil(this.totalItems / this.pageSize));
+          if (this.page > this.totalPages) this.page = this.totalPages || 1;
+
+          this.eventos = mapped;
+
+          this.pintarMarcadores();
+          finalizar();
+        },
+        error: (err) => {
+          console.error(err);
+          this.eventos = [];
+          this.allEventos = [];
+          this.eventosFiltrados = [];
+          this.totalItems = 0;
+          this.totalPages = 1;
+          this.errorMessage =
+            err?.error?.message || 'Error al cargar eventos desde el servidor.';
+          this.limpiarMarcadores();
+          finalizar();
+        },
+      });
   }
 
   private loadAllEventos(): void {
@@ -131,11 +275,8 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
 
         this.loading = false;
 
-        this.actualizarListaSegunMapa();
-        this.pintarMarcadores();
-        setTimeout(() => {
-          this.fitMapToAllEventos();
-        }, 300);
+        this.page = 1;
+        this.fetchEventosForCurrentView();
       },
       error: (err) => {
         console.error(err);
@@ -146,35 +287,8 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
   }
 
   private actualizarListaSegunMapa(): void {
-    if (!this.mapReady) {
-      this.eventosFiltrados = [...this.allEventos];
-    } else {
-      const bounds = this.getMapBounds();
-      if (!bounds) {
-        this.eventosFiltrados = [...this.allEventos];
-      } else {
-        this.eventosFiltrados = this.allEventos.filter(ev => {
-          if (ev.lat == null || ev.lng == null) return false;
-          const lat = Number(ev.lat);
-          const lng = Number(ev.lng);
-          return (
-            lat <= bounds.north &&
-            lat >= bounds.south &&
-            lng >= bounds.west &&
-            lng <= bounds.east
-          );
-        });
-      }
-    }
-
-    this.totalItems = this.eventosFiltrados.length;
-    this.totalPages = Math.max(1, Math.ceil(this.totalItems / this.pageSize));
-
-    if (this.page > this.totalPages) this.page = this.totalPages;
-    if (this.page < 1) this.page = 1;
-
-    const inicio = (this.page - 1) * this.pageSize;
-    this.eventos = this.eventosFiltrados.slice(inicio, inicio + this.pageSize);
+    if (!this.mapReady) return;
+    this.fetchEventosForCurrentView(true);
   }
 
   private pintarMarcadores(): void {
@@ -182,7 +296,7 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     this.markers.forEach(m => m.remove());
     this.markers = [];
 
-    this.eventosFiltrados.forEach(ev => {
+    this.eventos.forEach(ev => {
       if (ev.lat == null || ev.lng == null) return;
 
       const marker = new maplibregl.Marker({ color: '#4f46e5' })
@@ -197,6 +311,12 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
 
       this.markers.push(marker);
     });
+  }
+
+  private limpiarMarcadores(): void {
+    if (!this.map) return;
+    this.markers.forEach(m => m.remove());
+    this.markers = [];
   }
 
   private fitMapToAllEventos(): void {
@@ -324,17 +444,39 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/mis-eventos']);
   }
 
-  prevPage(): void {
-    if (this.page > 1) {
-      this.page--;
-      this.actualizarListaSegunMapa();
-    }
-  }
-
   nextPage(): void {
     if (this.page < this.totalPages) {
       this.page++;
-      this.actualizarListaSegunMapa();
+      this.fetchEventosForCurrentView(true);
     }
+  }
+
+  prevPage(): void {
+    if (this.page > 1) {
+      this.page--;
+      this.fetchEventosForCurrentView(true);
+    }
+  }
+
+  changeLanguage(lang: 'es' | 'en') {
+    if (this.currentLang === lang) return;
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+  }
+
+  toggleLangMenu(): void {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
+    this.showLangMenu = false;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }

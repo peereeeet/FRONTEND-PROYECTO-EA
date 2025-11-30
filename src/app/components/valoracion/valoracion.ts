@@ -1,198 +1,163 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ValoracionService } from '../../services/valoracion.service';
-import { Valoracion, ValoracionesPage } from '../../models/valoracion.model';
-import { EventoService } from '../../services/evento.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
+
+interface Rating {
+  userName: string;
+  rating: number;
+  comment: string;
+  date: Date;
+}
 
 @Component({
   selector: 'app-valoracion',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './valoracion.html',
   styleUrls: ['./valoracion.css']
 })
 export class ValoracionComponent implements OnInit {
-  eventoId!: string;
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private translate = inject(TranslateService);
+  private themeService = inject(ThemeService);
+  
+  theme = this.themeService.theme;
 
-  eventoName = '';
-  avgRating?: number;
-  ratingsCount?: number;
+  eventId: string = '';
+  eventName: string = 'Evento de Ejemplo';
+  loading = true;
+  submitting = false;
 
-  q = '';
-  page = 1;
-  limit = 10;
-  totalPages = 1;
-  totalItems = 0;
-  list: Valoracion[] = [];
-  loadingList = false;
+  userRating = 0;
+  userComment = '';
 
-  myScore = 0;
-  myComment = '';
-  saving = false;
+  ratings: Rating[] = [];
+  averageRating = 0;
+  totalRatings = 0;
 
-  showDeleteModal = false;
-  ratingToDelete: Valoracion | null = null;
+  currentLang: 'es' | 'en' = 'es';
+  showLangMenu = false;
 
-  errorMsg = '';
-  infoMsg = '';
-
-  hover = 0;
-  stars = [1, 2, 3, 4, 5];
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private ratings: ValoracionService,
-    private eventoSrv: EventoService,
-  ) {}
+  constructor() {
+    const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    this.currentLang = savedLang;
+    this.translate.use(savedLang);
+  }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) {
-      this.router.navigate(['/evento']);
-      return;
-    }
-    this.eventoId = id;
-
-    const nav = this.router.getCurrentNavigation();
-    const st: any = nav?.extras?.state;
-    if (st?.eventoName) this.eventoName = st.eventoName;
-    if (typeof st?.avgRating === 'number') this.avgRating = st.avgRating;
-    if (typeof st?.ratingsCount === 'number') this.ratingsCount = st.ratingsCount;
-
-    this.refreshAggregates();
-    this.resetValoracionForm();
-
-    if (!this.eventoName) {
-      this.eventoSrv.getEventoById(this.eventoId).subscribe({
-        next: (ev: any) => { this.eventoName = ev?.name || ev?.title || ''; },
-        error: () => { }
-      });
-    }
-
-    try { window.scrollTo({ top: 0, behavior: 'instant' as any }); } catch { window.scrollTo(0,0); }
-    this.loadList();
+    this.eventId = this.route.snapshot.paramMap.get('id') || '';
+    this.loadRatings();
   }
 
-  loadList() {
-    this.loadingList = true;
-    this.errorMsg = '';
-    this.ratings.listByEvent(this.eventoId, this.page, 6, this.q).subscribe({
-      next: (res: ValoracionesPage) => {
-        this.list = res.data;
-        this.page = res.page;
-        this.totalPages = res.totalPages;
-        this.totalItems = res.totalItems;
-        this.loadingList = false;
-      },
-      error: (err: HttpErrorResponse) => {
-        this.errorMsg = err?.error?.message || 'Error cargando valoraciones';
-        this.loadingList = false;
-      }
-    });
+  loadRatings(): void {
+    // Simular carga de valoraciones
+    setTimeout(() => {
+      this.ratings = [
+        {
+          userName: 'María García',
+          rating: 5,
+          comment: '¡Increíble evento! Todo estuvo perfectamente organizado.',
+          date: new Date('2024-11-15')
+        },
+        {
+          userName: 'Carlos López',
+          rating: 4,
+          comment: 'Muy buena experiencia, aunque podría mejorar la comida.',
+          date: new Date('2024-11-14')
+        },
+        {
+          userName: 'Ana Martínez',
+          rating: 5,
+          comment: 'Excelente ambiente y personas muy agradables.',
+          date: new Date('2024-11-13')
+        }
+      ];
+
+      this.calculateStats();
+      this.loading = false;
+    }, 1000);
   }
 
-  changePage(delta: number) {
-    const p = this.page + delta;
-    if (p < 1 || p > this.totalPages) return;
-    this.page = p;
-    this.loadList();
-  }
-
-  search() {
-    this.page = 1;
-    this.loadList();
-  }
-
-  setScore(v: number) {
-    this.myScore = v;
-  }
-
-  upsert() {
-    this.errorMsg = '';
-    this.infoMsg = '';
-
-    if (this.myScore < 1 || this.myScore > 5) {
-      this.errorMsg = 'Selecciona una puntuación entre 1 y 5.';
+  calculateStats(): void {
+    if (this.ratings.length === 0) {
+      this.averageRating = 0;
+      this.totalRatings = 0;
       return;
     }
 
-    this.saving = true;
-    this.ratings.create(this.eventoId, { puntuacion: this.myScore, comentario: this.myComment }).subscribe({
-      next: () => {
-        this.infoMsg = '¡Valoración guardada!';
-        this.saving = false;
-        this.loadList();
-        this.refreshAggregates();
-        this.resetValoracionForm();
-      },
-      error: (err: HttpErrorResponse) => {
-        this.errorMsg = err?.error?.message || 'No se pudo guardar la valoración';
-        this.saving = false;
-      }
-    });
+    const sum = this.ratings.reduce((acc, r) => acc + r.rating, 0);
+    this.averageRating = sum / this.ratings.length;
+    this.totalRatings = this.ratings.length;
   }
 
-  remove(r: Valoracion) {
-    if (!confirm('¿Eliminar esta valoración?')) return;
-    this.ratings.delete(r._id).subscribe({
-      next: () => this.loadList(),
-      error: (err: HttpErrorResponse) => {
-        this.errorMsg = err?.error?.message || 'No se pudo eliminar';
-      }
-    });
+  setRating(rating: number): void {
+    this.userRating = rating;
   }
 
-  openDeleteModal(r: Valoracion) {
-    this.errorMsg = '';
-    this.ratingToDelete = r;
-    this.showDeleteModal = true;
+  submitRating(): void {
+    if (this.userRating === 0) return;
+
+    this.submitting = true;
+
+    // Simular envío al servidor
+    setTimeout(() => {
+      const newRating: Rating = {
+        userName: 'Tú',
+        rating: this.userRating,
+        comment: this.userComment,
+        date: new Date()
+      };
+
+      this.ratings.unshift(newRating);
+      this.calculateStats();
+
+      // Reset form
+      this.userRating = 0;
+      this.userComment = '';
+      this.submitting = false;
+
+      alert('¡Valoración enviada con éxito!');
+    }, 1000);
   }
 
-  closeDeleteModal() {
-    this.showDeleteModal = false;
-    this.ratingToDelete = null;
+  getStars(rating: number): string {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    let stars = '★'.repeat(fullStars);
+    if (hasHalfStar) stars += '☆';
+    
+    const remaining = 5 - Math.ceil(rating);
+    stars += '☆'.repeat(remaining);
+    
+    return stars;
   }
 
-  confirmDelete() {
-    if (!this.ratingToDelete) return;
-    this.ratings.delete(this.ratingToDelete._id).subscribe({
-      next: () => {
-        this.closeDeleteModal();
-        this.loadList();
-        this.refreshAggregates();
-      },
-      error: () => {
-        this.errorMsg = 'No se pudo eliminar';
-        this.closeDeleteModal();
-      }
-    });
+  goBack(): void {
+    this.router.navigate(['/mis-eventos']);
   }
 
-  private refreshAggregates() {
-    this.eventoSrv.getEventoById(this.eventoId).subscribe({
-      next: (ev: any) => {
-        if (!this.eventoName) this.eventoName = ev?.name || ev?.title || '';
-        this.avgRating = typeof ev?.avgRating === 'number' ? ev.avgRating : 0;
-        this.ratingsCount = typeof ev?.ratingsCount === 'number' ? ev.ratingsCount : 0;
-      },
-      error: () => {
-        if (this.avgRating == null) this.avgRating = 0;
-        if (this.ratingsCount == null) this.ratingsCount = 0;
-      }
-    });
+  changeLanguage(lang: 'es' | 'en') {
+    if (this.currentLang === lang) return;
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
   }
 
-  private resetValoracionForm(): void {
-    this.hover = 0;
-    this.myScore = 0;
-    this.myComment = '';
+  toggleLangMenu() {
+    this.showLangMenu = !this.showLangMenu;
   }
 
-  goBack() {
-    this.router.navigate(['/evento']);
+  selectLanguage(lang: 'es' | 'en') {
+    this.changeLanguage(lang);
+    this.showLangMenu = false;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }

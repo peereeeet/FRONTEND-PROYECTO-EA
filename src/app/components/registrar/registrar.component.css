@@ -1,6 +1,6 @@
+
 @import '../login/login.component.css';
 
-/* Ajustes del registro sobre la base del login */
 .login-card{ 
   max-width:900px; width:90%;
   border:2px solid rgba(167,139,250,.5);
@@ -44,10 +44,41 @@
   box-shadow:0 8px 20px rgba(239,68,68,.2);
 }
 
-/* Responsive */
 @media (max-width: 700px){
   .form-grid{ grid-template-columns:1fr; }
   .buttons-row{ flex-direction:column; }
   .buttons-row .login-button, 
   .buttons-row .admin-button{ max-width:100%; }
+}
+
+.theme-toggle-register {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--purple-300), var(--accent-blue-light));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px var(--glow-purple);
+}
+
+.theme-toggle-register:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px var(--glow-purple-strong);
+}
+
+.dark-theme .theme-toggle-register {
+  background: linear-gradient(135deg, var(--purple-600), var(--accent-blue));
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.dark-theme .theme-toggle-register:hover {
+  box-shadow: 0 8px 22px var(--glow-purple-strong);
 }
