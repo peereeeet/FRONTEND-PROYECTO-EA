@@ -132,9 +132,10 @@
         </button>
       </form>
 
-      <div class="login-link">
-        {{ 'REGISTER.ALREADY_HAVE_ACCOUNT' | translate }}
-        <a routerLink="/login">{{ 'REGISTER.LOGIN_LINK' | translate }}</a>
+      <div class="login-button-container">
+        <button type="button" class="btn-back-to-login" routerLink="/login">
+          ← {{ 'REGISTER.BACK_TO_LOGIN' | translate }}
+        </button>
       </div>
     </div>
   </div>

@@ -208,27 +208,6 @@
   to { transform: rotate(360deg); }
 }
 
-.login-link {
-  text-align: center;
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 2px solid var(--border);
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-}
-
-.login-link a {
-  color: var(--purple-600);
-  font-weight: 700;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.login-link a:hover {
-  color: var(--purple-700);
-  text-decoration: underline;
-}
-
 /* Selector de idioma y tema */
 .lang-switcher-register {
   position: absolute;
@@ -368,3 +347,49 @@
     right: 10px;
   }
 }
+/* ===== RESTO DEL CSS SE MANTIENE IGUAL ===== */
+
+/* ... todo el CSS anterior ... */
+
+/* ⭐ REEMPLAZA .login-link CON ESTO: */
+.login-button-container {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 2px solid var(--border);
+}
+
+.btn-back-to-login {
+  background: linear-gradient(135deg, #93c5fd, #60a5fa);
+  color: #1e3a8a;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 16px rgba(59,130,246,.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn-back-to-login:hover {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(59,130,246,.35);
+}
+
+.dark-theme .btn-back-to-login {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  border: 1px solid rgba(147, 197, 253, 0.3);
+}
+
+.dark-theme .btn-back-to-login:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 10px 24px rgba(59,130,246,.5);
+}
+
+/* ===== RESTO DEL CSS (Selector de idioma, responsive, etc.) ===== */

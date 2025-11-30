@@ -1,109 +1,135 @@
-<div class="ratings-container">
-  <div class="header">
-    <button class="btn-back" (click)="goBack()">← Volver</button>
+<div class="valoracion-page">
+  <div class="space-background"></div>
+  <div class="stars"></div>
 
-    <div class="title">
-      <h2>Valoraciones del evento</h2>
-
-      <div class="info-row">
-        <div class="subtitle">
-            <strong>Actividad:</strong> {{ eventoName }}
-        </div>
-        <div class="avg">
-            <strong>Media:</strong> {{ avgRating != null ? (avgRating | number:'1.1-2') : '—' }}
-        </div>
-        <div class="count">
-            <strong>Valoraciones:</strong> {{ ratingsCount != null ? ratingsCount : 0 }}
-        </div>
-        </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Tu valoración</h3>
-
-    <div class="upsert-row">
-      <label>Puntuación:</label>
-      <div class="stars" (mouseleave)="hover = 0">
+  <header class="app-bar">
+    <div class="app-bar__content">
+      <div class="lang-switcher-menu">
         <button
-            type="button"
-            *ngFor="let s of stars; let i = index"
-            [attr.aria-label]="'Puntuación ' + (i+1)"
-            (mouseenter)="hover = i+1"
-            (click)="setScore(i+1)">
-            <span [ngClass]="{ filled: (hover || myScore) > i }">
-            {{ (hover || myScore) > i ? '★' : '☆' }}
-            </span>
+          type="button"
+          class="lang-toggle"
+          (click)="toggleLangMenu()">
+          <span class="lang-icon">🌐</span>
+          <span class="lang-current">
+            {{ currentLang === 'es' ? ('LANG.ES' | translate) : ('LANG.EN' | translate) }}
+          </span>
+          <span class="lang-arrow">▾</span>
         </button>
-    </div>
 
-      <span class="score-text" *ngIf="myScore">({{ myScore }}/5)</span>
-    </div>
+        <div class="lang-dropdown" *ngIf="showLangMenu">
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'es'"
+            (click)="selectLanguage('es')">
+            🇪🇸 {{ 'LANG.ES' | translate }}
+          </button>
 
-    <div class="upsert-row">
-      <label>Comentario (opcional):</label>
-      <textarea [(ngModel)]="myComment" rows="3" maxlength="1000" placeholder="Escribe tu opinión..."></textarea>
-    </div>
-
-    <div class="actions">
-      <button class="btn-primary" [disabled]="saving" (click)="upsert()">💾 Guardar</button>
-    </div>
-
-    <div class="msg error" *ngIf="errorMsg">⚠️ {{ errorMsg }}</div>
-    <div class="msg ok" *ngIf="infoMsg">✅ {{ infoMsg }}</div>
-  </div>
-
-  <div class="card">
-    <div class="list-header">
-      <h3>Otras valoraciones</h3>
-      <div class="pager" *ngIf="totalPages > 1">
-        <button type="button" (click)="changePage(-1)" [disabled]="page <= 1">«</button>
-        <span class="counter">Página {{ page }} / {{ totalPages }}</span>
-        <button type="button" (click)="changePage(1)" [disabled]="page >= totalPages">»</button>
-        <span class="total">Total: {{ totalItems }} valoraciones</span>
-    </div>
-      <div class="search">
-        <input type="text" [(ngModel)]="q" placeholder="Buscar por comentario..." />
-        <button (click)="search()">Buscar</button>
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'en'"
+            (click)="selectLanguage('en')">
+            🇬🇧 {{ 'LANG.EN' | translate }}
+          </button>
+        </div>
+        
+        <button class="theme-toggle-valoracion" (click)="toggleTheme()">
+          {{ theme() === 'dark' ? '☀️' : '🌙' }}
+        </button>
       </div>
+
+      <h1 class="app-bar__title">{{ 'RATING.TITLE' | translate }}</h1>
+    </div>
+  </header>
+
+  <section class="valoracion-container">
+    <!-- Loading -->
+    <div class="loading-state" *ngIf="loading">
+      <div class="loading-spinner"></div>
+      <p>{{ 'RATING.LOADING' | translate }}</p>
     </div>
 
-    <div *ngIf="loadingList" class="loading">Cargando...</div>
-    <div *ngIf="!loadingList && list.length === 0" class="empty">No hay valoraciones</div>
-
-    <ul class="ratings-list" *ngIf="!loadingList && list.length > 0">
-      <li *ngFor="let r of list">
-        <div class="left">
-          <div class="stars readonly">
-            <button type="button" *ngFor="let s of stars; let i = index">
-                <span [ngClass]="{ filled: i < (+r.puntuacion || 0) }">
-                {{ i < (+r.puntuacion || 0) ? '★' : '☆' }}
-                </span>
-            </button>
+    <!-- Contenido principal -->
+    <div *ngIf="!loading">
+      <div class="valoracion-card">
+        <div class="card-header">
+          <h2 class="event-title">{{ eventName }}</h2>
+          <button class="btn-back" (click)="goBack()">
+            ← {{ 'RATING.BACK' | translate }}
+          </button>
         </div>
 
-          <div class="comment" *ngIf="r.comentario">{{ r.comentario }}</div>
-          <div class="meta">
-            <span *ngIf="r.createdAt">Creado: {{ r.createdAt | date:'short' }}</span>
-            <span *ngIf="r.updatedAt"> · Actualizado: {{ r.updatedAt | date:'short' }}</span>
+        <!-- Estadísticas -->
+        <div class="stats-section">
+          <div class="stat-card">
+            <div class="stat-label">{{ 'RATING.AVERAGE' | translate }}</div>
+            <div class="stat-value">
+              <span>{{ averageRating.toFixed(1) }}</span>
+              <span class="stars-display">{{ getStars(averageRating) }}</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">{{ 'RATING.TOTAL' | translate }}</div>
+            <div class="stat-value">{{ totalRatings }}</div>
           </div>
         </div>
 
-        <div class="right">
-          <button class="btn-danger" (click)="openDeleteModal(r)">Eliminar</button>
-        </div>
-      </li>
-    </ul>
-  </div>
-</div>
+        <!-- Tu valoración -->
+        <div class="your-rating-section">
+          <h3 class="section-title">{{ 'RATING.YOUR_RATING' | translate }}</h3>
+          
+          <div class="rating-input">
+            <span class="rating-label">{{ 'RATING.SELECT_STARS' | translate }}</span>
+            <div class="stars-selector">
+              <span
+                *ngFor="let star of [1,2,3,4,5]"
+                class="star"
+                [class.active]="star <= userRating"
+                (click)="setRating(star)">
+                {{ star <= userRating ? '★' : '☆' }}
+              </span>
+            </div>
+          </div>
 
-<div class="modal-overlay" *ngIf="showDeleteModal">
-  <div class="modal">
-    <h3>¿Eliminar valoración?</h3>
-    <p>Esta acción no se puede deshacer.</p>
-    <div class="modal-actions">
-      <button class="btn-cancel" (click)="closeDeleteModal()">Cancelar</button>
-      <button class="btn-confirm" (click)="confirmDelete()">Eliminar</button>
+          <textarea
+            class="comment-input"
+            [(ngModel)]="userComment"
+            [placeholder]="'RATING.COMMENT_PLACEHOLDER' | translate"
+            rows="4">
+          </textarea>
+
+          <button
+            class="btn-submit"
+            (click)="submitRating()"
+            [disabled]="userRating === 0 || submitting">
+            {{ submitting ? ('RATING.SUBMITTING' | translate) : ('RATING.SUBMIT' | translate) }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista de valoraciones -->
+      <div class="valoracion-card">
+        <h3 class="section-title">{{ 'RATING.ALL_RATINGS' | translate }}</h3>
+
+        <!-- Sin valoraciones -->
+        <div class="empty-state" *ngIf="ratings.length === 0">
+          <div class="empty-icon">⭐</div>
+          <p class="empty-text">{{ 'RATING.NO_RATINGS' | translate }}</p>
+        </div>
+
+        <!-- Lista de valoraciones -->
+        <div *ngFor="let rating of ratings" class="rating-item">
+          <div class="rating-header">
+            <span class="user-name">{{ rating.userName }}</span>
+            <span class="rating-stars">{{ getStars(rating.rating) }}</span>
+            <span class="rating-date">{{ rating.date | date:'short' }}</span>
+          </div>
+          <p class="rating-comment" *ngIf="rating.comment">
+            {{ rating.comment }}
+          </p>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 </div>
