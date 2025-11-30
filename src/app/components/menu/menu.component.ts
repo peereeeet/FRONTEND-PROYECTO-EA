@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SocketService } from '../../services/socket.service';
 import { ChatMessage } from '../../models/user.model';
+import { logger } from '../../utils/logger';
 
 type FriendLike = User;
 
@@ -164,7 +165,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           .onFriendRequestReceived()
           .pipe(takeUntil(this.destroy$))
           .subscribe((payload) => {
-            console.log('Nueva solicitud de amistad recibida vía WS', payload);
+            logger.log('Nueva solicitud de amistad recibida vía WS', payload);
             this.newFriendRequests.update(v => v + 1);
 
             if (this.showRequestsModal()) {

@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
+import { logger } from '../../utils/logger';
 
 @Component({
   selector: 'app-login',
@@ -116,8 +117,8 @@ export class LoginComponent {
               this.router.navigate(['/home']);
             }
           },
-          error: (error) => {
-            console.error('Error en login:', error);
+            error: (error) => {
+              logger.error('Error en login:', error);
             this.errorMessage =
               error.error?.message ||
               this.translate.instant('LOGIN.ERROR_GENERIC');
@@ -131,7 +132,7 @@ export class LoginComponent {
   createAdmin(): void {
     this.authService.createAdminUser().subscribe({
       next: (response) => {
-        console.log('Admin creado:', response);
+          logger.log('Admin creado:', response);
         alert('Usuario admin creado exitosamente. Ahora puedes iniciar sesión con usuario: "admin" y contraseña: "admin"');
 
         this.loginForm.patchValue({
@@ -140,7 +141,7 @@ export class LoginComponent {
         });
       },
       error: (error) => {
-        console.error('Error creando admin:', error);
+          logger.error('Error creando admin:', error);
         this.errorMessage = 'Error creando usuario admin';
       }
     });
