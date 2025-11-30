@@ -6,7 +6,7 @@ import { environment } from '../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class EventoService {
-  private apiUrl = `${environment.apiUrl}/api/event`;
+  private apiUrl = `${environment.apiUrl}/event`;
 
   constructor(private http: HttpClient) {}
 

@@ -13,7 +13,7 @@ export interface Page<T> {
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private apiUrl = `${environment.apiUrl}/api/user`;
+  private apiUrl = `${environment.apiUrl}/user`;
 
   constructor(private http: HttpClient) {}
 

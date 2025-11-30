@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../environments/environment';
+import { logger } from '../utils/logger';
 
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private socket: Socket | null = null;
-  private readonly url = environment.apiUrl;
+  private readonly url = (environment as any).socketUrl || environment.apiUrl.replace('/api', '');
 
   constructor() {}
 
@@ -15,11 +16,23 @@ export class SocketService {
 
     this.socket = io(this.url, {
       transports: ['websocket', 'polling'],
-      withCredentials: true
+      withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
     });
 
     this.socket.on('connect', () => {
+      logger.info('✅ Socket conectado:', this.socket?.id);
       this.socket?.emit('user:online', userId);
+    });
+
+    this.socket.on('connect_error', (error: Error) => {
+      logger.error('❌ Error de conexión Socket.IO:', error);
+    });
+
+    this.socket.on('disconnect', (reason: string) => {
+      logger.warn('⚠️ Socket desconectado:', reason);
     });
   }
 
