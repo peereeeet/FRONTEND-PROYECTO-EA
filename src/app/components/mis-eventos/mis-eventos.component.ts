@@ -11,7 +11,7 @@ import { Valoracion } from '../../models/valoracion.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SocketService } from '../../services/socket.service';
 import { UserService } from '../../services/user.service';
-import { EventChatMessage } from '../../models/user.model';
+import { EventChatMessage, User } from '../../models/user.model';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
@@ -81,6 +81,12 @@ export class MisEventosComponent implements OnInit {
   eventChatLoading = signal(false);
   eventChatError = signal('');
 
+  shareModalOpen = false;
+  shareEvento: Evento | null = null;
+  shareFriends: User[] = [];
+  shareLoading = false;
+  shareError = '';
+
   @ViewChild('eventChatMessagesContainer')
   eventChatMessagesContainer?: ElementRef<HTMLDivElement>;
 
@@ -107,6 +113,7 @@ export class MisEventosComponent implements OnInit {
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     this.currentUserId = user?._id || '';
+    this.currentUsername = user?.username || '';
 
     if (this.currentUserId) {
       this.socketService.connect(this.currentUserId);
@@ -595,5 +602,52 @@ hasLocation(evento: any): boolean {
       if (!el) return;
       el.scrollTop = el.scrollHeight;
     }, 0);
+  }
+
+  openShareModal(evento: Evento): void {
+    this.shareModalOpen = true;
+    this.shareEvento = evento;
+    this.shareFriends = [];
+    this.shareError = '';
+    this.shareLoading = true;
+
+    if (!this.currentUserId) {
+      this.shareError = 'No se ha podido identificar al usuario actual';
+      this.shareLoading = false;
+      return;
+    }
+
+    this.userService.listFriends(this.currentUserId, 1, 100, '').subscribe({
+      next: (page) => {
+        this.shareFriends = page?.data ?? [];
+        this.shareLoading = false;
+      },
+      error: (err) => {
+        console.error('Error cargando amigos para compartir evento', err);
+        this.shareError =
+          err?.error?.message || 'No se pudieron cargar tus amigos';
+        this.shareLoading = false;
+      }
+    });
+  }
+
+  closeShareModal(): void {
+    this.shareModalOpen = false;
+    this.shareEvento = null;
+    this.shareFriends = [];
+    this.shareError = '';
+  }
+
+  sendEventToFriend(friend: User): void {
+    if (!friend?._id || !this.shareEvento?._id) return;
+    const fromId = this.currentUserId;
+    if (!fromId) return;
+
+    const EVENT_INVITE_PREFIX = '__EVENT_INVITE__|';
+    const safeName = (this.shareEvento.name || '').replace(/\|/g, ' ');
+    const text = `${EVENT_INVITE_PREFIX}${this.shareEvento._id}|${safeName}`;
+
+    this.socketService.sendChatMessage(fromId, String(friend._id), text);
+    this.closeShareModal();
   }
 }

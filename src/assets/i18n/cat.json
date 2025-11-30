@@ -137,7 +137,11 @@
     "CHAT_TITLE_PREFIX": "Xat amb",
     "CHAT_LOADING": "Carregant la conversa...",
     "CHAT_EMPTY": "Encara no hi ha missatges. Escriu el primer!",
-    "CHAT_PLACEHOLDER": "Escriu un missatge..."
+    "CHAT_PLACEHOLDER": "Escriu un missatge...",
+
+    "CHAT_EVENT_INVITE_TITLE": "Invitació a un esdeveniment",
+    "CHAT_EVENT_INVITE_JOIN": "Unir-se",
+    "CHAT_EVENT_INVITE_ALREADY_IN": "Ja hi ets dins"
   },
 
   "FRIENDS": {
@@ -304,6 +308,12 @@
     "LEAVE_MODAL_TEXT": "Segur que vols sortir de <strong>{{name}}</strong>?",
     "LEAVE_MODAL_CANCEL": "Cancel·lar",
     "LEAVE_MODAL_CONFIRM": "Sortir",
+
+    "BUTTON_SHARE_EVENT": "Enviar a un amic",
+    "SHARE_EVENT_TITLE": "Compartir esdeveniment",
+    "SHARE_EVENT_LOADING": "Carregant amics...",
+    "SHARE_EVENT_NO_FRIENDS": "No tens amics per enviar aquest esdeveniment.",
+    "SHARE_EVENT_SEND": "Enviar",
 
     "BUTTON_EVENT_CHAT": "Xat de l'esdeveniment",
     "EVENT_CHAT_TITLE": "Xat de l'esdeveniment",

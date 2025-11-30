@@ -349,8 +349,40 @@
               class="chat-message"
               [class.from-me]="m.from === me()?._id"
               [class.from-them]="m.from !== me()?._id">
+
               <div class="bubble">
-                <div class="text">{{ m.text }}</div>
+                <ng-container *ngIf="!isEventInvite(m); else eventInviteTpl">
+                  <div class="text">
+                    {{ m.text }}
+                  </div>
+                </ng-container>
+
+                <ng-template #eventInviteTpl>
+                  <div class="event-invite-card">
+                    <div class="event-invite-title">
+                      🎟️ {{ 'MENU.CHAT_EVENT_INVITE_TITLE' | translate }}
+                    </div>
+                    <div class="event-invite-name">
+                      {{ getEventInviteData(m).name }}
+                    </div>
+                    <div class="event-invite-footer">
+                      <ng-container *ngIf="!isCurrentUserInInvitedEvent(m); else alreadyInTpl">
+                        <button
+                          type="button"
+                          class="btn btn-primary btn-join-event"
+                          (click)="joinFromInvite(m)">
+                          {{ 'MENU.CHAT_EVENT_INVITE_JOIN' | translate }}
+                        </button>
+                      </ng-container>
+                      <ng-template #alreadyInTpl>
+                        <span class="already-joined">
+                          {{ 'MENU.CHAT_EVENT_INVITE_ALREADY_IN' | translate }}
+                        </span>
+                      </ng-template>
+                    </div>
+                  </div>
+                </ng-template>
+
                 <div class="time">
                   {{ m.createdAt | date:'dd/MM/yyyy HH:mm' }}
                 </div>

@@ -137,7 +137,11 @@
     "CHAT_TITLE_PREFIX": "Discussion avec",
     "CHAT_LOADING": "Chargement de la conversation...",
     "CHAT_EMPTY": "Pas encore de messages. Écrivez le premier !",
-    "CHAT_PLACEHOLDER": "Écrivez un message..."
+    "CHAT_PLACEHOLDER": "Écrivez un message...",
+
+    "CHAT_EVENT_INVITE_TITLE": "Invitation à un événement",
+    "CHAT_EVENT_INVITE_JOIN": "Rejoindre",
+    "CHAT_EVENT_INVITE_ALREADY_IN": "Tu es déjà dedans"
   },
 
   "FRIENDS": {
@@ -304,6 +308,12 @@
     "LEAVE_MODAL_TEXT": "Êtes-vous sûr de vouloir quitter <strong>{{name}}</strong> ?",
     "LEAVE_MODAL_CANCEL": "Annuler",
     "LEAVE_MODAL_CONFIRM": "Quitter",
+
+    "BUTTON_SHARE_EVENT": "Envoyer à un ami",
+    "SHARE_EVENT_TITLE": "Partager l'événement",
+    "SHARE_EVENT_LOADING": "Chargement des amis...",
+    "SHARE_EVENT_NO_FRIENDS": "Vous n'avez aucun ami à qui envoyer cet événement.",
+    "SHARE_EVENT_SEND": "Envoyer",
 
     "BUTTON_EVENT_CHAT": "Chat de l'événement",
     "EVENT_CHAT_TITLE": "Chat de l'événement",

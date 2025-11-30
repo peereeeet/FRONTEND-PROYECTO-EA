@@ -158,6 +158,9 @@
               <button class="btn btn-edit" (click)="openEditModal(evento)">
                 {{ 'MY_EVENTS.BUTTON_EDIT' | translate }}
               </button>
+              <button type="button" class="btn btn-share" (click)="openShareModal(evento)">
+                📤 {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
+              </button>
               <button class="btn btn-delete" (click)="openDeleteModal(evento)">
                 {{ 'MY_EVENTS.BUTTON_DELETE' | translate }}
               </button>
@@ -254,7 +257,9 @@
                 (click)="openEventChat(evento)">
                 💬 {{ 'MY_EVENTS.BUTTON_EVENT_CHAT' | translate }}
               </button>
-
+              <button type="button" class="btn btn-share" (click)="openShareModal(evento)">
+                📤 {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
+              </button>
               <button
                 *ngIf="!isUserCreator(evento)"
                 class="btn btn-leave"
@@ -330,6 +335,51 @@
       <button type="button" class="btn send-btn" (click)="sendEventChat()">
         ➤
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- 📤 Modal para compartir evento con amigos -->
+<div class="modal-overlay" *ngIf="shareModalOpen">
+  <div class="modal share-modal">
+    <div class="modal-header">
+      <h3>
+        📤 {{ 'MY_EVENTS.SHARE_EVENT_TITLE' | translate }}
+        <span *ngIf="shareEvento" class="share-event-name">
+          {{ shareEvento.name }}
+        </span>
+      </h3>
+      <button class="btn-close" (click)="closeShareModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="shareLoading" class="msg">
+        {{ 'MY_EVENTS.SHARE_EVENT_LOADING' | translate }}
+      </div>
+
+      <div *ngIf="shareError" class="msg error">
+        {{ shareError }}
+      </div>
+
+      <div *ngIf="!shareLoading && !shareError">
+        <div *ngIf="!shareFriends.length" class="empty">
+          {{ 'MY_EVENTS.SHARE_EVENT_NO_FRIENDS' | translate }}
+        </div>
+
+        <ul *ngIf="shareFriends.length" class="share-friends-list">
+          <li *ngFor="let f of shareFriends" class="share-friend-item">
+            <div class="friend-info">
+              <span class="friend-name">{{ f.username }}</span>
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="sendEventToFriend(f)">
+              {{ 'MY_EVENTS.SHARE_EVENT_SEND' | translate }}
+            </button>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

@@ -35,6 +35,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private eventoService = inject(EventoService);
   private router = inject(Router);
   private socketService = inject(SocketService);
+  private readonly EVENT_INVITE_PREFIX = '__EVENT_INVITE__|';
   @ViewChild('chatMessagesContainer') chatMessagesContainer?: ElementRef<HTMLDivElement>;
 
   loading = signal(false);
@@ -83,6 +84,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   chatError = signal('');
   chatText = signal('');
   private chatSocketsInitialized = false;
+  eventInviteMembership: Record<string, boolean> = {};
 
   get mTotalPages(): number {
     const n = this.filteredUsers().length;
@@ -680,7 +682,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         const pair = [me._id, friend._id];
         if (pair.includes(msg.from) && pair.includes(msg.to)) {
           this.chatMessages.update(list => [...list, msg]);
-          this.scrollChatToBottom(); // 👈 aquí
+          this.scrollChatToBottom();
         }
       });
   }
@@ -701,7 +703,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       next: (messages) => {
         this.chatMessages.set(messages || []);
         this.chatLoading.set(false);
-        this.scrollChatToBottom(); // 👈 aquí
+        this.scrollChatToBottom();
       },
       error: (err) => {
         console.error('Error al cargar chat', err);
@@ -734,6 +736,76 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.chatText.set('');
 
     this.socketService.sendChatMessage(me._id, friend._id, text);
+  }
+
+  isEventInvite(msg: ChatMessage): boolean {
+    return typeof msg?.text === 'string' &&
+          msg.text.startsWith(this.EVENT_INVITE_PREFIX);
+  }
+
+  getEventInviteData(msg: ChatMessage): { id: string; name: string } {
+    if (!this.isEventInvite(msg)) {
+      return { id: '', name: msg?.text || '' };
+    }
+    const payload = msg.text.substring(this.EVENT_INVITE_PREFIX.length);
+    const [id, name] = payload.split('|');
+    return {
+      id: id || '',
+      name: name || ''
+    };
+  }
+
+  isCurrentUserInInvitedEvent(msg: ChatMessage): boolean {
+    const data = this.getEventInviteData(msg);
+    const eventId = data.id;
+    const meUser = this.me();
+
+    if (!eventId || !meUser?._id) {
+      return false;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(this.eventInviteMembership, eventId)) {
+      return this.eventInviteMembership[eventId];
+    }
+
+    this.eventoService.getEventoById(eventId).subscribe({
+      next: (evento) => {
+        const myId = String(meUser._id);
+        const participantes = (evento?.participantes || []).map((p: any) =>
+          typeof p === 'string' ? p : String(p._id)
+        );
+        const joined = participantes.includes(myId);
+        this.eventInviteMembership[eventId] = joined;
+      },
+      error: (err) => {
+        console.error('Error comprobando si estoy en el evento invitado', err);
+        this.eventInviteMembership[eventId] = false;
+      }
+    });
+
+    return false;
+  }
+
+  joinFromInvite(msg: ChatMessage): void {
+    const data = this.getEventInviteData(msg);
+    if (!data.id) return;
+
+    this.eventoService.joinEvento(data.id).subscribe({
+      next: () => {
+        this.eventInviteMembership[data.id] = true;
+
+        const meUser = this.me();
+        if (meUser) {
+          const myId = this.getId(meUser);
+          if (myId) {
+            this.cargarEstadisticasEventos(myId);
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Error al unirse al evento desde invitación', err);
+      }
+    });
   }
 
   private scrollChatToBottom(): void {

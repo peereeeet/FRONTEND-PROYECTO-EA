@@ -137,7 +137,11 @@
     "CHAT_TITLE_PREFIX": "Chat with",
     "CHAT_LOADING": "Loading conversation...",
     "CHAT_EMPTY": "No messages yet. Write the first one!",
-    "CHAT_PLACEHOLDER": "Type a message..."
+    "CHAT_PLACEHOLDER": "Type a message...",
+
+    "CHAT_EVENT_INVITE_TITLE": "Event invitation",
+    "CHAT_EVENT_INVITE_JOIN": "Join",
+    "CHAT_EVENT_INVITE_ALREADY_IN": "You’re already in"
   },
 
   "FRIENDS": {
@@ -304,6 +308,12 @@
     "LEAVE_MODAL_TEXT": "Are you sure you want to leave <strong>{{name}}</strong>?",
     "LEAVE_MODAL_CANCEL": "Cancel",
     "LEAVE_MODAL_CONFIRM": "Leave",
+
+    "BUTTON_SHARE_EVENT": "Send to a friend",
+    "SHARE_EVENT_TITLE": "Share event",
+    "SHARE_EVENT_LOADING": "Loading friends...",
+    "SHARE_EVENT_NO_FRIENDS": "You have no friends to send this event to.",
+    "SHARE_EVENT_SEND": "Send",
 
     "BUTTON_EVENT_CHAT": "Event chat",
     "EVENT_CHAT_TITLE": "Event chat",
