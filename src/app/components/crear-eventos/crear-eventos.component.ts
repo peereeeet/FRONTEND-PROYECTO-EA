@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
 import { Evento } from '../../models/evento.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service'; // ⭐ IMPORT
 
 type NewEventDTO = {
   name: string;
@@ -30,6 +31,9 @@ export class CrearEventosComponent implements OnInit {
   private auth = inject(AuthService);
   private eventoService = inject(EventoService);
   private router = inject(Router);
+  private themeService = inject(ThemeService); // ⭐ INJECT
+  
+  theme = this.themeService.theme; // ⭐ SIGNAL
 
   formSubmitted = false;
   saving = false;
@@ -262,7 +266,6 @@ export class CrearEventosComponent implements OnInit {
       this.newEvent.participants.push(this.me._id);
     }
 
-    // 🆕 parsear lat/lng si el usuario las ha puesto
     let lat: number | undefined;
     let lng: number | undefined;
 
@@ -329,24 +332,8 @@ export class CrearEventosComponent implements OnInit {
     this.showLangMenu = false;
   }
 
-  themeState: 'light' | 'dark' = (localStorage.getItem('theme') as any) || 'light';
-
-  theme() {
-  return this.themeState;
-}
-
-
-  toggleTheme() {
-  this.themeState = this.themeState === 'dark' ? 'light' : 'dark';
-
-  // Guardar preferencia
-  localStorage.setItem('theme', this.themeState);
-
-  // Aplicar al documento
-  if (this.themeState === 'dark') {
-    document.documentElement.classList.add('dark-theme');
-  } else {
-    document.documentElement.classList.remove('dark-theme');
+  // ⭐ SOLO ESTE MÉTODO DE THEME
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
-}
 }
