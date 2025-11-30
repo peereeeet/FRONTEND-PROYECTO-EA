@@ -3,17 +3,54 @@
   <div class="stars"></div>
 
   <div class="login-card">
-    <div class="top-controls">
-      <div class="lang-switcher">
+    <div class="lang-switcher">
+      <button
+        type="button"
+        class="lang-toggle"
+        (click)="toggleLangMenu()">
+        <span class="lang-icon">🌐</span>
+        <span class="lang-current">
+          {{
+            currentLang === 'es'
+              ? ('LANG.ES' | translate)
+              : currentLang === 'en'
+              ? ('LANG.EN' | translate)
+              : currentLang === 'cat'
+              ? ('LANG.CAT' | translate)
+              : ('LANG.FR' | translate)
+          }}
+        </span>
+        <span class="lang-arrow">▾</span>
+      </button>
+
+      <div class="lang-dropdown" *ngIf="showLangMenu">
         <button
           type="button"
-          class="lang-toggle"
-          (click)="toggleLangMenu()">
-          <span class="lang-icon">🌐</span>
-          <span class="lang-current">
-            {{ currentLang === 'es' ? ('LANG.ES' | translate) : ('LANG.EN' | translate) }}
-          </span>
-          <span class="lang-arrow">▾</span>
+          class="lang-option"
+          [class.active]="currentLang === 'es'"
+          (click)="selectLanguage('es')">
+          {{ 'LANG.ES' | translate }}
+        </button>
+        <button
+          type="button"
+          class="lang-option"
+          [class.active]="currentLang === 'en'"
+          (click)="selectLanguage('en')">
+          {{ 'LANG.EN' | translate }}
+        </button>
+        <button
+          type="button"
+          class="lang-option"
+          [class.active]="currentLang === 'cat'"
+          (click)="selectLanguage('cat')">
+          {{ 'LANG.CAT' | translate }}
+        </button>
+        <button
+          type="button"
+          class="lang-option"
+          [class.active]="currentLang === 'fr'"
+          (click)="selectLanguage('fr')">
+          {{ 'LANG.FR' | translate }}
         </button>
 
         <div class="lang-dropdown" *ngIf="showLangMenu">

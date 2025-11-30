@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +10,11 @@ import { ValoracionService } from '../../services/valoracion.service';
 import { Valoracion } from '../../models/valoracion.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
+import { SocketService } from '../../services/socket.service';
+import { UserService } from '../../services/user.service';
+import { EventChatMessage, User } from '../../models/user.model';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-mis-eventos',
@@ -27,6 +32,7 @@ export class MisEventosComponent implements OnInit {
   loading = false;
   errorMessage = '';
   currentUserId = '';
+  currentUsername = '';
 
   showDeleteModal = false;
   eventoToDelete: Evento | null = null;
@@ -70,7 +76,26 @@ export class MisEventosComponent implements OnInit {
   mapLinkUrl: string | null = null;
   mapSafeUrl: SafeResourceUrl | null = null;
 
-  currentLang: 'es' | 'en' = 'es';
+  private socketService = inject(SocketService);
+  private destroy$ = new Subject<void>();
+  eventChatOpen = signal(false);
+  eventChatEvento = signal<Evento | null>(null);
+  eventChatMessages = signal<EventChatMessage[]>([]);
+  eventChatText = signal('');
+  eventChatLoading = signal(false);
+  eventChatError = signal('');
+
+  shareModalOpen = false;
+  shareEvento: Evento | null = null;
+  shareFriends: User[] = [];
+  shareLoading = false;
+  shareError = '';
+
+  @ViewChild('eventChatMessagesContainer')
+  eventChatMessagesContainer?: ElementRef<HTMLDivElement>;
+
+  currentLang: 'es' | 'en' | 'cat' | 'fr' =
+    (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
   constructor(
@@ -79,9 +104,11 @@ export class MisEventosComponent implements OnInit {
     private ratingsSrv: ValoracionService,
     private router: Router,
     private sanitizer: DomSanitizer,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private userService: UserService
   ) 
   {
+    this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
@@ -90,7 +117,34 @@ export class MisEventosComponent implements OnInit {
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     this.currentUserId = user?._id || '';
+    this.currentUsername = user?.username || '';
+
+    if (this.currentUserId) {
+      this.socketService.connect(this.currentUserId);
+    }
+
+    this.socketService
+      .onEventChatMessage()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(msg => {
+        const ev = this.eventChatEvento();
+        if (!ev || !msg) return;
+        if (msg.eventId !== ev._id) return;
+
+        this.eventChatMessages.update(list => {
+          if (msg._id && list.some(m => m._id === msg._id)) return list;
+          return [...list, msg];
+        });
+
+        this.scrollEventChatToBottom();
+      });
+
     this.loadMisEventos();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadMisEventos(): void {
@@ -147,7 +201,6 @@ export class MisEventosComponent implements OnInit {
     return { dateStr: `${yyyy}-${mm}-${dd}`, timeStr: `${hh}:${mi}` };
   }
 
-  // 🆕 inverso: de inputs a ISO
   private toISOFromInputs(dateStr: string, timeStr: string): string | null {
     if (!dateStr) return null;
     const t = timeStr && timeStr.trim() ? timeStr : '00:00';
@@ -470,16 +523,139 @@ hasLocation(evento: any): boolean {
     localStorage.setItem('lang', lang);
   }
 
-  toggleLangMenu() {
+  toggleLangMenu(): void {
     this.showLangMenu = !this.showLangMenu;
   }
 
-  selectLanguage(lang: 'es' | 'en') {
-    this.changeLanguage(lang);
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
     this.showLangMenu = false;
   }
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+}
+  openEventChat(evento: Evento): void {
+    if (!evento || !evento._id) return;
+    this.eventChatEvento.set(evento);
+    this.eventChatOpen.set(true);
+    this.eventChatLoading.set(true);
+    this.eventChatError.set('');
+    this.eventChatText.set('');
+    this.eventChatMessages.set([]);
+    this.socketService.joinEventChat(evento._id);
+
+    this.userService
+      .getEventChat(evento._id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (msgs) => {
+          const ordered = (msgs || []).slice().sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() -
+              new Date(b.createdAt).getTime()
+          );
+          this.eventChatMessages.set(ordered);
+          this.eventChatLoading.set(false);
+          this.scrollEventChatToBottom();
+        },
+        error: () => {
+          this.eventChatError.set(
+            this.translate.instant('MY_EVENTS.EVENT_CHAT_LOAD_ERROR') ||
+              'Error al cargar el chat.'
+          );
+          this.eventChatMessages.set([]);
+          this.eventChatLoading.set(false);
+        }
+      });
+  }
+
+  closeEventChat(): void {
+    this.eventChatOpen.set(false);
+    this.eventChatEvento.set(null);
+    this.eventChatMessages.set([]);
+    this.eventChatText.set('');
+    this.eventChatError.set('');
+    this.eventChatLoading.set(false);
+  }
+
+  onEventChatInput(ev: Event): void {
+    const value = (ev.target as HTMLInputElement).value;
+    this.eventChatText.set(value);
+  }
+
+  sendEventChat(): void {
+    const text = (this.eventChatText() || '').trim();
+    const evento = this.eventChatEvento();
+    if (!text || !evento?._id || !this.currentUserId) return;
+
+    const user = this.authService.getCurrentUser();
+    const username = user?.username || 'Yo';
+
+    this.eventChatText.set('');
+    this.socketService.sendEventChatMessage(
+      evento._id,
+      this.currentUserId,
+      username,
+      text
+    );
+  }
+
+  private scrollEventChatToBottom(): void {
+    setTimeout(() => {
+      const el = this.eventChatMessagesContainer?.nativeElement;
+      if (!el) return;
+      el.scrollTop = el.scrollHeight;
+    }, 0);
+  }
+
+  openShareModal(evento: Evento): void {
+    this.shareModalOpen = true;
+    this.shareEvento = evento;
+    this.shareFriends = [];
+    this.shareError = '';
+    this.shareLoading = true;
+
+    if (!this.currentUserId) {
+      this.shareError = 'No se ha podido identificar al usuario actual';
+      this.shareLoading = false;
+      return;
+    }
+
+    this.userService.listFriends(this.currentUserId, 1, 100, '').subscribe({
+      next: (page) => {
+        this.shareFriends = page?.data ?? [];
+        this.shareLoading = false;
+      },
+      error: (err) => {
+        console.error('Error cargando amigos para compartir evento', err);
+        this.shareError =
+          err?.error?.message || 'No se pudieron cargar tus amigos';
+        this.shareLoading = false;
+      }
+    });
+  }
+
+  closeShareModal(): void {
+    this.shareModalOpen = false;
+    this.shareEvento = null;
+    this.shareFriends = [];
+    this.shareError = '';
+  }
+
+  sendEventToFriend(friend: User): void {
+    if (!friend?._id || !this.shareEvento?._id) return;
+    const fromId = this.currentUserId;
+    if (!fromId) return;
+
+    const EVENT_INVITE_PREFIX = '__EVENT_INVITE__|';
+    const safeName = (this.shareEvento.name || '').replace(/\|/g, ' ');
+    const text = `${EVENT_INVITE_PREFIX}${this.shareEvento._id}|${safeName}`;
+
+    this.socketService.sendChatMessage(fromId, String(friend._id), text);
+    this.closeShareModal();
   }
 }

@@ -51,15 +51,17 @@ export class PerfilComponent implements OnInit, OnDestroy {
   checkingEmail = signal(false);
   emailTaken    = signal(false);
 
-  currentLang: 'es' | 'en' = 'es';
+  currentLang: 'es' | 'en' | 'cat' | 'fr' =
+  (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
   editOpen = signal(false);
   saving   = signal(false);
   saveError = signal('');
   edit = signal<EditDTO>({ username: '', gmail: '', birthday: '' });
-
-  constructor() {
+  
+  constructor(private translate: TranslateService) {
+    this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
@@ -188,7 +190,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.saveError.set('');
     this.editOpen.set(true);
   }
-  
   closeEdit() { 
     this.editOpen.set(false); 
   }
@@ -363,12 +364,14 @@ export class PerfilComponent implements OnInit, OnDestroy {
     localStorage.setItem('lang', lang);
   }
 
-  toggleLangMenu() {
+  toggleLangMenu(): void {
     this.showLangMenu = !this.showLangMenu;
   }
 
-  selectLanguage(lang: 'es' | 'en') {
-    this.changeLanguage(lang);
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
     this.showLangMenu = false;
   }
 

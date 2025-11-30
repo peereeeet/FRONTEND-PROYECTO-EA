@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subject, interval, Subscription, fromEvent } from 'rxjs';
-import { switchMap, takeUntil } from 'rxjs/operators';
+import { Subject, Subscription, fromEvent } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
@@ -11,6 +11,8 @@ import { Evento } from '../../models/evento.model';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
+import { SocketService } from '../../services/socket.service';
+import { ChatMessage } from '../../models/user.model';
 
 type FriendLike = User;
 
@@ -35,6 +37,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private themeService = inject(ThemeService);
     theme = this.themeService.theme;
+  private socketService = inject(SocketService);
+  private readonly EVENT_INVITE_PREFIX = '__EVENT_INVITE__|';
+  @ViewChild('chatMessagesContainer') chatMessagesContainer?: ElementRef<HTMLDivElement>;
 
   loading = signal(false);
   errorMsg = signal('');
@@ -55,6 +60,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   requestsList = signal<User[]>([]);
   sentRequests = signal<any[]>([]);
 
+  private socketsInitialized = false;
+
   eventStats = signal<EventStats>({
     eventosCreados: 0,
     eventosInscritos: 0,
@@ -65,14 +72,23 @@ export class MenuComponent implements OnInit, OnDestroy {
   private visibilitySub?: Subscription;
   private focusSub?: Subscription;
   private friendsPollSub?: Subscription;
+  newFriendRequests = signal(0);
 
   fPage: number = 1;
   fPageSize: number = 3;
 
-  currentLang: 'es' | 'en' = 'es';
+  currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
 
+  chatOpen = signal(false);
+  chatFriend = signal<any | null>(null);
+  chatMessages = signal<ChatMessage[]>([]);
+  chatLoading = signal(false);
+  chatError = signal('');
+  chatText = signal('');
+  private chatSocketsInitialized = false;
+  eventInviteMembership: Record<string, boolean> = {};
 
   get mTotalPages(): number {
     const n = this.filteredUsers().length;
@@ -97,6 +113,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   constructor(private translate: TranslateService) {
+    this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
@@ -122,18 +139,9 @@ export class MenuComponent implements OnInit, OnDestroy {
           }
         });
 
-        this.userService.heartbeat(myId).subscribe({
-          next: hb => this.me.set({ ...(this.me() as User), isOnline: !!hb.online }),
-          error: () => {}
-        });
-
-        interval(30000)
-          .pipe(takeUntil(this.destroy$), switchMap(() => this.userService.heartbeat(myId)))
-          .subscribe({
-            next: hb => this.me.set({ ...(this.me() as User), isOnline: !!hb.online }),
-            error: () => {}
-          });
-
+        this.socketService.connect(myId);
+        this.initFriendOnlineListeners(myId);
+        this.initChatListener(myId);
         this.cargarAmigos(myId);
         this.cargarEstadisticasEventos(myId);
 
@@ -151,13 +159,18 @@ export class MenuComponent implements OnInit, OnDestroy {
           .subscribe(() => {
             this.cargarAmigos(myId);
             this.cargarEstadisticasEventos(myId);
-          });
+        });
 
-        this.friendsPollSub = interval(60000)
+        this.socketService
+          .onFriendRequestReceived()
           .pipe(takeUntil(this.destroy$))
-          .subscribe(() => {
-            this.cargarAmigos(myId);
-            this.cargarEstadisticasEventos(myId);
+          .subscribe((payload) => {
+            console.log('Nueva solicitud de amistad recibida vía WS', payload);
+            this.newFriendRequests.update(v => v + 1);
+
+            if (this.showRequestsModal()) {
+              this.refreshRequests();
+            }
           });
       });
 
@@ -177,6 +190,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.visibilitySub?.unsubscribe();
     this.focusSub?.unsubscribe();
     this.friendsPollSub?.unsubscribe();
+    this.socketService.disconnect();
   }
 
   private cargarEstadisticasEventos(userId: string): void {
@@ -449,6 +463,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.userService.getFriendRequests(String(me._id)).subscribe({
       next: (list) => {
         this.requestsList?.set(list ?? []);
+        this.newFriendRequests.set(list?.length ?? 0);
         this.requestsLoading?.set(false);
       },
       error: (err) => {
@@ -507,6 +522,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     const myId = this.getId(meUser);
     if (!myId) return;
     this.cargarAmigos(myId);
+    this.refreshRequests(); 
   }
 
   acceptRequest(userId: string): void {
@@ -523,6 +539,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.requestsList.set(
             this.requestsList().filter((u) => this.getId(u) !== userId)
           );
+          this.newFriendRequests.set(this.requestsList().length);
           this.cargarAmigos(myId);
         },
         error: () => this.requestsError.set('Error al aceptar la solicitud'),
@@ -543,6 +560,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.requestsList.set(
             this.requestsList().filter((u) => this.getId(u) !== userId)
           );
+          this.newFriendRequests.set(this.requestsList().length);
         },
         error: () => this.requestsError.set('Error al rechazar la solicitud'),
       });
@@ -598,12 +616,14 @@ export class MenuComponent implements OnInit, OnDestroy {
     localStorage.setItem('lang', lang);
   }
 
-  toggleLangMenu() {
+  toggleLangMenu(): void {
     this.showLangMenu = !this.showLangMenu;
   }
 
-  selectLanguage(lang: 'es' | 'en') {
-    this.changeLanguage(lang);
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
     this.showLangMenu = false;
   }
   toggleTheme() {
@@ -613,3 +633,197 @@ export class MenuComponent implements OnInit, OnDestroy {
 }
 
 
+
+  private initFriendOnlineListeners(myId: string): void {
+    if (this.socketsInitialized) return;
+    this.socketsInitialized = true;
+
+    this.socketService
+      .onUserOnline()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ userId }) => {
+        if (userId === myId) {
+          const me = this.me();
+          if (me) {
+            this.me.set({ ...me, isOnline: true });
+          }
+        }
+
+        this.friends.update(list =>
+          list.map(f =>
+            f._id === userId
+              ? { ...f, isOnline: true }
+              : f
+          )
+        );
+      });
+
+    this.socketService
+      .onUserOffline()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ userId }) => {
+        if (userId === myId) {
+          const me = this.me();
+          if (me) {
+            this.me.set({ ...me, isOnline: false });
+          }
+        }
+        this.friends.update(list =>
+          list.map(f =>
+            f._id === userId
+              ? { ...f, isOnline: false }
+              : f
+        )
+      );
+    });
+  }
+
+  private initChatListener(myId: string): void {
+    if (this.chatSocketsInitialized) return;
+    this.chatSocketsInitialized = true;
+
+    this.socketService
+      .onChatMessage()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((msg) => {
+        const me = this.me();
+        const friend = this.chatFriend();
+        if (!me || !friend) return;
+
+        const pair = [me._id, friend._id];
+        if (pair.includes(msg.from) && pair.includes(msg.to)) {
+          this.chatMessages.update(list => [...list, msg]);
+          this.scrollChatToBottom();
+        }
+      });
+  }
+
+  openChat(friend: any): void {
+    const me = this.me();
+    if (!me || !friend || !friend._id || !me._id) return;
+
+    this.chatFriend.set(friend);
+    this.chatOpen.set(true);
+    this.chatLoading.set(true);
+    this.chatError.set('');
+    this.chatMessages.set([]);
+
+    this.socketService.joinChat(me._id, friend._id);
+
+    this.userService.getChatWithFriend(me._id, friend._id).subscribe({
+      next: (messages) => {
+        this.chatMessages.set(messages || []);
+        this.chatLoading.set(false);
+        this.scrollChatToBottom();
+      },
+      error: (err) => {
+        console.error('Error al cargar chat', err);
+        this.chatError.set('No se pudo cargar la conversación');
+        this.chatLoading.set(false);
+      }
+    });
+  }
+
+  closeChat(): void {
+    this.chatOpen.set(false);
+    this.chatFriend.set(null);
+    this.chatMessages.set([]);
+    this.chatText.set('');
+  }
+
+  onChatInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.chatText.set(value);
+  }
+
+  sendChat(): void {
+    const text = this.chatText().trim();
+    if (!text) return;
+
+    const me = this.me();
+    const friend = this.chatFriend();
+    if (!me || !friend || !me._id || !friend._id) return;
+
+    this.chatText.set('');
+
+    this.socketService.sendChatMessage(me._id, friend._id, text);
+  }
+
+  isEventInvite(msg: ChatMessage): boolean {
+    return typeof msg?.text === 'string' &&
+          msg.text.startsWith(this.EVENT_INVITE_PREFIX);
+  }
+
+  getEventInviteData(msg: ChatMessage): { id: string; name: string } {
+    if (!this.isEventInvite(msg)) {
+      return { id: '', name: msg?.text || '' };
+    }
+    const payload = msg.text.substring(this.EVENT_INVITE_PREFIX.length);
+    const [id, name] = payload.split('|');
+    return {
+      id: id || '',
+      name: name || ''
+    };
+  }
+
+  isCurrentUserInInvitedEvent(msg: ChatMessage): boolean {
+    const data = this.getEventInviteData(msg);
+    const eventId = data.id;
+    const meUser = this.me();
+
+    if (!eventId || !meUser?._id) {
+      return false;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(this.eventInviteMembership, eventId)) {
+      return this.eventInviteMembership[eventId];
+    }
+
+    this.eventoService.getEventoById(eventId).subscribe({
+      next: (evento) => {
+        const myId = String(meUser._id);
+        const participantes = (evento?.participantes || []).map((p: any) =>
+          typeof p === 'string' ? p : String(p._id)
+        );
+        const joined = participantes.includes(myId);
+        this.eventInviteMembership[eventId] = joined;
+      },
+      error: (err) => {
+        console.error('Error comprobando si estoy en el evento invitado', err);
+        this.eventInviteMembership[eventId] = false;
+      }
+    });
+
+    return false;
+  }
+
+  joinFromInvite(msg: ChatMessage): void {
+    const data = this.getEventInviteData(msg);
+    if (!data.id) return;
+
+    this.eventoService.joinEvento(data.id).subscribe({
+      next: () => {
+        this.eventInviteMembership[data.id] = true;
+
+        const meUser = this.me();
+        if (meUser) {
+          const myId = this.getId(meUser);
+          if (myId) {
+            this.cargarEstadisticasEventos(myId);
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Error al unirse al evento desde invitación', err);
+      }
+    });
+  }
+
+  private scrollChatToBottom(): void {
+    setTimeout(() => {
+      const el = this.chatMessagesContainer?.nativeElement;
+      if (!el) return;
+      el.scrollTop = el.scrollHeight;
+    }, 0);
+  }
+}

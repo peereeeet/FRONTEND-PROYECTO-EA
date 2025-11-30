@@ -63,7 +63,9 @@
   "LANG": {
     "SWITCH_LABEL": "Idioma",
     "ES": "Español",
-    "EN": "Inglés"
+    "EN": "Inglés",
+    "CAT": "Catalán",
+    "FR": "Francés"
   },
 
   "STATUS": {
@@ -110,7 +112,7 @@
     "FRIENDS_BUTTON_REQUESTS": "Solicitudes recibidas",
     "FRIENDS_ONLINE": "En línea",
     "FRIENDS_OFFLINE": "Desconectado",
-    "FRIENDS_REMOVE": "Quitar",
+    "FRIENDS_REMOVE": "Eliminar",
     "FRIENDS_EMPTY": "Aún no tienes amigos para mostrar.",
     "FRIENDS_SEARCH_ADD": "Buscar y agregar amigos",
 
@@ -130,13 +132,22 @@
     "REQUESTS_LOADING": "Cargando solicitudes...",
     "REQUESTS_EMPTY": "No tienes solicitudes pendientes 😄",
     "REQUESTS_ACCEPT": "Aceptar",
-    "REQUESTS_REJECT": "Rechazar"
+    "REQUESTS_REJECT": "Rechazar",
+
+    "CHAT_TITLE_PREFIX": "Chat con",
+    "CHAT_LOADING": "Cargando conversación...",
+    "CHAT_EMPTY": "Aún no hay mensajes. ¡Escribe el primero!",
+    "CHAT_PLACEHOLDER": "Escribe un mensaje...",
+
+    "CHAT_EVENT_INVITE_TITLE": "Invitación a un evento",
+    "CHAT_EVENT_INVITE_JOIN": "Unirse",
+    "CHAT_EVENT_INVITE_ALREADY_IN": "Ya estás dentro"
   },
 
   "FRIENDS": {
     "STATE_ONLINE": "En línea",
     "STATE_OFFLINE": "Desconectado",
-    "REMOVE": "Quitar",
+    "REMOVE": "Eliminar",
     "EMPTY_LIST": "Aún no tienes amigos para mostrar."
   },
 
@@ -296,7 +307,19 @@
     "LEAVE_MODAL_TITLE": "Salir del evento",
     "LEAVE_MODAL_TEXT": "¿Seguro que quieres salir de <strong>{{name}}</strong>?",
     "LEAVE_MODAL_CANCEL": "Cancelar",
-    "LEAVE_MODAL_CONFIRM": "Salir"
+    "LEAVE_MODAL_CONFIRM": "Salir",
+
+    "BUTTON_SHARE_EVENT": "Enviar a un amigo",
+    "SHARE_EVENT_TITLE": "Compartir evento",
+    "SHARE_EVENT_LOADING": "Cargando amigos...",
+    "SHARE_EVENT_NO_FRIENDS": "No tienes amigos para enviar este evento.",
+    "SHARE_EVENT_SEND": "Enviar",
+
+    "BUTTON_EVENT_CHAT": "Chat del evento",
+    "EVENT_CHAT_TITLE": "Chat del evento",
+    "EVENT_CHAT_LOADING": "Cargando mensajes del evento...",
+    "EVENT_CHAT_EMPTY": "Todavía no hay mensajes en este evento.",
+    "EVENT_CHAT_PLACEHOLDER": "Escribe un mensaje para este evento..."
   },
 
   "RATINGS": {
