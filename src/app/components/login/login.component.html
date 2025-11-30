@@ -52,23 +52,6 @@
           (click)="selectLanguage('fr')">
           {{ 'LANG.FR' | translate }}
         </button>
-
-        <div class="lang-dropdown" *ngIf="showLangMenu">
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'es'"
-            (click)="selectLanguage('es')">
-            🇪🇸 {{ 'LANG.ES' | translate }}
-          </button>
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'en'"
-            (click)="selectLanguage('en')">
-            🇬🇧 {{ 'LANG.EN' | translate }}
-          </button>
-        </div>
       </div>
 
       <button class="theme-toggle-btn" (click)="toggleTheme()">

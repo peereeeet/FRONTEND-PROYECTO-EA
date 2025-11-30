@@ -9,12 +9,12 @@ import { Evento } from '../../models/evento.model';
 import { ValoracionService } from '../../services/valoracion.service';
 import { Valoracion } from '../../models/valoracion.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ThemeService } from '../../services/theme.service';
 import { SocketService } from '../../services/socket.service';
 import { UserService } from '../../services/user.service';
 import { EventChatMessage, User } from '../../models/user.model';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-mis-eventos',
@@ -534,10 +534,6 @@ hasLocation(evento: any): boolean {
     this.showLangMenu = false;
   }
 
-  toggleTheme(): void {
-    this.themeService.toggleTheme();
-  }
-}
   openEventChat(evento: Evento): void {
     if (!evento || !evento._id) return;
     this.eventChatEvento.set(evento);
@@ -657,5 +653,9 @@ hasLocation(evento: any): boolean {
 
     this.socketService.sendChatMessage(fromId, String(friend._id), text);
     this.closeShareModal();
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }

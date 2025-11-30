@@ -24,7 +24,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private router = inject(Router);
   private themeService = inject(ThemeService);
-  private translate = inject(TranslateService);
   
   theme = this.themeService.theme;
 

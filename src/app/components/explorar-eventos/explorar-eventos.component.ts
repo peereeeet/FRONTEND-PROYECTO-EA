@@ -107,6 +107,7 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     });
   }
 
+
   private getMapBounds() {
     if (!this.map) return null;
     const b = this.map.getBounds();
