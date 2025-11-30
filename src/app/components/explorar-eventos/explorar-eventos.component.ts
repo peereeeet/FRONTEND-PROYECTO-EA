@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import * as maplibregl from 'maplibre-gl';
@@ -6,6 +6,7 @@ import { EventoService } from '../../services/evento.service';
 import { AuthService } from '../../services/auth.service';
 import { Evento } from '../../models/evento.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-explorar-eventos',
@@ -15,6 +16,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   styleUrls: ['./explorar-eventos.component.css']
 })
 export class ExplorarEventosComponent implements OnInit, AfterViewInit {
+  private themeService = inject(ThemeService);
+  theme = this.themeService.theme;
+
   allEventos: Evento[] = [];
   eventosFiltrados: Evento[] = [];
   eventos: Evento[] = [];
@@ -102,7 +106,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
       this.actualizarListaSegunMapa();
     });
   }
-
 
   private getMapBounds() {
     if (!this.map) return null;
@@ -470,5 +473,9 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
     localStorage.setItem('lang', lang);
     this.translate.use(lang);
     this.showLangMenu = false;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }

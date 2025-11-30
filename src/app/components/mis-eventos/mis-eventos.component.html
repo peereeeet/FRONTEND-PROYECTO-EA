@@ -54,6 +54,10 @@
             {{ 'LANG.FR' | translate }}
           </button>
         </div>
+        
+        <button class="theme-toggle" (click)="toggleTheme()">
+          {{ theme() === 'dark' ? '☀️' : '🌙' }}
+        </button>
       </div>
       <h1 class="app-bar__title">{{ 'MY_EVENTS.TITLE' | translate }}</h1>
     </div>

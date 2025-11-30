@@ -1,39 +1,35 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../services/user.service';
-import { User } from '../../models/user.model';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-registrar',
-  standalone: true,            
-  imports: [CommonModule, FormsModule, TranslateModule], 
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   templateUrl: './registrar.component.html',
   styleUrls: ['./registrar.component.css']
 })
 export class RegistrarComponent {
-  nuevoUsuario: User = {
-    username: '',
-    gmail: '',
-    password: '',
-    birthday: new Date(),
-  };
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private translate = inject(TranslateService);
+  private themeService = inject(ThemeService);
+  
+  theme = this.themeService.theme;
 
-  confirmarPassword = '';
-  birthdayStr = '';
-  maxDate: string;
-  formSubmitted = false;
+  username = '';
+  email = '';
+  birthday = '';
+  password = '';
+  showPassword = false;
+  loading = false;
   errorMessage = '';
-  isSubmitting = false;
-  emailExists: boolean = false;
-  isCheckingEmail: boolean = false;
-  isCheckingUsername = false;
-  usernameExists = false;
-
-  showPassword: boolean = false;
-  showConfirmPassword: boolean = false;
+  
+  errors: any = {};
 
   currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
@@ -47,80 +43,61 @@ export class RegistrarComponent {
     this.translate.use(savedLang);
   }
 
-  isFutureDate(): boolean {
-    if (!this.birthdayStr) return false;
-    const selected = new Date(this.birthdayStr);
-    const today = new Date();
-    return selected > today;
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
-  onSubmit(form: any) {
-    this.formSubmitted = true;
+  onSubmit(): void {
+    this.errors = {};
     this.errorMessage = '';
-    this.emailExists = false;
 
-    if (form.invalid || this.isFutureDate() || this.nuevoUsuario.password !== this.confirmarPassword) {
-      this.errorMessage = 'Por favor, revisa los campos del formulario.';
+    // Validaciones
+    if (!this.username || this.username.trim().length < 3) {
+      this.errors.username = 'El nombre de usuario debe tener al menos 3 caracteres';
       return;
     }
 
-    this.isCheckingEmail = true;
-    this.userService.checkEmailExists(this.nuevoUsuario.gmail).subscribe({
-      next: (res) => {
-        this.isCheckingEmail = false;
-        if (res.exists) {
-          this.emailExists = true;
-          this.errorMessage = 'Este correo ya está registrado.';
-          return;
-        }
-        this.isCheckingUsername = true;
-    this.userService.checkUsernameExists(this.nuevoUsuario.username).subscribe({
-      next: (res) => {
-        this.isCheckingUsername = false;
-        this.usernameExists = res.exists;
+    if (!this.email || !this.isValidEmail(this.email)) {
+      this.errors.email = 'Introduce un email válido';
+      return;
+    }
+
+    if (!this.password || this.password.length < 6) {
+      this.errors.password = 'La contraseña debe tener al menos 6 caracteres';
+      return;
+    }
+
+    this.loading = true;
+
+    this.authService.register({
+      username: this.username.trim(),
+      gmail: this.email.trim(),
+      birthday: this.birthday || undefined,
+      password: this.password
+    }).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/login']);
       },
-      error: () => (this.isCheckingUsername = false)
-    });
-
-      this.isSubmitting = true;
-
-      const newUser: User = {
-        username: this.nuevoUsuario.username.trim(),
-        gmail: this.nuevoUsuario.gmail.trim(),
-        password: (this.nuevoUsuario.password?? '').trim(),
-        birthday: new Date(this.birthdayStr),
-      };
-
-      this.userService.addUser(newUser).subscribe({
-        next: () => {
-          this.isSubmitting = false;
-          this.router.navigate(['/login']);
-        },
-        error: (err) => {
-          console.error('Error al registrar usuario', err);
-          this.isSubmitting = false;
-          this.errorMessage =
-            err?.error?.message ||
-            'Ha ocurrido un error al registrar el usuario. Inténtalo nuevamente.';
-        }
-      });
-    },
-      error: () => {
-        this.isCheckingEmail = false;
-        this.errorMessage = 'Error al verificar el correo.';
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err?.error?.message || 'Error al registrar usuario';
       }
     });
   }
 
-  togglePassword() {
-    this.showPassword = !this.showPassword;
+  private isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  toggleConfirmPassword() {
-    this.showConfirmPassword = !this.showConfirmPassword;
+  changeLanguage(lang: 'es' | 'en') {
+    if (this.currentLang === lang) return;
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
   }
 
-  toggleLangMenu(): void {
+  toggleLangMenu() {
     this.showLangMenu = !this.showLangMenu;
   }
 
@@ -131,7 +108,7 @@ export class RegistrarComponent {
     this.showLangMenu = false;
   }
 
-  goToLogin() {
-    this.router.navigate(['/login']);
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }

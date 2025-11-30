@@ -8,6 +8,7 @@ import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 
 type EditDTO = { username: string; gmail: string; birthday: string; password?: string };
 
@@ -22,6 +23,10 @@ export class PerfilComponent implements OnInit, OnDestroy {
   private userService = inject(UserService);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private themeService = inject(ThemeService);
+  private translate = inject(TranslateService);
+  
+  theme = this.themeService.theme;
 
   me = signal<User | null>(null);
   eventos = signal<any[]>([]);
@@ -50,6 +55,11 @@ export class PerfilComponent implements OnInit, OnDestroy {
   (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
+  editOpen = signal(false);
+  saving   = signal(false);
+  saveError = signal('');
+  edit = signal<EditDTO>({ username: '', gmail: '', birthday: '' });
+  
   constructor(private translate: TranslateService) {
     this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
@@ -60,11 +70,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
   private isValidEmail(v: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   }
-
-  editOpen = signal(false);
-  saving   = signal(false);
-  saveError = signal('');
-  edit = signal<EditDTO>({ username: '', gmail: '', birthday: '' });
 
   private getId(u: any): string {
     return String(u?._id ?? u?.id ?? '');
@@ -368,5 +373,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
     localStorage.setItem('lang', lang);
     this.translate.use(lang);
     this.showLangMenu = false;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }

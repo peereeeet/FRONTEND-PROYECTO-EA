@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
 import { Evento } from '../../models/evento.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service'; // ⭐ IMPORT
 
 type NewEventDTO = {
   name: string;
@@ -30,6 +31,9 @@ export class CrearEventosComponent implements OnInit {
   private auth = inject(AuthService);
   private eventoService = inject(EventoService);
   private router = inject(Router);
+  private themeService = inject(ThemeService); // ⭐ INJECT
+  
+  theme = this.themeService.theme; // ⭐ SIGNAL
 
   formSubmitted = false;
   saving = false;
@@ -264,7 +268,6 @@ export class CrearEventosComponent implements OnInit {
       this.newEvent.participants.push(this.me._id);
     }
 
-    // 🆕 parsear lat/lng si el usuario las ha puesto
     let lat: number | undefined;
     let lng: number | undefined;
 
@@ -331,5 +334,9 @@ export class CrearEventosComponent implements OnInit {
     localStorage.setItem('lang', lang);
     this.translate.use(lang);
     this.showLangMenu = false;
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }

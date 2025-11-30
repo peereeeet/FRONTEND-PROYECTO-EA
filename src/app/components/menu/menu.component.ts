@@ -10,6 +10,7 @@ import { User } from '../../models/user.model';
 import { Evento } from '../../models/evento.model';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 import { SocketService } from '../../services/socket.service';
 import { ChatMessage } from '../../models/user.model';
 
@@ -34,6 +35,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private eventoService = inject(EventoService);
   private router = inject(Router);
+  private themeService = inject(ThemeService);
+    theme = this.themeService.theme;
   private socketService = inject(SocketService);
   private readonly EVENT_INVITE_PREFIX = '__EVENT_INVITE__|';
   @ViewChild('chatMessagesContainer') chatMessagesContainer?: ElementRef<HTMLDivElement>;
@@ -76,6 +79,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
+
 
   chatOpen = signal(false);
   chatFriend = signal<any | null>(null);
@@ -622,6 +626,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.translate.use(lang);
     this.showLangMenu = false;
   }
+  toggleTheme() {
+        this.themeService.toggleTheme();
+    }
+
+}
+
+
 
   private initFriendOnlineListeners(myId: string): void {
     if (this.socketsInitialized) return;

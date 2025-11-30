@@ -52,7 +52,28 @@
           (click)="selectLanguage('fr')">
           {{ 'LANG.FR' | translate }}
         </button>
+
+        <div class="lang-dropdown" *ngIf="showLangMenu">
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'es'"
+            (click)="selectLanguage('es')">
+            🇪🇸 {{ 'LANG.ES' | translate }}
+          </button>
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'en'"
+            (click)="selectLanguage('en')">
+            🇬🇧 {{ 'LANG.EN' | translate }}
+          </button>
+        </div>
       </div>
+
+      <button class="theme-toggle-btn" (click)="toggleTheme()">
+        {{ theme() === 'dark' ? '☀️' : '🌙' }}
+      </button>
     </div>
 
     <div class="login-header">
@@ -141,7 +162,7 @@
     </form>
 
     <div class="admin-section">
-      <p style="color: #666; margin-bottom: 10px; font-size: 13px;">
+      <p style="color: var(--text-secondary); margin-bottom: 10px; font-size: 13px;">
         {{ 'LOGIN.NO_ACCOUNT' | translate }}
       </p>
       <button type="button" class="admin-button" (click)="goToRegister()">
@@ -150,6 +171,7 @@
     </div>
   </div>
 
+  <!-- Modal Forgot Password -->
   <div class="modal-overlay" *ngIf="forgotOpen" (click)="closeForgot()">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
@@ -191,6 +213,7 @@
     </div>
   </div>
 
+  <!-- Modal Direct Reset -->
   <div class="modal-overlay" *ngIf="directOpen" (click)="closeDirect()">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header">

@@ -9,6 +9,7 @@ import { Evento } from '../../models/evento.model';
 import { ValoracionService } from '../../services/valoracion.service';
 import { Valoracion } from '../../models/valoracion.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
 import { SocketService } from '../../services/socket.service';
 import { UserService } from '../../services/user.service';
 import { EventChatMessage, User } from '../../models/user.model';
@@ -23,6 +24,9 @@ import { Subject } from 'rxjs';
   styleUrls: ['./mis-eventos.component.css']
 })
 export class MisEventosComponent implements OnInit {
+  private themeService = inject(ThemeService);
+  theme = this.themeService.theme;
+
   eventosCreados: Evento[] = [];
   eventosInscritos: Evento[] = [];
   loading = false;
@@ -530,6 +534,10 @@ hasLocation(evento: any): boolean {
     this.showLangMenu = false;
   }
 
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+}
   openEventChat(evento: Evento): void {
     if (!evento || !evento._id) return;
     this.eventChatEvento.set(evento);

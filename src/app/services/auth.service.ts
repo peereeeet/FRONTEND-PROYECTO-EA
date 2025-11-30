@@ -20,6 +20,13 @@ export interface LoginResponse {
   refreshToken: string;
 }
 
+export interface RegisterData {
+  username: string;
+  gmail: string;
+  birthday?: string;
+  password: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -50,6 +57,11 @@ export class AuthService {
         }
       })
     );
+  }
+
+  // ⭐ NUEVO MÉTODO DE REGISTRO
+  register(userData: RegisterData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/user/auth/register`, userData);
   }
 
   logout(): void {
@@ -89,6 +101,7 @@ export class AuthService {
         return false;
       }
   }
+  
   getToken(): string | null {
     return localStorage.getItem('token');
   }
@@ -106,10 +119,12 @@ export class AuthService {
     return null;
   }
   }
+  
   // Método para crear admin (solo desarrollo)
   createAdminUser(): Observable<any> {
     return this.http.post(`${this.apiUrl}/user/auth/create-admin`, {});
   }
+  
   refreshToken(): Observable<any> {
     const refreshToken = localStorage.getItem('refreshToken');
     const currentUser = localStorage.getItem('currentUser');
