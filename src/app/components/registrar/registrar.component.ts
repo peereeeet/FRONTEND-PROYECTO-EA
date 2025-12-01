@@ -102,7 +102,6 @@ export class RegistrarComponent {
           this.router.navigate(['/login']);
         },
         error: (err) => {
-          console.error('Error al registrar usuario', err);
           this.isSubmitting = false;
           this.errorMessage =
             err?.error?.message ||

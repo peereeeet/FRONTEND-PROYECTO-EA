@@ -121,6 +121,10 @@ export class MisEventosComponent implements OnInit {
 
     if (this.currentUserId) {
       this.socketService.connect(this.currentUserId);
+      this.userService.heartbeat(this.currentUserId).subscribe({
+        next: () => {},
+        error: (err) => console.error('Error en heartbeat desde mis-eventos', err)
+      });
     }
 
     this.socketService
@@ -167,7 +171,6 @@ export class MisEventosComponent implements OnInit {
       },
       error: (err) => {
         this.errorMessage = 'Error al cargar eventos';
-        console.error(err);
         this.loading = false;
       }
     });
@@ -450,7 +453,6 @@ confirmEdit(): void {
       this.closeEditModal();
     },
     error: (err) => {
-      console.error('Error al actualizar evento', err);
       this.errorMessage = err?.error?.message || 'No se pudo actualizar el evento.';
     }
   });
@@ -627,7 +629,6 @@ hasLocation(evento: any): boolean {
         this.shareLoading = false;
       },
       error: (err) => {
-        console.error('Error cargando amigos para compartir evento', err);
         this.shareError =
           err?.error?.message || 'No se pudieron cargar tus amigos';
         this.shareLoading = false;

@@ -129,6 +129,16 @@ export class MenuComponent implements OnInit, OnDestroy {
 
         const myId = this.getId(u);
         if (!myId) return;
+
+        this.userService.setOnline(myId).subscribe({
+          next: (res) => {
+            this.me.update(m => m ? ({ ...(m as any), isOnline: res.online }) : m);
+          },
+          error: (err) => {
+            console.error('Error marcando usuario online al entrar en menú', err);
+          }
+        });
+
         this.userService.getUserDetail(myId).subscribe({
           next: (fresh) => {
             const isOnlineFresh = (fresh as any).online ?? (fresh as any).isOnline ?? false;
@@ -145,17 +155,33 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.cargarEstadisticasEventos(myId);
 
         this.visibilitySub = fromEvent(document, 'visibilitychange')
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(() => {
-            if (document.visibilityState === 'visible') {
-              this.cargarAmigos(myId);
-              this.cargarEstadisticasEventos(myId);
-            }
-          });
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => {
+          if (document.visibilityState === 'visible') {
+            this.userService.heartbeat(myId).subscribe({
+              next: (res) => {
+                this.me.update(m => m ? ({ ...(m as any), isOnline: res.online }) : m);
+              },
+              error: (err) => {
+                console.error('Error en heartbeat (visibility)', err);
+              }
+            });
+            this.cargarAmigos(myId);
+            this.cargarEstadisticasEventos(myId);
+          }
+        });
 
         this.focusSub = fromEvent(window, 'focus')
           .pipe(takeUntil(this.destroy$))
           .subscribe(() => {
+            this.userService.heartbeat(myId).subscribe({
+              next: (res) => {
+                this.me.update(m => m ? ({ ...(m as any), isOnline: res.online }) : m);
+              },
+              error: (err) => {
+                console.error('Error en heartbeat (focus)', err);
+              }
+            });
             this.cargarAmigos(myId);
             this.cargarEstadisticasEventos(myId);
         });
@@ -164,9 +190,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           .onFriendRequestReceived()
           .pipe(takeUntil(this.destroy$))
           .subscribe((payload) => {
-            console.log('Nueva solicitud de amistad recibida vía WS', payload);
             this.newFriendRequests.update(v => v + 1);
-
             if (this.showRequestsModal()) {
               this.refreshRequests();
             }
@@ -225,7 +249,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.loadingEvents.set(false);
       },
       error: (err) => {
-        console.error('Error cargando estadísticas de eventos:', err);
         this.loadingEvents.set(false);
       }
     });
@@ -709,7 +732,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.scrollChatToBottom();
       },
       error: (err) => {
-        console.error('Error al cargar chat', err);
         this.chatError.set('No se pudo cargar la conversación');
         this.chatLoading.set(false);
       }
@@ -781,7 +803,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.eventInviteMembership[eventId] = joined;
       },
       error: (err) => {
-        console.error('Error comprobando si estoy en el evento invitado', err);
         this.eventInviteMembership[eventId] = false;
       }
     });
@@ -805,9 +826,6 @@ export class MenuComponent implements OnInit, OnDestroy {
           }
         }
       },
-      error: (err) => {
-        console.error('Error al unirse al evento desde invitación', err);
-      }
     });
   }
 
