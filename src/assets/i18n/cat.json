@@ -29,7 +29,9 @@
     "DIRECT_CANCEL": "Cancel·lar",
     "DIRECT_CONFIRM": "Confirmar",
     "DIRECT_SAVING": "Desant…",
-    "ERROR_GENERIC": "Error en iniciar sessió. Verifica les credencials."
+    "ERROR_GENERIC": "Error en iniciar sessió. Verifica les credencials.",
+    "OR": "o continua amb",
+    "ERROR_GOOGLE": "Error en iniciar sessió amb Google."
   },
 
   "REGISTER": {

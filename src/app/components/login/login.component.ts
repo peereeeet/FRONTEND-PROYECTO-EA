@@ -7,6 +7,9 @@ import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
+import { environment } from '../../environments/environment';
+
+declare const google: any;
 
 @Component({
   selector: 'app-login',
@@ -85,6 +88,89 @@ export class LoginComponent {
     }
   }
 
+  ngAfterViewInit(): void {
+    this.initGoogleSignIn();
+  }
+
+  private initGoogleSignIn(): void {
+    const render = () => {
+      const g = (window as any).google;
+      if (!g || !g.accounts || !g.accounts.id) {
+        return false;
+      }
+
+      const locale = this.mapLocale(this.currentLang);
+      g.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        callback: (response: any) => this.handleGoogleCredentialResponse(response),
+        context: 'signin',
+        locale // 👈 aquí va el idioma
+      });
+
+      const btn = document.getElementById('googleSignInDiv');
+      if (btn) {
+        btn.innerHTML = '';
+        g.accounts.id.renderButton(btn, {
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+          shape: 'pill',
+        });
+      }
+      return true;
+    };
+
+    if (render()) return;
+    let attempts = 0;
+    const interval = setInterval(() => {
+      attempts++;
+      if (render() || attempts > 20) {
+        clearInterval(interval);
+      }
+    }, 300);
+  }
+
+  private mapLocale(lang: string): string {
+    switch (lang) {
+      case 'es': return 'es';
+      case 'en': return 'en';
+      case 'cat': return 'ca';
+      case 'fr': return 'fr';
+      default:   return 'en';
+    }
+  }
+
+  private handleGoogleCredentialResponse(res: any): void {
+    const credential = res?.credential;
+    if (!credential) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.authService.loginWithGoogle(credential)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: (response) => {
+          const role = response.user.rol;
+          if (role === 'admin') {
+            this.router.navigate(['/home']);
+          } else if (role === 'usuario') {
+            this.router.navigate(['/menu']);
+          } else {
+            this.router.navigate(['/home']);
+          }
+        },
+        error: (error) => {
+          this.errorMessage =
+            error.error?.message ||
+            this.translate.instant('LOGIN.ERROR_GOOGLE') ||
+            'Error al iniciar sesión con Google';
+        },
+      });
+  }
+
   toggleTheme(): void {
     this.themeService.toggleTheme();
   }
@@ -117,7 +203,6 @@ export class LoginComponent {
             }
           },
           error: (error) => {
-            console.error('Error en login:', error);
             this.errorMessage =
               error.error?.message ||
               this.translate.instant('LOGIN.ERROR_GENERIC');
@@ -131,7 +216,6 @@ export class LoginComponent {
   createAdmin(): void {
     this.authService.createAdminUser().subscribe({
       next: (response) => {
-        console.log('Admin creado:', response);
         alert('Usuario admin creado exitosamente. Ahora puedes iniciar sesión con usuario: "admin" y contraseña: "admin"');
 
         this.loginForm.patchValue({
@@ -140,7 +224,6 @@ export class LoginComponent {
         });
       },
       error: (error) => {
-        console.error('Error creando admin:', error);
         this.errorMessage = 'Error creando usuario admin';
       }
     });
@@ -220,7 +303,6 @@ export class LoginComponent {
       error: (err) => {
         this.sending = false;
         alert('No se pudo comprobar el usuario.');
-        console.error('checkUserExistsForReset error:', err);
       }
     });
   }
@@ -255,5 +337,8 @@ export class LoginComponent {
     localStorage.setItem('lang', lang);
     this.translate.use(lang);
     this.showLangMenu = false;
+    setTimeout(() => {
+      this.initGoogleSignIn();
+    }, 0);
   }
 }

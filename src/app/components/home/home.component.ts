@@ -34,7 +34,6 @@ export class HomeComponent implements OnInit {
         const totalUsers = res.totalItems ?? res.data.length;
         this.animateCounter('userCount', totalUsers);
       },
-      error: (err) => console.error('Error al contar usuarios:', err)
     });
 
     this.eventoService.getEventos().subscribe({
@@ -42,7 +41,6 @@ export class HomeComponent implements OnInit {
         const totalEvents = res.totalItems ?? res.data.length;
         this.animateCounter('eventCount', totalEvents);
       },
-      error: (err) => console.error('Error al contar eventos:', err)
     });
   }
 

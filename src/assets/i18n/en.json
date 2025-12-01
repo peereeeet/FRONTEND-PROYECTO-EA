@@ -57,7 +57,9 @@
     "BIRTHDAY_FUTURE": "Must be before today.",
     "BUTTON": "Register",
     "BUTTON_LOADING": "Registering...",
-    "BACK_TO_LOGIN": "Back to login"
+    "BACK_TO_LOGIN": "Back to login",
+    "OR": "or continue with",
+    "ERROR_GOOGLE": "Error signing in with Google."
   },
 
   "LANG": {
