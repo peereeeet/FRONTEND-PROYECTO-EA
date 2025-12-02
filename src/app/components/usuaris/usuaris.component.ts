@@ -91,9 +91,6 @@ export class UsuarisComponent implements OnInit {
         this.desplegado = new Array(this.usuarios.length).fill(false);
         this.mostrarPassword = new Array(this.usuarios.length).fill(false);
       },
-      error: (err) => {
-        console.error('Error al cargar usuarios:', err);
-      }
     });
   }
 
@@ -150,7 +147,6 @@ export class UsuarisComponent implements OnInit {
       });
     },
     error: (err) => {
-      console.error('Error al cargar eventos:', err);
     }
   });
 }
@@ -198,7 +194,6 @@ export class UsuarisComponent implements OnInit {
         this.usuarios[index] = res;
       },
       error: (err) => {
-        console.error('Error al cambiar estado del usuario:', err);
         alert('No se pudo cambiar el estado del usuario.');
       }
     });

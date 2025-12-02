@@ -82,7 +82,6 @@ export class EventoComponent implements OnInit {
         this.totalPagesBackend = res.totalPages ?? 1;
       },
       error: (err) => {
-        console.error('Error al cargar eventos:', err);
       }
     });
   }
@@ -107,7 +106,6 @@ export class EventoComponent implements OnInit {
         this.availableUsers = [...this.users];
       },
       error: (err) => {
-        console.error('Error al cargar usuarios:', err);
       }
     });
   }
@@ -195,7 +193,6 @@ export class EventoComponent implements OnInit {
       this.clampEditPages();
     },
     error: (err) => {
-      console.error('Error al cargar evento para edición:', err);
       this.errorMessage = 'No se pudo cargar el evento seleccionado.';
     }
   });

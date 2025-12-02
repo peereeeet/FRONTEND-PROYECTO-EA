@@ -29,7 +29,9 @@
     "DIRECT_CANCEL": "Annuler",
     "DIRECT_CONFIRM": "Confirmer",
     "DIRECT_SAVING": "Enregistrement…",
-    "ERROR_GENERIC": "Erreur lors de la connexion. Vérifiez vos informations."
+    "ERROR_GENERIC": "Erreur lors de la connexion. Vérifiez vos informations.",
+    "OR": "ou continuer avec",
+    "ERROR_GOOGLE": "Erreur lors de la connexion avec Google."
   },
 
   "REGISTER": {

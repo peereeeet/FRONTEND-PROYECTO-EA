@@ -172,7 +172,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
           finalizar();
         },
         error: (err) => {
-          console.error(err);
           this.eventos = [];
           this.allEventos = [];
           this.eventosFiltrados = [];
@@ -234,7 +233,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
           finalizar();
         },
         error: (err) => {
-          console.error(err);
           this.eventos = [];
           this.allEventos = [];
           this.eventosFiltrados = [];
@@ -279,7 +277,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
         this.fetchEventosForCurrentView();
       },
       error: (err) => {
-        console.error(err);
         this.loading = false;
         this.errorMessage = 'Error al cargar eventos.';
       }
@@ -361,7 +358,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
         }
       },
       error: (err) => {
-        console.error(err);
         this.errorMessage = err?.error?.message || 'Error al unirse al evento.';
       }
     });
@@ -384,7 +380,6 @@ export class ExplorarEventosComponent implements OnInit, AfterViewInit {
         }
       },
       error: (err) => {
-        console.error(err);
         this.errorMessage = err?.error?.message || 'Error al salir del evento.';
       }
     });

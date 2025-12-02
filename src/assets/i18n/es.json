@@ -29,7 +29,9 @@
     "DIRECT_CANCEL": "Cancelar",
     "DIRECT_CONFIRM": "Confirmar",
     "DIRECT_SAVING": "Guardando…",
-    "ERROR_GENERIC": "Error al iniciar sesión. Verifica tus credenciales."
+    "ERROR_GENERIC": "Error al iniciar sesión. Verifica tus credenciales.",
+    "OR": "o continúa con",
+    "ERROR_GOOGLE": "Error al iniciar sesión con Google."
   },
 
   "REGISTER": {
