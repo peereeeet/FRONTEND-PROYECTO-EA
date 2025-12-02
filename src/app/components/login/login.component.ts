@@ -7,13 +7,9 @@ import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
-<<<<<<< HEAD
-import { logger } from '../../utils/logger';
-=======
 import { environment } from '../../environments/environment';
 
 declare const google: any;
->>>>>>> develop
 
 @Component({
   selector: 'app-login',
@@ -206,12 +202,7 @@ export class LoginComponent {
               this.router.navigate(['/home']);
             }
           },
-<<<<<<< HEAD
-            error: (error) => {
-              logger.error('Error en login:', error);
-=======
           error: (error) => {
->>>>>>> develop
             this.errorMessage =
               error.error?.message ||
               this.translate.instant('LOGIN.ERROR_GENERIC');
@@ -225,10 +216,6 @@ export class LoginComponent {
   createAdmin(): void {
     this.authService.createAdminUser().subscribe({
       next: (response) => {
-<<<<<<< HEAD
-          logger.log('Admin creado:', response);
-=======
->>>>>>> develop
         alert('Usuario admin creado exitosamente. Ahora puedes iniciar sesión con usuario: "admin" y contraseña: "admin"');
 
         this.loginForm.patchValue({
