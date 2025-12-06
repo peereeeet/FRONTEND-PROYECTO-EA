@@ -1,423 +1,736 @@
-
 <div class="menu-page">
-  <div class="space-background"></div>
-  <div class="stars"></div>
+  <!-- Capa de fondo global -->
+  <div class="menu-bg"></div>
 
-  <header class="app-bar">
-    <div class="app-bar__content centered" style="position: relative;">
-      <div class="lang-switcher-menu">
-        <button
-          type="button"
-          class="lang-toggle"
-          (click)="toggleLangMenu()">
-          <span class="lang-icon">🌐</span>
-          <span class="lang-current">
-            {{
-              currentLang === 'es'
-                ? ('LANG.ES' | translate)
-                : currentLang === 'en'
-                ? ('LANG.EN' | translate)
-                : currentLang === 'cat'
-                ? ('LANG.CAT' | translate)
-                : ('LANG.FR' | translate)
-            }}
-          </span>
-          <span class="lang-arrow">▾</span>
-        </button>
-
-        <div class="lang-dropdown" *ngIf="showLangMenu">
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'es'"
-            (click)="selectLanguage('es')">
-            {{ 'LANG.ES' | translate }}
-          </button>
-
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'en'"
-            (click)="selectLanguage('en')">
-            {{ 'LANG.EN' | translate }}
-          </button>
-
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'cat'"
-            (click)="selectLanguage('cat')">
-            {{ 'LANG.CAT' | translate }}
-          </button>
-
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'fr'"
-            (click)="selectLanguage('fr')">
-            {{ 'LANG.FR' | translate }}
-          </button>
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <div class="brand-logo">E</div>
+        <div class="brand-text">
+          <span class="brand-name">Eventer</span>
+          <span class="brand-sub">{{ 'MENU.TITLE' | translate }}</span>
         </div>
-        <button class="theme-toggle-btn" (click)="toggleTheme()">
-          {{ theme() === 'dark' ? '☀️' : '🌙' }}
-        </button>
       </div>
-      <h1 class="app-bar__title">{{ 'MENU.TITLE' | translate }}</h1>
-    </div>
-  </header>
 
-  <section class="menu-container">
-    <header class="menu-header">
-      <div class="me compact">
-        <div class="avatar">👤</div>
-
-        <div class="me-text">
-          <div class="name-row">
-            <h2 class="username">{{ me()?.username || ('MENU.USER_FALLBACK' | translate) }}</h2>
-          </div>
-
-          <div class="status-row">
-            <span class="dot" 
-                  [class.online]="me()?.isOnline" 
-                  [class.offline]="!me()?.isOnline"></span>
+      <div class="sidebar__user">
+        <div class="avatar avatar--lg">👤</div>
+        <div class="user-meta">
+          <h2 class="user-name">
+            {{ me()?.username || ('MENU.USER_FALLBACK' | translate) }}
+          </h2>
+          <div class="user-status">
+            <span
+              class="dot"
+              [class.online]="me()?.isOnline"
+              [class.offline]="!me()?.isOnline">
+            </span>
             <span class="state-text">
               {{ me()?.isOnline ? ('STATUS.ONLINE' | translate) : ('STATUS.OFFLINE' | translate) }}
             </span>
           </div>
+          <button class="btn btn--ghost" (click)="goToPerfil()">
+            👤 {{ 'MENU.PROFILE_BUTTON' | translate }}
+          </button>
         </div>
       </div>
 
-      <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-        <button class="btn secondary" (click)="goToPerfil()">👤 {{ 'MENU.PROFILE_BUTTON' | translate }}</button>
-        <button class="logout-button" (click)="onLogout()">
+      <nav class="sidebar__nav">
+        <span class="nav-section-label">{{ 'MENU.EVENTS_TITLE' | translate }}</span>
+
+        <button class="nav-item" (click)="goToCrearEvento()">
+          <span class="nav-icon">➕</span>
+          <span class="nav-text">{{ 'MENU.EVENTS_CREATE' | translate }}</span>
+        </button>
+
+        <button class="nav-item" (click)="goToMisEventos()">
+          <span class="nav-icon">📅</span>
+          <span class="nav-text">{{ 'MENU.EVENTS_MY' | translate }}</span>
+        </button>
+
+<!--         <button class="nav-item" (click)="goToExplorarEventos()">
+          <span class="nav-icon">🗺️</span>
+          <span class="nav-text">{{ 'MENU.EVENTS_EXPLORE_MAP' | translate }}</span>
+        </button> -->
+
+        <span class="nav-section-label">{{ 'MENU.FRIENDS_TITLE' | translate }}</span>
+
+        <button class="nav-item" (click)="openAddFriendsModal()">
+          <span class="nav-icon">🔍</span>
+          <span class="nav-text">{{ 'MENU.FRIENDS_BUTTON_EXPLORE_USERS' | translate }}</span>
+        </button>
+
+        <button class="nav-item" (click)="openRequestsModal()">
+          <span class="nav-icon">📨</span>
+          <span class="nav-text">
+            {{ 'MENU.FRIENDS_BUTTON_REQUESTS' | translate }}
+          </span>
+          <span
+            class="notif-badge"
+            *ngIf="newFriendRequests() > 0">
+            {{ newFriendRequests() }}
+          </span>
+        </button>
+
+        <button class="btn btn--danger" (click)="onLogout()">
           {{ 'MENU.LOGOUT_BUTTON' | translate }}
         </button>
-      </div>
-    </header>
+      </nav>
+    </aside>
 
-    <div class="menu-grid">
-      <section class="events-card fixed-height">
-        <div class="events-header">
-          <h3>🎟️ {{ 'MENU.EVENTS_TITLE' | translate }}</h3>
+    <!-- PANEL PRINCIPAL -->
+    <div class="main-panel">
+      <!-- TOP BAR -->
+      <header class="top-bar">
+        <div class="top-bar__left">
+          <h1 class="top-title">{{ 'MENU.TITLE' | translate }}</h1>
+          <p class="top-subtitle">
+            {{ 'MENU.FRIENDS_TITLE' | translate }} &amp; {{ 'MENU.EVENTS_TITLE' | translate }}
+          </p>
         </div>
 
-        <div class="events-actions">
-          <button class="btn primary" (click)="goToCrearEvento()">
-            ➕ {{ 'MENU.EVENTS_CREATE' | translate }}
-          </button>
-          <button type="button" class="btn" (click)="goToExplorarEventos()">
-            🔍 {{ 'MENU.EVENTS_EXPLORE_MAP' | translate }}
-          </button>
-          <button type="button" class="btn secondary" (click)="goToMisEventos()">
-            📅 {{ 'MENU.EVENTS_MY' | translate }}
-          </button>
-        </div>
+        <div class="top-bar__right">
+          <div class="lang-switcher-menu">
+            <button
+              type="button"
+              class="lang-toggle"
+              (click)="toggleLangMenu()">
+              <span class="lang-icon">🌐</span>
+              <span class="lang-current">
+                {{
+                  currentLang === 'es'
+                    ? ('LANG.ES' | translate)
+                    : currentLang === 'en'
+                    ? ('LANG.EN' | translate)
+                    : currentLang === 'cat'
+                    ? ('LANG.CAT' | translate)
+                    : ('LANG.FR' | translate)
+                }}
+              </span>
+              <span class="lang-arrow">▾</span>
+            </button>
 
-        <div class="events-body">
-          <div *ngIf="loading()" class="msg">{{ 'MENU.LOADING' | translate }}</div>
-          <div *ngIf="!loading() && errorMsg()" class="msg error">{{ errorMsg() }}</div>
-        </div>
-      </section>
-
-      <section class="friends-card">
-        <div class="friends-header">
-          <div class="friends-title">
-            <h3>
-              {{ 'MENU.FRIENDS_TITLE' | translate }}
-              <span class="count">{{ friends().length || 0 }}</span>
-            </h3>
-
-            <div class="inline-pager" *ngIf="(friends().length || 0) > 0">
+            <div class="lang-dropdown" *ngIf="showLangMenu">
               <button
                 type="button"
-                class="icon-btn"
-                (click)="friendsPrev()"
-                [disabled]="fPage <= 1"
-                aria-label="Página anterior">
-                «
+                class="lang-option"
+                [class.active]="currentLang === 'es'"
+                (click)="selectLanguage('es')">
+                {{ 'LANG.ES' | translate }}
               </button>
-              <span class="counter">{{ fPage }} / {{ fTotalPages() }}</span>
+
               <button
                 type="button"
-                class="icon-btn"
-                (click)="friendsNext()"
-                [disabled]="fPage >= fTotalPages()"
-                aria-label="Página siguiente">
-                »
+                class="lang-option"
+                [class.active]="currentLang === 'en'"
+                (click)="selectLanguage('en')">
+                {{ 'LANG.EN' | translate }}
+              </button>
+
+              <button
+                type="button"
+                class="lang-option"
+                [class.active]="currentLang === 'cat'"
+                (click)="selectLanguage('cat')">
+                {{ 'LANG.CAT' | translate }}
+              </button>
+
+              <button
+                type="button"
+                class="lang-option"
+                [class.active]="currentLang === 'fr'"
+                (click)="selectLanguage('fr')">
+                {{ 'LANG.FR' | translate }}
               </button>
             </div>
-          </div>
 
-          <div class="actions">
-            <button type="button" class="btn" (click)="openAddFriendsModal()">
-              🔍 {{ 'MENU.FRIENDS_BUTTON_EXPLORE_USERS' | translate }}
-            </button>
-            <button type="button" class="btn secondary" (click)="openRequestsModal()">
-              📨 {{ 'MENU.FRIENDS_BUTTON_REQUESTS' | translate }}
-              <span
-                class="notif-badge"
-                *ngIf="newFriendRequests() > 0">
-                {{ newFriendRequests() }}
-              </span>
+            <button class="theme-toggle-btn" (click)="toggleTheme()">
+              {{ theme() === 'dark' ? '☀️' : '🌙' }}
             </button>
           </div>
         </div>
+      </header>
 
-        <ng-container *ngIf="(friends().length || 0) > 0; else emptyList">
-          <ul class="friends-list">
-            <li *ngFor="let f of friendsPaged()">
-              <div class="left">
-                <div class="avatar small">🙂</div>
-                <div class="data">
-                  <div class="name">{{ f.username }}</div>
-                  <div class="mail">{{ f.gmail }}</div>
+      <!-- CONTENIDO PRINCIPAL -->
+      <section class="content">
+        <div class="content-grid">
+          <!-- CARD AMIGOS -->
+          <section class="card card--friends">
+            <div class="card__header card__header--with-controls">
+              <div class="friends-heading">
+                <h3 class="card-title">
+                  {{ 'MENU.FRIENDS_TITLE' | translate }}
+                  <span class="count-pill">{{ friends().length || 0 }}</span>
+                </h3>
+
+                <div class="inline-pager" *ngIf="(friends().length || 0) > 0">
+                  <button
+                    type="button"
+                    class="pager-btn"
+                    (click)="friendsPrev()"
+                    [disabled]="fPage <= 1">
+                    «
+                  </button>
+                  <span class="pager-counter">{{ fPage }} / {{ fTotalPages() }}</span>
+                  <button
+                    type="button"
+                    class="pager-btn"
+                    (click)="friendsNext()"
+                    [disabled]="fPage >= fTotalPages()">
+                    »
+                  </button>
                 </div>
               </div>
-              <div class="right">
-                <span class="dot" [class.online]="f.isOnline" [class.offline]="!f.isOnline"></span>
-                <span class="state">
-                  {{ f.isOnline ? ('STATUS.ONLINE' | translate) : ('STATUS.OFFLINE' | translate) }}
-                </span>
-                <button
-                  type="button"
-                  class="btn chat-btn"
-                  (click)="openChat(f)"
-                  title="Abrir chat">
-                  💬
+
+              <section class="card card--friends"></section>
+              <div class="header-actions">
+                <button type="button" class="btn btn--outline" (click)="openAddFriendsModal()">
+                  🔍 {{ 'MENU.FRIENDS_BUTTON_EXPLORE_USERS' | translate }}
                 </button>
-                <button type="button" class="btn danger" (click)="quitar(f._id!)">
-                  {{ 'MENU.FRIENDS_REMOVE' | translate }}
+                <button type="button" class="btn btn--ghost" (click)="openRequestsModal()">
+                  📨 {{ 'MENU.FRIENDS_BUTTON_REQUESTS' | translate }}
+                  <span
+                    class="notif-badge"
+                    *ngIf="newFriendRequests() > 0">
+                    {{ newFriendRequests() }}
+                  </span>
                 </button>
               </div>
-            </li>
-          </ul>
-        </ng-container>
-
-        <ng-template #emptyList>
-          <p class="empty">{{ 'MENU.FRIENDS_EMPTY' | translate }}</p>
-          <button type="button" class="btn" (click)="openAddFriendsModal()">
-            {{ 'MENU.FRIENDS_SEARCH_ADD' | translate }}
-          </button>
-        </ng-template>
-      </section>
-    </div>
-
-    <!-- Modal explorar usuarios -->
-    <div class="modal-overlay" *ngIf="showAddModal()">
-      <div class="modal large-modal">
-        <div class="modal-header">
-          <h3>👥 {{ 'MENU.MODAL_EXPLORE_TITLE' | translate }}</h3>
-          <button class="btn-close" (click)="closeAddFriendsModal()">×</button>
-        </div>
-
-        <div class="search-row">
-          <input
-            type="text"
-            [placeholder]="'MENU.MODAL_SEARCH_PLACEHOLDER' | translate"
-            [value]="modalSearch()"
-            (input)="onModalSearchInput($event)" />
-          <button type="button" class="btn" (click)="buscarPersonas()">
-            {{ 'MENU.MODAL_SEARCH_BUTTON' | translate }}
-          </button>
-        </div>
-
-        <div *ngIf="modalError()" class="msg error">
-          ⚠️ {{ modalError() }}
-        </div>
-
-        <div class="participants-wrapper">
-          <div class="participants-column">
-            <div class="list-header">
-              <h4>{{ 'MENU.MODAL_USERS_TITLE' | translate }}</h4>
             </div>
 
-            <div class="pager">
-              <button type="button" (click)="modalPrev()" [disabled]="mPage()<=1">«</button>
-              <span class="counter">
-                {{ 'MENU.MODAL_PAGE_LABEL' | translate }} {{ mPage() }} / {{ mTotalPages }}
-              </span>
-              <button type="button" (click)="modalNext()" [disabled]="mPage()>=mTotalPages">»</button>
-              <span class="total">
-                {{ 'MENU.MODAL_TOTAL_LABEL' | translate }}: {{ filteredUsers().length }}
-              </span>
-            </div>
+            <div class="card__body">
+              <ng-container *ngIf="(friends().length || 0) > 0; else emptyList">
+                <ul class="friends-list">
+                  <li *ngFor="let f of friendsPaged()">
+                    <div class="friend-left">
+                      <div class="avatar avatar--sm">🙂</div>
+                      <div class="friend-data">
+                        <div class="friend-name">{{ f.username }}</div>
+                        <div class="friend-mail">{{ f.gmail }}</div>
+                      </div>
+                    </div>
 
-            <div class="user-row" *ngFor="let u of modalPageItems">
-              <span class="user-name">
-                {{ u.username }}
-                <small style="color:#666">({{ u.gmail }})</small>
-              </span>
-
-              <ng-container *ngIf="isPendingFrom(u._id!); else checkSent">
-                <button type="button" class="btn-pending" (click)="openRequestsModal()">
-                  📨 {{ 'MENU.MODAL_REQUEST_PENDING' | translate }}
-                </button>
+                    <div class="friend-right">
+                      <div class="friend-status">
+                        <span class="dot" [class.online]="f.isOnline" [class.offline]="!f.isOnline"></span>
+                        <span class="state">
+                          {{ f.isOnline ? ('STATUS.ONLINE' | translate) : ('STATUS.OFFLINE' | translate) }}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn--icon"
+                        (click)="openChat(f)"
+                        title="Abrir chat">
+                        💬
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn--danger-outline"
+                        (click)="openConfirmRemoveFriend(f)">
+                        {{ 'MENU.FRIENDS_REMOVE' | translate }}
+                      </button>
+                    </div>
+                  </li>
+                </ul>
               </ng-container>
 
-              <ng-template #checkSent>
-                <ng-container *ngIf="isPendingTo(u._id!); else canAddTpl">
-                  <span class="sent-text">
-                    ✅ {{ 'MENU.MODAL_REQUEST_SENT' | translate }}
+              <ng-template #emptyList>
+                <div class="friends-empty">
+                  <div class="friends-empty-icon">🤝</div>
+                  <p class="friends-empty-text">
+                    {{ 'MENU.FRIENDS_EMPTY' | translate }}
+                  </p>
+                </div>
+              </ng-template>
+            </div>
+          </section>
+        </div>
+
+        <section class="explore-section">
+          <div class="map-section">
+            <h2 class="map-title">{{ 'EXPLORE.MAP_TITLE' | translate }}</h2>
+
+            <div class="map-container-wrapper">
+              <div id="explorar-map" class="map-container"></div>
+              <p class="map-hint">
+                {{ 'EXPLORE.MAP_HINT' | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div *ngIf="!loadingMap" class="eventos-section">
+            <div *ngIf="eventos.length === 0" class="empty-state">
+              <span class="empty-icon">📭</span>
+              <h3>{{ 'EXPLORE.EMPTY_TITLE' | translate }}</h3>
+              <p>{{ 'EXPLORE.EMPTY_TEXT' | translate }}</p>
+            </div>
+
+            <div class="eventos-grid" *ngIf="eventos.length > 0">
+              <div *ngFor="let evento of eventos" class="evento-card">
+                <div class="badges">
+                  <span *ngIf="isUserCreator(evento)" class="badge badge-creator">
+                    👑 {{ 'EXPLORE.CARD_BADGE_CREATOR' | translate }}
                   </span>
-                </ng-container>
-              </ng-template>
+                  <span *ngIf="isAdmin()" class="badge badge-admin">
+                    🛡️ {{ 'EVENTS.ADMIN_BADGE' | translate }}
+                  </span>
+                  <span
+                    *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
+                    class="badge badge-joined">
+                    ✅ {{ 'EXPLORE.CARD_BADGE_JOINED' | translate }}
+                  </span>
+                </div>
 
-              <ng-template #canAddTpl>
-                <button type="button" class="btn-add" (click)="addFromModal(u._id!)">
-                  ➕ {{ 'MENU.MODAL_ADD_BUTTON' | translate }}
-                </button>
-              </ng-template>
-            </div>
+                <div class="evento-header">
+                  <h3 class="clickable-title" (click)="openEventModal(evento)">
+                    {{ evento.name }}
+                  </h3>
+                </div>
 
-            <div class="empty" *ngIf="!filteredUsers().length">
-              {{ 'MENU.MODAL_NO_USERS' | translate }}
-            </div>
-          </div>
-        </div>
+                <div class="evento-info" (click)="openEventModal(evento)">
+                  <div class="info-row">
+                    <span class="icon">👤</span>
+                    <span>
+                      <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
+                      {{ getCreadorName(evento) }}
+                    </span>
+                  </div>
 
-        <div class="modal-actions" style="margin-top:16px;">
-          <button class="btn-cancel" (click)="closeAddFriendsModal()">
-            {{ 'MENU.MODAL_CLOSE' | translate }}
-          </button>
-        </div>
-      </div>
-    </div>
+                  <div class="info-row">
+                    <span class="icon">📍</span>
+                    <span class="address-text">
+                      <strong>{{ 'EVENTS.LABEL_ADDRESS' | translate }}</strong>
+                      {{ evento.address || '-' }}
+                    </span>
+                  </div>
 
-    <!-- Modal solicitudes -->
-    <div class="modal-overlay" *ngIf="showRequestsModal()">
-      <div class="modal medium-modal">
-        <div class="modal-header">
-          <h3>📨 {{ 'MENU.REQUESTS_TITLE' | translate }}</h3>
-          <button class="btn-close" (click)="closeRequestsModal()">×</button>
-        </div>
+                  <div class="info-row">
+                    <span class="icon">🕒</span>
+                    <span>
+                      <strong>{{ 'EVENTS.LABEL_SCHEDULE' | translate }}</strong>
+                      {{ getScheduleText(evento) }}
+                    </span>
+                  </div>
 
-        <div class="modal-body">
-          <p *ngIf="requestsLoading()">
-            {{ 'MENU.REQUESTS_LOADING' | translate }}
-          </p>
-          <p *ngIf="requestsError() && !requestsLoading()" class="msg error">
-            {{ requestsError() }}
-          </p>
+                  <div class="info-row">
+                    <span class="icon">👥</span>
+                    <span>
+                      <strong>{{ 'EVENTS.LABEL_PARTICIPANTS' | translate }}</strong>
+                      {{ evento.participantes?.length || 0 }}
+                    </span>
+                  </div>
 
-          <ul *ngIf="!requestsLoading() && requestsList().length">
-            <li *ngFor="let u of requestsList()">
-              <div class="left">
-                <div class="avatar small">👤</div>
-                <div class="data">
-                  <div class="name">{{ u.username }}</div>
-                  <div class="mail">{{ u.gmail }}</div>
+                  <div class="info-row rating">
+                    <span class="icon">⭐</span>
+                    <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRatingsCard">
+                      <strong>
+                        {{ 'EVENTS.LABEL_RATINGS' | translate }}
+                        {{ evento.avgRating | number:'1.1-2' }}
+                      </strong>
+                      ({{ evento.ratingsCount }} {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
+                    </span>
+                    <ng-template #noRatingsCard>
+                      <span>{{ 'EVENTS.LABEL_RATINGS_NONE' | translate }}</span>
+                    </ng-template>
+                  </div>
+                </div>
+
+                <div class="evento-actions">
+                  <button
+                    *ngIf="!isUserInEvento(evento) && !isUserCreator(evento)"
+                    class="btn btn-join"
+                    (click)="joinEvento(evento)">
+                    ➕ {{ 'EVENTS.BUTTON_JOIN' | translate }}
+                  </button>
+
+                  <button
+                    *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
+                    class="btn btn-leave"
+                    (click)="leaveEvento(evento)">
+                    👋 {{ 'EVENTS.BUTTON_LEAVE' | translate }}
+                  </button>
+
+                  <p *ngIf="isUserCreator(evento)" class="creator-note">
+                    ℹ️ {{ 'EVENTS.CREATOR_CANNOT_LEAVE' | translate }}
+                  </p>
                 </div>
               </div>
-              <div class="right">
-                <button class="btn accept" (click)="acceptRequest(u._id!)">
-                  {{ 'MENU.REQUESTS_ACCEPT' | translate }}
-                </button>
-                <button class="btn reject" (click)="rejectRequest(u._id!)">
-                  {{ 'MENU.REQUESTS_REJECT' | translate }}
-                </button>
+            </div>
+
+            <div class="pagination" *ngIf="totalPages > 1 && eventos.length > 0">
+              <button class="btn-page" (click)="prevPage()" [disabled]="page <= 1">
+                {{ 'EXPLORE.PAGINATION_PREV' | translate }}
+              </button>
+              <span class="page-info">
+                {{ 'EXPLORE.PAGINATION_INFO_PREFIX' | translate }}
+                {{ page }}
+                {{ 'EXPLORE.PAGINATION_INFO_OF' | translate }}
+                {{ totalPages }}
+                ({{ 'COMMON.TOTAL' | translate }}: {{ totalItems }})
+              </span>
+              <button class="btn-page" (click)="nextPage()" [disabled]="page >= totalPages">
+                {{ 'EXPLORE.PAGINATION_NEXT' | translate }}
+              </button>
+            </div>
+          </div>
+        </section>
+      </section>
+    </div>
+  </div>
+
+      <!-- MODAL DETALLE EVENTO (MÁS PEQUEÑO) -->
+      <div class="modal-backdrop" *ngIf="showEventModal">
+        <div class="modal modal--small" role="dialog" aria-modal="true" aria-labelledby="eventDetailsTitle">
+          <div class="modal-header">
+            <h2 id="eventDetailsTitle">{{ 'EXPLORE.MODAL_TITLE' | translate }}</h2>
+            <button
+              type="button"
+              class="btn-close"
+              aria-label="Cerrar"
+              (click)="closeEventModal()">
+              ✖
+            </button>
+          </div>
+
+          <div class="modal-content">
+            <ng-container *ngIf="selectedEvent">
+              <div class="modal-body">
+                <h3 class="modal-event-title">{{ selectedEvent.name }}</h3>
+
+                <div class="info-row">
+                  <span class="icon">👤</span>
+                  <span>
+                    <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
+                    {{ getCreadorName(selectedEvent) }}
+                  </span>
+                </div>
+
+                <div class="info-row">
+                  <span class="icon">📍</span>
+                  <span>
+                    <strong>{{ 'EVENTS.LABEL_ADDRESS' | translate }}</strong>
+                    {{ selectedEvent.address || ('EXPLORE.MODAL_ADDRESS_FALLBACK' | translate) }}
+                  </span>
+                </div>
+
+                <div class="info-row">
+                  <span class="icon">🕒</span>
+                  <span>
+                    <strong>{{ 'EVENTS.LABEL_SCHEDULE' | translate }}</strong>
+                    {{ getScheduleText(selectedEvent) }}
+                  </span>
+                </div>
+
+                <div class="info-row">
+                  <span class="icon">👥</span>
+                  <span>
+                    <strong>{{ 'EVENTS.LABEL_PARTICIPANTS' | translate }}</strong>
+                    {{ selectedEvent.participantes?.length || 0 }}
+                  </span>
+                </div>
+
+                <div class="info-row rating">
+                  <span class="icon">⭐</span>
+                  <span *ngIf="selectedEvent.ratingsCount && selectedEvent.ratingsCount > 0; else noRatingsModal">
+                    <strong>
+                      {{ 'EVENTS.LABEL_RATINGS' | translate }}
+                      {{ selectedEvent.avgRating | number:'1.1-2' }}
+                    </strong>
+                    ({{ selectedEvent.ratingsCount }} {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
+                  </span>
+                  <ng-template #noRatingsModal>
+                    <span>{{ 'EVENTS.LABEL_RATINGS_NONE' | translate }}</span>
+                  </ng-template>
+                </div>
               </div>
-            </li>
-          </ul>
+            </ng-container>
+          </div>
 
-          <p *ngIf="!requestsLoading() && !requestsList().length && !requestsError()">
-            {{ 'MENU.REQUESTS_EMPTY' | translate }}
-          </p>
-        </div>
+          <div class="modal-actions">
+            <button
+              *ngIf="selectedEvent && !isUserInEvento(selectedEvent) && !isUserCreator(selectedEvent)"
+              class="btn btn-join"
+              (click)="joinEvento(selectedEvent)">
+              ➕ {{ 'EXPLORE.MODAL_BUTTON_JOIN' | translate }}
+            </button>
 
-        <div class="modal-actions" style="margin-top:16px;">
-          <button class="btn-cancel" (click)="closeRequestsModal()">
-            {{ 'MENU.MODAL_CLOSE' | translate }}
-          </button>
+            <button
+              *ngIf="selectedEvent && isUserInEvento(selectedEvent) && !isUserCreator(selectedEvent)"
+              class="btn btn-leave"
+              (click)="leaveEvento(selectedEvent)">
+              👋 {{ 'EXPLORE.MODAL_BUTTON_LEAVE' | translate }}
+            </button>
+
+            <p
+              *ngIf="selectedEvent && isUserCreator(selectedEvent)"
+              class="creator-note">
+              ℹ️ {{ 'EXPLORE.MODAL_CREATOR_NOTE' | translate }}
+            </p>
+
+            <button type="button" class="btn" (click)="closeEventModal()">
+              {{ 'EXPLORE.MODAL_BUTTON_CLOSE' | translate }}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Modal de chat entre amigos -->
-    <div class="modal-overlay" *ngIf="chatOpen()">
-      <div class="modal chat-modal">
-        <div class="modal-header">
-          <h3>
-            💬 {{ 'MENU.CHAT_TITLE_PREFIX' | translate }}
-            <span class="chat-friend-name">
-              {{ chatFriend()?.username || chatFriend()?.gmail || ('MENU.USER_FALLBACK' | translate) }}
+  <!-- ========= MODALES ========= -->
+
+  <!-- Modal explorar usuarios -->
+  <div class="modal-overlay" *ngIf="showAddModal()">
+    <div class="modal modal--large">
+      <div class="modal-header">
+        <h3>👥 {{ 'MENU.MODAL_EXPLORE_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeAddFriendsModal()">×</button>
+      </div>
+
+      <div class="search-row">
+        <input
+          type="text"
+          [placeholder]="'MENU.MODAL_SEARCH_PLACEHOLDER' | translate"
+          [value]="modalSearch()"
+          (input)="onModalSearchInput($event)" />
+        <button type="button" class="btn btn--primary" (click)="buscarPersonas()">
+          {{ 'MENU.MODAL_SEARCH_BUTTON' | translate }}
+        </button>
+      </div>
+
+      <div *ngIf="modalError()" class="msg msg--error">
+        ⚠️ {{ modalError() }}
+      </div>
+
+      <div class="participants-wrapper">
+        <div class="participants-column">
+          <div class="list-header">
+            <h4>{{ 'MENU.MODAL_USERS_TITLE' | translate }}</h4>
+          </div>
+
+          <div class="pager">
+            <button type="button" (click)="modalPrev()" [disabled]="mPage()<=1">«</button>
+            <span class="counter">
+              {{ 'MENU.MODAL_PAGE_LABEL' | translate }} {{ mPage() }} / {{ mTotalPages }}
             </span>
-          </h3>
-          <button class="btn-close" (click)="closeChat()">×</button>
+            <button type="button" (click)="modalNext()" [disabled]="mPage()>=mTotalPages">»</button>
+            <span class="total">
+              {{ 'MENU.MODAL_TOTAL_LABEL' | translate }}: {{ filteredUsers().length }}
+            </span>
+          </div>
+
+          <div class="user-row" *ngFor="let u of modalPageItems">
+            <span class="user-name">
+              {{ u.username }}
+              <small>({{ u.gmail }})</small>
+            </span>
+
+            <ng-container *ngIf="isPendingFrom(u._id!); else checkSent">
+              <button type="button" class="btn btn--pending" (click)="openRequestsModal()">
+                📨 {{ 'MENU.MODAL_REQUEST_PENDING' | translate }}
+              </button>
+            </ng-container>
+
+            <ng-template #checkSent>
+              <ng-container *ngIf="isPendingTo(u._id!); else canAddTpl">
+                <span class="sent-text">
+                  ✅ {{ 'MENU.MODAL_REQUEST_SENT' | translate }}
+                </span>
+              </ng-container>
+            </ng-template>
+
+            <ng-template #canAddTpl>
+              <button type="button" class="btn btn--add" (click)="addFromModal(u._id!)">
+                ➕ {{ 'MENU.MODAL_ADD_BUTTON' | translate }}
+              </button>
+            </ng-template>
+          </div>
+
+          <div class="empty" *ngIf="!filteredUsers().length">
+            {{ 'MENU.MODAL_NO_USERS' | translate }}
+          </div>
         </div>
+      </div>
 
-        <div class="modal-body chat-body">
-          <div *ngIf="chatLoading()" class="msg">
-            {{ 'MENU.CHAT_LOADING' | translate }}
-          </div>
-          <div *ngIf="chatError()" class="msg error">
-            {{ chatError() }}
-          </div>
+      <div class="modal-actions">
+        <button class="btn btn--ghost" (click)="closeAddFriendsModal()">
+          {{ 'MENU.MODAL_CLOSE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
 
-          <div class="chat-messages" #chatMessagesContainer *ngIf="!chatLoading()">
-            <div
-              *ngFor="let m of chatMessages()"
-              class="chat-message"
-              [class.from-me]="m.from === me()?._id"
-              [class.from-them]="m.from !== me()?._id">
+  <!-- Modal solicitudes -->
+  <div class="modal-overlay" *ngIf="showRequestsModal()">
+    <div class="modal modal--medium">
+      <div class="modal-header">
+        <h3>📨 {{ 'MENU.REQUESTS_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeRequestsModal()">×</button>
+      </div>
 
-              <div class="bubble">
-                <ng-container *ngIf="!isEventInvite(m); else eventInviteTpl">
-                  <div class="text">
-                    {{ m.text }}
-                  </div>
-                </ng-container>
+      <div class="modal-body">
+        <p *ngIf="requestsLoading()">
+          {{ 'MENU.REQUESTS_LOADING' | translate }}
+        </p>
+        <p *ngIf="requestsError() && !requestsLoading()" class="msg msg--error">
+          {{ requestsError() }}
+        </p>
 
-                <ng-template #eventInviteTpl>
-                  <div class="event-invite-card">
-                    <div class="event-invite-title">
-                      🎟️ {{ 'MENU.CHAT_EVENT_INVITE_TITLE' | translate }}
-                    </div>
-                    <div class="event-invite-name">
-                      {{ getEventInviteData(m).name }}
-                    </div>
-                    <div class="event-invite-footer">
-                      <ng-container *ngIf="!isCurrentUserInInvitedEvent(m); else alreadyInTpl">
-                        <button
-                          type="button"
-                          class="btn btn-primary btn-join-event"
-                          (click)="joinFromInvite(m)">
-                          {{ 'MENU.CHAT_EVENT_INVITE_JOIN' | translate }}
-                        </button>
-                      </ng-container>
-                      <ng-template #alreadyInTpl>
-                        <span class="already-joined">
-                          {{ 'MENU.CHAT_EVENT_INVITE_ALREADY_IN' | translate }}
-                        </span>
-                      </ng-template>
-                    </div>
-                  </div>
-                </ng-template>
-
-                <div class="time">
-                  {{ m.createdAt | date:'dd/MM/yyyy HH:mm' }}
-                </div>
+        <ul *ngIf="!requestsLoading() && requestsList().length">
+          <li *ngFor="let u of requestsList()">
+            <div class="request-left">
+              <div class="avatar avatar--sm">👤</div>
+              <div class="request-data">
+                <div class="request-name">{{ u.username }}</div>
+                <div class="request-mail">{{ u.gmail }}</div>
               </div>
             </div>
 
-            <div *ngIf="!chatMessages().length && !chatLoading()" class="empty">
-              {{ 'MENU.CHAT_EMPTY' | translate }}
+            <div class="request-right">
+              <button
+                type="button"
+                class="btn btn--accept"
+                (click)="acceptRequest(u._id!)">
+                {{ 'MENU.REQUESTS_ACCEPT' | translate }}
+              </button>
+
+              <button
+                type="button"
+                class="btn btn--reject"
+                (click)="rejectRequest(u._id!)">
+                {{ 'MENU.REQUESTS_REJECT' | translate }}
+              </button>
             </div>
-          </div>
+          </li>
+        </ul>
+
+        <p *ngIf="!requestsLoading() && !requestsList().length && !requestsError()">
+          {{ 'MENU.REQUESTS_EMPTY' | translate }}
+        </p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn--ghost" (click)="closeRequestsModal()">
+          {{ 'MENU.MODAL_CLOSE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal chat -->
+  <div class="modal-overlay" *ngIf="chatOpen()">
+    <div class="modal modal--chat">
+      <div class="modal-header">
+        <h3>
+          💬 {{ 'MENU.CHAT_TITLE_PREFIX' | translate }}
+          <span class="chat-friend-name">
+            {{ chatFriend()?.username || chatFriend()?.gmail || ('MENU.USER_FALLBACK' | translate) }}
+          </span>
+        </h3>
+        <button class="btn-close" (click)="closeChat()">×</button>
+      </div>
+
+      <div class="modal-body chat-body">
+        <div *ngIf="chatLoading()" class="msg">
+          {{ 'MENU.CHAT_LOADING' | translate }}
+        </div>
+        <div *ngIf="chatError()" class="msg msg--error">
+          {{ chatError() }}
         </div>
 
-        <div class="chat-input-row">
-          <input
-            type="text"
-            class="chat-input"
-            [value]="chatText()"
-            (input)="onChatInput($event)"
-            (keyup.enter)="sendChat()"
-            [placeholder]="'MENU.CHAT_PLACEHOLDER' | translate" />
-          <button type="button" class="btn send-btn" (click)="sendChat()">
-            ➤
+        <div class="chat-messages" #chatMessagesContainer *ngIf="!chatLoading()">
+          <div
+            *ngFor="let m of chatMessages()"
+            class="chat-message"
+            [class.from-me]="m.from === me()?._id"
+            [class.from-them]="m.from !== me()?._id">
+
+            <div class="bubble">
+              <ng-container *ngIf="!isEventInvite(m); else eventInviteTpl">
+                <div class="text">
+                  {{ m.text }}
+                </div>
+              </ng-container>
+
+              <ng-template #eventInviteTpl>
+                <div class="event-invite-card">
+                  <div class="event-invite-title">
+                    🎟️ {{ 'MENU.CHAT_EVENT_INVITE_TITLE' | translate }}
+                  </div>
+                  <div class="event-invite-name">
+                    {{ getEventInviteData(m).name }}
+                  </div>
+                  <div class="event-invite-footer">
+                    <ng-container *ngIf="!isCurrentUserInInvitedEvent(m); else alreadyInTpl">
+                      <button
+                        type="button"
+                        class="btn btn--primary btn-join-event"
+                        (click)="joinFromInvite(m)">
+                        {{ 'MENU.CHAT_EVENT_INVITE_JOIN' | translate }}
+                      </button>
+                    </ng-container>
+                    <ng-template #alreadyInTpl>
+                      <span class="already-joined">
+                        {{ 'MENU.CHAT_EVENT_INVITE_ALREADY_IN' | translate }}
+                      </span>
+                    </ng-template>
+                  </div>
+                </div>
+              </ng-template>
+
+              <div class="time">
+                {{ m.createdAt | date:'dd/MM/yyyy HH:mm' }}
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!chatMessages().length && !chatLoading()" class="empty">
+            {{ 'MENU.CHAT_EMPTY' | translate }}
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-row">
+        <input
+          type="text"
+          class="chat-input"
+          [value]="chatText()"
+          (input)="onChatInput($event)"
+          (keyup.enter)="sendChat()"
+          [placeholder]="'MENU.CHAT_PLACEHOLDER' | translate" />
+        <button type="button" class="btn send-btn" (click)="sendChat()">
+          ➤
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmación eliminar amigo -->
+  <div class="modal-overlay" *ngIf="showConfirmRemove()">
+    <div class="modal modal--medium modal--danger">
+      <div class="modal-header">
+        <h3>⚠️ {{ 'MENU.CONFIRM_REMOVE_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeConfirmRemoveFriend()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="confirm-text">
+          {{ 'MENU.CONFIRM_REMOVE_TEXT' | translate }}
+          <span class="confirm-user">{{ friendToRemove()?.username }}</span>?
+        </p>
+
+        <div class="confirm-warning">
+          <span>⚠️</span>
+          <span>{{ 'MENU.CONFIRM_REMOVE_WARNING' | translate }}</span>
+        </div>
+
+        <div class="confirm-actions">
+          <button class="btn btn--ghost" (click)="closeConfirmRemoveFriend()">
+            {{ 'MENU.CONFIRM_REMOVE_CANCEL' | translate }}
+          </button>
+          <button class="btn btn--danger" (click)="confirmRemoveFriend()">
+            {{ 'MENU.CONFIRM_REMOVE_CONFIRM' | translate }}
           </button>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </div>

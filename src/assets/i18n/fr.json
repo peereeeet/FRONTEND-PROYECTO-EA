@@ -143,7 +143,13 @@
 
     "CHAT_EVENT_INVITE_TITLE": "Invitation à un événement",
     "CHAT_EVENT_INVITE_JOIN": "Rejoindre",
-    "CHAT_EVENT_INVITE_ALREADY_IN": "Tu es déjà dedans"
+    "CHAT_EVENT_INVITE_ALREADY_IN": "Tu es déjà dedans",
+
+    "CONFIRM_REMOVE_TITLE": "Supprimer ami",
+    "CONFIRM_REMOVE_TEXT": "Êtes-vous sûr de vouloir supprimer",
+    "CONFIRM_REMOVE_WARNING": "Cette action est permanente et ne peut pas être annulée.",
+    "CONFIRM_REMOVE_CANCEL": "Annuler",
+    "CONFIRM_REMOVE_CONFIRM": "Supprimer"
   },
 
   "FRIENDS": {

@@ -1,654 +1,589 @@
-<div class="events-page">
-  <div class="space-background"></div>
-  <div class="stars"></div>
+<div class="menu-page">
+  <!-- Capa de fondo global -->
+  <div class="menu-bg"></div>
 
-  <header class="app-bar">
-    <div class="app-bar__content centered" style="position: relative;">
-      <div class="lang-switcher-menu">
-        <button type="button" class="lang-toggle" (click)="toggleLangMenu()">
-          <span class="lang-icon">🌐</span>
-          <span class="lang-current">
-            {{
-              currentLang === 'es'
-                ? ('LANG.ES' | translate)
-                : currentLang === 'en'
-                ? ('LANG.EN' | translate)
-                : currentLang === 'cat'
-                ? ('LANG.CAT' | translate)
-                : ('LANG.FR' | translate)
-            }}
-          </span>
-          <span class="lang-arrow">▾</span>
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <div class="brand-logo">E</div>
+        <div class="brand-text">
+          <span class="brand-name">Eventer</span>
+          <span class="brand-sub">{{ 'MY_EVENTS.TITLE' | translate }}</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <span class="nav-section-label">{{ 'MENU.EVENTS_TITLE' | translate }}</span>
+
+        <button class="nav-item" (click)="goBack()">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">{{ 'MY_EVENTS.BACK_TO_MENU' | translate }}</span>
         </button>
 
-        <div class="lang-dropdown" *ngIf="showLangMenu">
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'es'"
-            (click)="selectLanguage('es')">
-            {{ 'LANG.ES' | translate }}
-          </button>
-
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'en'"
-            (click)="selectLanguage('en')">
-            {{ 'LANG.EN' | translate }}
-          </button>
-
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'cat'"
-            (click)="selectLanguage('cat')">
-            {{ 'LANG.CAT' | translate }}
-          </button>
-
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'fr'"
-            (click)="selectLanguage('fr')">
-            {{ 'LANG.FR' | translate }}
-          </button>
-        </div>
-        
-        <button class="theme-toggle" (click)="toggleTheme()">
-          {{ theme() === 'dark' ? '☀️' : '🌙' }}
+        <button class="nav-item" (click)="goToCrear()">
+          <span class="nav-icon">➕</span>
+          <span class="nav-text">{{ 'MY_EVENTS.GO_TO_CREATE' | translate }}</span>
         </button>
-      </div>
-      <h1 class="app-bar__title">{{ 'MY_EVENTS.TITLE' | translate }}</h1>
-    </div>
-  </header>
 
-  <main class="events-wrapper">
-    <section class="events-card">
-      <button class="btn-back btn-menu" type="button" (click)="goBack()">
-        {{ 'MY_EVENTS.BACK_TO_MENU' | translate }}
-      </button>
+        <button class="nav-item nav-item--active">
+          <span class="nav-icon">📅</span>
+          <span class="nav-text">{{ 'MENU.EVENTS_MY' | translate }}</span>
+        </button>
 
-      <button class="btn-back btn-crear" type="button" (click)="goToCrear()">
-        {{ 'MY_EVENTS.GO_TO_CREATE' | translate }}
-      </button>
+        <!-- <button class="nav-item" (click)="goToExplorar()">
+          <span class="nav-icon">🗺️</span>
+          <span class="nav-text">{{ 'MY_EVENTS.GO_TO_EXPLORE' | translate }}</span>
+        </button> -->
+      </nav>
+    </aside>
 
-      <button class="btn-back btn-mis" type="button" (click)="goToExplorar()">
-        {{ 'MY_EVENTS.GO_TO_EXPLORE' | translate }}
-      </button>
-
-      <div *ngIf="loading" class="loading-state">
-        <div class="spinner"></div>
-        <p>{{ 'MY_EVENTS.LOADING' | translate }}</p>
-      </div>
-      <div *ngIf="errorMessage" class="error-message">
-        {{ 'MY_EVENTS.ERROR_MESSAGE_PREFIX' | translate }} {{ errorMessage }}
-      </div>
-
-      <!-- Eventos creados -->
-      <section class="eventos-section">
-        <h2 class="card-title">
-          {{ 'MY_EVENTS.CREATED_TITLE' | translate:{ count: eventosCreados.length } }}
-        </h2>
-
-        <div *ngIf="eventosCreados.length === 0" class="empty-state">
-          <div class="empty-icon">🗓️</div>
-          <p>{{ 'MY_EVENTS.CREATED_EMPTY_TEXT' | translate }}</p>
+    <!-- PANEL PRINCIPAL -->
+    <div class="main-panel">
+      <!-- TOP BAR -->
+      <header class="top-bar">
+        <div class="top-bar__left">
+          <h1 class="top-title">{{ 'MY_EVENTS.TITLE' | translate }}</h1>
+          <p class="top-subtitle">{{ 'MENU.EVENTS_TITLE' | translate }}</p>
         </div>
 
-        <ul class="event-list">
-          <li *ngFor="let evento of eventosCreados" class="evento-card">
-            <div class="evento-header">
-              <h3 class="ev-title">{{ evento.name }}</h3>
-              <div class="status-badges">
-                <span class="badge admin">
+        <div class="top-bar__right">
+          <div class="lang-switcher-menu">
+            <button type="button" class="lang-toggle" (click)="toggleLangMenu()">
+              <span class="lang-icon">🌐</span>
+              <span class="lang-current">
+                {{
+                  currentLang === 'es'
+                    ? ('LANG.ES' | translate)
+                    : currentLang === 'en'
+                    ? ('LANG.EN' | translate)
+                    : currentLang === 'cat'
+                    ? ('LANG.CAT' | translate)
+                    : ('LANG.FR' | translate)
+                }}
+              </span>
+              <span class="lang-arrow">▾</span>
+            </button>
+
+            <div class="lang-dropdown" *ngIf="showLangMenu">
+              <button type="button" class="lang-option" [class.active]="currentLang === 'es'" (click)="selectLanguage('es')">
+                {{ 'LANG.ES' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'en'" (click)="selectLanguage('en')">
+                {{ 'LANG.EN' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'cat'" (click)="selectLanguage('cat')">
+                {{ 'LANG.CAT' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'fr'" (click)="selectLanguage('fr')">
+                {{ 'LANG.FR' | translate }}
+              </button>
+            </div>
+
+            <button class="theme-toggle-btn" (click)="toggleTheme()">
+              {{ theme() === 'dark' ? '☀️' : '🌙' }}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENIDO PRINCIPAL -->
+      <section class="content">
+        <div *ngIf="loading" class="loading-state">
+          <div class="spinner"></div>
+          <p>{{ 'MY_EVENTS.LOADING' | translate }}</p>
+        </div>
+
+        <div *ngIf="errorMessage" class="error-message">
+          {{ 'MY_EVENTS.ERROR_MESSAGE_PREFIX' | translate }} {{ errorMessage }}
+        </div>
+
+        <!-- Eventos creados -->
+        <section class="eventos-section">
+          <div class="section-header">
+            <h2 class="section-title">
+              {{ 'MY_EVENTS.CREATED_TITLE' | translate:{ count: eventosCreados.length } }}
+            </h2>
+          </div>
+
+          <div *ngIf="eventosCreados.length === 0" class="empty-state-card">
+            <div class="empty-icon">🗓️</div>
+            <p>{{ 'MY_EVENTS.CREATED_EMPTY_TEXT' | translate }}</p>
+          </div>
+
+          <div class="events-grid">
+            <div *ngFor="let evento of eventosCreados" class="evento-card">
+              <div class="evento-header">
+                <h3 class="ev-title">{{ evento.name }}</h3>
+                <span class="badge badge-creator">
                   {{ 'MY_EVENTS.BADGE_CREATOR' | translate }}
                 </span>
               </div>
-            </div>
 
-            <div class="evento-info">
-              <div class="info-row">
-                <span class="icon">📍</span>
-                <span class="address-text">
-                  <strong>{{ 'MY_EVENTS.FIELD_ADDRESS' | translate }}</strong>
-                  {{ evento.address || '-' }}
-                </span>
-                <button
-                  type="button"
-                  class="btn btn-map"
-                  (click)="openMap(evento)"
-                  [disabled]="!hasLocation(evento)">
-                  {{ 'MY_EVENTS.BUTTON_VIEW_MAP' | translate }}
+              <div class="evento-info">
+                <div class="info-row">
+                  <span class="icon">📍</span>
+                  <span class="info-content">
+                    <strong>{{ 'MY_EVENTS.FIELD_ADDRESS' | translate }}</strong>
+                    {{ evento.address || '-' }}
+                  </span>
+                </div>
+                <div class="info-row">
+                  <span class="icon">🕒</span>
+                  <span class="info-content">
+                    <strong>{{ 'MY_EVENTS.FIELD_SCHEDULE' | translate }}</strong>
+                    {{ getScheduleText(evento) }}
+                  </span>
+                </div>
+                <div class="info-row">
+                  <span class="icon">👥</span>
+                  <span class="info-content">
+                    <strong>{{ 'MY_EVENTS.FIELD_PARTICIPANTS' | translate }}</strong>
+                    {{ evento.participantes?.length || 0 }}
+                  </span>
+                </div>
+                <div class="info-row rating">
+                  <span class="icon">⭐</span>
+                  <ng-container *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRating1">
+                    <span class="info-content">
+                      <strong>
+                        {{ 'MY_EVENTS.RATINGS_LABEL' | translate }}
+                        {{ evento.avgRating | number: '1.1-2' }}
+                      </strong>
+                      ({{ evento.ratingsCount }}
+                      {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
+                    </span>
+                  </ng-container>
+                  <ng-template #noRating1>
+                    <span class="info-content">{{ 'MY_EVENTS.RATINGS_NONE' | translate }}</span>
+                  </ng-template>
+                </div>
+              </div>
+
+              <div class="evento-actions">
+                <button class="btn btn--map" (click)="openMap(evento)" [disabled]="!hasLocation(evento)">
+                 {{ 'MY_EVENTS.BUTTON_VIEW_MAP' | translate }}
+                </button>
+                <button class="btn btn--rate" (click)="openRatingsModal(evento)">
+                  ⭐ {{ 'MY_EVENTS.BUTTON_VIEW_RATINGS' | translate }}
+                </button>
+                <button class="btn btn--edit" (click)="openEditModal(evento)">
+                 {{ 'MY_EVENTS.BUTTON_EDIT' | translate }}
+                </button>
+                <button class="btn btn--share" (click)="openShareModal(evento)">
+                  📤 {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
+                </button>
+                <button class="btn btn--danger-outline" (click)="openDeleteModal(evento)">
+                 {{ 'MY_EVENTS.BUTTON_DELETE' | translate }}
                 </button>
               </div>
-              <div class="info-row">
-                <span class="icon">🕒</span>
-                <span>
-                  <strong>{{ 'MY_EVENTS.FIELD_SCHEDULE' | translate }}</strong>
-                  {{ getScheduleText(evento) }}
-                </span>
-              </div>
-              <div class="info-row">
-                <span class="icon">👥</span>
-                <span>
-                  <strong>{{ 'MY_EVENTS.FIELD_PARTICIPANTS' | translate }}</strong>
-                  {{ evento.participantes?.length || 0 }}
-                </span>
-              </div>
-              <div class="info-row rating">
-                <span class="icon">⭐</span>
-                <ng-container
-                  *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRating1">
-                  <span>
-                    <strong>
-                      {{ 'MY_EVENTS.RATINGS_LABEL' | translate }}
-                      {{ evento.avgRating | number: '1.1-2' }}
-                    </strong>
-                    ({{ evento.ratingsCount }}
-                    {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
-                  </span>
-                </ng-container>
-                <ng-template #noRating1>
-                  <span>{{ 'MY_EVENTS.RATINGS_NONE' | translate }}</span>
-                </ng-template>
-              </div>
             </div>
+          </div>
+        </section>
 
-            <div class="evento-actions">
-              <button class="btn btn-rate" (click)="openRatingsModal(evento)">
-                {{ 'MY_EVENTS.BUTTON_VIEW_RATINGS' | translate }}
-              </button>
-              <button class="btn btn-edit" (click)="openEditModal(evento)">
-                {{ 'MY_EVENTS.BUTTON_EDIT' | translate }}
-              </button>
-              <button type="button" class="btn btn-share" (click)="openShareModal(evento)">
-                📤 {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
-              </button>
-              <button class="btn btn-delete" (click)="openDeleteModal(evento)">
-                {{ 'MY_EVENTS.BUTTON_DELETE' | translate }}
-              </button>
-            </div>
-          </li>
-        </ul>
-      </section>
+        <!-- Eventos inscritos -->
+        <section class="eventos-section">
+          <div class="section-header">
+            <h2 class="section-title">
+              {{ 'MY_EVENTS.JOINED_TITLE' | translate:{ count: eventosInscritos.length } }}
+            </h2>
+          </div>
 
-      <!-- Eventos inscritos -->
-      <section class="eventos-section">
-        <h2 class="card-title">
-          {{ 'MY_EVENTS.JOINED_TITLE' | translate:{ count: eventosInscritos.length } }}
-        </h2>
+          <div *ngIf="eventosInscritos.length === 0" class="empty-state-card">
+            <div class="empty-icon">🔭</div>
+            <p>{{ 'MY_EVENTS.JOINED_EMPTY_TEXT' | translate }}</p>
+            <button class="btn btn--primary" routerLink="/explorar-eventos">
+              {{ 'MY_EVENTS.JOINED_BUTTON_EXPLORE' | translate }}
+            </button>
+          </div>
 
-        <div *ngIf="eventosInscritos.length === 0" class="empty-state">
-          <div class="empty-icon">📭</div>
-          <p>{{ 'MY_EVENTS.JOINED_EMPTY_TEXT' | translate }}</p>
-          <button class="btn btn-primary" routerLink="/explorar-eventos">
-            {{ 'MY_EVENTS.JOINED_BUTTON_EXPLORE' | translate }}
-          </button>
-        </div>
-
-        <ul class="event-list">
-          <li *ngFor="let evento of eventosInscritos" class="evento-card">
-            <div class="evento-header">
-              <h3 class="ev-title">{{ evento.name }}</h3>
-              <div class="status-badges">
-                <p *ngIf="isUserCreator(evento)" class="creator-note">
-                  <span class="badge admin">
+          <div class="events-grid">
+            <div *ngFor="let evento of eventosInscritos" class="evento-card">
+              <div class="evento-header">
+                <h3 class="ev-title">{{ evento.name }}</h3>
+                <div class="badges-group">
+                  <span *ngIf="isUserCreator(evento)" class="badge badge-creator">
                     {{ 'MY_EVENTS.BADGE_CREATOR' | translate }}
                   </span>
-                </p>
-                <span class="badge joined">
-                  {{ 'MY_EVENTS.BADGE_JOINED' | translate }}
-                </span>
+                  <span class="badge badge-joined">
+                    {{ 'MY_EVENTS.BADGE_JOINED' | translate }}
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <div class="evento-info">
-              <div class="info-row">
-                <span class="icon">👤</span>
-                <span>
-                  <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
-                  {{ getCreadorName(evento) }}
-                </span>
+              <div class="evento-info">
+                <div class="info-row">
+                  <span class="icon">👤</span>
+                  <span class="info-content">
+                    <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
+                    {{ getCreadorName(evento) }}
+                  </span>
+                </div>
+                <div class="info-row">
+                  <span class="icon">📍</span>
+                  <span class="info-content">
+                    <strong>{{ 'MY_EVENTS.FIELD_ADDRESS' | translate }}</strong>
+                    {{ evento.address || '-' }}
+                  </span>
+                </div>
+                <div class="info-row">
+                  <span class="icon">🕒</span>
+                  <span class="info-content">
+                    <strong>{{ 'MY_EVENTS.FIELD_SCHEDULE' | translate }}</strong>
+                    {{ getScheduleText(evento) }}
+                  </span>
+                </div>
+                <div class="info-row rating">
+                  <span class="icon">⭐</span>
+                  <ng-container *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRating2">
+                    <span class="info-content">
+                      <strong>
+                        {{ 'MY_EVENTS.RATINGS_LABEL' | translate }}
+                        {{ evento.avgRating | number: '1.1-2' }}
+                      </strong>
+                      ({{ evento.ratingsCount }}
+                      {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
+                    </span>
+                  </ng-container>
+                  <ng-template #noRating2>
+                    <span class="info-content">{{ 'MY_EVENTS.RATINGS_NONE' | translate }}</span>
+                  </ng-template>
+                </div>
               </div>
-              <div class="info-row">
-                <span class="icon">📍</span>
-                <span class="address-text">
-                  <strong>{{ 'MY_EVENTS.FIELD_ADDRESS' | translate }}</strong>
-                  {{ evento.address || '-' }}
-                </span>
-                <button
-                  type="button"
-                  class="btn btn-map"
-                  (click)="openMap(evento)"
-                  [disabled]="!hasLocation(evento)">
-                  {{ 'MY_EVENTS.BUTTON_VIEW_MAP' | translate }}
+
+              <div class="evento-actions">
+                <button class="btn btn--map" (click)="openMap(evento)" [disabled]="!hasLocation(evento)">
+                 {{ 'MY_EVENTS.BUTTON_VIEW_MAP' | translate }}
+                </button>
+                <button class="btn btn--rate" (click)="openRatingsModal(evento)">
+                  ⭐ {{ 'MY_EVENTS.BUTTON_VIEW_RATINGS' | translate }}
+                </button>
+                <button class="btn btn--chat" (click)="openEventChat(evento)">
+                  💬 {{ 'MY_EVENTS.BUTTON_EVENT_CHAT' | translate }}
+                </button>
+                <button class="btn btn--share" (click)="openShareModal(evento)">
+                  📤 {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
+                </button>
+                <button *ngIf="!isUserCreator(evento)" class="btn btn--ghost" (click)="openLeaveModal(evento)">
+                  🚪 {{ 'MY_EVENTS.BUTTON_LEAVE' | translate }}
                 </button>
               </div>
-              <div class="info-row">
-                <span class="icon">🕒</span>
-                <span>
-                  <strong>{{ 'MY_EVENTS.FIELD_SCHEDULE' | translate }}</strong>
-                  {{ getScheduleText(evento) }}
-                </span>
-              </div>
-              <div class="info-row rating">
-                <span class="icon">⭐</span>
-                <ng-container
-                  *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRating2">
-                  <span>
-                    <strong>
-                      {{ 'MY_EVENTS.RATINGS_LABEL' | translate }}
-                      {{ evento.avgRating | number: '1.1-2' }}
-                    </strong>
-                    ({{ evento.ratingsCount }}
-                    {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
-                  </span>
-                </ng-container>
-                <ng-template #noRating2>
-                  <span>{{ 'MY_EVENTS.RATINGS_NONE' | translate }}</span>
-                </ng-template>
-              </div>
             </div>
-
-            <div class="evento-actions">
-              <button class="btn btn-rate" (click)="openRatingsModal(evento)">
-                {{ 'MY_EVENTS.BUTTON_VIEW_RATINGS' | translate }}
-              </button>
-              <button
-                type="button"
-                class="btn btn-chat"
-                (click)="openEventChat(evento)">
-                💬 {{ 'MY_EVENTS.BUTTON_EVENT_CHAT' | translate }}
-              </button>
-              <button type="button" class="btn btn-share" (click)="openShareModal(evento)">
-                📤 {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
-              </button>
-              <button
-                *ngIf="!isUserCreator(evento)"
-                class="btn btn-leave"
-                (click)="openLeaveModal(evento)">
-                {{ 'MY_EVENTS.BUTTON_LEAVE' | translate }}
-              </button>
-            </div>
-          </li>
-        </ul>
+          </div>
+        </section>
       </section>
-    </section>
-  </main>
-</div>
-
-<!-- 💬 Modal de chat de evento -->
-<div class="modal-overlay" *ngIf="eventChatOpen()">
-  <div class="modal chat-modal">
-    <div class="modal-header">
-      <h3>
-        💬 {{ 'MY_EVENTS.EVENT_CHAT_TITLE' | translate }}
-        <span class="chat-event-name">
-          {{ eventChatEvento()?.name || 'Evento' }}
-        </span>
-      </h3>
-      <button class="btn-close" (click)="closeEventChat()">×</button>
     </div>
+  </div>
 
-    <div class="modal-body chat-body">
-      <div *ngIf="eventChatLoading()" class="msg">
-        {{ 'MY_EVENTS.EVENT_CHAT_LOADING' | translate }}
-      </div>
-      <div *ngIf="eventChatError()" class="msg error">
-        {{ eventChatError() }}
+  <!-- ========= MODALES (MANTENIENDO TODA LA FUNCIONALIDAD) ========= -->
+
+  <!-- 💬 Modal chat de evento -->
+  <div class="modal-overlay" *ngIf="eventChatOpen()">
+    <div class="modal modal--chat">
+      <div class="modal-header">
+        <h3>
+          💬 {{ 'MY_EVENTS.EVENT_CHAT_TITLE' | translate }}
+          <span class="chat-event-name">{{ eventChatEvento()?.name || 'Evento' }}</span>
+        </h3>
+        <button class="btn-close" (click)="closeEventChat()">×</button>
       </div>
 
-      <div
-        class="chat-messages"
-        #eventChatMessagesContainer
-        *ngIf="!eventChatLoading()">
-        <div
-          *ngFor="let m of eventChatMessages()"
-          class="chat-message"
-          [class.own]="m.userId === currentUserId">
-          <div class="bubble">
-            <div class="sender">
-              {{ m.username }}
-            </div>
-            <div class="text">
-              {{ m.text }}
-            </div>
-            <div class="time">
-              {{ m.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+      <div class="modal-body chat-body">
+        <div *ngIf="eventChatLoading()" class="msg">
+          {{ 'MY_EVENTS.EVENT_CHAT_LOADING' | translate }}
+        </div>
+        <div *ngIf="eventChatError()" class="msg msg--error">
+          {{ eventChatError() }}
+        </div>
+
+        <div class="chat-messages" #eventChatMessagesContainer *ngIf="!eventChatLoading()">
+          <div *ngFor="let m of eventChatMessages()" class="chat-message" [class.from-me]="m.userId === currentUserId">
+            <div class="bubble">
+              <div class="sender">{{ m.username }}</div>
+              <div class="text">{{ m.text }}</div>
+              <div class="time">{{ m.createdAt | date: 'dd/MM/yyyy HH:mm' }}</div>
             </div>
           </div>
-        </div>
 
-        <div
-          *ngIf="!eventChatMessages().length && !eventChatLoading()"
-          class="empty">
-          {{ 'MY_EVENTS.EVENT_CHAT_EMPTY' | translate }}
+          <div *ngIf="!eventChatMessages().length && !eventChatLoading()" class="empty">
+            {{ 'MY_EVENTS.EVENT_CHAT_EMPTY' | translate }}
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="chat-input-row">
-      <input
-        type="text"
-        class="chat-input"
-        [value]="eventChatText()"
-        (input)="onEventChatInput($event)"
-        (keyup.enter)="sendEventChat()"
-        [placeholder]="'MY_EVENTS.EVENT_CHAT_PLACEHOLDER' | translate" />
-      <button type="button" class="btn send-btn" (click)="sendEventChat()">
-        ➤
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- 📤 Modal para compartir evento con amigos -->
-<div class="modal-overlay" *ngIf="shareModalOpen">
-  <div class="modal share-modal">
-    <div class="modal-header">
-      <h3>
-        📤 {{ 'MY_EVENTS.SHARE_EVENT_TITLE' | translate }}
-        <span *ngIf="shareEvento" class="share-event-name">
-          {{ shareEvento.name }}
-        </span>
-      </h3>
-      <button class="btn-close" (click)="closeShareModal()">×</button>
-    </div>
-
-    <div class="modal-body">
-      <div *ngIf="shareLoading" class="msg">
-        {{ 'MY_EVENTS.SHARE_EVENT_LOADING' | translate }}
-      </div>
-
-      <div *ngIf="shareError" class="msg error">
-        {{ shareError }}
-      </div>
-
-      <div *ngIf="!shareLoading && !shareError">
-        <div *ngIf="!shareFriends.length" class="empty">
-          {{ 'MY_EVENTS.SHARE_EVENT_NO_FRIENDS' | translate }}
-        </div>
-
-        <ul *ngIf="shareFriends.length" class="share-friends-list">
-          <li *ngFor="let f of shareFriends" class="share-friend-item">
-            <div class="friend-info">
-              <span class="friend-name">{{ f.username }}</span>
-            </div>
-            <button
-              type="button"
-              class="btn btn-primary"
-              (click)="sendEventToFriend(f)">
-              {{ 'MY_EVENTS.SHARE_EVENT_SEND' | translate }}
-            </button>
-          </li>
-        </ul>
+      <div class="chat-input-row">
+        <input type="text" class="chat-input" [value]="eventChatText()" (input)="onEventChatInput($event)"
+          (keyup.enter)="sendEventChat()" [placeholder]="'MY_EVENTS.EVENT_CHAT_PLACEHOLDER' | translate" />
+        <button type="button" class="btn send-btn" (click)="sendEventChat()">➤</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Modal eliminar -->
-<div class="modal-overlay" *ngIf="showDeleteModal">
-  <div class="modal delete-modal">
-    <div class="modal-header">
-      <h3>{{ 'MY_EVENTS.DELETE_MODAL_TITLE' | translate }}</h3>
-      <button class="btn-close" (click)="closeDeleteModal()">×</button>
-    </div>
-    <p [innerHTML]="'MY_EVENTS.DELETE_MODAL_TEXT' | translate:{name: eventoToDelete?.name}"></p>
-    <div class="modal-actions">
-      <button class="btn cancel" (click)="closeDeleteModal()">
-        {{ 'MY_EVENTS.DELETE_MODAL_CANCEL' | translate }}
-      </button>
-      <button class="btn danger prominent" (click)="confirmDelete()">
-        {{ 'MY_EVENTS.DELETE_MODAL_CONFIRM' | translate }}
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal salir -->
-<div class="modal-overlay" *ngIf="showLeaveModal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>{{ 'MY_EVENTS.LEAVE_MODAL_TITLE' | translate }}</h3>
-      <button class="btn-close" (click)="closeLeaveModal()">×</button>
-    </div>
-    <p [innerHTML]="'MY_EVENTS.LEAVE_MODAL_TEXT' | translate:{name: eventoToLeave?.name}"></p>
-    <div class="modal-actions">
-      <button class="btn cancel" (click)="closeLeaveModal()">
-        {{ 'MY_EVENTS.LEAVE_MODAL_CANCEL' | translate }}
-      </button>
-      <button class="btn danger" (click)="confirmLeave()">
-        {{ 'MY_EVENTS.LEAVE_MODAL_CONFIRM' | translate }}
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal valoraciones -->
-<div class="modal-overlay" *ngIf="showRatingsModal">
-  <div class="modal modal-ratings" role="dialog" aria-modal="true" aria-labelledby="ratingsTitle">
-    <div class="modal-header sticky-header">
-      <h3 id="ratingsTitle">
-        {{ 'RATINGS.MODAL_TITLE_PREFIX' | translate }} {{ ratingsEventoName }}
-      </h3>
-      <button class="btn-close" (click)="closeRatingsModal()" aria-label="Cerrar">×</button>
-    </div>
-
-    <div class="modal-content">
-      <div class="ratings-summary">
-        <div>
-          <strong>{{ 'RATINGS.SUMMARY_AVG' | translate }}</strong>
-          {{ ratingsAvg != null ? (ratingsAvg | number:'1.1-2') : '—' }}
-        </div>
-        <div>
-          <strong>{{ 'RATINGS.SUMMARY_TOTAL' | translate }}</strong>
-          {{ ratingsCount != null ? ratingsCount : 0 }}
-        </div>
+  <!-- 📤 Modal compartir evento -->
+  <div class="modal-overlay" *ngIf="shareModalOpen">
+    <div class="modal modal--medium share-modal">
+      <div class="modal-header">
+        <h3>
+          📤 {{ 'MY_EVENTS.SHARE_EVENT_TITLE' | translate }}
+          <span *ngIf="shareEvento" class="event-name-tag">{{ shareEvento.name }}</span>
+        </h3>
+        <button class="btn-close" (click)="closeShareModal()">×</button>
       </div>
 
-      <div class="card upsert-card">
-        <h4>{{ 'RATINGS.YOUR_RATING_TITLE' | translate }}</h4>
-        <div class="upsert-row">
-          <label class="upsert-label">{{ 'RATINGS.YOUR_RATING_SCORE_LABEL' | translate }}</label>
-          <div class="upsert-right">
-            <span class="score-text" *ngIf="myScore">
-              {{ 'RATINGS.YOUR_RATING_SCORE_TEXT' | translate:{score: myScore} }}
-            </span>
-            <div class="rating-stars">
-              <button
-                type="button"
-                *ngFor="let s of stars; let i = index"
-                [attr.aria-label]="'Puntuación ' + (i + 1)"
-                [class.active]="myScore >= i + 1"
-                (click)="setScore(i + 1)">
-                <span class="star-icon" [class.filled]="myScore >= i + 1">★</span>
+      <div class="modal-body">
+        <div *ngIf="shareLoading" class="msg">{{ 'MY_EVENTS.SHARE_EVENT_LOADING' | translate }}</div>
+        <div *ngIf="shareError" class="msg msg--error">{{ shareError }}</div>
+
+        <div *ngIf="!shareLoading && !shareError">
+          <div *ngIf="!shareFriends.length" class="empty">
+            {{ 'MY_EVENTS.SHARE_EVENT_NO_FRIENDS' | translate }}
+          </div>
+
+          <ul *ngIf="shareFriends.length" class="share-friends-list">
+            <li *ngFor="let f of shareFriends" class="share-friend-item">
+              <div class="friend-info">
+                <div class="friend-name">{{ f.username }}</div>
+              </div>
+              <button type="button" class="btn btn--primary" (click)="sendEventToFriend(f)">
+                {{ 'MY_EVENTS.SHARE_EVENT_SEND' | translate }}
               </button>
-            </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🗑️ Modal eliminar -->
+  <div class="modal-overlay" *ngIf="showDeleteModal">
+    <div class="modal modal--medium">
+      <div class="modal-header">
+        <h3>{{ 'MY_EVENTS.DELETE_MODAL_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeDeleteModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p [innerHTML]="'MY_EVENTS.DELETE_MODAL_TEXT' | translate:{name: eventoToDelete?.name}"></p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn--ghost" (click)="closeDeleteModal()">
+          {{ 'MY_EVENTS.DELETE_MODAL_CANCEL' | translate }}
+        </button>
+        <button class="btn btn--danger" (click)="confirmDelete()">
+          {{ 'MY_EVENTS.DELETE_MODAL_CONFIRM' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🚪 Modal salir -->
+  <div class="modal-overlay" *ngIf="showLeaveModal">
+    <div class="modal modal--medium">
+      <div class="modal-header">
+        <h3>{{ 'MY_EVENTS.LEAVE_MODAL_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeLeaveModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p [innerHTML]="'MY_EVENTS.LEAVE_MODAL_TEXT' | translate:{name: eventoToLeave?.name}"></p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn--ghost" (click)="closeLeaveModal()">
+          {{ 'MY_EVENTS.LEAVE_MODAL_CANCEL' | translate }}
+        </button>
+        <button class="btn btn--danger" (click)="confirmLeave()">
+          {{ 'MY_EVENTS.LEAVE_MODAL_CONFIRM' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⭐ Modal valoraciones -->
+  <div class="modal-overlay" *ngIf="showRatingsModal">
+    <div class="modal modal--large ratings-modal">
+      <div class="modal-header">
+        <h3>⭐ {{ 'RATINGS.MODAL_TITLE_PREFIX' | translate }} {{ ratingsEventoName }}</h3>
+        <button class="btn-close" (click)="closeRatingsModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="ratings-summary">
+          <div>
+            <strong>{{ 'RATINGS.SUMMARY_AVG' | translate }}</strong>
+            {{ ratingsAvg != null ? (ratingsAvg | number:'1.1-2') : '—' }}
+          </div>
+          <div>
+            <strong>{{ 'RATINGS.SUMMARY_TOTAL' | translate }}</strong>
+            {{ ratingsCount != null ? ratingsCount : 0 }}
           </div>
         </div>
 
-        <div class="upsert-row">
-          <label for="myComment">{{ 'RATINGS.YOUR_RATING_COMMENT_LABEL' | translate }}</label>
-          <textarea
-            id="myComment"
-            [(ngModel)]="myComment"
-            rows="3"
-            maxlength="1000"
-            [placeholder]="'RATINGS.YOUR_RATING_COMMENT_PLACEHOLDER' | translate"></textarea>
+        <div class="card-upsert">
+          <h4>{{ 'RATINGS.YOUR_RATING_TITLE' | translate }}</h4>
+          <div class="upsert-row">
+            <label>{{ 'RATINGS.YOUR_RATING_SCORE_LABEL' | translate }}</label>
+            <div class="upsert-right">
+              <span class="score-text" *ngIf="myScore">
+                {{ 'RATINGS.YOUR_RATING_SCORE_TEXT' | translate:{score: myScore} }}
+              </span>
+              <div class="rating-stars">
+                <button type="button" *ngFor="let s of stars; let i = index" [class.active]="myScore >= i + 1"
+                  (click)="setScore(i + 1)">
+                  <span class="star-icon" [class.filled]="myScore >= i + 1">★</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="upsert-row">
+            <label for="myComment">{{ 'RATINGS.YOUR_RATING_COMMENT_LABEL' | translate }}</label>
+            <textarea id="myComment" [(ngModel)]="myComment" rows="3" maxlength="1000"
+              [placeholder]="'RATINGS.YOUR_RATING_COMMENT_PLACEHOLDER' | translate"></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn--primary" [disabled]="saving" (click)="saveRating()">
+              {{ saving ? ('CREATE_EVENT.SUBMIT_SAVING' | translate) : ('RATINGS.YOUR_RATING_SAVE_BUTTON' | translate) }}
+            </button>
+          </div>
+
+          <p class="msg msg--error" *ngIf="ratingsError">{{ ratingsError }}</p>
+          <p class="msg" *ngIf="ratingsInfo">{{ ratingsInfo }}</p>
         </div>
 
-        <div class="actions">
-          <button class="btn-primary" [disabled]="saving" (click)="saveRating()">
-            {{ saving ? ('CREATE_EVENT.SUBMIT_SAVING' | translate) : ('RATINGS.YOUR_RATING_SAVE_BUTTON' | translate) }}
+        <div class="search-row">
+          <input type="text" [placeholder]="'RATINGS.SEARCH_PLACEHOLDER' | translate" [(ngModel)]="q"
+            (keyup.enter)="searchRatings()">
+          <button class="btn btn--outline" (click)="searchRatings()">
+            🔍 {{ 'RATINGS.SEARCH_BUTTON' | translate }}
           </button>
         </div>
 
-        <p class="msg error" *ngIf="ratingsError">{{ ratingsError }}</p>
-        <p class="msg" *ngIf="ratingsInfo">{{ ratingsInfo }}</p>
-      </div>
+        <div *ngIf="ratingsLoading" class="loading-ratings">
+          <div class="spinner-small"></div>
+          <p>Cargando valoraciones...</p>
+        </div>
 
-      <div class="tools-row">
-        <input
-          type="text"
-          [placeholder]="'RATINGS.SEARCH_PLACEHOLDER' | translate"
-          [(ngModel)]="q"
-          (keyup.enter)="searchRatings()"
-          aria-label="Buscar comentarios">
-        <button class="btn" (click)="searchRatings()">
-          {{ 'RATINGS.SEARCH_BUTTON' | translate }}
-        </button>
-      </div>
-
-      <div class="list-header" *ngIf="!ratingsLoading">
-        <span class="counter">
-          {{ 'RATINGS.LIST_PAGE_INFO' | translate:{page: page, totalPages: totalPages} }}
-        </span>
-        <span class="total">
-          {{ 'RATINGS.LIST_TOTAL_ITEMS' | translate:{total: totalItems} }}
-        </span>
-      </div>
-
-      <ul class="ratings-list" *ngIf="ratingsLoading">
-        <li class="skeleton">
-          <div class="skeleton-score"></div>
-          <div class="skeleton-lines">
-            <div class="skeleton-line w60"></div>
-            <div class="skeleton-line w40"></div>
+        <ng-container *ngIf="!ratingsLoading">
+          <!-- Info de página -->
+          <div class="list-info" *ngIf="ratingsList && ratingsList.length > 0">
+            <span class="counter">
+              Mostrando {{ ((page-1)*pageSize) + 1 }} - {{ Math.min(page*pageSize, ratingsList.length) }} de {{ ratingsList.length }}
+            </span>
+            <span class="total">
+              Página {{ page }} / {{ Math.ceil(ratingsList.length / pageSize) }}
+            </span>
           </div>
-        </li>
-        <li class="skeleton">
-          <div class="skeleton-score"></div>
-          <div class="skeleton-lines">
-            <div class="skeleton-line w70"></div>
-            <div class="skeleton-line w35"></div>
-          </div>
-        </li>
-      </ul>
 
-      <ul class="ratings-list" *ngIf="!ratingsLoading && ratingsList.length; else emptyOrLoading">
-        <li *ngFor="let r of (ratingsList | slice: ((page-1)*pageSize) : ((page-1)*pageSize)+pageSize)">
-          <div class="left">
-            <div class="score">⭐ {{ r.puntuacion }}/5</div>
-            <div class="meta">
-              <div class="comment" *ngIf="r.comentario; else noComment">
-                {{ r.comentario }}
+          <!-- Lista de valoraciones -->
+          <ul class="ratings-list" *ngIf="ratingsList && ratingsList.length > 0">
+            <li *ngFor="let r of (ratingsList | slice: ((page-1)*pageSize) : (page*pageSize))">
+              <div class="rating-content">
+                <div class="score">⭐ {{ r.puntuacion }}/5</div>
+                <div class="meta">
+                  <div class="comment" *ngIf="r.comentario; else noComment">{{ r.comentario }}</div>
+                  <ng-template #noComment>
+                    <span class="muted">{{ 'RATINGS.LIST_NO_COMMENT' | translate }}</span>
+                  </ng-template>
+                  <div class="date muted">{{ r.createdAt | date:'short' }}</div>
+                </div>
               </div>
-              <ng-template #noComment>
-                <span class="muted">{{ 'RATINGS.LIST_NO_COMMENT' | translate }}</span>
-              </ng-template>
-              <div class="date muted">{{ r.createdAt | date:'short' }}</div>
-            </div>
+            </li>
+          </ul>
+
+          <!-- Paginador -->
+          <div class="pager" *ngIf="ratingsList && ratingsList.length > pageSize">
+            <button type="button" class="pager-btn" (click)="prevRatingsPage()" [disabled]="page <= 1">
+              « Anterior
+            </button>
+            <span class="pager-info">
+              {{ page }} / {{ Math.ceil(ratingsList.length / pageSize) }}
+            </span>
+            <button type="button" class="pager-btn" (click)="nextRatingsPage()" [disabled]="page >= Math.ceil(ratingsList.length / pageSize)">
+              Siguiente »
+            </button>
           </div>
-        </li>
-      </ul>
 
-      <ng-template #emptyOrLoading>
-        <div class="empty" *ngIf="!ratingsLoading">
-          {{ 'RATINGS.LIST_NO_RATINGS' | translate }}
-        </div>
-      </ng-template>
+          <!-- Mensaje vacío -->
+          <div class="empty" *ngIf="!ratingsList || ratingsList.length === 0">
+            {{ 'RATINGS.LIST_NO_RATINGS' | translate }}
+          </div>
+        </ng-container>
+      </div>
 
-      <div class="pager" *ngIf="totalPages > 1">
-        <button (click)="changeRatingsPage(-1)" [disabled]="page <= 1">
-          {{ 'RATINGS.PAGER_PREV' | translate }}
-        </button>
-        <span>
-          {{ 'RATINGS.LIST_PAGE_INFO' | translate:{page: page, totalPages: totalPages} }}
-        </span>
-        <button (click)="changeRatingsPage(1)" [disabled]="page >= totalPages">
-          {{ 'RATINGS.PAGER_NEXT' | translate }}
+      <div class="modal-actions">
+        <button class="btn btn--ghost" (click)="closeRatingsModal()">
+          {{ 'RATINGS.CLOSE_BUTTON' | translate }}
         </button>
       </div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn cancel" (click)="closeRatingsModal()">
-        {{ 'RATINGS.CLOSE_BUTTON' | translate }}
-      </button>
     </div>
   </div>
-</div>
 
-<!-- Modal editar -->
-<div class="modal-overlay" *ngIf="showEditModal">
-  <div class="modal edit-modal" role="dialog" aria-modal="true" aria-labelledby="editTitle">
-    <div class="modal-header">
-      <div class="modal-title-block">
-        <h2 id="editTitle">Modificar evento</h2>
+  <!-- ✏️ Modal editar -->
+  <div class="modal-overlay" *ngIf="showEditModal">
+    <div class="modal modal--medium">
+      <div class="modal-header">
+        <h3>✏️ Modificar evento</h3>
+        <button class="btn-close" (click)="closeEditModal()">×</button>
       </div>
-      <button class="close-btn" type="button" (click)="closeEditModal()" aria-label="Cerrar">✖</button>
+
+      <form (ngSubmit)="confirmEdit()" class="modal-body">
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="editName">{{ 'CREATE_EVENT.FIELD_NAME_LABEL' | translate }}</label>
+            <input id="editName" type="text" [(ngModel)]="editName" name="editName" required />
+          </div>
+
+          <div class="form-group">
+            <label for="editAddress">{{ 'CREATE_EVENT.FIELD_ADDRESS_LABEL' | translate }}</label>
+            <input id="editAddress" type="text" [(ngModel)]="editAddress" name="editAddress" />
+          </div>
+
+          <div class="form-group">
+            <label for="editTime">{{ 'CREATE_EVENT.FIELD_TIME_LABEL' | translate }}</label>
+            <input id="editTime" type="time" [(ngModel)]="editTime" name="editTime" />
+          </div>
+
+          <div class="form-group">
+            <label for="editDate">{{ 'CREATE_EVENT.FIELD_DATE_LABEL' | translate }}</label>
+            <input id="editDate" type="date" [(ngModel)]="editDate" name="editDate" />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn--ghost" (click)="closeEditModal()">
+            {{ 'PROFILE.EDIT_CANCEL' | translate }}
+          </button>
+          <button type="submit" class="btn btn--primary">
+            {{ 'PROFILE.EDIT_SAVE' | translate }}
+          </button>
+        </div>
+      </form>
     </div>
-
-    <form (ngSubmit)="confirmEdit()" class="modal-form">
-      <div class="modal-body grid-2">
-        <div class="form-group">
-          <label for="editName">{{ 'CREATE_EVENT.FIELD_NAME_LABEL' | translate }}</label>
-          <input id="editName" type="text" [(ngModel)]="editName" name="editName" required />
-        </div>
-
-        <div class="form-group">
-          <label for="editAddress">{{ 'CREATE_EVENT.FIELD_ADDRESS_LABEL' | translate }}</label>
-          <input id="editAddress" type="text" [(ngModel)]="editAddress" name="editAddress" />
-        </div>
-
-        <div class="form-group">
-          <label for="editTime">{{ 'CREATE_EVENT.FIELD_TIME_LABEL' | translate }}</label>
-          <input id="editTime" type="time" [(ngModel)]="editTime" name="editTime" />
-        </div>
-
-        <div class="form-group">
-          <label for="editDate">{{ 'CREATE_EVENT.FIELD_DATE_LABEL' | translate }}</label>
-          <input id="editDate" type="date" [(ngModel)]="editDate" name="editDate" />
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">
-          {{ 'PROFILE.EDIT_CANCEL' | translate }}
-        </button>
-        <button type="submit" class="btn btn-primary">
-          {{ 'PROFILE.EDIT_SAVE' | translate }}
-        </button>
-      </div>
-    </form>
   </div>
-</div>
 
-<div class="modal-overlay" *ngIf="showMapModal">
-  <div class="modal map-modal" role="dialog" aria-modal="true" aria-labelledby="mapTitle">
-    <div class="modal-header">
-      <h3 id="mapTitle">
-        {{ 'MAP.MODAL_TITLE_PREFIX' | translate }} {{ mapEventoName }}
-      </h3>
-      <button class="btn-close" (click)="closeMapModal()" aria-label="Cerrar">×</button>
-    </div>
-    <div class="modal-content map-content">
-      <div *ngIf="mapSafeUrl; else noMap">
-        <iframe
-          class="map-frame"
-          [src]="mapSafeUrl"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
-        <a
-          *ngIf="mapLinkUrl"
-          class="map-link"
-          [href]="mapLinkUrl"
-          target="_blank"
-          rel="noopener noreferrer">
-          {{ 'MAP.OPEN_LARGE' | translate }}
-        </a>
+  <!-- 🗺️ Modal mapa -->
+  <div class="modal-overlay" *ngIf="showMapModal">
+    <div class="modal modal--large map-modal">
+      <div class="modal-header">
+        <h3>🗺️ {{ 'MAP.MODAL_TITLE_PREFIX' | translate }} {{ mapEventoName }}</h3>
+        <button class="btn-close" (click)="closeMapModal()">×</button>
       </div>
-      <ng-template #noMap>
-        <p>{{ 'MAP.NO_MAP' | translate }}</p>
-      </ng-template>
-    </div>
-    <div class="modal-actions">
-      <button class="btn cancel" (click)="closeMapModal()">
-        {{ 'MAP.CLOSE' | translate }}
-      </button>
+      <div class="modal-body">
+        <div *ngIf="mapSafeUrl; else noMap" class="map-container">
+          <iframe class="map-frame" [src]="mapSafeUrl" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <a *ngIf="mapLinkUrl" class="map-link" [href]="mapLinkUrl" target="_blank" rel="noopener noreferrer">
+            {{ 'MAP.OPEN_LARGE' | translate }}
+          </a>
+        </div>
+        <ng-template #noMap>
+          <p class="no-map-text">{{ 'MAP.NO_MAP' | translate }}</p>
+        </ng-template>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn--ghost" (click)="closeMapModal()">
+          {{ 'MAP.CLOSE' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </div>

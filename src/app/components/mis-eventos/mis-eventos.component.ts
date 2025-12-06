@@ -56,6 +56,7 @@ export class MisEventosComponent implements OnInit {
   pageSize: number = 4;
   totalItems: number = 0;
   totalPages: number = 1;
+  Math = Math;
 
   stars = [1, 2, 3, 4, 5];
   hover = 0;
@@ -282,6 +283,19 @@ export class MisEventosComponent implements OnInit {
     this.totalItems = (this.ratingsList?.length ?? 0);
     this.totalPages = Math.max(1, Math.ceil(this.totalItems / this.pageSize));
     this.page = Math.min(this.page, this.totalPages);
+  }
+
+  prevRatingsPage() {
+    if (this.page > 1) {
+      this.page--;
+    }
+  }
+
+  nextRatingsPage() {
+    const totalPages = Math.ceil(this.ratingsList.length / this.pageSize);
+    if (this.page < totalPages) {
+      this.page++;
+    }
   }
 
   openRatingsModal(ev: Evento) {
