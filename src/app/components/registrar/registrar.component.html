@@ -1,9 +1,7 @@
-
 <div class="login-container">
-  <div class="space-background"></div>
-  <div class="stars"></div>
+  <div class="login-backdrop"></div>
 
-  <div class="login-card">
+  <div class="login-card login-card--wide">
     <div class="lang-switcher">
       <button
         type="button"
@@ -55,7 +53,7 @@
         </button>
       </div>
 
-      <button class="theme-toggle-register" (click)="toggleTheme()">
+      <button class="theme-toggle-btn" (click)="toggleTheme()">
         {{ theme() === 'dark' ? '☀️' : '🌙' }}
       </button>
     </div>
@@ -81,8 +79,7 @@
               #usernameCtrl="ngModel"
               required
               minlength="3"
-              [placeholder]="'REGISTER.USERNAME_PLACEHOLDER' | translate"
-            >
+              [placeholder]="'REGISTER.USERNAME_PLACEHOLDER' | translate" />
             <div *ngIf="(usernameCtrl.touched || formSubmitted) && usernameCtrl.invalid" class="error-message">
               <span>⚠</span>
               <span *ngIf="usernameCtrl.errors?.['required']">
@@ -111,8 +108,7 @@
               #gmailCtrl="ngModel"
               required
               email
-              [placeholder]="'REGISTER.EMAIL_PLACEHOLDER' | translate"
-            >
+              [placeholder]="'REGISTER.EMAIL_PLACEHOLDER' | translate" />
             <div *ngIf="(gmailCtrl.touched || formSubmitted) && gmailCtrl.invalid" class="error-message">
               <span>⚠</span>
               <span *ngIf="gmailCtrl.errors?.['required']">
@@ -144,9 +140,7 @@
                 #passwordCtrl="ngModel"
                 required
                 minlength="7"
-                [placeholder]="'REGISTER.PASSWORD_PLACEHOLDER' | translate"
-              />
-
+                [placeholder]="'REGISTER.PASSWORD_PLACEHOLDER' | translate" />
               <button type="button" class="toggle-pass" (click)="togglePassword()">
                 {{ showPassword ? '🙈' : '👁️' }}
               </button>
@@ -174,9 +168,10 @@
               name="confirmarPassword"
               #confirmarCtrl="ngModel"
               required
-              [placeholder]="'REGISTER.CONFIRM_PASSWORD_PLACEHOLDER' | translate"
-            >
-            <div *ngIf="(confirmarCtrl.touched || formSubmitted) && confirmarPassword !== nuevoUsuario.password" class="error-message">
+              [placeholder]="'REGISTER.CONFIRM_PASSWORD_PLACEHOLDER' | translate" />
+            <div
+              *ngIf="(confirmarCtrl.touched || formSubmitted) && confirmarPassword !== nuevoUsuario.password"
+              class="error-message">
               <span>⚠</span>
               <span>{{ 'REGISTER.CONFIRM_PASSWORD_MISMATCH' | translate }}</span>
             </div>
@@ -194,8 +189,7 @@
               name="birthday"
               #birthdayCtrl="ngModel"
               required
-              [max]="maxDate"
-            >
+              [max]="maxDate" />
             <div *ngIf="(birthdayCtrl.touched || formSubmitted) && birthdayCtrl.invalid" class="error-message">
               <span>⚠</span>
               <span *ngIf="birthdayCtrl.errors?.['required']">
@@ -213,8 +207,7 @@
         <button
           type="submit"
           class="login-button"
-          [disabled]="isSubmitting"
-        >
+          [disabled]="isSubmitting">
           <span *ngIf="isSubmitting" class="loading-spinner"></span>
           {{
             isSubmitting

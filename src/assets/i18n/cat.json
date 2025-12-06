@@ -143,7 +143,13 @@
 
     "CHAT_EVENT_INVITE_TITLE": "Invitació a un esdeveniment",
     "CHAT_EVENT_INVITE_JOIN": "Unir-se",
-    "CHAT_EVENT_INVITE_ALREADY_IN": "Ja hi ets dins"
+    "CHAT_EVENT_INVITE_ALREADY_IN": "Ja hi ets dins",
+
+    "CONFIRM_REMOVE_TITLE": "Eliminar amic",
+    "CONFIRM_REMOVE_TEXT": "Segur que vols eliminar",
+    "CONFIRM_REMOVE_WARNING": "Aquesta acció és permanent i no es pot desfer.",
+    "CONFIRM_REMOVE_CANCEL": "Cancel·lar",
+    "CONFIRM_REMOVE_CONFIRM": "Eliminar"
   },
 
   "FRIENDS": {

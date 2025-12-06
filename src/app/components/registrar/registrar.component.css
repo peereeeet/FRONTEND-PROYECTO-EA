@@ -1,84 +1,72 @@
-
 @import '../login/login.component.css';
 
-.login-card{ 
-  max-width:900px; width:90%;
-  border:2px solid rgba(167,139,250,.5);
-  box-shadow: 0 30px 60px rgba(139,92,246,.3), 0 0 100px rgba(59,130,246,.2);
+/* Ensanchamos un poco la tarjeta de registro */
+.login-card.login-card--wide {
+  max-width: 900px;
 }
 
-.form-grid{ 
-  display:grid; 
-  grid-template-columns: 1fr 1fr; 
-  gap:24px; 
-}
-.form-column{ 
-  display:flex; 
-  flex-direction:column; 
-  gap:14px; 
+/* Grid de formulario en dos columnas en escritorio */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
 }
 
-.buttons-row{ 
-  display:flex; 
-  justify-content:center; 
-  align-items:center; 
-  gap:16px; 
-  margin-top:24px; 
-  flex-wrap:wrap; 
-}
-.buttons-row .login-button, 
-.buttons-row .admin-button{ 
-  flex:1; 
-  max-width:240px; 
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.form-error{
-  margin-top:20px; 
-  padding:14px 16px; 
-  background: linear-gradient(135deg, rgba(254,202,202,.3), rgba(252,165,165,.2));
-  border:2px solid #f87171; 
-  color:#b91c1c; 
-  text-align:center; 
-  border-radius:14px;
-  font-weight:700;
-  box-shadow:0 8px 20px rgba(239,68,68,.2);
-}
-
-@media (max-width: 700px){
-  .form-grid{ grid-template-columns:1fr; }
-  .buttons-row{ flex-direction:column; }
-  .buttons-row .login-button, 
-  .buttons-row .admin-button{ max-width:100%; }
-}
-
-.theme-toggle-register {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: linear-gradient(135deg, var(--purple-300), var(--accent-blue-light));
-  display: inline-flex;
-  align-items: center;
+/* Fila de botones */
+.buttons-row {
+  display: flex;
   justify-content: center;
-  cursor: pointer;
-  font-size: 18px;
-  color: #ffffff;
-  backdrop-filter: blur(8px);
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 12px var(--glow-purple);
+  align-items: center;
+  gap: 14px;
+  margin-top: 22px;
+  flex-wrap: wrap;
 }
 
-.theme-toggle-register:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px var(--glow-purple-strong);
+.buttons-row .login-button,
+.buttons-row .admin-button {
+  flex: 1;
+  max-width: 240px;
 }
 
-.dark-theme .theme-toggle-register {
-  background: linear-gradient(135deg, var(--purple-600), var(--accent-blue));
-  border-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
+/* Error global */
+.form-error {
+  margin-top: 18px;
+  padding: 12px 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(254, 202, 202, 0.3),
+    rgba(252, 165, 165, 0.2)
+  );
+  border: 1px solid #f87171;
+  color: #b91c1c;
+  text-align: center;
+  border-radius: 14px;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
 }
 
-.dark-theme .theme-toggle-register:hover {
-  box-shadow: 0 8px 22px var(--glow-purple-strong);
+/* Responsive */
+@media (max-width: 700px) {
+  .login-card.login-card--wide {
+    max-width: 480px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .buttons-row {
+    flex-direction: column;
+  }
+
+  .buttons-row .login-button,
+  .buttons-row .admin-button {
+    max-width: 100%;
+  }
 }

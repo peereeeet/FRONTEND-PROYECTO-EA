@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subject, Subscription, fromEvent } from 'rxjs';
+import { Subject, Subscription, fromEvent, interval } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SocketService } from '../../services/socket.service';
 import { ChatMessage } from '../../models/user.model';
-import { logger } from '../../utils/logger';
+import * as maplibregl from 'maplibre-gl';
 
 type FriendLike = User;
 
@@ -41,6 +41,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private socketService = inject(SocketService);
   private readonly EVENT_INVITE_PREFIX = '__EVENT_INVITE__|';
   @ViewChild('chatMessagesContainer') chatMessagesContainer?: ElementRef<HTMLDivElement>;
+  private userLocationMarker?: maplibregl.Marker;
 
   loading = signal(false);
   errorMsg = signal('');
@@ -90,6 +91,30 @@ export class MenuComponent implements OnInit, OnDestroy {
   private chatSocketsInitialized = false;
   eventInviteMembership: Record<string, boolean> = {};
 
+  allEventos: Evento[] = [];
+  eventosFiltrados: Evento[] = [];
+  eventos: Evento[] = [];
+  
+  loadingMap = false;
+  errorMessage = '';  
+  currentUserId = '';
+  currentUserRole = '';
+  page = 1;
+  pageSize = 6;
+  totalItems = 0;
+  totalPages = 1;
+  
+  private map: maplibregl.Map | null = null;
+  private markers: maplibregl.Marker[] = [];
+  private mapReady = false;
+  
+  selectedEvent: Evento | null = null;
+  showEventModal = false;
+
+  showConfirmRemove = signal(false);
+  friendToRemove = signal<any | null>(null);
+  removingFriend = signal(false);
+
   get mTotalPages(): number {
     const n = this.filteredUsers().length;
     return Math.max(1, Math.ceil(n / this.mPageSize()));
@@ -112,7 +137,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     return String((u as any)?._id ?? (u as any)?.id ?? '');
   }
 
-  constructor(private translate: TranslateService) {
+  constructor(private authService: AuthService,
+    private translate: TranslateService
+  ) {
     this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
     this.currentLang = savedLang;
@@ -120,6 +147,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    this.currentUserId = user?._id ?? '';
+    this.currentUserRole = user?.rol ?? 'usuario';
     this.auth.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe(u => {
@@ -130,6 +160,9 @@ export class MenuComponent implements OnInit, OnDestroy {
 
         const myId = this.getId(u);
         if (!myId) return;
+
+        this.refreshRequests();
+        this.refreshSentRequests();
 
         this.userService.setOnline(myId).subscribe({
           next: (res) => {
@@ -191,10 +224,33 @@ export class MenuComponent implements OnInit, OnDestroy {
           .onFriendRequestReceived()
           .pipe(takeUntil(this.destroy$))
           .subscribe((payload) => {
+            console.log('Nueva solicitud de amistad recibida vía WS', payload);
             this.newFriendRequests.update(v => v + 1);
+            this.requestsLoading.set(true);
+
             if (this.showRequestsModal()) {
               this.refreshRequests();
             }
+          });
+
+        this.friendsPollSub = interval(2000)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => {
+            const m = this.me();
+            const myId = m ? this.getId(m as any) : '';
+            if (!myId) return;
+
+            this.userService.getFriendRequests(myId).subscribe({
+              next: (list) => {
+                const count = (list || []).length;
+                if (this.newFriendRequests() !== count) {
+                  this.newFriendRequests.set(count);
+                }
+              },
+              error: (err) => {
+                console.error('Error refrescando solicitudes (polling)', err);
+              }
+            });
           });
       });
 
@@ -215,6 +271,11 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.focusSub?.unsubscribe();
     this.friendsPollSub?.unsubscribe();
     this.socketService.disconnect();
+
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+    }
   }
 
   private cargarEstadisticasEventos(userId: string): void {
@@ -227,24 +288,22 @@ export class MenuComponent implements OnInit, OnDestroy {
 
         const todosEventos = [...creados, ...inscritos];
         const ahora = new Date();
-        
-        const eventosFuturos = todosEventos
-          .filter(e => {
-            const fechaStr = Array.isArray(e.schedule) ? e.schedule[0] : e.schedule;
-            if (!fechaStr) return false;
-            return new Date(fechaStr) >= ahora;
+        const proximos = todosEventos
+          .map(e => {
+            const s = Array.isArray(e.schedule) ? e.schedule[0] : e.schedule;
+            return {
+              ...e,
+              fechaObj: s ? new Date(s) : new Date(0)
+            };
           })
-          .sort((a, b) => {
-            const fechaA = Array.isArray(a.schedule) ? a.schedule[0] : a.schedule;
-            const fechaB = Array.isArray(b.schedule) ? b.schedule[0] : b.schedule;
-            return new Date(fechaA).getTime() - new Date(fechaB).getTime();
-          })
+          .filter(e => e.fechaObj > ahora)
+          .sort((a, b) => a.fechaObj.getTime() - b.fechaObj.getTime())
           .slice(0, 3);
 
         this.eventStats.set({
           eventosCreados: creados.length,
           eventosInscritos: inscritos.length,
-          proximosEventos: eventosFuturos
+          proximosEventos: proximos as Evento[]
         });
 
         this.loadingEvents.set(false);
@@ -840,5 +899,455 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   toggleTheme() {
     this.themeService.toggleTheme();
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.initMap();
+    }, 500);
+  }
+  
+    private initMap(): void {
+      this.map = new maplibregl.Map({
+        container: 'explorar-map',
+        style: {
+          version: 8,
+          sources: {
+            'osm-tiles': {
+              type: 'raster',
+              tiles: [
+                'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+              ],
+              tileSize: 256,
+              attribution: '© OpenStreetMap contributors'
+            }
+          },
+          layers: [
+            {
+              id: 'osm-tiles-layer',
+              type: 'raster',
+              source: 'osm-tiles'
+            }
+          ]
+        },
+        center: [1.7, 41.3],
+        zoom: 11
+      });
+  
+      this.map.addControl(new maplibregl.NavigationControl(), 'top-right');
+  
+      this.map.on('load', () => {
+        this.mapReady = true;
+        this.fetchEventosForCurrentView(false);
+        this.map?.resize();
+        this.centerMapOnUserLocation();
+      });
+  
+      this.map.on('moveend', () => {
+        this.actualizarListaSegunMapa();
+      });
+    }
+
+    private centerMapOnUserLocation(): void {
+    if (!this.map) {
+      console.warn('[MENU] El mapa aún no está inicializado.');
+      return;
+    }
+
+    if (!('geolocation' in navigator)) {
+      console.warn('[MENU] El navegador no soporta geolocalización.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lng = position.coords.longitude;
+        const lat = position.coords.latitude;
+        const userLngLat: [number, number] = [lng, lat];
+        this.map!.setCenter(userLngLat);
+        this.map!.setZoom(13);
+
+        if (this.userLocationMarker) {
+          this.userLocationMarker.setLngLat(userLngLat);
+        } else {
+          this.userLocationMarker = new maplibregl.Marker({
+            color: '#007bff'
+          })
+            .setLngLat(userLngLat)
+            .addTo(this.map!);
+        }
+
+        console.log('[MENU] Mapa centrado en la ubicación del usuario', userLngLat);
+      },
+      (error) => {
+        console.warn('[MENU] Error al obtener geolocalización:', error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  }
+  
+  
+    private getMapBounds() {
+      if (!this.map) return null;
+      const b = this.map.getBounds();
+      return {
+        north: b.getNorth(),
+        south: b.getSouth(),
+        east: b.getEast(),
+        west: b.getWest()
+      };
+    }
+  
+    private fetchEventosForCurrentView(fromMapMove: boolean = false): void {
+      if (!this.map) return;
+  
+      const bounds = this.getMapBounds();
+      if (!fromMapMove) {
+        this.loadingMap = true;
+      }
+      this.errorMessage = '';
+  
+      const finalizar = () => {
+        if (!fromMapMove) {
+          this.loadingMap = false;
+        }
+      };
+  
+      if (!bounds) {
+        this.eventoService.getEventos(this.page, this.pageSize).subscribe({
+          next: (resp) => {
+            const lista = resp?.data ?? [];
+            const mapped = lista.map((raw: any) => {
+              const schedules = Array.isArray(raw.schedule)
+                ? raw.schedule
+                : raw.schedule
+                ? [raw.schedule]
+                : [];
+  
+              return {
+                ...raw,
+                lat: raw.lat != null ? Number(raw.lat) : undefined,
+                lng: raw.lng != null ? Number(raw.lng) : undefined,
+                schedule: schedules,
+                participantes: Array.isArray(raw.participantes)
+                  ? raw.participantes
+                  : raw.participantes
+                  ? [raw.participantes]
+                  : [],
+              } as Evento;
+            });
+  
+            this.allEventos = mapped;
+            this.eventosFiltrados = mapped;
+            this.totalItems = resp.totalItems ?? mapped.length;
+            this.totalPages =
+              resp.totalPages ??
+              Math.max(1, Math.ceil(this.totalItems / this.pageSize));
+            if (this.page > this.totalPages) this.page = this.totalPages || 1;
+  
+            this.eventos = mapped;
+  
+            this.pintarMarcadores();
+            finalizar();
+          },
+          error: (err) => {
+            this.eventos = [];
+            this.allEventos = [];
+            this.eventosFiltrados = [];
+            this.totalItems = 0;
+            this.totalPages = 1;
+            this.errorMessage =
+              err?.error?.message || 'Error al cargar eventos desde el servidor.';
+            this.limpiarMarcadores();
+            finalizar();
+          },
+        });
+  
+        return;
+      }
+  
+      this.eventoService
+        .getEventosByBounds(
+          bounds.north,
+          bounds.south,
+          bounds.east,
+          bounds.west,
+          this.page,
+          this.pageSize
+        )
+        .subscribe({
+          next: (resp) => {
+            const lista = resp?.data ?? [];
+            const mapped = lista.map((raw: any) => {
+              const schedules = Array.isArray(raw.schedule)
+                ? raw.schedule
+                : raw.schedule
+                ? [raw.schedule]
+                : [];
+  
+              return {
+                ...raw,
+                lat: raw.lat != null ? Number(raw.lat) : undefined,
+                lng: raw.lng != null ? Number(raw.lng) : undefined,
+                schedule: schedules,
+                participantes: Array.isArray(raw.participantes)
+                  ? raw.participantes
+                  : raw.participantes
+                  ? [raw.participantes]
+                  : [],
+              } as Evento;
+            });
+  
+            this.allEventos = mapped;
+            this.eventosFiltrados = mapped;
+            this.totalItems = resp.totalItems ?? mapped.length;
+            this.totalPages =
+              resp.totalPages ??
+              Math.max(1, Math.ceil(this.totalItems / this.pageSize));
+            if (this.page > this.totalPages) this.page = this.totalPages || 1;
+  
+            this.eventos = mapped;
+  
+            this.pintarMarcadores();
+            finalizar();
+          },
+          error: (err) => {
+            this.eventos = [];
+            this.allEventos = [];
+            this.eventosFiltrados = [];
+            this.totalItems = 0;
+            this.totalPages = 1;
+            this.errorMessage =
+              err?.error?.message || 'Error al cargar eventos desde el servidor.';
+            this.limpiarMarcadores();
+            finalizar();
+          },
+        });
+    }
+  
+    private loadAllEventos(): void {
+      this.loadingMap = true;
+      this.errorMessage = '';
+  
+      this.eventoService.getEventos(1, 1000).subscribe({
+        next: (resp: any) => {
+          const lista =
+            resp?.eventos ||
+            resp?.data ||
+            resp?.allEventos ||
+            resp?.results ||
+            [];
+  
+          this.allEventos = lista.map((e: any) => ({
+            ...e,
+            lat: e.lat != null ? Number(e.lat) : null,
+            lng: e.lng != null ? Number(e.lng) : null,
+            schedule: Array.isArray(e.schedule)
+              ? e.schedule
+              : (e.schedule ? [e.schedule] : []),
+            participantes: Array.isArray(e.participantes)
+              ? e.participantes
+              : (Array.isArray(e.participants) ? e.participants : [])
+          }));
+  
+          this.loadingMap = false;
+  
+          this.page = 1;
+          this.fetchEventosForCurrentView();
+        },
+        error: (err) => {
+          this.loadingMap = false;
+          this.errorMessage = 'Error al cargar eventos.';
+        }
+      });
+    }
+  
+    private actualizarListaSegunMapa(): void {
+      if (!this.mapReady) return;
+      this.fetchEventosForCurrentView(true);
+    }
+  
+    private pintarMarcadores(): void {
+      if (!this.map) return;
+      this.markers.forEach(m => m.remove());
+      this.markers = [];
+  
+      this.eventos.forEach(ev => {
+        if (ev.lat == null || ev.lng == null) return;
+  
+        const marker = new maplibregl.Marker({ color: '#4f46e5' })
+          .setLngLat([Number(ev.lng), Number(ev.lat)])
+          .addTo(this.map as maplibregl.Map);
+  
+        const el = marker.getElement();
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', () => {
+          this.openEventModal(ev);
+        });
+  
+        this.markers.push(marker);
+      });
+    }
+  
+    private limpiarMarcadores(): void {
+      if (!this.map) return;
+      this.markers.forEach(m => m.remove());
+      this.markers = [];
+    }
+  
+    private fitMapToAllEventos(): void {
+      if (!this.map || this.allEventos.length === 0) return;
+  
+      const bounds = new maplibregl.LngLatBounds();
+  
+      this.allEventos.forEach(ev => {
+        if (ev.lat != null && ev.lng != null) {
+          bounds.extend([Number(ev.lng), Number(ev.lat)]);
+        }
+      });
+  
+      if (!bounds.isEmpty()) {
+        this.map.fitBounds(bounds, { padding: 60 });
+      }
+    }
+  
+    openEventModal(ev: Evento): void {
+      this.selectedEvent = ev;
+      this.showEventModal = true;
+    }
+  
+    closeEventModal(): void {
+      this.showEventModal = false;
+      this.selectedEvent = null;
+    }
+  
+    joinEvento(ev: Evento): void {
+      if (!ev._id) return;
+  
+      this.eventoService.joinEvento(ev._id).subscribe({
+        next: (updated: any) => {
+          const idx = this.allEventos.findIndex(e => e._id === ev._id);
+          if (idx !== -1) {
+            this.allEventos[idx] = updated;
+          }
+          this.actualizarListaSegunMapa();
+          this.pintarMarcadores();
+          if (this.selectedEvent && this.selectedEvent._id === ev._id) {
+            this.selectedEvent = updated;
+          }
+        },
+        error: (err) => {
+          this.errorMessage = err?.error?.message || 'Error al unirse al evento.';
+        }
+      });
+    }
+  
+    leaveEvento(ev: Evento): void {
+      if (!ev._id) return;
+  
+      this.eventoService.leaveEvento(ev._id).subscribe({
+        next: (updated: any) => {
+          const idx = this.allEventos.findIndex(e => e._id === ev._id);
+          if (idx !== -1) {
+            this.allEventos[idx] = updated;
+          }
+          this.actualizarListaSegunMapa();
+          this.pintarMarcadores();
+  
+          if (this.selectedEvent && this.selectedEvent._id === ev._id) {
+            this.selectedEvent = updated;
+          }
+        },
+        error: (err) => {
+          this.errorMessage = err?.error?.message || 'Error al salir del evento.';
+        }
+      });
+    }
+  
+    isUserCreator(ev: Evento): boolean {
+      if (!this.currentUserId || !ev.creador) return false;
+  
+      const c: any = ev.creador;
+      const creadorId = typeof c === 'string' ? c : c?._id;
+      return creadorId === this.currentUserId;
+    }
+  
+    isUserInEvento(ev: Evento): boolean {
+      if (!this.currentUserId || !ev.participantes) return false;
+      return (ev.participantes as any[]).some(p =>
+        typeof p === 'string' ? p === this.currentUserId : p?._id === this.currentUserId
+      );
+    }
+  
+    isAdmin(): boolean {
+      return this.currentUserRole === 'admin';
+    }
+  
+    getCreadorName(ev: any): string {
+      const c = ev.creador;
+      if (!c) return 'Desconocido';
+      if (typeof c === 'string') return c;
+      return c.username || c.gmail || 'Desconocido';
+    }
+  
+    getScheduleText(ev: any): string {
+      const s = Array.isArray(ev.schedule) ? ev.schedule[0] : ev.schedule;
+      if (!s) return 'Sin fecha definida';
+  
+      const d = new Date(s);
+      if (isNaN(d.getTime())) return 'Horario no válido';
+  
+      return d.toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    nextPage(): void {
+    if (this.page < this.totalPages) {
+      this.page++;
+      this.fetchEventosForCurrentView(true);
+    }
+  }
+
+  prevPage(): void {
+    if (this.page > 1) {
+      this.page--;
+      this.fetchEventosForCurrentView(true);
+    }
+  }
+
+  openConfirmRemoveFriend(friend: any) {
+    this.friendToRemove.set(friend);
+    this.showConfirmRemove.set(true);
+  }
+
+  closeConfirmRemoveFriend() {
+    this.showConfirmRemove.set(false);
+    this.friendToRemove.set(null);
+  }
+
+  confirmRemoveFriend() {
+    const friend = this.friendToRemove();
+    if (!friend || this.removingFriend()) return;
+
+    this.removingFriend.set(true);
+
+    try {
+      this.quitar(friend._id!);
+
+    } catch (err) {
+      console.error("Error al quitar amigo:", err);
+    } finally {
+      this.removingFriend.set(false);
+      this.closeConfirmRemoveFriend();
+    }
   }
 }

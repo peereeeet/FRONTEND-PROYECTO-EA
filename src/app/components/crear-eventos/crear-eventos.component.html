@@ -1,177 +1,184 @@
-<section class="events-page">
-  <div class="space-background"></div>
-  <div class="stars"></div>
+<div class="menu-page">
+  <!-- Capa de fondo global -->
+  <div class="menu-bg"></div>
 
-  <header class="app-bar">
-    <div class="app-bar__content centered" style="position: relative;">
-      <div class="lang-switcher-menu">
-        <button
-          type="button"
-          class="lang-toggle"
-          (click)="toggleLangMenu()">
-          <span class="lang-icon">🌐</span>
-          <span class="lang-current">
-            {{
-              currentLang === 'es'
-                ? ('LANG.ES' | translate)
-                : currentLang === 'en'
-                ? ('LANG.EN' | translate)
-                : currentLang === 'cat'
-                ? ('LANG.CAT' | translate)
-                : ('LANG.FR' | translate)
-            }}
-          </span>
-          <span class="lang-arrow">▾</span>
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <div class="brand-logo">E</div>
+        <div class="brand-text">
+          <span class="brand-name">Eventer</span>
+          <span class="brand-sub">{{ 'CREATE_EVENT.TITLE' | translate }}</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <span class="nav-section-label">{{ 'MENU.EVENTS_TITLE' | translate }}</span>
+
+        <button class="nav-item" (click)="goBackToMenu()">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">{{ 'CREATE_EVENT.BACK_TO_MENU' | translate }}</span>
         </button>
 
-        <div class="lang-dropdown" *ngIf="showLangMenu">
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'es'"
-            (click)="selectLanguage('es')">
-            {{ 'LANG.ES' | translate }}
-          </button>
+        <button class="nav-item nav-item--active">
+          <span class="nav-icon">➕</span>
+          <span class="nav-text">{{ 'CREATE_EVENT.TITLE' | translate }}</span>
+        </button>
 
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'en'"
-            (click)="selectLanguage('en')">
-            {{ 'LANG.EN' | translate }}
-          </button>
+        <button class="nav-item" (click)="goToMisEventos()">
+          <span class="nav-icon">📅</span>
+          <span class="nav-text">{{ 'CREATE_EVENT.GO_TO_MY_EVENTS' | translate }}</span>
+        </button>
 
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'cat'"
-            (click)="selectLanguage('cat')">
-            {{ 'LANG.CAT' | translate }}
-          </button>
+        <!-- <button class="nav-item" (click)="goToExplorar()">
+          <span class="nav-icon">🗺️</span>
+          <span class="nav-text">{{ 'CREATE_EVENT.GO_TO_EXPLORE' | translate }}</span>
+        </button> -->
+      </nav>
+    </aside>
 
-          <button
-            type="button"
-            class="lang-option"
-            [class.active]="currentLang === 'fr'"
-            (click)="selectLanguage('fr')">
-            {{ 'LANG.FR' | translate }}
-          </button>
+    <!-- PANEL PRINCIPAL -->
+    <div class="main-panel">
+      <!-- TOP BAR -->
+      <header class="top-bar">
+        <div class="top-bar__left">
+          <h1 class="top-title">{{ 'CREATE_EVENT.TITLE' | translate }}</h1>
+          <p class="top-subtitle">{{ 'CREATE_EVENT.FORM_TITLE' | translate }}</p>
         </div>
 
-        <button class="theme-toggle-crear" (click)="toggleTheme()">
-          {{ theme() === 'dark' ? '☀️' : '🌙' }}
-        </button>
-      </div>
-      <h1 class="app-bar__title">{{ 'CREATE_EVENT.TITLE' | translate }}</h1>
-    </div>    
-  </header>
+        <div class="top-bar__right">
+          <div class="lang-switcher-menu">
+            <button type="button" class="lang-toggle" (click)="toggleLangMenu()">
+              <span class="lang-icon">🌐</span>
+              <span class="lang-current">
+                {{
+                  currentLang === 'es'
+                    ? ('LANG.ES' | translate)
+                    : currentLang === 'en'
+                    ? ('LANG.EN' | translate)
+                    : currentLang === 'cat'
+                    ? ('LANG.CAT' | translate)
+                    : ('LANG.FR' | translate)
+                }}
+              </span>
+              <span class="lang-arrow">▾</span>
+            </button>
 
-  <div class="crear-evento-page">
-    <div class="crear-evento-container">
-      <div class="top-row">
-        <button class="btn-back btn-menu" type="button" (click)="goBackToMenu()">
-          {{ 'CREATE_EVENT.BACK_TO_MENU' | translate }}
-        </button>
-
-        <button class="btn-back btn-crear" type="button" (click)="goToExplorar()">
-          {{ 'CREATE_EVENT.GO_TO_EXPLORE' | translate }}
-        </button>
-
-        <button class="btn-back btn-mis" type="button" (click)="goToMisEventos()">
-          {{ 'CREATE_EVENT.GO_TO_MY_EVENTS' | translate }}
-        </button>
-      </div>
-
-      <h3 class="card-title-inside">
-        {{ 'CREATE_EVENT.FORM_TITLE' | translate }}
-      </h3>
-
-      <form class="crear-evento-form" (ngSubmit)="onSubmit()">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="name">{{ 'CREATE_EVENT.FIELD_NAME_LABEL' | translate }}</label>
-            <input
-              id="name"
-              type="text"
-              [(ngModel)]="newEvent.name"
-              name="name"
-              [placeholder]="'CREATE_EVENT.FIELD_NAME_PLACEHOLDER' | translate"
-              required
-              minlength="3"
-            />
-            <small *ngIf="formSubmitted && (!newEvent.name || newEvent.name.trim().length<3)">
-              {{ 'CREATE_EVENT.FIELD_NAME_ERROR_MIN' | translate }}
-            </small>
-          </div>
-
-          <div class="form-group">
-            <label for="address">{{ 'CREATE_EVENT.FIELD_ADDRESS_LABEL' | translate }}</label>
-            <input
-              id="address"
-              type="text"
-              [(ngModel)]="newEvent.address"
-              name="address"
-              [placeholder]="'CREATE_EVENT.FIELD_ADDRESS_PLACEHOLDER' | translate"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="dateStr">{{ 'CREATE_EVENT.FIELD_DATE_LABEL' | translate }}</label>
-            <input
-              id="dateStr"
-              type="date"
-              [(ngModel)]="dateStr"
-              name="dateStr"
-              [attr.aria-label]="'CREATE_EVENT.FIELD_DATE_LABEL' | translate"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="timeStr">{{ 'CREATE_EVENT.FIELD_TIME_LABEL' | translate }}</label>
-            <input
-              id="timeStr"
-              type="time"
-              [(ngModel)]="timeStr"
-              name="timeStr"
-              [attr.aria-label]="'CREATE_EVENT.FIELD_TIME_LABEL' | translate"
-            />
-          </div>
-
-          <div class="form-group form-group--full">
-            <div class="schedule-actions">
-              <button class="add-slot" type="button" (click)="setSchedule()">
-                {{ 'CREATE_EVENT.SCHEDULE_SET' | translate }}
+            <div class="lang-dropdown" *ngIf="showLangMenu">
+              <button type="button" class="lang-option" [class.active]="currentLang === 'es'" (click)="selectLanguage('es')">
+                {{ 'LANG.ES' | translate }}
               </button>
-              <button
-                class="remove-slot"
-                type="button"
-                *ngIf="newEvent.schedule"
-                (click)="clearSchedule()">
-                {{ 'CREATE_EVENT.SCHEDULE_CLEAR' | translate }}
+              <button type="button" class="lang-option" [class.active]="currentLang === 'en'" (click)="selectLanguage('en')">
+                {{ 'LANG.EN' | translate }}
               </button>
-              <div class="schedule-preview">
-                <strong>{{ 'CREATE_EVENT.SCHEDULE_SELECTED' | translate }}</strong>
-                <span *ngIf="newEvent.schedule; else noHorario">
-                  {{ getScheduleText(newEvent) }}
-                </span>
-                <ng-template #noHorario>
-                  <em>{{ 'CREATE_EVENT.SCHEDULE_NONE' | translate }}</em>
-                </ng-template>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'cat'" (click)="selectLanguage('cat')">
+                {{ 'LANG.CAT' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'fr'" (click)="selectLanguage('fr')">
+                {{ 'LANG.FR' | translate }}
+              </button>
+            </div>
+
+            <button class="theme-toggle-btn" (click)="toggleTheme()">
+              {{ theme() === 'dark' ? '☀️' : '🌙' }}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENIDO PRINCIPAL -->
+      <section class="content">
+        <div class="form-card">
+          <form class="event-form" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="name">{{ 'CREATE_EVENT.FIELD_NAME_LABEL' | translate }}</label>
+                <input
+                  id="name"
+                  type="text"
+                  [(ngModel)]="newEvent.name"
+                  name="name"
+                  [placeholder]="'CREATE_EVENT.FIELD_NAME_PLACEHOLDER' | translate"
+                  required
+                  minlength="3"
+                />
+                <small *ngIf="formSubmitted && (!newEvent.name || newEvent.name.trim().length<3)">
+                  {{ 'CREATE_EVENT.FIELD_NAME_ERROR_MIN' | translate }}
+                </small>
+              </div>
+
+              <div class="form-group">
+                <label for="address">{{ 'CREATE_EVENT.FIELD_ADDRESS_LABEL' | translate }}</label>
+                <input
+                  id="address"
+                  type="text"
+                  [(ngModel)]="newEvent.address"
+                  name="address"
+                  [placeholder]="'CREATE_EVENT.FIELD_ADDRESS_PLACEHOLDER' | translate"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="dateStr">{{ 'CREATE_EVENT.FIELD_DATE_LABEL' | translate }}</label>
+                <input
+                  id="dateStr"
+                  type="date"
+                  [(ngModel)]="dateStr"
+                  name="dateStr"
+                  [attr.aria-label]="'CREATE_EVENT.FIELD_DATE_LABEL' | translate"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="timeStr">{{ 'CREATE_EVENT.FIELD_TIME_LABEL' | translate }}</label>
+                <input
+                  id="timeStr"
+                  type="time"
+                  [(ngModel)]="timeStr"
+                  name="timeStr"
+                  [attr.aria-label]="'CREATE_EVENT.FIELD_TIME_LABEL' | translate"
+                />
+              </div>
+
+              <div class="form-group form-group--full">
+                <label>{{ 'CREATE_EVENT.FIELD_DATE_LABEL' | translate }} & {{ 'CREATE_EVENT.FIELD_TIME_LABEL' | translate }}</label>
+                <div class="schedule-controls">
+                  <button class="btn btn--primary" type="button" (click)="setSchedule()">
+                    ✓ {{ 'CREATE_EVENT.SCHEDULE_SET' | translate }}
+                  </button>
+                  <button
+                    class="btn btn--danger-outline"
+                    type="button"
+                    *ngIf="newEvent.schedule"
+                    (click)="clearSchedule()">
+                    ✗ {{ 'CREATE_EVENT.SCHEDULE_CLEAR' | translate }}
+                  </button>
+                  <div class="schedule-display">
+                    <strong>{{ 'CREATE_EVENT.SCHEDULE_SELECTED' | translate }}</strong>
+                    <span *ngIf="newEvent.schedule; else noHorario">
+                      {{ getScheduleText(newEvent) }}
+                    </span>
+                    <ng-template #noHorario>
+                      <em>{{ 'CREATE_EVENT.SCHEDULE_NONE' | translate }}</em>
+                    </ng-template>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div class="msg error" *ngIf="errorMessage">
-          {{ 'CREATE_EVENT.ERROR_MESSAGE_PREFIX' | translate }} {{ errorMessage }}
-        </div>
+            <div class="msg msg--error" *ngIf="errorMessage">
+              {{ 'CREATE_EVENT.ERROR_MESSAGE_PREFIX' | translate }} {{ errorMessage }}
+            </div>
 
-        <div class="actions-row">
-          <button class="btn-primary" type="submit" [disabled]="saving">
-            {{ saving ? ('CREATE_EVENT.SUBMIT_SAVING' | translate) : ('CREATE_EVENT.SUBMIT_DEFAULT' | translate) }}
-          </button>
+            <div class="form-actions">
+              <button class="btn btn--primary btn--large" type="submit" [disabled]="saving">
+                {{ saving ? ('CREATE_EVENT.SUBMIT_SAVING' | translate) : ('CREATE_EVENT.SUBMIT_DEFAULT' | translate) }}
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </section>
     </div>
   </div>
-</section>
+</div>
