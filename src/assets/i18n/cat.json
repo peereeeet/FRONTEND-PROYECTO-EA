@@ -31,7 +31,12 @@
     "DIRECT_SAVING": "Desant…",
     "ERROR_GENERIC": "Error en iniciar sessió. Verifica les credencials.",
     "OR": "o continua amb",
-    "ERROR_GOOGLE": "Error en iniciar sessió amb Google."
+    "ERROR_GOOGLE": "Error en iniciar sessió amb Google.",
+    "GOOGLE_BIRTHDAY_TITLE": "Completa la teva data de naixement",
+    "GOOGLE_BIRTHDAY_TEXT": "Abans d’acabar el registre amb Google, necessitem la teva data de naixement per completar el teu perfil.",
+    "GOOGLE_BIRTHDAY_LABEL": "Data de naixement",
+    "GOOGLE_BIRTHDAY_CANCEL": "Cancel·lar",
+    "GOOGLE_BIRTHDAY_CONFIRM": "Continuar"
   },
 
   "REGISTER": {
@@ -106,7 +111,7 @@
     "EVENTS_TITLE": "Esdeveniments",
     "EVENTS_CREATE": "Crear nou esdeveniment",
     "EVENTS_EXPLORE_MAP": "Explorar esdeveniments (mapa)",
-    "EVENTS_MY": "Els meus esdeveniments (creats o inscrits)",
+    "EVENTS_MY": "Els meus esdeveniments",
     "LOADING": "Carregant…",
 
     "FRIENDS_TITLE": "Amics",
@@ -149,7 +154,20 @@
     "CONFIRM_REMOVE_TEXT": "Segur que vols eliminar",
     "CONFIRM_REMOVE_WARNING": "Aquesta acció és permanent i no es pot desfer.",
     "CONFIRM_REMOVE_CANCEL": "Cancel·lar",
-    "CONFIRM_REMOVE_CONFIRM": "Eliminar"
+    "CONFIRM_REMOVE_CONFIRM": "Eliminar",
+
+    "TAB_MAP": "Mapa",
+    "TAB_SEARCH": "Cercador",
+    "SEARCH_TITLE": "Cercar Esdeveniments",
+    "SEARCH_NAME_LABEL": "Nom de l'Esdeveniment",
+    "SEARCH_NAME_PLACEHOLDER": "Cercar per nom...",
+    "SEARCH_DATE_FROM_LABEL": "Des de",
+    "SEARCH_DATE_TO_LABEL": "Fins",
+    "SEARCH_BUTTON": "Cercar",
+    "SEARCH_CLEAR_BUTTON": "Netejar",
+    "SEARCH_LOADING": "Cercant esdeveniments...",
+    "SEARCH_EMPTY_TITLE": "No s'han trobat esdeveniments",
+    "SEARCH_EMPTY_TEXT": "Prova d'ajustar els teus filtres de cerca"
   },
 
   "FRIENDS": {
@@ -222,7 +240,7 @@
     "TITLE": "Explorar esdeveniments",
     "BACK_TO_MENU": "Tornar al menú",
     "GO_TO_CREATE": "Crear esdeveniment nou",
-    "GO_TO_MY_EVENTS": "Els meus esdeveniments (creats o inscrits)",
+    "GO_TO_MY_EVENTS": "Els meus esdeveniments",
 
     "LOADING_EVENTS": "Carregant esdeveniments...",
     "MAP_TITLE": "Mapa d'esdeveniments",
@@ -252,7 +270,7 @@
     "TITLE": "Crear un nou esdeveniment",
     "BACK_TO_MENU": "Tornar al menú",
     "GO_TO_EXPLORE": "Explorar esdeveniments (mapa)",
-    "GO_TO_MY_EVENTS": "Els meus esdeveniments (creats o inscrits)",
+    "GO_TO_MY_EVENTS": "Els meus esdeveniments",
 
     "FORM_TITLE": "Completa les dades de l'esdeveniment",
 
@@ -289,13 +307,13 @@
     "BADGE_CREATOR": "Creador",
 
     "FIELD_ADDRESS": "Adreça:",
-    "BUTTON_VIEW_MAP": "🗺 Veure mapa",
+    "BUTTON_VIEW_MAP": "🗺 Mapa",
     "FIELD_SCHEDULE": "Horari:",
     "FIELD_PARTICIPANTS": "Participants:",
 
     "RATINGS_LABEL": "Valoracions:",
     "RATINGS_NONE": "Sense valoracions",
-    "BUTTON_VIEW_RATINGS": "Veure/Afegir valoracions",
+    "BUTTON_VIEW_RATINGS": "Valoracions",
     "BUTTON_EDIT": "✏️ Modificar",
     "BUTTON_DELETE": "🗑️ Eliminar",
 
@@ -305,7 +323,7 @@
 
     "BADGE_JOINED": "Inscrit",
 
-    "BUTTON_LEAVE": "👋 Sortir de l'esdeveniment",
+    "BUTTON_LEAVE": "👋 Sortir",
 
     "DELETE_MODAL_TITLE": "Eliminar esdeveniment",
     "DELETE_MODAL_TEXT": "Segur que vols eliminar <strong>{{name}}</strong>?",
@@ -317,17 +335,21 @@
     "LEAVE_MODAL_CANCEL": "Cancel·lar",
     "LEAVE_MODAL_CONFIRM": "Sortir",
 
-    "BUTTON_SHARE_EVENT": "Enviar a un amic",
+    "BUTTON_SHARE_EVENT": "Enviar esdeveniment",
     "SHARE_EVENT_TITLE": "Compartir esdeveniment",
     "SHARE_EVENT_LOADING": "Carregant amics...",
     "SHARE_EVENT_NO_FRIENDS": "No tens amics per enviar aquest esdeveniment.",
     "SHARE_EVENT_SEND": "Enviar",
 
-    "BUTTON_EVENT_CHAT": "Xat de l'esdeveniment",
+    "BUTTON_EVENT_CHAT": "Xat",
     "EVENT_CHAT_TITLE": "Xat de l'esdeveniment",
     "EVENT_CHAT_LOADING": "Carregant els missatges de l'esdeveniment...",
     "EVENT_CHAT_EMPTY": "Encara no hi ha missatges en aquest esdeveniment.",
-    "EVENT_CHAT_PLACEHOLDER": "Escriu un missatge per a aquest esdeveniment..."
+    "EVENT_CHAT_PLACEHOLDER": "Escriu un missatge per a aquest esdeveniment...",
+
+    "TAB_JOINED": "Esdeveniments Inscrit",
+    "TAB_CREATED": "Esdeveniments Creats",
+    "STATS_RATING": "Valoració"
   },
 
   "RATINGS": {

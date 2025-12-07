@@ -31,7 +31,12 @@
     "DIRECT_SAVING": "Guardando…",
     "ERROR_GENERIC": "Error al iniciar sesión. Verifica tus credenciales.",
     "OR": "o continúa con",
-    "ERROR_GOOGLE": "Error al iniciar sesión con Google."
+    "ERROR_GOOGLE": "Error al iniciar sesión con Google.",
+    "GOOGLE_BIRTHDAY_TITLE": "Completa tu fecha de nacimiento",
+    "GOOGLE_BIRTHDAY_TEXT": "Antes de terminar el registro con Google, necesitamos tu fecha de nacimiento para completar tu perfil.",
+    "GOOGLE_BIRTHDAY_LABEL": "Fecha de nacimiento",
+    "GOOGLE_BIRTHDAY_CANCEL": "Cancelar",
+    "GOOGLE_BIRTHDAY_CONFIRM": "Continuar"
   },
 
   "REGISTER": {
@@ -106,7 +111,7 @@
     "EVENTS_TITLE": "Eventos",
     "EVENTS_CREATE": "Crear evento nuevo",
     "EVENTS_EXPLORE_MAP": "Explorar eventos (mapa)",
-    "EVENTS_MY": "Mis eventos (Creados o inscrito)",
+    "EVENTS_MY": "Mis eventos",
     "LOADING": "Cargando…",
 
     "FRIENDS_TITLE": "Amigos",
@@ -149,7 +154,20 @@
     "CONFIRM_REMOVE_TEXT": "¿Seguro que quieres eliminar a",
     "CONFIRM_REMOVE_WARNING": "Esta acción es permanente y no podrás deshacerla.",
     "CONFIRM_REMOVE_CANCEL": "Cancelar",
-    "CONFIRM_REMOVE_CONFIRM": "Eliminar"
+    "CONFIRM_REMOVE_CONFIRM": "Eliminar",
+
+    "TAB_MAP": "Mapa",
+    "TAB_SEARCH": "Buscador",
+    "SEARCH_TITLE": "Buscar Eventos",
+    "SEARCH_NAME_LABEL": "Nombre del Evento",
+    "SEARCH_NAME_PLACEHOLDER": "Buscar por nombre...",
+    "SEARCH_DATE_FROM_LABEL": "Desde",
+    "SEARCH_DATE_TO_LABEL": "Hasta",
+    "SEARCH_BUTTON": "Buscar",
+    "SEARCH_CLEAR_BUTTON": "Limpiar",
+    "SEARCH_LOADING": "Buscando eventos...",
+    "SEARCH_EMPTY_TITLE": "No se encontraron eventos",
+    "SEARCH_EMPTY_TEXT": "Intenta ajustar tus filtros de búsqueda"
   },
 
   "FRIENDS": {
@@ -222,7 +240,7 @@
     "TITLE": "Explorar eventos",
     "BACK_TO_MENU": "Volver al menú",
     "GO_TO_CREATE": "Crear evento nuevo",
-    "GO_TO_MY_EVENTS": "Mis eventos (Creados o inscrito)",
+    "GO_TO_MY_EVENTS": "Mis eventos",
 
     "LOADING_EVENTS": "Cargando eventos...",
     "MAP_TITLE": "Mapa de eventos",
@@ -252,7 +270,7 @@
     "TITLE": "Crear nuevo evento",
     "BACK_TO_MENU": "Volver al menú",
     "GO_TO_EXPLORE": "Explorar eventos (mapa)",
-    "GO_TO_MY_EVENTS": "Mis eventos (Creados o inscrito)",
+    "GO_TO_MY_EVENTS": "Mis eventos",
 
     "FORM_TITLE": "Completa los datos del evento",
 
@@ -289,13 +307,13 @@
     "BADGE_CREATOR": "Creador",
 
     "FIELD_ADDRESS": "Dirección:",
-    "BUTTON_VIEW_MAP": "🗺 Ver mapa",
+    "BUTTON_VIEW_MAP": "🗺 Mapa",
     "FIELD_SCHEDULE": "Horario:",
     "FIELD_PARTICIPANTS": "Participantes:",
 
     "RATINGS_LABEL": "Valoraciones:",
     "RATINGS_NONE": "Sin valoraciones",
-    "BUTTON_VIEW_RATINGS": "Ver/Agregar valoraciones",
+    "BUTTON_VIEW_RATINGS": "Valoraciones",
     "BUTTON_EDIT": "✏️ Modificar",
     "BUTTON_DELETE": "🗑️ Eliminar",
 
@@ -305,7 +323,7 @@
 
     "BADGE_JOINED": "Inscrito",
 
-    "BUTTON_LEAVE": "👋 Salir del evento",
+    "BUTTON_LEAVE": "👋 Abandonar",
 
     "DELETE_MODAL_TITLE": "Eliminar evento",
     "DELETE_MODAL_TEXT": "¿Seguro que quieres eliminar <strong>{{name}}</strong>?",
@@ -317,17 +335,21 @@
     "LEAVE_MODAL_CANCEL": "Cancelar",
     "LEAVE_MODAL_CONFIRM": "Salir",
 
-    "BUTTON_SHARE_EVENT": "Enviar a un amigo",
+    "BUTTON_SHARE_EVENT": "Enviar evento",
     "SHARE_EVENT_TITLE": "Compartir evento",
     "SHARE_EVENT_LOADING": "Cargando amigos...",
     "SHARE_EVENT_NO_FRIENDS": "No tienes amigos para enviar este evento.",
     "SHARE_EVENT_SEND": "Enviar",
 
-    "BUTTON_EVENT_CHAT": "Chat del evento",
+    "BUTTON_EVENT_CHAT": "Chat",
     "EVENT_CHAT_TITLE": "Chat del evento",
     "EVENT_CHAT_LOADING": "Cargando mensajes del evento...",
     "EVENT_CHAT_EMPTY": "Todavía no hay mensajes en este evento.",
-    "EVENT_CHAT_PLACEHOLDER": "Escribe un mensaje para este evento..."
+    "EVENT_CHAT_PLACEHOLDER": "Escribe un mensaje para este evento...",
+
+    "TAB_JOINED": "Eventos Inscrito",
+    "TAB_CREATED": "Eventos Creados",
+    "STATS_RATING": "Valoración"
   },
 
   "RATINGS": {

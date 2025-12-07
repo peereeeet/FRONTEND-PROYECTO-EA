@@ -50,7 +50,6 @@
       <header class="top-bar">
         <div class="top-bar__left">
           <h1 class="top-title">{{ 'PROFILE.TITLE' | translate }}</h1>
-          <p class="top-subtitle">{{ me()?.gmail }}</p>
         </div>
 
         <div class="top-bar__right">
@@ -104,7 +103,7 @@
               <div class="value">{{ formatDate(me()?.birthday) }}</div>
             </div>
 
-            <div class="field">
+            <div class="field" *ngIf="!me()?.isGoogleUser">
               <div class="label">{{ 'PROFILE.FIELD_PASSWORD' | translate }}</div>
               <div class="value">
                 <span>{{ showPassword ? (realPassword || '—') : maskedPassword() }}</span>
@@ -202,9 +201,7 @@
 
       <div class="modal-body">
         <p [innerHTML]="'PROFILE.DELETE_MODAL_TEXT' | translate"></p>
-
-        <div class="form-row">
-          <label>{{ 'PROFILE.DELETE_PASSWORD_LABEL' | translate }}</label>
+        <div class="form-row" *ngIf="!me()?.isGoogleUser">
           <input type="password" [(ngModel)]="deletePassword" minlength="7" />
         </div>
 

@@ -242,4 +242,46 @@
       </form>
     </div>
   </div>
+
+  <!-- Modal Cumpleaños para registro con Google -->
+  <div class="modal-overlay" *ngIf="googleBirthdayOpen" (click)="closeGoogleBirthdayModal()">
+    <div class="modal modal--birthday" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'LOGIN.GOOGLE_BIRTHDAY_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeGoogleBirthdayModal()">×</button>
+      </div>
+
+      <form [formGroup]="googleBirthdayForm" (ngSubmit)="onGoogleBirthdaySubmit()">
+        <p class="modal-text">
+          {{ 'LOGIN.GOOGLE_BIRTHDAY_TEXT' | translate }}
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="googleBirthday">
+            {{ 'LOGIN.GOOGLE_BIRTHDAY_LABEL' | translate }}
+          </label>
+          <input
+            id="googleBirthday"
+            type="date"
+            class="form-input"
+            formControlName="birthday"
+            [attr.max]="todayISO" />
+        </div>
+
+        <div *ngIf="googleBirthdayError" class="error-message">
+          <span>⚠</span>
+          <span>{{ googleBirthdayError }}</span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn cancel" (click)="closeGoogleBirthdayModal()">
+            {{ 'LOGIN.GOOGLE_BIRTHDAY_CANCEL' | translate }}
+          </button>
+          <button type="submit" class="btn primary">
+            {{ 'LOGIN.GOOGLE_BIRTHDAY_CONFIRM' | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

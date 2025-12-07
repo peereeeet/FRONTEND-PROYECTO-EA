@@ -9,8 +9,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
 import { environment } from '../../environments/environment';
 
-declare const google: any;
-
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -42,6 +40,12 @@ export class LoginComponent {
   currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
+  googleBirthdayOpen = false;
+  private googleCredentialPending: string | null = null;
+  googleBirthdayForm: FormGroup;
+  googleBirthdayError = '';
+  todayISO: string;
+
   get forgotTouchedInvalid() {
     const c = this.forgotForm?.get('identifier');
     return !!(c && c.touched && c.invalid);
@@ -65,6 +69,17 @@ export class LoginComponent {
     this.directForm = this.fb.group({
       newPassword: ['', [Validators.required, Validators.minLength(7)]],
     });
+
+    this.googleBirthdayForm = this.fb.group({
+      birthday: ['']
+    });
+
+    const t = new Date();
+    this.todayISO = new Date(Date.UTC(
+      t.getFullYear(),
+      t.getMonth(),
+      t.getDate()
+    )).toISOString().slice(0, 10);
 
     this.translate.use(this.currentLang);
     this.translate.addLangs(['es', 'en']);
@@ -104,7 +119,7 @@ export class LoginComponent {
         client_id: environment.googleClientId,
         callback: (response: any) => this.handleGoogleCredentialResponse(response),
         context: 'signin',
-        locale // 👈 aquí va el idioma
+        locale
       });
 
       const btn = document.getElementById('googleSignInDiv');
@@ -141,34 +156,98 @@ export class LoginComponent {
   }
 
   private handleGoogleCredentialResponse(res: any): void {
+    this.googleBirthdayOpen = true;
     const credential = res?.credential;
     if (!credential) {
+      return;
+    }
+
+    this.googleCredentialPending = credential;
+    this.googleBirthdayError = '';
+    setTimeout(() => {
+      this.googleBirthdayForm.setValue({ birthday: this.todayISO });
+    }, 0);
+
+    const today = new Date();
+    const iso = new Date(Date.UTC(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    )).toISOString().slice(0, 10);
+
+    this.googleBirthdayForm.setValue({ birthday: this.todayISO });
+  }
+
+  closeGoogleBirthdayModal(): void {
+    this.googleBirthdayOpen = false;
+    this.googleBirthdayError = '';
+    this.googleCredentialPending = null;
+  }
+
+  onGoogleBirthdaySubmit(): void {
+    this.googleBirthdayError = '';
+
+    if (!this.googleCredentialPending) {
+      this.closeGoogleBirthdayModal();
+      return;
+    }
+
+    const raw = this.googleBirthdayForm.value.birthday as string | null;
+    if (!raw) {
+      this.googleBirthdayError = 'Por favor, indica tu fecha de nacimiento.';
+      return;
+    }
+
+    const birth = new Date(raw);
+    if (Number.isNaN(birth.getTime())) {
+      this.googleBirthdayError = 'La fecha de nacimiento no es válida.';
+      return;
+    }
+
+    const now = new Date();
+    const today = new Date(Date.UTC(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    ));
+
+    if (birth > today) {
+      this.googleBirthdayError = 'La fecha de nacimiento no puede ser futura.';
       return;
     }
 
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.authService.loginWithGoogle(credential)
+    this.authService.loginWithGoogle(this.googleCredentialPending, raw)
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
         next: (response) => {
-          const role = response.user.rol;
-          if (role === 'admin') {
-            this.router.navigate(['/home']);
-          } else if (role === 'usuario') {
-            this.router.navigate(['/menu']);
-          } else {
-            this.router.navigate(['/home']);
-          }
+          this.googleBirthdayOpen = false;
+          this.googleCredentialPending = null;
+          this.googleBirthdayError = '';
+          this.handleLoginSuccess(response);
         },
         error: (error) => {
-          this.errorMessage =
+          console.error('Error en login con Google:', error);
+          this.googleBirthdayError =
             error.error?.message ||
             this.translate.instant('LOGIN.ERROR_GOOGLE') ||
             'Error al iniciar sesión con Google';
         },
       });
+  }
+
+  // Navegación compartida para login normal y login con Google
+  private handleLoginSuccess(response: any): void {
+    const role = response?.user?.rol;
+    if (role === 'admin') {
+      this.router.navigate(['/home']);
+    } else if (role === 'usuario') {
+      this.router.navigate(['/menu']);
+    } else {
+      this.router.navigate(['/home']);
+    }
   }
 
   toggleTheme(): void {
@@ -193,14 +272,7 @@ export class LoginComponent {
         .pipe(finalize(() => this.isLoading = false))
         .subscribe({
           next: (response) => {
-            const role = response.user.rol;
-            if (role === 'admin') {
-              this.router.navigate(['/home']);
-            } else if (role === 'usuario') {
-              this.router.navigate(['/menu']);
-            } else {
-              this.router.navigate(['/home']);
-            }
+            this.handleLoginSuccess(response);
           },
           error: (error) => {
             this.errorMessage =

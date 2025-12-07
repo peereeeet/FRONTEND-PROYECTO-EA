@@ -20,6 +20,17 @@ export class EventoService {
     );
   }
 
+  getUpcomingEventos(page: number = 1,limit: number = 10): Observable<{ 
+    data: Evento[]; 
+    page: number; 
+    totalPages: number; 
+    totalItems: number; 
+  }> {
+    return this.http.get<{ data: Evento[]; page: number; totalPages: number; totalItems: number; }>(
+      `${this.apiUrl}/upcoming?page=${page}&limit=${limit}`
+    );
+  }
+
   getEventoById(id: string): Observable<Evento> {
     return this.http.get<Evento>(`${this.apiUrl}/${id}`);
   }
@@ -164,5 +175,39 @@ export class EventoService {
       { name },
       { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
     );
+  }
+
+  searchEventos(
+    search: string = '',
+    dateFrom: string = '',
+    dateTo: string = '',
+    page: number = 1,
+    limit: number = 10
+  ): Observable<{
+    data: Evento[];
+    page: number;
+    totalPages: number;
+    totalItems: number;
+  }> {
+    let params = new HttpParams()
+      .set('page', String(page))
+      .set('limit', String(limit));
+
+    if (search) {
+      params = params.set('search', search);
+    }
+    if (dateFrom) {
+      params = params.set('dateFrom', dateFrom);
+    }
+    if (dateTo) {
+      params = params.set('dateTo', dateTo);
+    }
+
+    return this.http.get<{
+      data: Evento[];
+      page: number;
+      totalPages: number;
+      totalItems: number;
+    }>(`${this.apiUrl}/search`, { params });
   }
 }

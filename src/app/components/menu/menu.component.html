@@ -84,9 +84,6 @@
       <header class="top-bar">
         <div class="top-bar__left">
           <h1 class="top-title">{{ 'MENU.TITLE' | translate }}</h1>
-          <p class="top-subtitle">
-            {{ 'MENU.FRIENDS_TITLE' | translate }} &amp; {{ 'MENU.EVENTS_TITLE' | translate }}
-          </p>
         </div>
 
         <div class="top-bar__right">
@@ -247,131 +244,332 @@
           </section>
         </div>
 
-        <section class="explore-section">
-          <div class="map-section">
-            <h2 class="map-title">{{ 'EXPLORE.MAP_TITLE' | translate }}</h2>
 
-            <div class="map-container-wrapper">
-              <div id="explorar-map" class="map-container"></div>
-              <p class="map-hint">
-                {{ 'EXPLORE.MAP_HINT' | translate }}
-              </p>
+        <!-- SISTEMA DE PESTAÑAS PARA EVENTOS -->
+        <section class="events-tabs-section">
+          <div class="tabs-container-events">
+            <div class="tabs-header-events">
+              <button 
+                class="tab-button-event" 
+                [class.tab-button-event--active]="activeEventTab === 'map'"
+                (click)="switchEventTab('map')">
+                <span class="tab-icon">🗺️</span>
+                <span class="tab-label">{{ 'MENU.TAB_MAP' | translate }}</span>
+              </button>
+              <button 
+                class="tab-button-event" 
+                [class.tab-button-event--active]="activeEventTab === 'search'"
+                (click)="switchEventTab('search')">
+                <span class="tab-icon">🔍</span>
+                <span class="tab-label">{{ 'MENU.TAB_SEARCH' | translate }}</span>
+              </button>
             </div>
-          </div>
 
-          <div *ngIf="!loadingMap" class="eventos-section">
-            <div *ngIf="eventos.length === 0" class="empty-state">
-              <span class="empty-icon">📭</span>
-              <h3>{{ 'EXPLORE.EMPTY_TITLE' | translate }}</h3>
-              <p>{{ 'EXPLORE.EMPTY_TEXT' | translate }}</p>
-            </div>
+            <div class="tabs-content-events">
+              <!-- TAB MAPA -->
+              <div class="tab-panel-event" [class.tab-panel-event--hidden]="activeEventTab !== 'map'">
+                <div class="map-section">
+                  <h2 class="map-title">{{ 'EXPLORE.MAP_TITLE' | translate }}</h2>
 
-            <div class="eventos-grid" *ngIf="eventos.length > 0">
-              <div *ngFor="let evento of eventos" class="evento-card">
-                <div class="badges">
-                  <span *ngIf="isUserCreator(evento)" class="badge badge-creator">
-                    👑 {{ 'EXPLORE.CARD_BADGE_CREATOR' | translate }}
-                  </span>
-                  <span *ngIf="isAdmin()" class="badge badge-admin">
-                    🛡️ {{ 'EVENTS.ADMIN_BADGE' | translate }}
-                  </span>
-                  <span
-                    *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
-                    class="badge badge-joined">
-                    ✅ {{ 'EXPLORE.CARD_BADGE_JOINED' | translate }}
-                  </span>
-                </div>
-
-                <div class="evento-header">
-                  <h3 class="clickable-title" (click)="openEventModal(evento)">
-                    {{ evento.name }}
-                  </h3>
-                </div>
-
-                <div class="evento-info" (click)="openEventModal(evento)">
-                  <div class="info-row">
-                    <span class="icon">👤</span>
-                    <span>
-                      <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
-                      {{ getCreadorName(evento) }}
-                    </span>
-                  </div>
-
-                  <div class="info-row">
-                    <span class="icon">📍</span>
-                    <span class="address-text">
-                      <strong>{{ 'EVENTS.LABEL_ADDRESS' | translate }}</strong>
-                      {{ evento.address || '-' }}
-                    </span>
-                  </div>
-
-                  <div class="info-row">
-                    <span class="icon">🕒</span>
-                    <span>
-                      <strong>{{ 'EVENTS.LABEL_SCHEDULE' | translate }}</strong>
-                      {{ getScheduleText(evento) }}
-                    </span>
-                  </div>
-
-                  <div class="info-row">
-                    <span class="icon">👥</span>
-                    <span>
-                      <strong>{{ 'EVENTS.LABEL_PARTICIPANTS' | translate }}</strong>
-                      {{ evento.participantes?.length || 0 }}
-                    </span>
-                  </div>
-
-                  <div class="info-row rating">
-                    <span class="icon">⭐</span>
-                    <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRatingsCard">
-                      <strong>
-                        {{ 'EVENTS.LABEL_RATINGS' | translate }}
-                        {{ evento.avgRating | number:'1.1-2' }}
-                      </strong>
-                      ({{ evento.ratingsCount }} {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
-                    </span>
-                    <ng-template #noRatingsCard>
-                      <span>{{ 'EVENTS.LABEL_RATINGS_NONE' | translate }}</span>
-                    </ng-template>
+                  <div class="map-container-wrapper">
+                    <div id="explorar-map" class="map-container"></div>
+                    <p class="map-hint">
+                      {{ 'EXPLORE.MAP_HINT' | translate }}
+                    </p>
                   </div>
                 </div>
 
-                <div class="evento-actions">
-                  <button
-                    *ngIf="!isUserInEvento(evento) && !isUserCreator(evento)"
-                    class="btn btn-join"
-                    (click)="joinEvento(evento)">
-                    ➕ {{ 'EVENTS.BUTTON_JOIN' | translate }}
-                  </button>
+                <div *ngIf="!loadingMap" class="eventos-section">
+                  <div *ngIf="eventos.length === 0" class="empty-state">
+                    <span class="empty-icon">📭</span>
+                    <h3>{{ 'EXPLORE.EMPTY_TITLE' | translate }}</h3>
+                    <p>{{ 'EXPLORE.EMPTY_TEXT' | translate }}</p>
+                  </div>
 
-                  <button
-                    *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
-                    class="btn btn-leave"
-                    (click)="leaveEvento(evento)">
-                    👋 {{ 'EVENTS.BUTTON_LEAVE' | translate }}
-                  </button>
+                  <div class="eventos-grid" *ngIf="eventos.length > 0">
+                    <div *ngFor="let evento of eventos" class="evento-card">
+                      <div class="badges">
+                        <span *ngIf="isUserCreator(evento)" class="badge badge-creator">
+                          👑 {{ 'EXPLORE.CARD_BADGE_CREATOR' | translate }}
+                        </span>
+                        <span *ngIf="isAdmin()" class="badge badge-admin">
+                          🛡️ {{ 'EVENTS.ADMIN_BADGE' | translate }}
+                        </span>
+                        <span
+                          *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
+                          class="badge badge-joined">
+                          ✅ {{ 'EXPLORE.CARD_BADGE_JOINED' | translate }}
+                        </span>
+                      </div>
 
-                  <p *ngIf="isUserCreator(evento)" class="creator-note">
-                    ℹ️ {{ 'EVENTS.CREATOR_CANNOT_LEAVE' | translate }}
-                  </p>
+                      <div class="evento-header">
+                        <h3 class="clickable-title" (click)="openEventModal(evento)">
+                          {{ evento.name }}
+                        </h3>
+                      </div>
+
+                      <div class="evento-info" (click)="openEventModal(evento)">
+                        <div class="info-row">
+                          <span class="icon">👤</span>
+                          <span>
+                            <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
+                            {{ getCreadorName(evento) }}
+                          </span>
+                        </div>
+
+                        <div class="info-row">
+                          <span class="icon">📍</span>
+                          <span class="address-text">
+                            <strong>{{ 'EVENTS.LABEL_ADDRESS' | translate }}</strong>
+                            {{ evento.address || '-' }}
+                          </span>
+                        </div>
+
+                        <div class="info-row">
+                          <span class="icon">🕒</span>
+                          <span>
+                            <strong>{{ 'EVENTS.LABEL_SCHEDULE' | translate }}</strong>
+                            {{ getScheduleText(evento) }}
+                          </span>
+                        </div>
+
+                        <div class="info-row">
+                          <span class="icon">👥</span>
+                          <span>
+                            <strong>{{ 'EVENTS.LABEL_PARTICIPANTS' | translate }}</strong>
+                            {{ evento.participantes?.length || 0 }}
+                          </span>
+                        </div>
+
+                        <div class="info-row rating">
+                          <span class="icon">⭐</span>
+                          <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRatingsCard">
+                            <strong>
+                              {{ 'EVENTS.LABEL_RATINGS' | translate }}
+                              {{ evento.avgRating | number:'1.1-2' }}
+                            </strong>
+                            ({{ evento.ratingsCount }} {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
+                          </span>
+                          <ng-template #noRatingsCard>
+                            <span>{{ 'EVENTS.LABEL_RATINGS_NONE' | translate }}</span>
+                          </ng-template>
+                        </div>
+                      </div>
+
+                      <div class="evento-actions">
+                        <button
+                          *ngIf="!isUserInEvento(evento) && !isUserCreator(evento)"
+                          class="btn btn-join"
+                          (click)="joinEvento(evento)">
+                          ➕ {{ 'EVENTS.BUTTON_JOIN' | translate }}
+                        </button>
+
+                        <button
+                          *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
+                          class="btn btn-leave"
+                          (click)="leaveEvento(evento)">
+                          👋 {{ 'EVENTS.BUTTON_LEAVE' | translate }}
+                        </button>
+
+                        <p *ngIf="isUserCreator(evento)" class="creator-note">
+                          ℹ️ {{ 'EVENTS.CREATOR_CANNOT_LEAVE' | translate }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pagination" *ngIf="totalPages > 1 && eventos.length > 0">
+                    <button class="btn-page" (click)="prevPage()" [disabled]="page <= 1">
+                      {{ 'EXPLORE.PAGINATION_PREV' | translate }}
+                    </button>
+                    <span class="page-info">
+                      {{ 'EXPLORE.PAGINATION_INFO_PREFIX' | translate }}
+                      {{ page }}
+                      {{ 'EXPLORE.PAGINATION_INFO_OF' | translate }}
+                      {{ totalPages }}
+                      ({{ 'COMMON.TOTAL' | translate }}: {{ totalItems }})
+                    </span>
+                    <button class="btn-page" (click)="nextPage()" [disabled]="page >= totalPages">
+                      {{ 'EXPLORE.PAGINATION_NEXT' | translate }}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="pagination" *ngIf="totalPages > 1 && eventos.length > 0">
-              <button class="btn-page" (click)="prevPage()" [disabled]="page <= 1">
-                {{ 'EXPLORE.PAGINATION_PREV' | translate }}
-              </button>
-              <span class="page-info">
-                {{ 'EXPLORE.PAGINATION_INFO_PREFIX' | translate }}
-                {{ page }}
-                {{ 'EXPLORE.PAGINATION_INFO_OF' | translate }}
-                {{ totalPages }}
-                ({{ 'COMMON.TOTAL' | translate }}: {{ totalItems }})
-              </span>
-              <button class="btn-page" (click)="nextPage()" [disabled]="page >= totalPages">
-                {{ 'EXPLORE.PAGINATION_NEXT' | translate }}
-              </button>
+              <!-- TAB BÚSQUEDA -->
+              <div class="tab-panel-event" *ngIf="activeEventTab === 'search'">
+                <div class="search-section">
+                  <h2 class="search-title">{{ 'MENU.SEARCH_TITLE' | translate }}</h2>
+
+                  <div class="search-filters">
+                    <div class="filter-row">
+                      <div class="filter-group">
+                        <label for="searchTerm">{{ 'MENU.SEARCH_NAME_LABEL' | translate }}</label>
+                        <input 
+                          id="searchTerm"
+                          type="text" 
+                          class="search-input"
+                          [value]="searchTerm()"
+                          (input)="onSearchTermInput($event)"
+                          (keyup.enter)="performSearch()"
+                          [placeholder]="'MENU.SEARCH_NAME_PLACEHOLDER' | translate" />
+                      </div>
+
+                      <div class="filter-group">
+                        <label for="searchDateFrom">{{ 'MENU.SEARCH_DATE_FROM_LABEL' | translate }}</label>
+                        <input 
+                          id="searchDateFrom"
+                          type="date" 
+                          class="search-input"
+                          [value]="searchDateFrom()"
+                          (input)="onSearchDateFromInput($event)"
+                          (keyup.enter)="performSearch()" />
+                      </div>
+
+                      <div class="filter-group">
+                        <label for="searchDateTo">{{ 'MENU.SEARCH_DATE_TO_LABEL' | translate }}</label>
+                        <input 
+                          id="searchDateTo"
+                          type="date" 
+                          class="search-input"
+                          [value]="searchDateTo()"
+                          (input)="onSearchDateToInput($event)"
+                          (keyup.enter)="performSearch()" />
+                      </div>
+
+                      <div class="filter-actions">
+                        <button class="btn btn--primary" (click)="performSearch()">
+                          🔍 {{ 'MENU.SEARCH_BUTTON' | translate }}
+                        </button>
+                        <button class="btn btn--secondary" (click)="clearSearch()">
+                          🔄 {{ 'MENU.SEARCH_CLEAR_BUTTON' | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="loadingSearch" class="loading-state">
+                    <div class="spinner"></div>
+                    <p>{{ 'MENU.SEARCH_LOADING' | translate }}</p>
+                  </div>
+
+                  <div *ngIf="!loadingSearch" class="search-results">
+                    <div *ngIf="searchEventos.length === 0" class="empty-state">
+                      <span class="empty-icon">🔍</span>
+                      <h3>{{ 'MENU.SEARCH_EMPTY_TITLE' | translate }}</h3>
+                      <p>{{ 'MENU.SEARCH_EMPTY_TEXT' | translate }}</p>
+                    </div>
+
+                    <div class="eventos-grid" *ngIf="searchEventos.length > 0">
+                      <div *ngFor="let evento of searchEventos" class="evento-card">
+                        <div class="badges">
+                          <span *ngIf="isUserCreatorSearch(evento)" class="badge badge-creator">
+                            👑 {{ 'EXPLORE.CARD_BADGE_CREATOR' | translate }}
+                          </span>
+                          <span *ngIf="isAdmin()" class="badge badge-admin">
+                            🛡️ {{ 'EVENTS.ADMIN_BADGE' | translate }}
+                          </span>
+                          <span
+                            *ngIf="isUserInSearchEvento(evento) && !isUserCreatorSearch(evento)"
+                            class="badge badge-joined">
+                            ✅ {{ 'EXPLORE.CARD_BADGE_JOINED' | translate }}
+                          </span>
+                        </div>
+
+                        <div class="evento-header">
+                          <h3 class="clickable-title" (click)="openSearchEventModal(evento)">
+                            {{ evento.name }}
+                          </h3>
+                        </div>
+
+                        <div class="evento-info" (click)="openSearchEventModal(evento)">
+                          <div class="info-row">
+                            <span class="icon">👤</span>
+                            <span>
+                              <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
+                              {{ getCreadorNameSearch(evento) }}
+                            </span>
+                          </div>
+
+                          <div class="info-row">
+                            <span class="icon">📍</span>
+                            <span class="address-text">
+                              <strong>{{ 'EVENTS.LABEL_ADDRESS' | translate }}</strong>
+                              {{ evento.address || '-' }}
+                            </span>
+                          </div>
+
+                          <div class="info-row">
+                            <span class="icon">🕒</span>
+                            <span>
+                              <strong>{{ 'EVENTS.LABEL_SCHEDULE' | translate }}</strong>
+                              {{ getScheduleTextSearch(evento) }}
+                            </span>
+                          </div>
+
+                          <div class="info-row">
+                            <span class="icon">👥</span>
+                            <span>
+                              <strong>{{ 'EVENTS.LABEL_PARTICIPANTS' | translate }}</strong>
+                              {{ evento.participantes?.length || 0 }}
+                            </span>
+                          </div>
+
+                          <div class="info-row rating">
+                            <span class="icon">⭐</span>
+                            <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRatingsSearch">
+                              <strong>
+                                {{ 'EVENTS.LABEL_RATINGS' | translate }}
+                                {{ evento.avgRating | number:'1.1-2' }}
+                              </strong>
+                              ({{ evento.ratingsCount }} {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
+                            </span>
+                            <ng-template #noRatingsSearch>
+                              <span>{{ 'EVENTS.LABEL_RATINGS_NONE' | translate }}</span>
+                            </ng-template>
+                          </div>
+                        </div>
+
+                        <div class="evento-actions">
+                          <button
+                            *ngIf="!isUserInSearchEvento(evento) && !isUserCreatorSearch(evento)"
+                            class="btn btn-join"
+                            (click)="joinSearchEvento(evento)">
+                            ➕ {{ 'EVENTS.BUTTON_JOIN' | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="isUserInSearchEvento(evento) && !isUserCreatorSearch(evento)"
+                            class="btn btn-leave"
+                            (click)="leaveSearchEvento(evento)">
+                            👋 {{ 'EVENTS.BUTTON_LEAVE' | translate }}
+                          </button>
+
+                          <p *ngIf="isUserCreatorSearch(evento)" class="creator-note">
+                            ℹ️ {{ 'EVENTS.CREATOR_CANNOT_LEAVE' | translate }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="pagination" *ngIf="searchTotalPages > 1 && searchEventos.length > 0">
+                      <button class="btn-page" (click)="searchPrevPage()" [disabled]="searchPage <= 1">
+                        {{ 'EXPLORE.PAGINATION_PREV' | translate }}
+                      </button>
+                      <span class="page-info">
+                        {{ 'EXPLORE.PAGINATION_INFO_PREFIX' | translate }}
+                        {{ searchPage }}
+                        {{ 'EXPLORE.PAGINATION_INFO_OF' | translate }}
+                        {{ searchTotalPages }}
+                        ({{ 'COMMON.TOTAL' | translate }}: {{ searchTotalItems }})
+                      </span>
+                      <button class="btn-page" (click)="searchNextPage()" [disabled]="searchPage >= searchTotalPages">
+                        {{ 'EXPLORE.PAGINATION_NEXT' | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

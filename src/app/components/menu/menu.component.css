@@ -2208,3 +2208,248 @@
     justify-content: center;
   }
 }
+/* ===== SISTEMA DE PESTAÑAS DE EVENTOS ===== */
+
+.events-tabs-section {
+  margin-top: 32px;
+}
+
+.tabs-container-events {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.tabs-header-events {
+  display: flex;
+  gap: 8px;
+  background: var(--surface-elev);
+  border-radius: 16px 16px 0 0;
+  padding: 12px 12px 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+}
+
+.tab-button-event {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 12px 12px 0 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  border: 1px solid transparent;
+  border-bottom: none;
+}
+
+.tab-button-event:hover {
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+.dark-theme .tab-button-event:hover {
+  background: rgba(37, 99, 235, 0.15);
+}
+
+.tab-button-event--active {
+  background: var(--surface-card);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-bottom: 1px solid var(--surface-card);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 2;
+}
+
+.dark-theme .tab-button-event--active {
+  background: var(--surface-card);
+  color: #60a5fa;
+  border-color: var(--border);
+  border-bottom-color: var(--surface-card);
+  box-shadow: 0 -6px 16px rgba(15, 23, 42, 0.5);
+}
+
+.tab-button-event--active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: 3px 3px 0 0;
+}
+
+.tab-icon {
+  font-size: 1.2rem;
+}
+
+.tab-label {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.tabs-content-events {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  padding: 28px 24px;
+  min-height: 400px;
+}
+
+.tab-panel-event {
+  animation: fadeInEventTab 0.3s ease;
+}
+
+@keyframes fadeInEventTab {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== SECCIÓN DE BÚSQUEDA ===== */
+
+.search-section {
+  width: 100%;
+}
+
+.search-title {
+  margin: 0 0 24px 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.search-filters {
+  background: var(--surface-elev);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--glow-purple);
+}
+
+.dark-theme .search-input {
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-actions .btn {
+  padding: 10px 20px;
+  font-size: 0.85rem;
+}
+
+.search-results {
+  width: 100%;
+}
+
+/* Responsive para pestañas */
+@media (max-width: 768px) {
+  .tabs-header-events {
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px;
+  }
+
+  .tab-button-event {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .tab-button-event--active {
+    border: 1px solid var(--accent);
+  }
+
+  .tab-button-event--active::after {
+    display: none;
+  }
+
+  .tab-label {
+    font-size: 0.9rem;
+  }
+
+  .tabs-content-events {
+    padding: 20px 16px;
+  }
+
+  .filter-row {
+    flex-direction: column;
+  }
+
+  .filter-group {
+    min-width: 100%;
+  }
+
+  .filter-actions {
+    width: 100%;
+  }
+
+  .filter-actions .btn {
+    flex: 1;
+  }
+}
+
+.tab-panel-event--hidden {
+  display: none;
+}

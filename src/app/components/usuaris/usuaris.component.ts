@@ -156,12 +156,18 @@ export class UsuarisComponent implements OnInit {
   }
 
   get usuariosForTable(): any[] { 
-  return (this.usuarios ?? []).map(usuario => ({
-    ...usuario,
-    eventCount: this.getUserEvents(usuario).length,
-    birthday: new Date(usuario.birthday)
-  }));
-}
+    return (this.usuarios ?? []).map(usuario => {
+      const birth = usuario.birthday
+        ? new Date(usuario.birthday as string | Date)
+        : null;
+
+      return {
+        ...usuario,
+        eventCount: this.getUserEvents(usuario).length,
+        birthday: birth
+      };
+    });
+  }
 
   onTableEdit(user: any): void {
     const index = this.usuarios.findIndex(u => u._id === user._id);
@@ -381,9 +387,14 @@ export class UsuarisComponent implements OnInit {
     this.usuarioEdicion = { ...usuario };
     this.nuevoUsuario = { ...usuario };
     this.indiceEdicion = index;
-
     this.desplegado = this.desplegado.map((_, i) => i === index);
-    this.birthdayStr = this.toISODate(new Date(usuario.birthday));
+
+    if (usuario.birthday) {
+      const d = new Date(usuario.birthday as string | Date);
+      this.birthdayStr = this.toISODate(d);
+    } else {
+      this.birthdayStr = this.todayISO();
+    }
   }
 
   toggleDesplegable(index: number): void {

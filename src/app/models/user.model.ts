@@ -5,10 +5,11 @@ export interface User {
   username: string;
   gmail: string;
   password?: string;
-  birthday: Date;
+  birthday?: Date | string;
   eventos?: (string | Evento)[];
   isActive?: boolean;
   rol?: 'admin' | 'usuario';
+  isGoogleUser?: boolean;
   isOnline?: boolean;
   friends?: Array<
     string |
