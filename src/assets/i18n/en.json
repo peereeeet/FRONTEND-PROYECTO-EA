@@ -29,7 +29,12 @@
     "DIRECT_CANCEL": "Cancel",
     "DIRECT_CONFIRM": "Confirm",
     "DIRECT_SAVING": "Saving…",
-    "ERROR_GENERIC": "Login failed. Please check your credentials."
+    "ERROR_GENERIC": "Login failed. Please check your credentials.",
+    "GOOGLE_BIRTHDAY_TITLE": "Complete your date of birth",
+    "GOOGLE_BIRTHDAY_TEXT": "Before finishing the registration with Google, we need your date of birth to complete your profile.",
+    "GOOGLE_BIRTHDAY_LABEL": "Date of birth",
+    "GOOGLE_BIRTHDAY_CANCEL": "Cancel",
+    "GOOGLE_BIRTHDAY_CONFIRM": "Continue"
   },
 
   "REGISTER": {
@@ -106,7 +111,7 @@
     "EVENTS_TITLE": "Events",
     "EVENTS_CREATE": "Create new event",
     "EVENTS_EXPLORE_MAP": "Explore events (map)",
-    "EVENTS_MY": "My events (created or joined)",
+    "EVENTS_MY": "My events",
     "LOADING": "Loading…",
 
     "FRIENDS_TITLE": "Friends",
@@ -149,7 +154,20 @@
     "CONFIRM_REMOVE_TEXT": "Are you sure you want to remove",
     "CONFIRM_REMOVE_WARNING": "This action is permanent and cannot be undone.",
     "CONFIRM_REMOVE_CANCEL": "Cancel",
-    "CONFIRM_REMOVE_CONFIRM": "Remove"
+    "CONFIRM_REMOVE_CONFIRM": "Remove",
+
+    "TAB_MAP": "Map",
+    "TAB_SEARCH": "Search",
+    "SEARCH_TITLE": "Search Events",
+    "SEARCH_NAME_LABEL": "Event Name",
+    "SEARCH_NAME_PLACEHOLDER": "Search by name...",
+    "SEARCH_DATE_FROM_LABEL": "From",
+    "SEARCH_DATE_TO_LABEL": "To",
+    "SEARCH_BUTTON": "Search",
+    "SEARCH_CLEAR_BUTTON": "Clear",
+    "SEARCH_LOADING": "Searching events...",
+    "SEARCH_EMPTY_TITLE": "No events found",
+    "SEARCH_EMPTY_TEXT": "Try adjusting your search filters"
   },
 
   "FRIENDS": {
@@ -222,7 +240,7 @@
     "TITLE": "Explore events",
     "BACK_TO_MENU": "Back to menu",
     "GO_TO_CREATE": "Create new event",
-    "GO_TO_MY_EVENTS": "My events (created or joined)",
+    "GO_TO_MY_EVENTS": "My events",
 
     "LOADING_EVENTS": "Loading events...",
     "MAP_TITLE": "Events map",
@@ -252,7 +270,7 @@
     "TITLE": "Create new event",
     "BACK_TO_MENU": "Back to menu",
     "GO_TO_EXPLORE": "Explore events (map)",
-    "GO_TO_MY_EVENTS": "My events (created or joined)",
+    "GO_TO_MY_EVENTS": "My events",
 
     "FORM_TITLE": "Fill in the event details",
 
@@ -289,13 +307,13 @@
     "BADGE_CREATOR": "Creator",
 
     "FIELD_ADDRESS": "Address:",
-    "BUTTON_VIEW_MAP": "🗺 View map",
+    "BUTTON_VIEW_MAP": "🗺 Map",
     "FIELD_SCHEDULE": "Schedule:",
     "FIELD_PARTICIPANTS": "Participants:",
 
     "RATINGS_LABEL": "Ratings:",
     "RATINGS_NONE": "No ratings",
-    "BUTTON_VIEW_RATINGS": "View/Add ratings",
+    "BUTTON_VIEW_RATINGS": "Ratings",
     "BUTTON_EDIT": "✏️ Edit",
     "BUTTON_DELETE": "🗑️ Delete",
 
@@ -305,7 +323,7 @@
 
     "BADGE_JOINED": "Joined",
 
-    "BUTTON_LEAVE": "Leave event",
+    "BUTTON_LEAVE": "Leave",
 
     "DELETE_MODAL_TITLE": "Delete event",
     "DELETE_MODAL_TEXT": "Are you sure you want to delete <strong>{{name}}</strong>?",
@@ -317,17 +335,21 @@
     "LEAVE_MODAL_CANCEL": "Cancel",
     "LEAVE_MODAL_CONFIRM": "Leave",
 
-    "BUTTON_SHARE_EVENT": "Send to a friend",
+    "BUTTON_SHARE_EVENT": "Send event",
     "SHARE_EVENT_TITLE": "Share event",
     "SHARE_EVENT_LOADING": "Loading friends...",
     "SHARE_EVENT_NO_FRIENDS": "You have no friends to send this event to.",
     "SHARE_EVENT_SEND": "Send",
 
-    "BUTTON_EVENT_CHAT": "Event chat",
+    "BUTTON_EVENT_CHAT": "Chat",
     "EVENT_CHAT_TITLE": "Event chat",
     "EVENT_CHAT_LOADING": "Loading event messages...",
     "EVENT_CHAT_EMPTY": "There are no messages in this event yet.",
-    "EVENT_CHAT_PLACEHOLDER": "Write a message for this event..."
+    "EVENT_CHAT_PLACEHOLDER": "Write a message for this event...",
+
+    "TAB_JOINED": "Joined Events",
+    "TAB_CREATED": "Created Events",
+    "STATS_RATING": "Rating"
   },
 
   "RATINGS": {

@@ -111,6 +111,17 @@ export class MenuComponent implements OnInit, OnDestroy {
   selectedEvent: Evento | null = null;
   showEventModal = false;
 
+  activeEventTab: 'map' | 'search' = 'map';
+  searchTerm = signal('');
+  searchDateFrom = signal('');
+  searchDateTo = signal('');
+  searchEventos: Evento[] = [];
+  searchPage = 1;
+  searchPageSize = 6;
+  searchTotalItems = 0;
+  searchTotalPages = 1;
+  loadingSearch = false;
+
   showConfirmRemove = signal(false);
   friendToRemove = signal<any | null>(null);
   removingFriend = signal(false);
@@ -1222,6 +1233,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   
     closeEventModal(): void {
       this.showEventModal = false;
+
       this.selectedEvent = null;
     }
   
@@ -1349,5 +1361,218 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.removingFriend.set(false);
       this.closeConfirmRemoveFriend();
     }
+  }
+
+  switchEventTab(tab: 'map' | 'search'): void {
+    this.activeEventTab = tab;
+
+    if (tab === 'map') {
+      setTimeout(() => {
+        if (this.map) {
+          this.map.resize();
+          this.fetchEventosForCurrentView(false);
+        }
+      }, 100);
+    }
+
+    if (tab === 'search') {
+      this.searchPage = 1;
+      this.performSearch();
+    }
+  }
+
+  performSearch(): void {
+    this.loadingSearch = true;
+    this.errorMessage = '';
+
+    const term = this.searchTerm().trim();
+    const from = this.searchDateFrom();
+    const to   = this.searchDateTo();
+
+    if (!term && !from && !to) {
+      this.eventoService
+        .getUpcomingEventos(this.searchPage, this.searchPageSize)
+        .subscribe({
+          next: (response) => {
+            this.searchEventos    = response.data || [];
+            this.searchPage       = response.page;
+            this.searchTotalPages = response.totalPages;
+            this.searchTotalItems = response.totalItems;
+            this.loadingSearch    = false;
+          },
+          error: (err) => {
+            console.error('Error al cargar eventos futuros (getUpcomingEventos):', err);
+            this.errorMessage = 'Error al cargar eventos futuros';
+            this.loadingSearch = false;
+          }
+        });
+      return;
+    }
+
+    this.eventoService
+      .searchEventos(term, from, to, this.searchPage, this.searchPageSize)
+      .subscribe({
+        next: (response) => {
+          this.searchEventos    = response.data || [];
+          this.searchPage       = response.page;
+          this.searchTotalPages = response.totalPages;
+          this.searchTotalItems = response.totalItems;
+          this.loadingSearch    = false;
+        },
+        error: (err) => {
+          console.error('Error en búsqueda de eventos:', err);
+          this.errorMessage = 'Error al buscar eventos';
+          this.loadingSearch = false;
+        }
+      });
+  }
+
+  clearSearch(): void {
+    this.searchTerm.set('');
+    this.searchDateFrom.set('');
+    this.searchDateTo.set('');
+    this.searchPage = 1;
+    this.performSearch();
+  }
+
+  onSearchTermInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.searchTerm.set(target.value);
+    this.searchPage = 1;
+  }
+
+  onSearchDateFromInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.searchDateFrom.set(target.value);
+    this.searchPage = 1;
+  }
+
+  onSearchDateToInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.searchDateTo.set(target.value);
+    this.searchPage = 1;
+  }
+
+  searchPrevPage(): void {
+    if (this.searchPage > 1) {
+      this.searchPage--;
+      this.performSearch();
+    }
+  }
+
+  searchNextPage(): void {
+    if (this.searchPage < this.searchTotalPages) {
+      this.searchPage++;
+      this.performSearch();
+    }
+  }
+
+  isUserInSearchEvento(evento: Evento): boolean {
+    const userId = this.currentUserId;
+    if (!userId || !evento.participantes) return false;
+    return evento.participantes.some((p: any) => {
+      const pid = typeof p === 'string' ? p : (p._id || p.id);
+      return pid === userId;
+    });
+  }
+
+  isUserCreatorSearch(evento: Evento): boolean {
+    const userId = this.currentUserId;
+    if (!userId) return false;
+    const creadorId = typeof evento.creador === 'string' 
+      ? evento.creador 
+      : (evento.creador as any)?._id || (evento.creador as any)?.id;
+    return creadorId === userId;
+  }
+
+  joinSearchEvento(evento: Evento): void {
+    if (!evento._id) return;
+
+    this.eventoService.joinEvento(evento._id as string).subscribe({
+      next: () => {
+        this.performSearch();
+        const m = this.me();
+        if (m) {
+          const myId = this.getId(m);
+          if (myId) this.cargarEstadisticasEventos(myId);
+        }
+      },
+      error: (err) => {
+        console.error('Error al unirse al evento:', err);
+        this.errorMessage = 'Error al unirse al evento';
+      }
+    });
+  }
+
+  leaveSearchEvento(evento: Evento): void {
+    if (!evento._id) return;
+
+    this.eventoService.leaveEvento(evento._id as string).subscribe({
+      next: () => {
+        this.performSearch();
+        const m = this.me();
+        if (m) {
+          const myId = this.getId(m);
+          if (myId) this.cargarEstadisticasEventos(myId);
+        }
+      },
+      error: (err) => {
+        console.error('Error al salir del evento:', err);
+        this.errorMessage = 'Error al salir del evento';
+      }
+    });
+  }
+
+  openSearchEventModal(evento: Evento): void {
+    this.selectedEvent = evento;
+    this.showEventModal = true;
+  }
+
+  getCreadorNameSearch(evento: Evento): string {
+    if (!evento.creador) return '-';
+    const c = evento.creador as any;
+    return c.username || c.gmail || '-';
+  }
+
+  getScheduleTextSearch(evento: Evento): string {
+    if (!evento.schedule) return '-';
+    const s = Array.isArray(evento.schedule) ? evento.schedule[0] : evento.schedule;
+    if (!s) return '-';
+    try {
+      const d = new Date(s);
+      return d.toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return s.toString();
+    }
+  }
+
+  private getScheduleDate(evento: any): Date | null {
+    if (!evento || !evento.schedule) return null;
+
+    const raw = Array.isArray(evento.schedule)
+      ? evento.schedule[0]
+      : evento.schedule;
+
+    if (!raw) return null;
+
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return null;
+    return d;
+  }
+
+  private normalizeAndSortEventos(list: any[]): any[] {
+    const now = new Date();
+
+    return (list || [])
+      .map(e => ({ e, d: this.getScheduleDate(e) }))
+      .filter(x => x.d && x.d >= now)
+      .sort((a, b) => a.d!.getTime() - b.d!.getTime())
+      .map(x => x.e);
   }
 }

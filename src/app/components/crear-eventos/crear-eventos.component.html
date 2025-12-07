@@ -44,7 +44,6 @@
       <header class="top-bar">
         <div class="top-bar__left">
           <h1 class="top-title">{{ 'CREATE_EVENT.TITLE' | translate }}</h1>
-          <p class="top-subtitle">{{ 'CREATE_EVENT.FORM_TITLE' | translate }}</p>
         </div>
 
         <div class="top-bar__right">
@@ -127,6 +126,7 @@
                   [(ngModel)]="dateStr"
                   name="dateStr"
                   [attr.aria-label]="'CREATE_EVENT.FIELD_DATE_LABEL' | translate"
+                  [attr.min]="todayISO"
                 />
               </div>
 

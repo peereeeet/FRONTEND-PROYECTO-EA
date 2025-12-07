@@ -54,6 +54,8 @@ export class CrearEventosComponent implements OnInit {
   latStr = '';
   lngStr = '';
 
+  todayISO: string = '';
+
   currentLang: 'es' | 'en' | 'cat' | 'fr' =
     (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
@@ -106,6 +108,12 @@ export class CrearEventosComponent implements OnInit {
       this.me = u as User;
       this.loadUsers();
     });
+    const t = new Date();
+    this.todayISO = new Date(Date.UTC(
+      t.getFullYear(),
+      t.getMonth(),
+      t.getDate()
+    )).toISOString().slice(0, 10);
   }
 
   private loadUsers(): void {

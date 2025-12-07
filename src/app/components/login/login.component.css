@@ -598,3 +598,21 @@
     right: 10px;
   }
 }
+
+.modal--birthday .modal-text {
+  text-align: left;
+  margin-bottom: 14px;
+}
+
+.modal--birthday .form-group {
+  margin-bottom: 12px;
+}
+
+.modal--birthday #googleBirthday {
+  text-align: center;
+  font-weight: 600;
+}
+
+.modal--birthday .modal-actions {
+  margin-top: 14px;
+}

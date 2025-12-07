@@ -31,7 +31,12 @@
     "DIRECT_SAVING": "Enregistrement…",
     "ERROR_GENERIC": "Erreur lors de la connexion. Vérifiez vos informations.",
     "OR": "ou continuer avec",
-    "ERROR_GOOGLE": "Erreur lors de la connexion avec Google."
+    "ERROR_GOOGLE": "Erreur lors de la connexion avec Google.",
+    "GOOGLE_BIRTHDAY_TITLE": "Complétez votre date de naissance",
+    "GOOGLE_BIRTHDAY_TEXT": "Avant de finaliser l'inscription avec Google, nous avons besoin de votre date de naissance pour compléter votre profil.",
+    "GOOGLE_BIRTHDAY_LABEL": "Date de naissance",
+    "GOOGLE_BIRTHDAY_CANCEL": "Annuler",
+    "GOOGLE_BIRTHDAY_CONFIRM": "Continuer"
   },
 
   "REGISTER": {
@@ -106,7 +111,7 @@
     "EVENTS_TITLE": "Événements",
     "EVENTS_CREATE": "Créer un nouvel événement",
     "EVENTS_EXPLORE_MAP": "Explorer les événements (carte)",
-    "EVENTS_MY": "Mes événements (créés ou inscrits)",
+    "EVENTS_MY": "Mes événements",
     "LOADING": "Chargement…",
 
     "FRIENDS_TITLE": "Amis",
@@ -149,7 +154,20 @@
     "CONFIRM_REMOVE_TEXT": "Êtes-vous sûr de vouloir supprimer",
     "CONFIRM_REMOVE_WARNING": "Cette action est permanente et ne peut pas être annulée.",
     "CONFIRM_REMOVE_CANCEL": "Annuler",
-    "CONFIRM_REMOVE_CONFIRM": "Supprimer"
+    "CONFIRM_REMOVE_CONFIRM": "Supprimer",
+
+    "TAB_MAP": "Carte",
+    "TAB_SEARCH": "Recherche",
+    "SEARCH_TITLE": "Rechercher des Événements",
+    "SEARCH_NAME_LABEL": "Nom de l'Événement",
+    "SEARCH_NAME_PLACEHOLDER": "Rechercher par nom...",
+    "SEARCH_DATE_FROM_LABEL": "Du",
+    "SEARCH_DATE_TO_LABEL": "Au",
+    "SEARCH_BUTTON": "Rechercher",
+    "SEARCH_CLEAR_BUTTON": "Effacer",
+    "SEARCH_LOADING": "Recherche d'événements...",
+    "SEARCH_EMPTY_TITLE": "Aucun événement trouvé",
+    "SEARCH_EMPTY_TEXT": "Essayez d'ajuster vos filtres de recherche"
   },
 
   "FRIENDS": {
@@ -222,7 +240,7 @@
     "TITLE": "Explorer les événements",
     "BACK_TO_MENU": "Retour au menu",
     "GO_TO_CREATE": "Créer un nouvel événement",
-    "GO_TO_MY_EVENTS": "Mes événements (créés ou inscrits)",
+    "GO_TO_MY_EVENTS": "Mes événements",
 
     "LOADING_EVENTS": "Chargement des événements...",
     "MAP_TITLE": "Carte des événements",
@@ -252,7 +270,7 @@
     "TITLE": "Créer un nouvel événement",
     "BACK_TO_MENU": "Retour au menu",
     "GO_TO_EXPLORE": "Explorer les événements (carte)",
-    "GO_TO_MY_EVENTS": "Mes événements (créés ou inscrits)",
+    "GO_TO_MY_EVENTS": "Mes événements",
 
     "FORM_TITLE": "Complétez les informations de l'événement",
 
@@ -289,13 +307,13 @@
     "BADGE_CREATOR": "Créateur",
 
     "FIELD_ADDRESS": "Adresse:",
-    "BUTTON_VIEW_MAP": "🗺 Voir sur la carte",
+    "BUTTON_VIEW_MAP": "🗺 Carte",
     "FIELD_SCHEDULE": "Horaire:",
     "FIELD_PARTICIPANTS": "Participants:",
 
     "RATINGS_LABEL": "Avis:",
     "RATINGS_NONE": "Aucun avis",
-    "BUTTON_VIEW_RATINGS": "Voir/Ajouter des avis",
+    "BUTTON_VIEW_RATINGS": "Avis",
     "BUTTON_EDIT": "✏️ Modifier",
     "BUTTON_DELETE": "🗑️ Supprimer",
 
@@ -305,7 +323,7 @@
 
     "BADGE_JOINED": "Inscrit",
 
-    "BUTTON_LEAVE": "👋 Quitter l'événement",
+    "BUTTON_LEAVE": "👋 Quitter",
 
     "DELETE_MODAL_TITLE": "Supprimer l'événement",
     "DELETE_MODAL_TEXT": "Êtes-vous sûr de vouloir supprimer <strong>{{name}}</strong> ?",
@@ -317,17 +335,21 @@
     "LEAVE_MODAL_CANCEL": "Annuler",
     "LEAVE_MODAL_CONFIRM": "Quitter",
 
-    "BUTTON_SHARE_EVENT": "Envoyer à un ami",
+    "BUTTON_SHARE_EVENT": "Envoyer événement",
     "SHARE_EVENT_TITLE": "Partager l'événement",
     "SHARE_EVENT_LOADING": "Chargement des amis...",
     "SHARE_EVENT_NO_FRIENDS": "Vous n'avez aucun ami à qui envoyer cet événement.",
     "SHARE_EVENT_SEND": "Envoyer",
 
-    "BUTTON_EVENT_CHAT": "Chat de l'événement",
+    "BUTTON_EVENT_CHAT": "Chat",
     "EVENT_CHAT_TITLE": "Chat de l'événement",
     "EVENT_CHAT_LOADING": "Chargement des messages de l'événement...",
     "EVENT_CHAT_EMPTY": "Il n'y a pas encore de messages pour cet événement.",
-    "EVENT_CHAT_PLACEHOLDER": "Écrivez un message pour cet événement..."
+    "EVENT_CHAT_PLACEHOLDER": "Écrivez un message pour cet événement...",
+
+    "TAB_JOINED": "Événements Inscrit",
+    "TAB_CREATED": "Événements Créés",
+    "STATS_RATING": "Évaluation"
   },
 
   "RATINGS": {

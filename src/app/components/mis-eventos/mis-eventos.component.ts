@@ -26,6 +26,7 @@ import { ThemeService } from '../../services/theme.service';
 export class MisEventosComponent implements OnInit {
   private themeService = inject(ThemeService);
   theme = this.themeService.theme;
+  activeTab: 'joined' | 'created' = 'joined';
 
   eventosCreados: Evento[] = [];
   eventosInscritos: Evento[] = [];
@@ -672,5 +673,9 @@ hasLocation(evento: any): boolean {
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+
+  switchTab(tab: 'joined' | 'created'): void {
+    this.activeTab = tab;
   }
 }
