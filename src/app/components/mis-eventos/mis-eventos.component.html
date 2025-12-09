@@ -131,9 +131,13 @@
 
               <div class="events-grid" *ngIf="eventosInscritos.length > 0">
                 <div *ngFor="let evento of eventosInscritos" class="evento-card">
-                  <div class="evento-header">
-                    <div class="evento-title-row">
+                  <div class="evento-title-row">
+                    <div class="evento-title-line">
                       <h3 class="evento-title">{{ evento.name }}</h3>
+
+                      <span *ngIf="evento.categoria" class="badge-category">
+                        {{ evento.categoria }}
+                      </span>
                     </div>
                   </div>
 
@@ -213,9 +217,13 @@
 
               <div class="events-grid" *ngIf="eventosCreados.length > 0">
                 <div *ngFor="let evento of eventosCreados" class="evento-card">
-                  <div class="evento-header">
-                    <div class="evento-title-row">
+                  <div class="evento-title-row">
+                    <div class="evento-title-line">
                       <h3 class="evento-title">{{ evento.name }}</h3>
+
+                      <span *ngIf="evento.categoria" class="badge-category">
+                        {{ evento.categoria }}
+                      </span>
                     </div>
                   </div>
 

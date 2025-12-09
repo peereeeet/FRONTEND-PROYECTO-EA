@@ -2376,3 +2376,77 @@
     font-size: 1.2rem;
   }
 }
+
+.badge-category {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 8px;
+
+  background: var(--surface-elev);          /* fondo suave compatible con tu UI */
+  border: 1px solid var(--border);          /* borde sutil */
+  color: var(--text-primary);               /* color del texto */
+  opacity: 0.85;                            /* look elegante */
+
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+}
+
+/* Hover suave y elegante */
+.badge-category:hover {
+  opacity: 1;
+  background: var(--surface); 
+  border-color: var(--accent); 
+}
+
+/* ===== MODO OSCURO ===== */
+.dark-theme .badge-category {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #e5e7eb;
+}
+
+.dark-theme .badge-category:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent);
+}
+
+.evento-title-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Título a la izquierda, badge a la derecha */
+  gap: 10px;                      /* Espacio bonito entre ambos */
+  width: 100%;
+}
+
+/* Asegura que el título no se coma el espacio */
+.evento-title {
+  margin: 0;
+  flex-grow: 1;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* Badge mejorado para que quede pequeño, suave y elegante */
+.badge-category {
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 6px;
+
+  background: var(--surface-elev);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.badge-category:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}

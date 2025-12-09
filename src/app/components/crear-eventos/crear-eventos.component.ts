@@ -6,9 +6,9 @@ import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
-import { Evento } from '../../models/evento.model';
+import { Evento, CATEGORIAS_EVENTO, EventoCategoria } from '../../models/evento.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ThemeService } from '../../services/theme.service'; // ⭐ IMPORT
+import { ThemeService } from '../../services/theme.service';
 
 type NewEventDTO = {
   name: string;
@@ -17,6 +17,7 @@ type NewEventDTO = {
   participants: string[];
   lat?: number | null;
   lng?: number | null;
+  categoria?: string;
 };
 
 @Component({
@@ -31,9 +32,9 @@ export class CrearEventosComponent implements OnInit {
   private auth = inject(AuthService);
   private eventoService = inject(EventoService);
   private router = inject(Router);
-  private themeService = inject(ThemeService); // ⭐ INJECT
+  private themeService = inject(ThemeService);
   
-  theme = this.themeService.theme; // ⭐ SIGNAL
+  theme = this.themeService.theme;
 
   formSubmitted = false;
   saving = false;
@@ -46,6 +47,7 @@ export class CrearEventosComponent implements OnInit {
     participants: [],
     lat: null,
     lng: null,
+    categoria: '',
   };
 
   dateStr = '';
@@ -59,6 +61,10 @@ export class CrearEventosComponent implements OnInit {
   currentLang: 'es' | 'en' | 'cat' | 'fr' =
     (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
+  categoriasDisponibles = CATEGORIAS_EVENTO;
+
+  categoriaSearch = '';
+  showCategoriaDropdown = false;
 
   constructor(private translate: TranslateService) {
     this.translate.use(this.currentLang);
@@ -99,6 +105,16 @@ export class CrearEventosComponent implements OnInit {
     return this.selectedUsers.slice(start, start + this.selectedPageSize);
   }
 
+  get categoriasFiltradas(): EventoCategoria[] {
+    if (!this.categoriaSearch || this.categoriaSearch.trim() === '') {
+      return this.categoriasDisponibles;
+    }
+    const search = this.categoriaSearch.toLowerCase().trim();
+    return this.categoriasDisponibles.filter(cat => 
+      cat.toLowerCase().includes(search)
+    );
+  }
+
   ngOnInit(): void {
     this.auth.currentUser$.subscribe((u) => {
       if (!u) {
@@ -114,6 +130,8 @@ export class CrearEventosComponent implements OnInit {
       t.getMonth(),
       t.getDate()
     )).toISOString().slice(0, 10);
+    
+    this.categoriaSearch = this.newEvent.categoria || '';
   }
 
   private loadUsers(): void {
@@ -252,6 +270,26 @@ export class CrearEventosComponent implements OnInit {
 
   getScheduleText = (ev: any) => this.formatSchedule(ev?.schedule);
 
+  selectCategoria(cat: EventoCategoria): void {
+    this.newEvent.categoria = cat;
+    this.categoriaSearch = cat;
+    this.showCategoriaDropdown = false;
+  }
+
+  onCategoriaInputFocus(): void {
+    this.showCategoriaDropdown = true;
+  }
+
+  onCategoriaInputBlur(): void {
+    setTimeout(() => {
+      this.showCategoriaDropdown = false;
+    }, 200);
+  }
+
+  onCategoriaSearchChange(): void {
+    this.showCategoriaDropdown = true;
+  }
+
   onSubmit(): void {
     this.formSubmitted = true;
     this.errorMessage = '';
@@ -294,6 +332,7 @@ export class CrearEventosComponent implements OnInit {
       schedule: this.newEvent.schedule,
       address: this.newEvent.address?.trim() || '',
       participantes: this.newEvent.participants.slice(),
+      categoria: this.newEvent.categoria || '',
       lat,
       lng,
     } as any as Evento;

@@ -1,9 +1,7 @@
 <div class="menu-page">
-  <!-- Capa de fondo global -->
   <div class="menu-bg"></div>
 
   <div class="app-layout">
-    <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar__brand">
         <div class="brand-logo">E</div>
@@ -30,17 +28,10 @@
           <span class="nav-icon">📅</span>
           <span class="nav-text">{{ 'CREATE_EVENT.GO_TO_MY_EVENTS' | translate }}</span>
         </button>
-
-        <!-- <button class="nav-item" (click)="goToExplorar()">
-          <span class="nav-icon">🗺️</span>
-          <span class="nav-text">{{ 'CREATE_EVENT.GO_TO_EXPLORE' | translate }}</span>
-        </button> -->
       </nav>
     </aside>
 
-    <!-- PANEL PRINCIPAL -->
     <div class="main-panel">
-      <!-- TOP BAR -->
       <header class="top-bar">
         <div class="top-bar__left">
           <h1 class="top-title">{{ 'CREATE_EVENT.TITLE' | translate }}</h1>
@@ -49,7 +40,7 @@
         <div class="top-bar__right">
           <div class="lang-switcher-menu">
             <button type="button" class="lang-toggle" (click)="toggleLangMenu()">
-              <span class="lang-icon">🌐</span>
+              <span class="lang-icon">🌍</span>
               <span class="lang-current">
                 {{
                   currentLang === 'es'
@@ -86,7 +77,6 @@
         </div>
       </header>
 
-      <!-- CONTENIDO PRINCIPAL -->
       <section class="content">
         <div class="form-card">
           <form class="event-form" (ngSubmit)="onSubmit()">
@@ -116,6 +106,49 @@
                   name="address"
                   [placeholder]="'CREATE_EVENT.FIELD_ADDRESS_PLACEHOLDER' | translate"
                 />
+              </div>
+
+              <div class="form-group categoria-searchable">
+                <label for="categoria">Categoría</label>
+                <div class="categoria-input-wrapper">
+                  <input
+                    id="categoria"
+                    type="text"
+                    [(ngModel)]="categoriaSearch"
+                    name="categoriaSearch"
+                    placeholder="Buscar o seleccionar categoría..."
+                    class="categoria-input"
+                    (focus)="onCategoriaInputFocus()"
+                    (blur)="onCategoriaInputBlur()"
+                    (input)="onCategoriaSearchChange()"
+                    autocomplete="off"
+                    required
+                  />
+                  <span class="categoria-arrow">▼</span>
+                  
+                  <div class="categoria-dropdown" *ngIf="showCategoriaDropdown && categoriasFiltradas.length > 0">
+                    <div class="categoria-count">
+                      {{ categoriasFiltradas.length }} categoría(s) encontrada(s)
+                    </div>
+                    <div class="categoria-options">
+                      <button
+                        type="button"
+                        class="categoria-option"
+                        *ngFor="let cat of categoriasFiltradas"
+                        (click)="selectCategoria(cat)"
+                        [class.selected]="newEvent.categoria === cat"
+                      >
+                        {{ cat }}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="categoria-dropdown categoria-no-results" *ngIf="showCategoriaDropdown && categoriasFiltradas.length === 0">
+                    <div class="categoria-empty">
+                      ❌ No se encontraron categorías con "{{ categoriaSearch }}"
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="form-group">

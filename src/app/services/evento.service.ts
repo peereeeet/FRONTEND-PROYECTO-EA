@@ -182,6 +182,7 @@ export class EventoService {
     search: string = '',
     dateFrom: string = '',
     dateTo: string = '',
+    categoria: string = '',
     page: number = 1,
     limit: number = 10
   ): Observable<{
@@ -202,6 +203,9 @@ export class EventoService {
     }
     if (dateTo) {
       params = params.set('dateTo', dateTo);
+    }
+    if (categoria) {
+      params = params.set('categoria', categoria);
     }
 
     return this.http.get<{
