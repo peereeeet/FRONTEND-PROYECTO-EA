@@ -300,6 +300,9 @@
                           class="badge badge-joined">
                           ✅ {{ 'EXPLORE.CARD_BADGE_JOINED' | translate }}
                         </span>
+                        <span class="badge badge-category">
+                          🏷️ {{ evento.categoria || 'Otros' }}
+                        </span>
                       </div>
 
                       <div class="evento-header">
@@ -437,6 +440,48 @@
                           (keyup.enter)="performSearch()" />
                       </div>
 
+                      <div class="filter-group categoria-searchable">
+                        <label for="searchCategoria">Categoría</label>
+                        <div class="categoria-input-wrapper">
+                          <input
+                            id="searchCategoria"
+                            type="text"
+                            class="categoria-input"
+                            [value]="searchCategoriaSearch"
+                            placeholder="Buscar o seleccionar categoría..."
+                            autocomplete="off"
+                            (focus)="onSearchCategoriaInputFocus()"
+                            (blur)="onSearchCategoriaInputBlur()"
+                            (input)="onSearchCategoriaSearchChange($event)"
+                          />
+                          <span class="categoria-arrow">▼</span>
+                          <div
+                            class="categoria-dropdown"
+                            *ngIf="searchShowCategoriaDropdown && searchCategoriasFiltradas.length > 0">
+                            <div class="categoria-count">
+                              {{ searchCategoriasFiltradas.length }} categoría(s) encontrada(s)
+                            </div>
+                            <div class="categoria-options">
+                              <button
+                                type="button"
+                                class="categoria-option"
+                                *ngFor="let cat of searchCategoriasFiltradas"
+                                (click)="selectSearchCategoria(cat)"
+                                [class.selected]="searchCategoria() === cat">
+                                {{ cat }}
+                              </button>
+                            </div>
+                          </div>
+                          <div
+                            class="categoria-dropdown categoria-no-results"
+                            *ngIf="searchShowCategoriaDropdown && searchCategoriasFiltradas.length === 0">
+                            <div class="categoria-empty">
+                              ❌ No se encontraron categorías con "{{ searchCategoriaSearch }}"
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                       <div class="filter-actions">
                         <button class="btn btn--primary" (click)="performSearch()">
                           🔍 {{ 'MENU.SEARCH_BUTTON' | translate }}
@@ -473,6 +518,9 @@
                             *ngIf="isUserInSearchEvento(evento) && !isUserCreatorSearch(evento)"
                             class="badge badge-joined">
                             ✅ {{ 'EXPLORE.CARD_BADGE_JOINED' | translate }}
+                          </span>
+                          <span class="badge badge-category">
+                            🏷️ {{ evento.categoria || 'Otros' }}
                           </span>
                         </div>
 
