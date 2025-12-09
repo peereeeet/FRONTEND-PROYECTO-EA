@@ -1029,7 +1029,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       };
   
       if (!bounds) {
-        this.eventoService.getEventos(this.page, this.pageSize).subscribe({
+        this.eventoService.getUpcomingEventos(this.page, this.pageSize).subscribe({
           next: (resp) => {
             const lista = resp?.data ?? [];
             const mapped = lista.map((raw: any) => {
@@ -1144,7 +1144,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.loadingMap = true;
       this.errorMessage = '';
   
-      this.eventoService.getEventos(1, 1000).subscribe({
+      this.eventoService.getUpcomingEventos(1, 1000).subscribe({
         next: (resp: any) => {
           const lista =
             resp?.eventos ||
