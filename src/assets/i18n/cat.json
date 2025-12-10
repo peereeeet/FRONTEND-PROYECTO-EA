@@ -349,7 +349,12 @@
 
     "TAB_JOINED": "Esdeveniments Inscrit",
     "TAB_CREATED": "Esdeveniments Creats",
-    "STATS_RATING": "Valoració"
+    "STATS_RATING": "Valoració",
+
+    "CREATOR_CANNOT_LEAVE": "No pots abandonar essent el creador",
+    "SECTION_UPCOMING": "Propers Esdeveniments",
+    "SECTION_PAST": "Esdeveniments Passats",
+    "BADGE_FINISHED": "Finalitzat"
   },
 
   "RATINGS": {

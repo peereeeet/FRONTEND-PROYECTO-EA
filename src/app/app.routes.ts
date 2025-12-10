@@ -10,7 +10,6 @@ import { ValoracionComponent } from './components/valoracion/valoracion';
 import { MenuComponent } from './components/menu/menu.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
 import { MisEventosComponent } from './components/mis-eventos/mis-eventos.component';
-import { ExplorarEventosComponent } from './components/explorar-eventos/explorar-eventos.component';
 import { CrearEventosComponent } from './components/crear-eventos/crear-eventos.component';
 
 export const routes: Routes = [
@@ -55,11 +54,6 @@ export const routes: Routes = [
     {
     path: 'mis-eventos',
     component: MisEventosComponent,
-    canActivate: [authGuard]
-  },
-  {
-    path: 'explorar-eventos',
-    component: ExplorarEventosComponent,
     canActivate: [authGuard]
   },
   { path: 'crear-evento',

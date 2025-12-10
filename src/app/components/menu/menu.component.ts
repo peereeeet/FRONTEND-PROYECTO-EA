@@ -353,10 +353,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       });
   }
 
-  goToExplorarEventos(): void {
-    this.router.navigate(['/explorar-eventos']);
-  }
-
   goToMisEventos(): void {
     this.router.navigate(['/mis-eventos']);
   }

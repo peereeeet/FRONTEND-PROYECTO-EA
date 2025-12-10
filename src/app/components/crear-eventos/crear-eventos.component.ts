@@ -357,10 +357,6 @@ export class CrearEventosComponent implements OnInit {
     this.router.navigate(['/menu']);
   }
 
-  goToExplorar(): void {
-    this.router.navigate(['/explorar-eventos']);
-  }
-
   goToMisEventos(): void {
     this.router.navigate(['/mis-eventos']);
   }
