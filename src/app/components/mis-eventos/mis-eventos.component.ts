@@ -184,10 +184,6 @@ export class MisEventosComponent implements OnInit {
     this.router.navigate(['/crear-evento']);
   }
 
-  goToExplorar(): void {
-    this.router.navigate(['/explorar-eventos']);
-  }
-
   getCreadorName(ev: any): string {
     const c = ev?.creador || ev?.owner || ev?.createdBy;
     if (!c) return '—';
@@ -248,6 +244,53 @@ export class MisEventosComponent implements OnInit {
   isUserInEvento(ev: Evento): boolean {
     const arr: any[] = (ev as any)?.participantes || [];
     return arr.some((p: any) => (typeof p === 'string' ? p === this.currentUserId : p?._id === this.currentUserId));
+  }
+
+  /**
+   * Verifica si un evento ya ha finalizado (la fecha/hora del evento ya pasó)
+   */
+  isEventoFinalizado(ev: Evento): boolean {
+    if (!ev?.schedule) return false;
+    
+    // schedule puede ser string o string[], tomamos el primer elemento si es array
+    const scheduleValue = Array.isArray(ev.schedule) ? ev.schedule[0] : ev.schedule;
+    if (!scheduleValue) return false;
+    
+    const scheduleDate = new Date(scheduleValue);
+    const now = new Date();
+    
+    // Verificar que la fecha es válida
+    if (isNaN(scheduleDate.getTime())) return false;
+    
+    return scheduleDate < now;
+  }
+
+  /**
+   * Obtiene eventos inscritos que están por venir (fecha futura)
+   */
+  get eventosInscritosFuturos(): Evento[] {
+    return this.eventosInscritos.filter(ev => !this.isEventoFinalizado(ev));
+  }
+
+  /**
+   * Obtiene eventos inscritos que ya han pasado (fecha pasada)
+   */
+  get eventosInscritosPasados(): Evento[] {
+    return this.eventosInscritos.filter(ev => this.isEventoFinalizado(ev));
+  }
+
+  /**
+   * Obtiene eventos creados que están por venir (fecha futura)
+   */
+  get eventosCreadosFuturos(): Evento[] {
+    return this.eventosCreados.filter(ev => !this.isEventoFinalizado(ev));
+  }
+
+  /**
+   * Obtiene eventos creados que ya han pasado (fecha pasada)
+   */
+  get eventosCreadosPasados(): Evento[] {
+    return this.eventosCreados.filter(ev => this.isEventoFinalizado(ev));
   }
 
   openDeleteModal(evento: Evento): void { this.eventoToDelete = evento; this.showDeleteModal = true; }

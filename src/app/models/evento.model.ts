@@ -129,7 +129,6 @@ export const CATEGORIAS_EVENTO: EventoCategoria[] = [
   'Senderismo',
   'Escalada',
   'Artes Marciales',
-  
   'Concierto Rock',
   'Concierto Pop',
   'Concierto Clásica',
@@ -139,7 +138,6 @@ export const CATEGORIAS_EVENTO: EventoCategoria[] = [
   'Karaoke',
   'Discoteca',
   'Festival Musical',
-  
   'Exposición Arte',
   'Teatro',
   'Cine',
@@ -150,7 +148,6 @@ export const CATEGORIAS_EVENTO: EventoCategoria[] = [
   'Escultura',
   'Danza',
   'Ópera',
-  
   'Restaurante',
   'Tapas',
   'Cocina Internacional',
@@ -159,7 +156,6 @@ export const CATEGORIAS_EVENTO: EventoCategoria[] = [
   'Repostería',
   'Brunch',
   'Food Truck',
-  
   'Fiesta Privada',
   'Fiesta Temática',
   'Cumpleaños',
@@ -168,7 +164,6 @@ export const CATEGORIAS_EVENTO: EventoCategoria[] = [
   'After Work',
   'Networking',
   'Speed Dating',
-  
   'Taller',
   'Curso',
   'Conferencia',
@@ -176,7 +171,6 @@ export const CATEGORIAS_EVENTO: EventoCategoria[] = [
   'Workshop',
   'Idiomas',
   'Masterclass',
-  
   'Hackathon',
   'Meetup Tech',
   'Gaming',
@@ -185,20 +179,17 @@ export const CATEGORIAS_EVENTO: EventoCategoria[] = [
   'Inteligencia Artificial',
   'Blockchain',
   'Startups',
-  
   'Meditación',
   'Spa',
   'Wellness',
   'Mindfulness',
   'Salud Mental',
-  
   'Voluntariado Ambiental',
   'Voluntariado Social',
   'Donación de Sangre',
   'Rescate Animal',
   'Limpieza Playas',
   'Banco de Alimentos',
-  
   'Camping',
   'Montañismo',
   'Playa',
@@ -206,7 +197,6 @@ export const CATEGORIAS_EVENTO: EventoCategoria[] = [
   'Picnic',
   'Observación Aves',
   'Safari',
-  
   'Juegos de Mesa',
   'Ajedrez',
   'Poker',
@@ -214,13 +204,11 @@ export const CATEGORIAS_EVENTO: EventoCategoria[] = [
   'Paintball',
   'Laser Tag',
   'Bolos',
-  
   'Evento Familiar',
   'Parque Infantil',
   'Teatro Infantil',
   'Animación Infantil',
   'Taller Niños',
-
   'Mercadillo',
   'Feria',
   'Turismo',

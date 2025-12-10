@@ -349,7 +349,12 @@
 
     "TAB_JOINED": "Eventos Inscrito",
     "TAB_CREATED": "Eventos Creados",
-    "STATS_RATING": "Valoración"
+    "STATS_RATING": "Valoración",
+
+    "CREATOR_CANNOT_LEAVE": "No puedes abandonar siendo el creador",
+    "SECTION_UPCOMING": "Próximos Eventos",
+    "SECTION_PAST": "Eventos Pasados",
+    "BADGE_FINISHED": "Finalizado"
   },
 
   "RATINGS": {

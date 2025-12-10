@@ -349,7 +349,12 @@
 
     "TAB_JOINED": "Joined Events",
     "TAB_CREATED": "Created Events",
-    "STATS_RATING": "Rating"
+    "STATS_RATING": "Rating",
+
+    "CREATOR_CANNOT_LEAVE": "You cannot leave as the creator",
+    "SECTION_UPCOMING": "Upcoming Events",
+    "SECTION_PAST": "Past Events",
+    "BADGE_FINISHED": "Finished"
   },
 
   "RATINGS": {
