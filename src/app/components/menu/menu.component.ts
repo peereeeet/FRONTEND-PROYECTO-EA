@@ -8,7 +8,7 @@ import { EventoService } from '../../services/evento.service';
 import { ThemeService } from '../../services/theme.service';
 import { Router } from '@angular/router';
 import { User } from '../../models/user.model';
-import { Evento } from '../../models/evento.model';
+import { Evento, CATEGORIAS_EVENTO, EventoCategoria } from '../../models/evento.model';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SocketService } from '../../services/socket.service';
@@ -115,12 +115,17 @@ export class MenuComponent implements OnInit, OnDestroy {
   searchTerm = signal('');
   searchDateFrom = signal('');
   searchDateTo = signal('');
+  searchCategoria = signal('');
+  searchCategoriaSearch: string = '';
+  searchShowCategoriaDropdown = false;
+  searchCategoriasFiltradas: EventoCategoria[] = [];
   searchEventos: Evento[] = [];
   searchPage = 1;
   searchPageSize = 6;
   searchTotalItems = 0;
   searchTotalPages = 1;
   loadingSearch = false;
+  categoriasDisponibles = CATEGORIAS_EVENTO;
 
   showConfirmRemove = signal(false);
   friendToRemove = signal<any | null>(null);
@@ -198,6 +203,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.initChatListener(myId);
         this.cargarAmigos(myId);
         this.cargarEstadisticasEventos(myId);
+        this.searchCategoriasFiltradas = [...this.categoriasDisponibles];
 
         this.visibilitySub = fromEvent(document, 'visibilitychange')
         .pipe(takeUntil(this.destroy$))
@@ -1233,7 +1239,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   
     closeEventModal(): void {
       this.showEventModal = false;
-
       this.selectedEvent = null;
     }
   
@@ -1385,16 +1390,18 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.loadingSearch = true;
     this.errorMessage = '';
 
-    const term = this.searchTerm().trim();
-    const from = this.searchDateFrom();
-    const to   = this.searchDateTo();
+    const term      = this.searchTerm().trim();
+    const from      = this.searchDateFrom();
+    const to        = this.searchDateTo();
+    const categoria = this.searchCategoria ? this.searchCategoria() : '';
 
-    if (!term && !from && !to) {
+    if (!term && !from && !to && !categoria) {
       this.eventoService
         .getUpcomingEventos(this.searchPage, this.searchPageSize)
         .subscribe({
           next: (response) => {
-            this.searchEventos    = response.data || [];
+            const lista = response.data || [];
+            this.searchEventos    = this.normalizeAndSortEventos(lista);
             this.searchPage       = response.page;
             this.searchTotalPages = response.totalPages;
             this.searchTotalItems = response.totalItems;
@@ -1410,10 +1417,11 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
 
     this.eventoService
-      .searchEventos(term, from, to, this.searchPage, this.searchPageSize)
+      .searchEventos(term, from, to, categoria, this.searchPage, this.searchPageSize)
       .subscribe({
         next: (response) => {
-          this.searchEventos    = response.data || [];
+          const lista = response.data || [];
+          this.searchEventos    = this.normalizeAndSortEventos(lista);
           this.searchPage       = response.page;
           this.searchTotalPages = response.totalPages;
           this.searchTotalItems = response.totalItems;
@@ -1427,10 +1435,57 @@ export class MenuComponent implements OnInit, OnDestroy {
       });
   }
 
+  onSearchCategoriaChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const value = select.value as EventoCategoria | '';
+    this.searchCategoria.set(value);
+    this.searchPage = 1;
+    this.performSearch();
+  }
+
   clearSearch(): void {
     this.searchTerm.set('');
     this.searchDateFrom.set('');
     this.searchDateTo.set('');
+    this.searchCategoria.set('');
+    this.searchCategoriaSearch = '';
+    this.searchCategoriasFiltradas = [...this.categoriasDisponibles];
+    this.searchPage = 1;
+    this.performSearch();
+  }
+
+  onSearchCategoriaInputFocus(): void {
+    this.searchShowCategoriaDropdown = true;
+    this.filterSearchCategorias();
+  }
+
+  onSearchCategoriaInputBlur(): void {
+    setTimeout(() => {
+      this.searchShowCategoriaDropdown = false;
+    }, 150);
+  }
+
+  onSearchCategoriaSearchChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchCategoriaSearch = value;
+    this.filterSearchCategorias();
+  }
+
+  private filterSearchCategorias(): void {
+    const q = this.searchCategoriaSearch.toLowerCase().trim();
+    if (!q) {
+      this.searchCategoriasFiltradas = [...this.categoriasDisponibles];
+    } else {
+      this.searchCategoriasFiltradas = this.categoriasDisponibles.filter(cat =>
+        cat.toLowerCase().includes(q)
+      );
+    }
+  }
+
+  selectSearchCategoria(cat: EventoCategoria | ''): void {
+    this.searchCategoria.set(cat || '');
+    this.searchCategoriaSearch = cat || '';
+    this.searchShowCategoriaDropdown = false;
     this.searchPage = 1;
     this.performSearch();
   }
