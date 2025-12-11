@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import {jwtDecode} from 'jwt-decode';
-import { environment } from '../environments/environment';
+import { environment } from '../environments/environment.prod';
 import { logger } from '../utils/logger';
 
 

@@ -7,7 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 
 declare const google: any;
 
