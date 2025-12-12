@@ -112,6 +112,104 @@
           </div>
         </div>
 
+        <!-- ===== CARD GAMIFICACIÓN ===== -->
+        <div class="card gamification-card" *ngIf="!loadingProgreso() && progreso()">
+          <div class="gamif-header">
+            <h3 class="card-title">
+              <span class="title-emoji">{{ getNivelEmoji() }}</span>
+              {{ 'GAMIFICATION.SECTION_TITLE' | translate }}
+            </h3>
+            <div class="nivel-badge" [style.--nivel-color]="getNivelColor()">
+              {{ progreso()?.nivel }}
+            </div>
+          </div>
+
+          <div class="progress-section">
+            <div class="progress-header">
+              <div class="puntos-display">
+                <span class="puntos-value">{{ progreso()?.puntos }}</span>
+                <span class="puntos-label">{{ 'GAMIFICATION.POINTS_LABEL' | translate }}</span>
+              </div>
+              <div class="next-level" *ngIf="getProgresoNivel()?.siguienteNivel">
+                <span class="next-label">{{ 'GAMIFICATION.NEXT_LEVEL_LABEL' | translate }}</span>
+                <span class="next-name">{{ getProgresoNivel()?.siguienteNivel?.nombre }}</span>
+                <span class="next-points">({{ getProgresoNivel()?.puntosRestantes }} {{ 'GAMIFICATION.NEXT_LEVEL_POINTS' | translate }})</span>
+              </div>
+              <div class="max-level" *ngIf="!getProgresoNivel()?.siguienteNivel">
+                <span class="max-badge">{{ 'GAMIFICATION.MAX_LEVEL_BADGE' | translate }}</span>
+              </div>
+            </div>
+
+            <div class="progress-bar-container">
+              <div class="progress-bar-bg">
+                <div 
+                  class="progress-bar-fill" 
+                  [style.width.%]="getProgresoNivel()?.progreso"
+                  [style.background]="getNivelColor()">
+                </div>
+              </div>
+              <div class="progress-percentage">{{ getProgresoNivel()?.progreso }}%</div>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-icon">🎯</div>
+              <div class="stat-value">{{ progreso()?.estadisticas?.eventosCreadosTotal }}</div>
+              <div class="stat-label">{{ 'GAMIFICATION.STATS_EVENTS_CREATED' | translate }}</div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon">🤝</div>
+              <div class="stat-value">{{ progreso()?.estadisticas?.eventosUnidosTotal }}</div>
+              <div class="stat-label">{{ 'GAMIFICATION.STATS_EVENTS_JOINED' | translate }}</div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon">⭐</div>
+              <div class="stat-value">{{ progreso()?.estadisticas?.valoracionesTotal }}</div>
+              <div class="stat-label">{{ 'GAMIFICATION.STATS_RATINGS' | translate }}</div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon">👥</div>
+              <div class="stat-value">{{ progreso()?.estadisticas?.amigosTotal }}</div>
+              <div class="stat-label">{{ 'GAMIFICATION.STATS_FRIENDS' | translate }}</div>
+            </div>
+          </div>
+
+          <div class="badges-section" *ngIf="progreso()?.insignias && progreso()!.insignias.length > 0">
+            <div class="badges-header">
+              <h4 class="badges-title">{{ 'GAMIFICATION.BADGES_TITLE' | translate }}</h4>
+              <span class="badges-count">{{ progreso()?.insignias?.length }}</span>
+            </div>
+
+            <div class="badges-grid">
+              <div 
+                class="badge-item" 
+                *ngFor="let insignia of progreso()?.insignias"
+                [title]="insignia.descripcion + ' (+' + insignia.puntos + ' pts)'">
+                <div class="badge-icon">{{ insignia.icono || '🏆' }}</div>
+                <div class="badge-name">{{ insignia.nombre }}</div>
+                <div class="badge-points">+{{ insignia.puntos }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="no-badges" *ngIf="!progreso()?.insignias || progreso()!.insignias.length === 0">
+            <div class="no-badges-icon">{{ 'GAMIFICATION.NO_BADGES_ICON' | translate }}</div>
+            <div class="no-badges-text">{{ 'GAMIFICATION.NO_BADGES_TEXT' | translate }}</div>
+            <div class="no-badges-hint">{{ 'GAMIFICATION.NO_BADGES_HINT' | translate }}</div>
+          </div>
+        </div>
+
+        <div class="card gamification-card loading-card" *ngIf="loadingProgreso()">
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>{{ 'GAMIFICATION.LOADING' | translate }}</p>
+          </div>
+        </div>
+
         <!-- ===== CARD EVENTOS ===== -->
         <div class="card events-card">
           <div class="events-header">

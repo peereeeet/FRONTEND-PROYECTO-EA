@@ -385,5 +385,32 @@
     "NO_MAP": "No s'ha pogut mostrar el mapa per aquest esdeveniment.",
     "OPEN_LARGE": "Veure en mapa gran",
     "CLOSE": "Tancar"
+  },
+  "GAMIFICATION": {
+    "SECTION_TITLE": "El teu Progrés",
+    "LOADING": "Carregant el teu progrés...",
+    "POINTS_LABEL": "punts",
+    "NEXT_LEVEL_LABEL": "Següent nivell:",
+    "NEXT_LEVEL_POINTS": "pts",
+    "MAX_LEVEL_BADGE": "🏆 Nivell Màxim!",
+    "STATS_EVENTS_CREATED": "Esdeveniments Creats",
+    "STATS_EVENTS_JOINED": "Esdeveniments Units",
+    "STATS_RATINGS": "Valoracions",
+    "STATS_FRIENDS": "Amics",
+    "BADGES_TITLE": "🏆 Insígnies Desbloquejades",
+    "BADGES_COUNT": "insígnies",
+    "NO_BADGES_ICON": "🎖️",
+    "NO_BADGES_TEXT": "Aconsegueix la teva primera insígnia!",
+    "NO_BADGES_HINT": "Participa en esdeveniments per desbloquejar assoliments",
+    "REWARD_UNLOCKED": "Recompensa Desbloquejada!",
+    "POINTS_GAINED": "Punts Guanyats",
+    "LEVEL_UP": "Has Pujat de Nivell!",
+    "BADGES_UNLOCKED": "🏆 Insígnia(es) Desbloquejada(es)",
+    "BONUS_POINTS": "pts bonus",
+    "CONTINUE_BUTTON": "Continuar",
+    "VIEW_PROFILE_BUTTON": "👤 Veure El Meu Perfil",
+    "ACTION_CREATE_EVENT": "Esdeveniment creat amb èxit!",
+    "ACTION_JOIN_EVENT": "T'has unit a l'esdeveniment!",
+    "ACTION_MAKE_FRIEND": "Nou amic afegit!"
   }
 }
