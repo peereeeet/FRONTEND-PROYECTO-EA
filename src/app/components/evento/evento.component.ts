@@ -131,12 +131,16 @@ export class EventoComponent implements OnInit {
       this.timeStr = '';
     }
 
-    this.selectedUsers = this.users.filter(u =>
-      this.newEvent.participantes?.includes(u._id!)
-    );
-    this.availableUsers = this.users.filter(u =>
-      !this.newEvent.participantes?.includes(u._id!)
-    );
+    this.selectedUsers = this.users.filter(u => {
+      const parts = this.newEvent.participantes;
+      if (!parts) return false;
+      return parts.some(p => (typeof p === 'string' ? p : p._id) === u._id);
+    });
+    this.availableUsers = this.users.filter(u => {
+      const parts = this.newEvent.participantes;
+      if (!parts) return true;
+      return !parts.some(p => (typeof p === 'string' ? p : p._id) === u._id);
+    });
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -173,12 +177,16 @@ export class EventoComponent implements OnInit {
       const parts = this.fromISOtoInputs(this.editEvent?.schedule);
       this.editDateStr = parts.dateStr;
       this.editTimeStr = parts.timeStr;
-      this.editSelectedUsers = this.users.filter(u =>
-        this.editEvent.participantes?.includes(u._id!)
-      );
-      this.editAvailableUsers = this.users.filter(u =>
-        !this.editEvent.participantes?.includes(u._id!)
-      );
+      this.editSelectedUsers = this.users.filter(u => {
+        const parts = this.editEvent.participantes;
+        if (!parts) return false;
+        return parts.some(p => (typeof p === 'string' ? p : p._id) === u._id);
+      });
+      this.editAvailableUsers = this.users.filter(u => {
+        const parts = this.editEvent.participantes;
+        if (!parts) return true;
+        return !parts.some(p => (typeof p === 'string' ? p : p._id) === u._id);
+      });
 
       if (this.editEvent.schedule.length > 0) {
         const [date, time] = this.editEvent.schedule[0].split(' ');

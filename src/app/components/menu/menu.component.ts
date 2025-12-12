@@ -6,7 +6,7 @@ import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
 import { ThemeService } from '../../services/theme.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { User } from '../../models/user.model';
 import { Evento, CATEGORIAS_EVENTO, EventoCategoria } from '../../models/evento.model';
 import { FormsModule } from '@angular/forms';
@@ -26,7 +26,7 @@ interface EventStats {
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, RouterModule],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css']
 })
@@ -75,6 +75,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private focusSub?: Subscription;
   private friendsPollSub?: Subscription;
   newFriendRequests = signal(0);
+  invitacionesPendientes = signal(0);
 
   fPage: number = 1;
   fPageSize: number = 3;
@@ -278,6 +279,14 @@ export class MenuComponent implements OnInit, OnDestroy {
         if (!m) return;
         const myId = this.getId(m);
         if (myId) this.cargarAmigos(myId);
+      });
+
+    this.cargarInvitacionesPendientes();
+
+    interval(30000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.cargarInvitacionesPendientes();
       });
   }
 
@@ -1625,5 +1634,22 @@ export class MenuComponent implements OnInit, OnDestroy {
       .filter(x => x.d && x.d >= now)
       .sort((a, b) => a.d!.getTime() - b.d!.getTime())
       .map(x => x.e);
+  }
+
+  cargarInvitacionesPendientes(): void {
+    this.eventoService.getPendingInvitations().subscribe({
+      next: (response) => {
+        this.invitacionesPendientes.set(response.count || 0);
+      },
+      error: (err) => {
+        console.error('Error cargando invitaciones pendientes:', err);
+      }
+    });
+  }
+
+  navegarInvitaciones(): void {
+    this.router.navigate(['/invitaciones']).then(() => {
+      setTimeout(() => this.cargarInvitacionesPendientes(), 500);
+    });
   }
 }

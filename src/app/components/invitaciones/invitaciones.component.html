@@ -1,0 +1,131 @@
+<div class="invitaciones-page">
+  <!-- Background espacial -->
+  <div class="invitaciones-bg"></div>
+
+  <div class="invitaciones-container">
+    <!-- Header -->
+    <header class="invitaciones-header">
+      <div class="header-content">
+        <button class="btn-back" (click)="volverAlMenu()">
+          <span class="icon-back">←</span>
+          <span>Volver</span>
+        </button>
+        
+        <div class="header-title">
+          <h1>📩 Invitaciones a Eventos</h1>
+          <p class="header-subtitle">
+            <span *ngIf="loading">Cargando invitaciones...</span>
+            <span *ngIf="!loading && invitaciones.length === 0">No tienes invitaciones pendientes</span>
+            <span *ngIf="!loading && invitaciones.length > 0">
+              Tienes {{ invitaciones.length }} {{ invitaciones.length === 1 ? 'invitación pendiente' : 'invitaciones pendientes' }}
+            </span>
+          </p>
+        </div>
+
+        <button class="btn-eventos" (click)="irAEventos()">
+          <span class="icon-eventos">📅</span>
+          <span>Mis Eventos</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="invitaciones-main">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="state-container">
+        <div class="loading-spinner"></div>
+        <p class="state-text">Cargando tus invitaciones...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error && !loading" class="state-container error-state">
+        <div class="error-icon">⚠️</div>
+        <p class="state-text">{{ error }}</p>
+        <button class="btn-retry" (click)="cargarInvitaciones()">
+          🔄 Reintentar
+        </button>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && !error && invitaciones.length === 0" class="state-container empty-state">
+        <div class="empty-icon">📭</div>
+        <h2 class="empty-title">No tienes invitaciones pendientes</h2>
+        <p class="empty-text">
+          Cuando alguien te invite a un evento privado, las invitaciones aparecerán aquí.
+        </p>
+        <button class="btn-primary" (click)="irAEventos()">
+          Ver mis eventos
+        </button>
+      </div>
+
+      <!-- Lista de Invitaciones -->
+      <div *ngIf="!loading && !error && invitaciones.length > 0" class="invitaciones-list">
+        <div 
+          *ngFor="let evento of invitaciones" 
+          class="invitacion-card"
+          [class.procesando]="estaProcesando(evento)">
+          
+          <!-- Badge privado -->
+          <div class="card-header">
+            <span class="badge-privado">🔒 Evento Privado</span>
+            <span class="badge-categoria" *ngIf="evento.categoria">
+              {{ evento.categoria }}
+            </span>
+          </div>
+
+          <!-- Contenido del evento -->
+          <div class="card-body">
+            <h3 class="evento-nombre">{{ evento.name }}</h3>
+            
+            <div class="evento-info">
+              <div class="info-row">
+                <span class="info-icon">👤</span>
+                <span class="info-text">
+                  <strong>Organizador:</strong> {{ getNombreCreador(evento) }}
+                </span>
+              </div>
+
+              <div class="info-row">
+                <span class="info-icon">📅</span>
+                <span class="info-text">
+                  <strong>Fecha:</strong> {{ formatearFecha(evento.schedule) }}
+                </span>
+              </div>
+
+              <div class="info-row" *ngIf="evento.address">
+                <span class="info-icon">📍</span>
+                <span class="info-text">
+                  <strong>Lugar:</strong> {{ evento.address }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acciones -->
+          <div class="card-actions">
+            <button 
+              class="btn-aceptar"
+              (click)="aceptarInvitacion(evento)"
+              [disabled]="estaProcesando(evento)">
+              <span *ngIf="!estaProcesando(evento)">✓ Aceptar</span>
+              <span *ngIf="estaProcesando(evento)">Procesando...</span>
+            </button>
+            
+            <button 
+              class="btn-rechazar"
+              (click)="rechazarInvitacion(evento)"
+              [disabled]="estaProcesando(evento)">
+              <span *ngIf="!estaProcesando(evento)">✗ Rechazar</span>
+              <span *ngIf="estaProcesando(evento)">Procesando...</span>
+            </button>
+          </div>
+
+          <!-- Overlay de procesamiento -->
+          <div *ngIf="estaProcesando(evento)" class="card-overlay">
+            <div class="overlay-spinner"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

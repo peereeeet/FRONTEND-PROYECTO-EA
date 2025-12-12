@@ -1,3 +1,9 @@
+export interface Usuario {
+  _id: string;
+  username: string;
+  gmail: string;
+}
+
 export interface Evento {
   _id?: string;
   name: string;
@@ -5,15 +11,14 @@ export interface Evento {
   address?: string;
   lat?: number;
   lng?: number;
-  participantes?: string[];
-  creador?: {        
-    _id: string;
-    username: string;
-    gmail: string;
-  } | string;
+  participantes?: Usuario[] | string[];
+  creador?: Usuario | string;
   categoria?: string;
   avgRating?: number;
   ratingsCount?: number;
+  isPrivate?: boolean;
+  invitados?: Usuario[] | string[];
+  invitacionesPendientes?: Usuario[] | string[];
 }
 
 export type EventoCategoria = 

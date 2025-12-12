@@ -835,3 +835,367 @@
     max-height: 150px;
   }
 }
+
+.toggle-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.toggle-container:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--primary-color, #00d9ff);
+}
+
+.form-group .toggle-input {
+  width: 40px;
+  height: 20px;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.toggle-input::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  top: 1px;
+  left: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-input:checked {
+  background: var(--primary-color, #00d9ff);
+  border-color: var(--primary-color, #00d9ff);
+}
+
+.toggle-input:checked::before {
+  left: 21px;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  font-size: 1rem;
+}
+
+.toggle-icon {
+  font-size: 1.3rem;
+}
+
+.form-hint {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--text-secondary, #a0a0a0);
+  font-size: 0.875rem;
+  padding-left: 1rem;
+}
+
+.amigos-selector {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-top: 0.75rem;
+}
+
+.search-amigos {
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-primary, #ffffff);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color, #00d9ff);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+}
+
+.search-input::placeholder {
+  color: var(--text-secondary, #a0a0a0);
+}
+
+.selection-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.btn-selection {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-primary, #ffffff);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-selection:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary-color, #00d9ff);
+  transform: translateY(-1px);
+}
+
+.btn-selection:active {
+  transform: translateY(0);
+}
+
+.amigos-list {
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+  padding-right: 0.5rem;
+}
+
+.amigos-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.amigos-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.amigos-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 217, 255, 0.5);
+  border-radius: 3px;
+}
+
+.amigos-list::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color, #00d9ff);
+}
+
+.amigo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.amigo-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(0, 217, 255, 0.3);
+  transform: translateX(4px);
+}
+
+.amigo-item.selected {
+  background: rgba(0, 217, 255, 0.12);
+  border-color: var(--primary-color, #00d9ff);
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
+}
+
+.amigo-info {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.amigo-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.amigo-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.amigo-name {
+  color: var(--text-primary, #ffffff);
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.amigo-email {
+  color: var(--text-secondary, #a0a0a0);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.amigo-checkbox {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.amigo-item.selected .amigo-checkbox {
+  background: var(--primary-color, #00d9ff);
+  border-color: var(--primary-color, #00d9ff);
+}
+
+.check-icon {
+  color: var(--bg-primary, #0a0e27);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.no-amigos {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--text-secondary, #a0a0a0);
+}
+
+.empty-amigos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.empty-amigos .icon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.empty-amigos p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-primary, #ffffff);
+  font-weight: 600;
+}
+
+.empty-amigos small {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #a0a0a0);
+  max-width: 300px;
+}
+
+.selected-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem;
+  background: rgba(0, 217, 255, 0.12);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  border-radius: 8px;
+  text-align: center;
+  color: var(--primary-color, #00d9ff);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.count-icon {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .toggle-container {
+    padding: 0.85rem;
+  }
+
+  .toggle-input {
+    width: 45px;
+    height: 24px;
+  }
+
+  .toggle-input::before {
+    width: 18px;
+    height: 18px;
+  }
+
+  .toggle-input:checked::before {
+    left: 23px;
+  }
+
+  .amigos-selector {
+    padding: 1rem;
+  }
+
+  .amigos-list {
+    max-height: 280px;
+  }
+
+  .amigo-item {
+    padding: 0.65rem;
+  }
+
+  .amigo-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+
+  .amigo-name {
+    font-size: 0.9rem;
+  }
+
+  .amigo-email {
+    font-size: 0.8rem;
+  }
+
+  .selection-buttons {
+    flex-direction: column;
+  }
+
+  .btn-selection {
+    width: 100%;
+  }
+}

@@ -151,6 +151,93 @@
                 </div>
               </div>
 
+
+              <div class="form-group form-group--full">
+                <label class="toggle-container">
+                  <input 
+                    type="checkbox" 
+                    [(ngModel)]="newEvent.isPrivate"
+                    name="isPrivate"
+                    class="toggle-input">
+                  <span class="toggle-label">
+                    <span class="toggle-icon">🔒</span>
+                    Evento Privado
+                  </span>
+                </label>
+                <small class="form-hint">
+                  Los eventos privados solo son visibles para los usuarios invitados
+                </small>
+              </div>
+
+              <div class="form-group form-group--full" *ngIf="newEvent.isPrivate">
+                <label>Invitar Amigos ({{ amigosSeleccionados.length }} seleccionados)</label>
+                
+                <div class="amigos-selector">
+
+                  <div class="search-amigos">
+                    <input 
+                      type="text" 
+                      [(ngModel)]="searchAmigoQuery"
+                      name="searchAmigo"
+                      placeholder="🔍 Buscar amigos..."
+                      class="search-input">
+                  </div>
+
+                  <div class="selection-buttons" *ngIf="amigos.length > 0">
+                    <button 
+                      type="button" 
+                      (click)="seleccionarTodosAmigos()"
+                      class="btn-selection">
+                      ✓ Seleccionar todos
+                    </button>
+                    <button 
+                      type="button" 
+                      (click)="deseleccionarTodosAmigos()"
+                      class="btn-selection">
+                      ✗ Deseleccionar todos
+                    </button>
+                  </div>
+
+                  <div class="amigos-list" *ngIf="amigos.length > 0">
+                    <div 
+                      *ngFor="let amigo of amigosFiltrados" 
+                      class="amigo-item"
+                      [class.selected]="isAmigoSeleccionado(amigo._id)"
+                      (click)="toggleAmigoSeleccion(amigo._id)">
+                      <div class="amigo-info">
+                        <div class="amigo-avatar">
+                          {{ amigo.username.charAt(0).toUpperCase() }}
+                        </div>
+                        <div class="amigo-details">
+                          <span class="amigo-name">{{ amigo.username }}</span>
+                          <span class="amigo-email">{{ amigo.gmail }}</span>
+                        </div>
+                      </div>
+                      <div class="amigo-checkbox">
+                        <span *ngIf="isAmigoSeleccionado(amigo._id)" class="check-icon">✓</span>
+                      </div>
+                    </div>
+
+                    <div *ngIf="amigosFiltrados.length === 0 && searchAmigoQuery" class="no-amigos">
+                      <p>No se encontraron amigos con "{{ searchAmigoQuery }}"</p>
+                    </div>
+                  </div>
+
+                  <div *ngIf="amigos.length === 0" class="no-amigos">
+                    <div class="empty-amigos">
+                      <span class="icon">👥</span>
+                      <p>No tienes amigos agregados aún</p>
+                      <small>Añade amigos desde tu perfil para poder invitarlos a eventos privados</small>
+                    </div>
+                  </div>
+
+                  <div class="selected-count" *ngIf="amigosSeleccionados.length > 0">
+                    <span class="count-icon">✓</span>
+                    <span>{{ amigosSeleccionados.length }} amigo(s) seleccionado(s)</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="form-group">
                 <label for="dateStr">{{ 'CREATE_EVENT.FIELD_DATE_LABEL' | translate }}</label>
                 <input
