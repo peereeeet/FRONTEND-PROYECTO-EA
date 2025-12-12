@@ -385,5 +385,32 @@
     "NO_MAP": "The map could not be displayed for this event.",
     "OPEN_LARGE": "View in large map",
     "CLOSE": "Close"
+  },
+  "GAMIFICATION": {
+    "SECTION_TITLE": "Your Progress",
+    "LOADING": "Loading your progress...",
+    "POINTS_LABEL": "points",
+    "NEXT_LEVEL_LABEL": "Next level:",
+    "NEXT_LEVEL_POINTS": "pts",
+    "MAX_LEVEL_BADGE": "🏆 Max Level!",
+    "STATS_EVENTS_CREATED": "Events Created",
+    "STATS_EVENTS_JOINED": "Events Joined",
+    "STATS_RATINGS": "Ratings",
+    "STATS_FRIENDS": "Friends",
+    "BADGES_TITLE": "🏆 Unlocked Badges",
+    "BADGES_COUNT": "badges",
+    "NO_BADGES_ICON": "🎖️",
+    "NO_BADGES_TEXT": "Get your first badge!",
+    "NO_BADGES_HINT": "Participate in events to unlock achievements",
+    "REWARD_UNLOCKED": "Reward Unlocked!",
+    "POINTS_GAINED": "Points Gained",
+    "LEVEL_UP": "Level Up!",
+    "BADGES_UNLOCKED": "🏆 Badge(s) Unlocked",
+    "BONUS_POINTS": "bonus pts",
+    "CONTINUE_BUTTON": "Continue",
+    "VIEW_PROFILE_BUTTON": "👤 View My Profile",
+    "ACTION_CREATE_EVENT": "Event created successfully!",
+    "ACTION_JOIN_EVENT": "You joined the event!",
+    "ACTION_MAKE_FRIEND": "New friend added!"
   }
 }

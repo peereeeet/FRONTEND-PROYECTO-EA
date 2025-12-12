@@ -385,5 +385,32 @@
     "NO_MAP": "No se ha podido mostrar el mapa para este evento.",
     "OPEN_LARGE": "Ver en mapa grande",
     "CLOSE": "Cerrar"
+  },
+  "GAMIFICATION": {
+    "SECTION_TITLE": "Tu Progreso",
+    "LOADING": "Cargando tu progreso...",
+    "POINTS_LABEL": "puntos",
+    "NEXT_LEVEL_LABEL": "Siguiente nivel:",
+    "NEXT_LEVEL_POINTS": "pts",
+    "MAX_LEVEL_BADGE": "🏆 ¡Nivel Máximo!",
+    "STATS_EVENTS_CREATED": "Eventos Creados",
+    "STATS_EVENTS_JOINED": "Eventos Unidos",
+    "STATS_RATINGS": "Valoraciones",
+    "STATS_FRIENDS": "Amigos",
+    "BADGES_TITLE": "🏆 Insignias Desbloqueadas",
+    "BADGES_COUNT": "insignias",
+    "NO_BADGES_ICON": "🎖️",
+    "NO_BADGES_TEXT": "¡Consigue tu primera insignia!",
+    "NO_BADGES_HINT": "Participa en eventos para desbloquear logros",
+    "REWARD_UNLOCKED": "¡Recompensa Desbloqueada!",
+    "POINTS_GAINED": "Puntos Ganados",
+    "LEVEL_UP": "¡Subiste de Nivel!",
+    "BADGES_UNLOCKED": "🏆 Insignia(s) Desbloqueada(s)",
+    "BONUS_POINTS": "pts bonus",
+    "CONTINUE_BUTTON": "Continuar",
+    "VIEW_PROFILE_BUTTON": "👤 Ver Mi Perfil",
+    "ACTION_CREATE_EVENT": "¡Evento creado con éxito!",
+    "ACTION_JOIN_EVENT": "¡Te uniste al evento!",
+    "ACTION_MAKE_FRIEND": "¡Nuevo amigo agregado!"
   }
 }

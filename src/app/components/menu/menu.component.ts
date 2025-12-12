@@ -14,6 +14,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SocketService } from '../../services/socket.service';
 import { ChatMessage } from '../../models/user.model';
 import * as maplibregl from 'maplibre-gl';
+import { RewardNotificationService } from '../../services/reward-notification.service';
+import { GamificacionService } from '../../services/gamificacion.service';
+import { RewardNotificationComponent } from '../reward-notification/reward-notification.component';
 
 type FriendLike = User;
 
@@ -26,7 +29,7 @@ interface EventStats {
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, RewardNotificationComponent],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css']
 })
@@ -75,6 +78,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   private focusSub?: Subscription;
   private friendsPollSub?: Subscription;
   newFriendRequests = signal(0);
+
+  private progresoInicial: any = null;
 
   fPage: number = 1;
   fPageSize: number = 3;
@@ -154,7 +159,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   constructor(private authService: AuthService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private rewardService: RewardNotificationService,
+  private gamificacionService: GamificacionService
   ) {
     this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
@@ -179,6 +186,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
         this.refreshRequests();
         this.refreshSentRequests();
+        this.cargarProgresoInicial();
 
         this.userService.setOnline(myId).subscribe({
           next: (res) => {
@@ -293,6 +301,79 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.map.remove();
       this.map = null;
     }
+  }
+
+  private cargarProgresoInicial(): void {
+    const m = this.me();
+    if (!m?._id) return;
+
+    this.gamificacionService.obtenerMiProgreso().subscribe({
+      next: (progreso) => {
+        this.progresoInicial = {
+          nivel: progreso.nivel,
+          puntos: progreso.puntos,
+          insignias: progreso.insignias.length,
+          insigniasIds: progreso.insignias.map((i: any) => i._id)
+        };
+        console.log('📊 Progreso inicial cargado:', this.progresoInicial);
+      },
+      error: (err) => {
+        console.error('Error al cargar progreso inicial:', err);
+      }
+    });
+  }
+
+  private detectarCambiosProgreso(accion: 'unirseEvento' | 'hacerAmigo'): void {
+    setTimeout(() => {
+      this.gamificacionService.obtenerMiProgreso().subscribe({
+        next: (progresoNuevo) => {
+          if (!this.progresoInicial) {
+            this.progresoInicial = {
+              nivel: progresoNuevo.nivel,
+              puntos: progresoNuevo.puntos,
+              insignias: progresoNuevo.insignias.length,
+              insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
+            };
+            return;
+          }
+
+          const subisteDeNivel = progresoNuevo.nivel !== this.progresoInicial.nivel;
+          
+          const insigniasAnteriores = new Set(this.progresoInicial.insigniasIds || []);
+          const insigniasDesbloqueadas = progresoNuevo.insignias.filter(
+            (ins: any) => !insigniasAnteriores.has(ins._id)
+          );
+
+          const puntosGanados = this.rewardService.getPuntosAccion(accion);
+
+          this.rewardService.showReward({
+            puntosGanados,
+            accion,
+            insigniasDesbloqueadas,
+            nivelAnterior: this.progresoInicial.nivel,
+            nivelNuevo: progresoNuevo.nivel,
+            subisteDeNivel
+          });
+
+          this.progresoInicial = {
+            nivel: progresoNuevo.nivel,
+            puntos: progresoNuevo.puntos,
+            insignias: progresoNuevo.insignias.length,
+            insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
+          };
+
+          console.log('🎮 Recompensa detectada:', {
+            accion,
+            puntosGanados,
+            subisteDeNivel,
+            insigniasDesbloqueadas: insigniasDesbloqueadas.length
+          });
+        },
+        error: (err) => {
+          console.error('Error al detectar cambios de progreso:', err);
+        }
+      });
+    }, 800);
   }
 
   private cargarEstadisticasEventos(userId: string): void {
@@ -636,6 +717,7 @@ export class MenuComponent implements OnInit, OnDestroy {
           );
           this.newFriendRequests.set(this.requestsList().length);
           this.cargarAmigos(myId);
+          this.detectarCambiosProgreso('hacerAmigo');
         },
         error: () => this.requestsError.set('Error al aceptar la solicitud'),
       });
@@ -1252,6 +1334,15 @@ export class MenuComponent implements OnInit, OnDestroy {
           if (this.selectedEvent && this.selectedEvent._id === ev._id) {
             this.selectedEvent = updated;
           }
+          this.detectarCambiosProgreso('unirseEvento');
+      
+          const meUser = this.me();
+          if (meUser) {
+            const myId = this.getId(meUser);
+            if (myId) {
+              this.cargarEstadisticasEventos(myId);
+            }
+          }
         },
         error: (err) => {
           this.errorMessage = err?.error?.message || 'Error al unirse al evento.';
@@ -1542,6 +1633,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.eventoService.joinEvento(evento._id as string).subscribe({
       next: () => {
         this.performSearch();
+        this.detectarCambiosProgreso('unirseEvento');
         const m = this.me();
         if (m) {
           const myId = this.getId(m);

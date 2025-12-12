@@ -385,5 +385,32 @@
     "NO_MAP": "Impossible d'afficher la carte pour cet événement.",
     "OPEN_LARGE": "Voir en grand",
     "CLOSE": "Fermer"
+  },
+  "GAMIFICATION": {
+    "SECTION_TITLE": "Votre Progression",
+    "LOADING": "Chargement de votre progression...",
+    "POINTS_LABEL": "points",
+    "NEXT_LEVEL_LABEL": "Niveau suivant:",
+    "NEXT_LEVEL_POINTS": "pts",
+    "MAX_LEVEL_BADGE": "🏆 Niveau Maximum!",
+    "STATS_EVENTS_CREATED": "Événements Créés",
+    "STATS_EVENTS_JOINED": "Événements Rejoints",
+    "STATS_RATINGS": "Évaluations",
+    "STATS_FRIENDS": "Amis",
+    "BADGES_TITLE": "🏆 Badges Débloqués",
+    "BADGES_COUNT": "badges",
+    "NO_BADGES_ICON": "🎖️",
+    "NO_BADGES_TEXT": "Obtenez votre premier badge!",
+    "NO_BADGES_HINT": "Participez à des événements pour débloquer des succès",
+    "REWARD_UNLOCKED": "Récompense Débloquée!",
+    "POINTS_GAINED": "Points Gagnés",
+    "LEVEL_UP": "Niveau Supérieur!",
+    "BADGES_UNLOCKED": "🏆 Badge(s) Débloqué(s)",
+    "BONUS_POINTS": "pts bonus",
+    "CONTINUE_BUTTON": "Continuer",
+    "VIEW_PROFILE_BUTTON": "👤 Voir Mon Profil",
+    "ACTION_CREATE_EVENT": "Événement créé avec succès!",
+    "ACTION_JOIN_EVENT": "Vous avez rejoint l'événement!",
+    "ACTION_MAKE_FRIEND": "Nouvel ami ajouté!"
   }
 }

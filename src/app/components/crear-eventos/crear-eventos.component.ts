@@ -9,6 +9,9 @@ import { EventoService } from '../../services/evento.service';
 import { Evento, CATEGORIAS_EVENTO, EventoCategoria } from '../../models/evento.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
+import { GamificacionService } from '../../services/gamificacion.service';
+import { RewardNotificationService } from '../../services/reward-notification.service';
+import { RewardNotificationComponent } from '../reward-notification/reward-notification.component';
 
 type NewEventDTO = {
   name: string;
@@ -23,7 +26,7 @@ type NewEventDTO = {
 @Component({
   selector: 'app-crear-eventos',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, RewardNotificationComponent],
   templateUrl: './crear-eventos.component.html',
   styleUrls: ['./crear-eventos.component.css'],
 })
@@ -33,6 +36,8 @@ export class CrearEventosComponent implements OnInit {
   private eventoService = inject(EventoService);
   private router = inject(Router);
   private themeService = inject(ThemeService);
+  private gamificacionService = inject(GamificacionService);
+  private rewardService = inject(RewardNotificationService);
   
   theme = this.themeService.theme;
 
@@ -123,6 +128,7 @@ export class CrearEventosComponent implements OnInit {
       }
       this.me = u as User;
       this.loadUsers();
+      this.cargarProgresoInicial();
     });
     const t = new Date();
     this.todayISO = new Date(Date.UTC(
@@ -132,6 +138,77 @@ export class CrearEventosComponent implements OnInit {
     )).toISOString().slice(0, 10);
     
     this.categoriaSearch = this.newEvent.categoria || '';
+  }
+
+  private progresoInicial: any = null;
+  private cargarProgresoInicial(): void {
+    this.gamificacionService.obtenerMiProgreso().subscribe({
+      next: (progreso) => {
+        this.progresoInicial = {
+          nivel: progreso.nivel,
+          puntos: progreso.puntos,
+          insignias: progreso.insignias.length,
+          insigniasIds: progreso.insignias.map((i: any) => i._id)
+        };
+        console.log('📊 Progreso inicial cargado:', this.progresoInicial);
+      },
+      error: (err) => {
+        console.error('Error al cargar progreso inicial:', err);
+      }
+    });
+  }
+
+  private detectarCambiosProgreso(): void {
+    setTimeout(() => {
+      this.gamificacionService.obtenerMiProgreso().subscribe({
+        next: (progresoNuevo) => {
+          if (!this.progresoInicial) {
+            this.progresoInicial = {
+              nivel: progresoNuevo.nivel,
+              puntos: progresoNuevo.puntos,
+              insignias: progresoNuevo.insignias.length,
+              insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
+            };
+            return;
+          }
+
+          const subisteDeNivel = progresoNuevo.nivel !== this.progresoInicial.nivel;
+          
+          const insigniasAnteriores = new Set(this.progresoInicial.insigniasIds || []);
+          const insigniasDesbloqueadas = progresoNuevo.insignias.filter(
+            (ins: any) => !insigniasAnteriores.has(ins._id)
+          );
+
+          const puntosGanados = this.rewardService.getPuntosAccion('crearEvento');
+
+          this.rewardService.showReward({
+            puntosGanados,
+            accion: 'crearEvento',
+            insigniasDesbloqueadas,
+            nivelAnterior: this.progresoInicial.nivel,
+            nivelNuevo: progresoNuevo.nivel,
+            subisteDeNivel
+          });
+
+          this.progresoInicial = {
+            nivel: progresoNuevo.nivel,
+            puntos: progresoNuevo.puntos,
+            insignias: progresoNuevo.insignias.length,
+            insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
+          };
+
+          console.log('🎮 Recompensa detectada:', {
+            accion: 'crearEvento',
+            puntosGanados,
+            subisteDeNivel,
+            insigniasDesbloqueadas: insigniasDesbloqueadas.length
+          });
+        },
+        error: (err) => {
+          console.error('Error al detectar cambios de progreso:', err);
+        }
+      });
+    }, 800);
   }
 
   private loadUsers(): void {
@@ -341,7 +418,10 @@ export class CrearEventosComponent implements OnInit {
     this.eventoService.addEvento(payload).subscribe({
       next: () => {
         this.saving = false;
-        this.router.navigate(['/menu']);
+        this.detectarCambiosProgreso();
+        setTimeout(() => {
+          this.router.navigate(['/menu']);
+        }, 1000);
       },
       error: (err) => {
         this.saving = false;
