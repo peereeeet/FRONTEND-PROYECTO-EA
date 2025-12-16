@@ -64,7 +64,23 @@
     "BIRTHDAY_FUTURE": "Ha de ser anterior a avui.",
     "BUTTON": "Registrar",
     "BUTTON_LOADING": "Registrant...",
-    "BACK_TO_LOGIN": "Tornar al Login"
+    "BACK_TO_LOGIN": "Tornar al Login",
+    "USERNAME_MIN_LENGTH": "El nom ha de tenir almenys 3 caràcters",
+    "USERNAME_MAX_LENGTH": "El nom no pot superar els 30 caràcters",
+    "USERNAME_START_LETTER": "Ha de començar amb una lletra",
+    "USERNAME_VALID_CHARS": "Només lletres, números i guions baixos",
+    "EMAIL_FORMAT_VALID": "Format vàlid d'email",
+    "EMAIL_NOT_TEMPORARY": "No és un email temporal",
+    "BIRTHDAY_MIN_AGE": "Has de tenir almenys 13 anys per registrar-te",
+    "PASSWORD_STRENGTH_WEAK": "Feble",
+    "PASSWORD_STRENGTH_MEDIUM": "Mitjana",
+    "PASSWORD_STRENGTH_STRONG": "Forta",
+    "PASSWORD_REQ_LENGTH": "Mínim 8 caràcters",
+    "PASSWORD_REQ_UPPERCASE": "Una lletra majúscula",
+    "PASSWORD_REQ_LOWERCASE": "Una lletra minúscula",
+    "PASSWORD_REQ_NUMBER": "Un número",
+    "PASSWORD_REQ_SPECIAL": "Un caràcter especial (!@#$...)",
+    "PASSWORDS_MATCH": "Les contrasenyes coincideixen"
   },
 
   "LANG": {

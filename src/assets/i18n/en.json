@@ -64,7 +64,23 @@
     "BUTTON_LOADING": "Registering...",
     "BACK_TO_LOGIN": "Back to login",
     "OR": "or continue with",
-    "ERROR_GOOGLE": "Error signing in with Google."
+    "ERROR_GOOGLE": "Error signing in with Google.",
+    "USERNAME_MIN_LENGTH": "Username must have at least 3 characters",
+    "USERNAME_MAX_LENGTH": "Username cannot exceed 30 characters",
+    "USERNAME_START_LETTER": "Must start with a letter",
+    "USERNAME_VALID_CHARS": "Only letters, numbers and underscores",
+    "EMAIL_FORMAT_VALID": "Valid email format",
+    "EMAIL_NOT_TEMPORARY": "Not a temporary email",
+    "BIRTHDAY_MIN_AGE": "You must be at least 13 years old to register",
+    "PASSWORD_STRENGTH_WEAK": "Weak",
+    "PASSWORD_STRENGTH_MEDIUM": "Medium",
+    "PASSWORD_STRENGTH_STRONG": "Strong",
+    "PASSWORD_REQ_LENGTH": "Minimum 8 characters",
+    "PASSWORD_REQ_UPPERCASE": "One uppercase letter",
+    "PASSWORD_REQ_LOWERCASE": "One lowercase letter",
+    "PASSWORD_REQ_NUMBER": "One number",
+    "PASSWORD_REQ_SPECIAL": "One special character (!@#$...)",
+    "PASSWORDS_MATCH": "Passwords match"
   },
 
   "LANG": {

@@ -6,7 +6,6 @@ import { HomeComponent } from './components/home/home.component';
 import { authGuard } from './guards/auth.guard';
 import { LoginComponent } from './components/login/login.component';
 import { RegistrarComponent } from './components/registrar/registrar.component';
-import { ValoracionComponent } from './components/valoracion/valoracion';
 import { MenuComponent } from './components/menu/menu.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
 import { MisEventosComponent } from './components/mis-eventos/mis-eventos.component';
@@ -39,9 +38,6 @@ export const routes: Routes = [
     path: 'evento', 
     component: EventoComponent,
     canActivate: [authGuard] 
-  },
-  { path: 'events/:id/ratings',
-    component: ValoracionComponent 
   },
   { path: 'menu', 
     component: MenuComponent, 

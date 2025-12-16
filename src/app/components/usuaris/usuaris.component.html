@@ -1,154 +1,169 @@
 <div class="usuaris-container">
-  <div class="form-container">
-    <form (ngSubmit)="agregarElemento(userForm)" #userForm="ngForm">
-      <div class="form-header">
-        <h1>{{ indiceEdicion !== null ? 'Editar usuario' : 'Agregar un nuevo usuario' }}</h1>
+  <div class="space-background"></div>
+  <div class="stars"></div>
+
+  <header class="app-bar">
+    <div class="app-bar__content">
+      <h1 class="app-bar__title">GESTIÓN DE USUARIOS</h1>
+      <div class="app-bar__actions">
+        <button class="theme-toggle-btn" (click)="toggleTheme()">
+          {{ theme() === 'dark' ? '☀️' : '🌙' }}
+        </button>
         <button type="button" class="btn-back" (click)="goHome()">
           ← Volver a Home
         </button>
       </div>
+    </div>
+  </header>
+
+  <div class="form-container">
+    <form (ngSubmit)="agregarElemento(userForm)" #userForm="ngForm">
+      <div class="form-header">
+        <h1>{{ indiceEdicion !== null ? 'Editar usuario' : 'Agregar un nuevo usuario' }}</h1>
+      </div>
 
       <div class="form-grid">
-  <div class="left-col">
-    <div class="form-group">
-      <label for="nombre" class="form-label">Nombre:</label>
-      <input
-        id="nombre"
-        class="form-input"
-        [(ngModel)]="nuevoUsuario.username"
-        name="name"
-        #nameCtrl="ngModel"
-        placeholder="Nombre del usuario"
-        required />
-      <div class="error-message" *ngIf="(nameCtrl.touched || formSubmitted) && nameCtrl.errors?.['required']">
-        ⚠️ El nombre es obligatorio.
-      </div>
-      <div *ngIf="usernameExists" class="error-message">⚠ Este nombre de usuario ya está en uso.</div>
-    </div>
+        <div class="left-col">
+          <div class="form-group">
+            <label for="nombre" class="form-label">Nombre:</label>
+            <input
+              id="nombre"
+              class="form-input"
+              [(ngModel)]="nuevoUsuario.username"
+              name="name"
+              #nameCtrl="ngModel"
+              placeholder="Nombre del usuario"
+              required />
+            <div class="error-message" *ngIf="(nameCtrl.touched || formSubmitted) && nameCtrl.errors?.['required']">
+              ⚠️ El nombre es obligatorio.
+            </div>
+            <div *ngIf="usernameExists" class="error-message">⚠ Este nombre de usuario ya está en uso.</div>
+          </div>
 
-    <div class="form-group">
-      <label for="mail" class="form-label">Email:</label>
-      <input
-        id="mail"
-        class="form-input"
-        [(ngModel)]="nuevoUsuario.gmail"
-        name="mail"
-        #mailCtrl="ngModel"
-        placeholder="Email"
-        required
-        email />
-      <div class="error-message" *ngIf="(mailCtrl.touched || formSubmitted) && mailCtrl.errors?.['required']">
-        ⚠️ El email es obligatorio.
-      </div>
-      <div class="error-message" *ngIf="(mailCtrl.touched || formSubmitted) && !mailCtrl.errors?.['required'] && mailCtrl.errors?.['email']">
-        ⚠️ Formato de email no válido.
-      </div>
-      <div class="error-message" *ngIf="emailExists">
-        ⚠️ Este correo ya está registrado.
-      </div>
-    </div>
+          <div class="form-group">
+            <label for="mail" class="form-label">Email:</label>
+            <input
+              id="mail"
+              class="form-input"
+              [(ngModel)]="nuevoUsuario.gmail"
+              name="mail"
+              #mailCtrl="ngModel"
+              placeholder="Email"
+              required
+              email />
+            <div class="error-message" *ngIf="(mailCtrl.touched || formSubmitted) && mailCtrl.errors?.['required']">
+              ⚠️ El email es obligatorio.
+            </div>
+            <div class="error-message" *ngIf="(mailCtrl.touched || formSubmitted) && !mailCtrl.errors?.['required'] && mailCtrl.errors?.['email']">
+              ⚠️ Formato de email no válido.
+            </div>
+            <div class="error-message" *ngIf="emailExists">
+              ⚠️ Este correo ya está registrado.
+            </div>
+          </div>
 
-    <div class="form-group">
-      <label for="password" class="form-label">Contraseña:</label>
-      <input
-        id="password"
-        class="form-input"
-        [(ngModel)]="nuevoUsuario.password"
-        name="password"
-        #passCtrl="ngModel"
-        type="password"
-        placeholder="Password"
-        required
-        minlength="7" />
-      <div class="error-message" *ngIf="(passCtrl.touched || formSubmitted) && passCtrl.errors?.['required']">
-        ⚠️ La contraseña es obligatoria.
+          <div class="form-group">
+            <label for="password" class="form-label">Contraseña:</label>
+            <input
+              id="password"
+              class="form-input"
+              [(ngModel)]="nuevoUsuario.password"
+              name="password"
+              #passCtrl="ngModel"
+              type="password"
+              placeholder="Password"
+              required
+              minlength="7" />
+            <div class="error-message" *ngIf="(passCtrl.touched || formSubmitted) && passCtrl.errors?.['required']">
+              ⚠️ La contraseña es obligatoria.
+            </div>
+            <div class="error-message" *ngIf="(passCtrl.touched || formSubmitted) && !passCtrl.errors?.['required'] && passCtrl.errors?.['minlength']">
+              ⚠️ La contraseña debe tener al menos 7 caracteres.
+            </div>
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="form-group">
+            <label for="confirmarPassword" class="form-label">Confirmar Contraseña:</label>
+            <input
+              id="confirmarPassword"
+              class="form-input"
+              [(ngModel)]="confirmarPassword"
+              name="confirmarPassword"
+              #confirmCtrl="ngModel"
+              type="password"
+              placeholder="Confirmar Password"
+              required
+              minlength="7" />
+            <div class="error-message" *ngIf="(confirmCtrl.touched || formSubmitted) && confirmCtrl.errors?.['required']">
+              ⚠️ Confirmar contraseña es obligatorio.
+            </div>
+            <div class="error-message" *ngIf="(confirmCtrl.touched || formSubmitted) && !confirmCtrl.errors?.['required'] && confirmCtrl.errors?.['minlength']">
+              ⚠️ Debe tener al menos 7 caracteres.
+            </div>
+            <div class="error-message"
+                 *ngIf="(confirmCtrl.touched || formSubmitted)
+                         && confirmarPassword
+                         && nuevoUsuario.password
+                         && confirmarPassword !== nuevoUsuario.password">
+              ⚠️ Las contraseñas no coinciden.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="birthday" class="form-label">Aniversario:</label>
+            <input
+              id="birthday"
+              class="form-input"
+              type="date"
+              [(ngModel)]="birthdayStr"
+              name="birthday"
+              #birthdayCtrl="ngModel"
+              required />
+            <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && birthdayCtrl.errors?.['required']">
+              ⚠️ El aniversario es obligatorio.
+            </div>
+            <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && !birthdayCtrl.errors?.['required'] && isFutureBirthday(birthdayStr)">
+              ⚠️ La fecha no puede ser posterior a hoy.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="rol" class="form-label">Rol:</label>
+            <select
+              id="rol"
+              class="form-input"
+              [(ngModel)]="nuevoUsuario.rol"
+              name="rol"
+              #rolCtrl="ngModel"
+              required
+            >
+              <option value="usuario">Usuario</option>
+              <option value="admin">Administrador</option>
+            </select>
+            <div class="error-message" *ngIf="(rolCtrl.touched || formSubmitted) && rolCtrl.errors?.['required']">
+              ⚠️ El rol es obligatorio.
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-top: 30px; display: flex; flex-direction: column; gap: 12px;">
+            <button type="submit" class="submit-button">
+              {{ indiceEdicion !== null ? 'Actualizar' : 'Agregar' }}
+            </button>
+
+            <button
+              *ngIf="indiceEdicion !== null"
+              type="button"
+              class="submit-button cancel"
+              (click)="cancelarEdicion(userForm)">
+              Cancelar edición
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="error-message" *ngIf="(passCtrl.touched || formSubmitted) && !passCtrl.errors?.['required'] && passCtrl.errors?.['minlength']">
-        ⚠️ La contraseña debe tener al menos 7 caracteres.
-      </div>
-    </div>
+    </form>
   </div>
-
-  <div class="right-col">
-    <div class="form-group">
-      <label for="confirmarPassword" class="form-label">Confirmar Contraseña:</label>
-      <input
-        id="confirmarPassword"
-        class="form-input"
-        [(ngModel)]="confirmarPassword"
-        name="confirmarPassword"
-        #confirmCtrl="ngModel"
-        type="password"
-        placeholder="Confirmar Password"
-        required
-        minlength="7" />
-      <div class="error-message" *ngIf="(confirmCtrl.touched || formSubmitted) && confirmCtrl.errors?.['required']">
-        ⚠️ Confirmar contraseña es obligatorio.
-      </div>
-      <div class="error-message" *ngIf="(confirmCtrl.touched || formSubmitted) && !confirmCtrl.errors?.['required'] && confirmCtrl.errors?.['minlength']">
-        ⚠️ Debe tener al menos 7 caracteres.
-      </div>
-      <div class="error-message"
-           *ngIf="(confirmCtrl.touched || formSubmitted)
-                   && confirmarPassword
-                   && nuevoUsuario.password
-                   && confirmarPassword !== nuevoUsuario.password">
-        ⚠️ Las contraseñas no coinciden.
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="birthday" class="form-label">Aniversario:</label>
-      <input
-        id="birthday"
-        class="form-input"
-        type="date"
-        [(ngModel)]="birthdayStr"
-        name="birthday"
-        #birthdayCtrl="ngModel"
-        required />
-      <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && birthdayCtrl.errors?.['required']">
-        ⚠️ El aniversario es obligatorio.
-      </div>
-      <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && !birthdayCtrl.errors?.['required'] && isFutureBirthday(birthdayStr)">
-        ⚠️ La fecha no puede ser posterior a hoy.
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="rol" class="form-label">Rol:</label>
-      <select
-        id="rol"
-        class="form-input"
-        [(ngModel)]="nuevoUsuario.rol"
-        name="rol"
-        #rolCtrl="ngModel"
-        required
-      >
-        <option value="usuario">Usuario</option>
-        <option value="admin">Administrador</option>
-      </select>
-      <div class="error-message" *ngIf="(rolCtrl.touched || formSubmitted) && rolCtrl.errors?.['required']">
-        ⚠️ El rol es obligatorio.
-      </div>
-    </div>
-
-
-    <div class="form-actions" style="margin-top: 30px; display: flex; flex-direction: column; gap: 12px;">
-      <button type="submit" class="submit-button">
-        {{ indiceEdicion !== null ? 'Actualizar' : 'Agregar' }}
-      </button>
-
-      <button
-        *ngIf="indiceEdicion !== null"
-        type="button"
-        class="submit-button cancel"
-        (click)="cancelarEdicion(userForm)">
-        Cancelar edición
-      </button>
-    </div>
-  </div>
-</div>
 
   <div class="lista-usuarios">
     <div class="list-header">
@@ -172,7 +187,7 @@
             </button>
             <button (click)="prepararEdicion(usuario, idx(i))" class="modificar">✏️ Modificar</button>
             <button (click)="openDeleteModal(idx(i))" [ngClass]="usuario.isActive ? 'btn-deshabilitar' : 'btn-habilitar'">
-            {{ usuario.isActive ? '🚫 Deshabilitar' : '✅ Habilitar' }}
+              {{ usuario.isActive ? '🚫 Deshabilitar' : '✅ Habilitar' }}
             </button>
           </div>
         </div>
@@ -226,23 +241,23 @@
   </div>
 
   <div class="modal-overlay" *ngIf="showDeleteModal">
-  <div class="modal">
-    <h3>
-      {{ usuarioAEliminar?.isActive ? '¿Deshabilitar usuario?' : '¿Habilitar usuario?' }}
-    </h3>
-    <p>
-      {{ usuarioAEliminar?.isActive
-        ? 'El usuario será deshabilitado temporalmente, pero sus datos se conservarán.'
-        : 'El usuario volverá a estar habilitado en el sistema y podrá iniciar sesión nuevamente.' }}
-    </p>
-    <div class="modal-actions">
-      <button class="btn-cancel" (click)="closeDeleteModal()">Cancelar</button>
-      <button class="btn-confirm" (click)="confirmarDisable()">
-        {{ usuarioAEliminar?.isActive ? 'Deshabilitar' : 'Habilitar' }}
-      </button>
+    <div class="modal">
+      <h3>
+        {{ usuarioAEliminar?.isActive ? '¿Deshabilitar usuario?' : '¿Habilitar usuario?' }}
+      </h3>
+      <p>
+        {{ usuarioAEliminar?.isActive
+          ? 'El usuario será deshabilitado temporalmente, pero sus datos se conservarán.'
+          : 'El usuario volverá a estar habilitado en el sistema y podrá iniciar sesión nuevamente.' }}
+      </p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeDeleteModal()">Cancelar</button>
+        <button class="btn-confirm" (click)="confirmarDisable()">
+          {{ usuarioAEliminar?.isActive ? 'Deshabilitar' : 'Habilitar' }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
   <div class="modal-overlay" *ngIf="showUpdateModal">
     <div class="modal">
@@ -254,30 +269,4 @@
       </div>
     </div>
   </div>
-
-  <div class="table-section">
-    <div class="section-header">
-      <h2>Vista de Tabla - Usuarios</h2>
-      <button (click)="toggleTableView()" class="btn-toggle-table">
-        {{ showTableView ? '📊 Ocultar Tabla' : '📊 Mostrar Tabla' }}
-      </button>
-    </div>
-
-    <app-dynamic-table
-      *ngIf="showTableView"
-      [data]="usuariosForTable"
-      [columns]="tableColumns"
-      title="Lista de Usuarios"
-      (onEdit)="onTableEdit($event)"
-      (onDelete)="onTableDelete($event)"
-      (onExport)="exportTable()"
-      (onToggleActive)="onTableToggleActive($event)">
-    </app-dynamic-table>
-    <div class="pager" *ngIf="showTableView && totalPages > 1">
-      <button type="button" (click)="prevBackendPage()" [disabled]="page <= 1">«</button>
-      <span class="counter">Página {{ page }} / {{ totalPages }}</span>
-      <button type="button" (click)="nextBackendPage()" [disabled]="page >= totalPages">»</button>
-      <span class="total">Total: {{ totalUsuarios }}</span>
-    </div>
-  </div> 
-
+</div>

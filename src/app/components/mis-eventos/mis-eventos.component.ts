@@ -163,6 +163,12 @@ export class MisEventosComponent implements OnInit {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.currentUserId) {
+    this.userService.heartbeat(this.currentUserId).subscribe({
+      next: () => console.log('Heartbeat enviado al salir de mis-eventos'),
+      error: (err) => console.error('Error en heartbeat al salir', err)
+    });
+  }
   }
 
   loadMisEventos(): void {
