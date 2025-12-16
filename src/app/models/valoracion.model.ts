@@ -1,8 +1,11 @@
 export interface Valoracion {
   _id: string;
   evento: string;
-  userId?: string;
-  username?: string;
+  usuario: {
+    _id: string;
+    username: string;
+    gmail?: string;
+  };
   puntuacion: number;
   comentario?: string;
   createdAt: string;

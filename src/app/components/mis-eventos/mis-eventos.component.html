@@ -1,8 +1,5 @@
 <div class="menu-page">
-  <!-- Capa de fondo global -->
   <div class="menu-bg"></div>
-
-  <!-- 🎮 COMPONENTE DE NOTIFICACIÓN DE RECOMPENSA -->
   <app-reward-notification></app-reward-notification>
 
   <div class="app-layout">
@@ -247,7 +244,6 @@
                           {{ evento.categoria }}
                         </span>
                         
-                        <!-- Badge de Finalizado -->
                         <span class="badge-finished">
                           ✓ {{ 'MY_EVENTS.BADGE_FINISHED' | translate }}
                         </span>
@@ -420,7 +416,6 @@
                           {{ evento.categoria }}
                         </span>
                         
-                        <!-- Badge de Finalizado -->
                         <span class="badge-finished">
                           ✓ {{ 'MY_EVENTS.BADGE_FINISHED' | translate }}
                         </span>
@@ -618,35 +613,61 @@
 
         <div class="card-upsert">
           <h4>{{ 'RATINGS.YOUR_RATING_TITLE' | translate }}</h4>
-          <div class="upsert-row">
-            <label>{{ 'RATINGS.YOUR_RATING_SCORE_LABEL' | translate }}</label>
-            <div class="upsert-right">
-              <span class="score-text" *ngIf="myScore">
-                {{ 'RATINGS.YOUR_RATING_SCORE_TEXT' | translate:{score: myScore} }}
-              </span>
-              <div class="rating-stars">
-                <button type="button" *ngFor="let s of stars; let i = index" [class.active]="myScore >= i + 1"
-                  (click)="setScore(i + 1)">
-                  <span class="star-icon" [class.filled]="myScore >= i + 1">★</span>
-                </button>
+          
+          <div class="alert-already-rated" *ngIf="userHasRated">
+            <div class="alert-icon">✅</div>
+            <div class="alert-content">
+              <p class="alert-title">
+                <strong>{{ 'RATINGS.ALREADY_RATED_TITLE' | translate }}</strong>
+              </p>
+              <div class="alert-rating-display">
+                <span class="rating-value">
+                  <span class="stars-display">
+                    <span *ngFor="let s of stars" [class.star-filled]="s <= myScore">★</span>
+                  </span>
+                  <strong>{{ myScore }}/5</strong>
+                </span>
               </div>
+              <p class="alert-comment" *ngIf="myComment">
+                <em>"{{ myComment }}"</em>
+              </p>
+              <p class="alert-hint">
+                {{ 'RATINGS.ALREADY_RATED_HINT' | translate }}
+              </p>
             </div>
           </div>
 
-          <div class="upsert-row">
-            <label for="myComment">{{ 'RATINGS.YOUR_RATING_COMMENT_LABEL' | translate }}</label>
-            <textarea id="myComment" [(ngModel)]="myComment" rows="3" maxlength="1000"
-              [placeholder]="'RATINGS.YOUR_RATING_COMMENT_PLACEHOLDER' | translate"></textarea>
-          </div>
+          <div *ngIf="!userHasRated">
+            <div class="upsert-row">
+              <label>{{ 'RATINGS.YOUR_RATING_SCORE_LABEL' | translate }}</label>
+              <div class="upsert-right">
+                <span class="score-text" *ngIf="myScore">
+                  {{ 'RATINGS.YOUR_RATING_SCORE_TEXT' | translate:{score: myScore} }}
+                </span>
+                <div class="rating-stars">
+                  <button type="button" *ngFor="let s of stars; let i = index" [class.active]="myScore >= i + 1"
+                    (click)="setScore(i + 1)">
+                    <span class="star-icon" [class.filled]="myScore >= i + 1">★</span>
+                  </button>
+                </div>
+              </div>
+            </div>
 
-          <div class="actions">
-            <button class="btn btn--primary" [disabled]="saving" (click)="saveRating()">
-              {{ saving ? ('CREATE_EVENT.SUBMIT_SAVING' | translate) : ('RATINGS.YOUR_RATING_SAVE_BUTTON' | translate) }}
-            </button>
-          </div>
+            <div class="upsert-row">
+              <label for="myComment">{{ 'RATINGS.YOUR_RATING_COMMENT_LABEL' | translate }}</label>
+              <textarea id="myComment" [(ngModel)]="myComment" rows="3" maxlength="1000"
+                [placeholder]="'RATINGS.YOUR_RATING_COMMENT_PLACEHOLDER' | translate"></textarea>
+            </div>
 
-          <p class="msg msg--error" *ngIf="ratingsError">{{ ratingsError }}</p>
-          <p class="msg" *ngIf="ratingsInfo">{{ ratingsInfo }}</p>
+            <div class="actions">
+              <button class="btn btn--primary" [disabled]="saving || myScore < 1" (click)="saveRating()">
+                {{ saving ? ('CREATE_EVENT.SUBMIT_SAVING' | translate) : ('RATINGS.YOUR_RATING_SAVE_BUTTON' | translate) }}
+              </button>
+            </div>
+
+            <p class="msg msg--error" *ngIf="ratingsError">{{ ratingsError }}</p>
+            <p class="msg" *ngIf="ratingsInfo">{{ ratingsInfo }}</p>
+          </div>
         </div>
 
         <div class="search-row">
@@ -677,13 +698,27 @@
           <ul class="ratings-list" *ngIf="ratingsList && ratingsList.length > 0">
             <li *ngFor="let r of (ratingsList | slice: ((page-1)*pageSize) : (page*pageSize))">
               <div class="rating-content">
-                <div class="score">⭐ {{ r.puntuacion }}/5</div>
-                <div class="meta">
-                  <div class="comment" *ngIf="r.comentario; else noComment">{{ r.comentario }}</div>
-                  <ng-template #noComment>
-                    <span class="muted">{{ 'RATINGS.LIST_NO_COMMENT' | translate }}</span>
-                  </ng-template>
-                  <div class="date muted">{{ r.createdAt | date:'short' }}</div>
+                <div class="rating-header-row">
+                  <div class="rating-user-badge">
+                    <span class="user-avatar">👤</span>
+                    <div class="user-details">
+                      <strong class="username">{{ r.usuario.username || 'Usuario' }}</strong>
+                      <span class="rating-date">{{ r.createdAt | date:'short' }}</span>
+                    </div>
+                  </div>
+                  <div class="rating-score-badge">
+                    <span class="stars-inline">
+                      <span *ngFor="let s of stars" [class.star-active]="s <= r.puntuacion">★</span>
+                    </span>
+                    <strong>{{ r.puntuacion }}/5</strong>
+                  </div>
+                </div>
+                
+                <div class="rating-comment-box" *ngIf="r.comentario">
+                  <p>{{ r.comentario }}</p>
+                </div>
+                <div class="rating-no-comment" *ngIf="!r.comentario">
+                  <span class="muted">{{ 'RATINGS.LIST_NO_COMMENT' | translate }}</span>
                 </div>
               </div>
             </li>

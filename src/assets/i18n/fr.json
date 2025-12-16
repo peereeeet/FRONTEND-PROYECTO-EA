@@ -411,6 +411,7 @@
     "VIEW_PROFILE_BUTTON": "👤 Voir Mon Profil",
     "ACTION_CREATE_EVENT": "Événement créé avec succès!",
     "ACTION_JOIN_EVENT": "Vous avez rejoint l'événement!",
-    "ACTION_MAKE_FRIEND": "Nouvel ami ajouté!"
+    "ACTION_MAKE_FRIEND": "Nouvel ami ajouté!",
+    "ACTION_LEAVE_RATING": "Évaluation soumise avec succès!"
   }
 }

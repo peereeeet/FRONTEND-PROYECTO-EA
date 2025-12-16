@@ -357,7 +357,7 @@
     "BADGE_FINISHED": "Finished"
   },
 
-  "RATINGS": {
+ "RATINGS": {
     "MODAL_TITLE_PREFIX": "Ratings —",
     "SUMMARY_AVG": "Average:",
     "SUMMARY_TOTAL": "Total:",
@@ -367,6 +367,9 @@
     "YOUR_RATING_COMMENT_LABEL": "Comment (optional):",
     "YOUR_RATING_COMMENT_PLACEHOLDER": "Write your opinion.",
     "YOUR_RATING_SAVE_BUTTON": "Save rating",
+    "ALREADY_RATED_TITLE": "You have already rated this event",
+    "ALREADY_RATED_HINT": "You cannot submit another rating for this event",
+    "USER_LABEL": "User",
     "ERROR": "Error saving rating.",
     "INFO": "Rating saved correctly.",
     "SEARCH_PLACEHOLDER": "Search comments…",
@@ -411,6 +414,7 @@
     "VIEW_PROFILE_BUTTON": "👤 View My Profile",
     "ACTION_CREATE_EVENT": "Event created successfully!",
     "ACTION_JOIN_EVENT": "You joined the event!",
-    "ACTION_MAKE_FRIEND": "New friend added!"
+    "ACTION_MAKE_FRIEND": "New friend added!",
+    "ACTION_LEAVE_RATING": "Rating submitted successfully!"
   }
 }
