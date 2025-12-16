@@ -1,6 +1,9 @@
 <div class="menu-page">
   <div class="menu-bg"></div>
 
+  <!-- 🎮 COMPONENTE DE NOTIFICACIÓN DE RECOMPENSA -->
+  <app-reward-notification></app-reward-notification>
+
   <div class="app-layout">
     <aside class="sidebar">
       <div class="sidebar__brand">
@@ -40,7 +43,7 @@
         <div class="top-bar__right">
           <div class="lang-switcher-menu">
             <button type="button" class="lang-toggle" (click)="toggleLangMenu()">
-              <span class="lang-icon">🌍</span>
+              <span class="lang-icon">🌐</span>
               <span class="lang-current">
                 {{
                   currentLang === 'es'

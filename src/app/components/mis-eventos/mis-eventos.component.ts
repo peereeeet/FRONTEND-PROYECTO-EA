@@ -15,11 +15,14 @@ import { EventChatMessage, User } from '../../models/user.model';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { ThemeService } from '../../services/theme.service';
+import { GamificacionService } from '../../services/gamificacion.service';
+import { RewardNotificationService } from '../../services/reward-notification.service';
+import { RewardNotificationComponent } from '../reward-notification/reward-notification.component';
 
 @Component({
   selector: 'app-mis-eventos',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, TranslateModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, RewardNotificationComponent],
   templateUrl: './mis-eventos.component.html',
   styleUrls: ['./mis-eventos.component.css']
 })
@@ -65,6 +68,9 @@ export class MisEventosComponent implements OnInit {
   myComment = '';
   saving = false;
 
+  // Variables para gamificación - seguir patrón de crear-eventos
+  private progresoInicial: any = null;
+
   showEditModal = false;
   eventoToEdit: Evento | null = null;
   editName = '';
@@ -100,6 +106,10 @@ export class MisEventosComponent implements OnInit {
     (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
+  // Servicios para gamificación - inyección directa
+  private gamificacionService = inject(GamificacionService);
+  private rewardService = inject(RewardNotificationService);
+
   constructor(
     private eventoService: EventoService,
     private authService: AuthService,
@@ -127,6 +137,9 @@ export class MisEventosComponent implements OnInit {
         next: () => {},
         error: (err) => console.error('Error en heartbeat desde mis-eventos', err)
       });
+      
+      // Cargar progreso inicial para comparación posterior
+      this.cargarProgresoInicial();
     }
 
     this.socketService
@@ -447,6 +460,9 @@ export class MisEventosComponent implements OnInit {
         this.loadRatingsList();
         this.refreshRatingsAggregates();
         this.loadMisEventos();
+        
+        // 🎮 Detectar cambios de progreso y mostrar notificación
+        this.detectarCambiosProgreso();
       },
       error: (err) => {
         this.saving = false;
@@ -720,5 +736,89 @@ hasLocation(evento: any): boolean {
 
   switchTab(tab: 'joined' | 'created'): void {
     this.activeTab = tab;
+  }
+
+  // ========== MÉTODOS DE GAMIFICACIÓN ==========
+  
+  /**
+   * Cargar progreso inicial del usuario para comparación posterior
+   * Sigue el mismo patrón que crear-eventos.component.ts
+   */
+  private cargarProgresoInicial(): void {
+    this.gamificacionService.obtenerMiProgreso().subscribe({
+      next: (progreso) => {
+        this.progresoInicial = {
+          nivel: progreso.nivel,
+          puntos: progreso.puntos,
+          insignias: progreso.insignias.length,
+          insigniasIds: progreso.insignias.map((i: any) => i._id)
+        };
+        console.log('📊 Progreso inicial cargado:', this.progresoInicial);
+      },
+      error: (err) => {
+        console.error('Error al cargar progreso inicial:', err);
+      }
+    });
+  }
+
+  /**
+   * Detectar cambios en el progreso después de una acción (dejar valoración)
+   * y mostrar la notificación de recompensa
+   */
+  private detectarCambiosProgreso(): void {
+    setTimeout(() => {
+      this.gamificacionService.obtenerMiProgreso().subscribe({
+        next: (progresoNuevo) => {
+          if (!this.progresoInicial) {
+            // Si no hay progreso inicial, guardarlo ahora
+            this.progresoInicial = {
+              nivel: progresoNuevo.nivel,
+              puntos: progresoNuevo.puntos,
+              insignias: progresoNuevo.insignias.length,
+              insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
+            };
+            return;
+          }
+
+          const subisteDeNivel = progresoNuevo.nivel !== this.progresoInicial.nivel;
+          
+          // Detectar nuevas insignias
+          const insigniasAnteriores = new Set(this.progresoInicial.insigniasIds || []);
+          const insigniasDesbloqueadas = progresoNuevo.insignias.filter(
+            (ins: any) => !insigniasAnteriores.has(ins._id)
+          );
+
+          const puntosGanados = this.rewardService.getPuntosAccion('dejarValoracion');
+
+          // Mostrar notificación usando el servicio
+          this.rewardService.showReward({
+            puntosGanados,
+            accion: 'dejarValoracion',
+            insigniasDesbloqueadas,
+            nivelAnterior: this.progresoInicial.nivel,
+            nivelNuevo: progresoNuevo.nivel,
+            subisteDeNivel
+          });
+
+          // Actualizar progreso inicial para futuras comparaciones
+          this.progresoInicial = {
+            nivel: progresoNuevo.nivel,
+            puntos: progresoNuevo.puntos,
+            insignias: progresoNuevo.insignias.length,
+            insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
+          };
+
+          console.log('🎮 Recompensa detectada:', {
+            accion: 'dejarValoracion',
+            puntosGanados,
+            subisteDeNivel,
+            insigniasDesbloqueadas: insigniasDesbloqueadas.length
+          });
+        },
+        error: (err) => {
+          console.error('Error al detectar cambios de progreso:', err);
+        }
+      });
+    }, 800); // Delay de 800ms para asegurar que el backend haya procesado los puntos
   }
 }

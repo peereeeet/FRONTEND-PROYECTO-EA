@@ -9,6 +9,8 @@ import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
+import { GamificacionService } from '../../services/gamificacion.service';
+import { UsuarioProgreso, calcularProgresoNivel, getNivelInfo } from '../../models/gamificacion.model';
 
 type EditDTO = { username: string; gmail: string; birthday: string; password?: string };
 
@@ -24,6 +26,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private router = inject(Router);
   private themeService = inject(ThemeService);
+  private gamificacionService = inject(GamificacionService);
   
   theme = this.themeService.theme;
 
@@ -31,6 +34,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
   eventos = signal<any[]>([]);
   loading = signal(true);
   error = signal('');
+
+  progreso = signal<UsuarioProgreso | null>(null);
+  loadingProgreso = signal(true);
 
   private sub?: Subscription;
   private hbSub?: Subscription;
@@ -128,6 +134,18 @@ export class PerfilComponent implements OnInit, OnDestroy {
         }
       });
 
+      this.loadingProgreso.set(true);
+      this.gamificacionService.obtenerMiProgreso().subscribe({
+        next: (progreso) => {
+          this.progreso.set(progreso);
+          this.loadingProgreso.set(false);
+        },
+        error: (err) => {
+          console.error('Error al cargar progreso:', err);
+          this.loadingProgreso.set(false);
+        }
+      });
+
       this.userService.heartbeat(myId).subscribe({
         next: (hb: any) => {
           const cur = this.me();
@@ -152,6 +170,24 @@ export class PerfilComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
     this.hbSub?.unsubscribe();
+  }
+
+  getProgresoNivel() {
+    const prog = this.progreso();
+    if (!prog) return null;
+    return calcularProgresoNivel(prog.puntos);
+  }
+
+  getNivelColor() {
+    const prog = this.progreso();
+    if (!prog) return '#9ca3af';
+    return getNivelInfo(prog.nivel).color;
+  }
+
+  getNivelEmoji() {
+    const prog = this.progreso();
+    if (!prog) return '🌱';
+    return getNivelInfo(prog.nivel).emoji;
   }
 
   maskedPassword(): string {
