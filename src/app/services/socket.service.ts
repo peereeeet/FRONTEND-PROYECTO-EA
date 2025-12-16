@@ -6,29 +6,70 @@ import * as io from 'socket.io-client';
 export class SocketService {
   private socket: any = null;
   private readonly url = 'http://localhost:3000';
+  private connectedUserId: string | null = null;
 
   constructor() {}
 
   connect(userId: string): void {
-    if (this.socket && this.socket.connected) {
+    if (this.socket && this.socket.connected && this.connectedUserId === userId) {
+      console.log('✅ Socket ya conectado para usuario:', userId);
       return;
     }
 
+    if (this.socket && this.connectedUserId && this.connectedUserId !== userId) {
+      console.warn('⚠️ Desconectando socket de usuario anterior:', this.connectedUserId);
+      this.disconnect();
+    }
+
+    console.log('🔌 Conectando socket para usuario:', userId);
     this.socket = io.connect(this.url, {
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5 
     } as any);
 
     this.socket.on('connect', () => {
+      console.log('✅ Socket conectado');
       if (this.socket) {
         this.socket.emit('user:online', userId);
+        this.connectedUserId = userId;
       }
+    });
+
+    this.socket.on('disconnect', (reason: string) => {
+      console.warn('⚠️ Socket desconectado. Razón:', reason);
+      if (reason === 'io server disconnect') {
+        this.socket.connect();
+      }
+    });
+
+    this.socket.on('reconnect', (attemptNumber: number) => {
+      console.log(`✅ Socket reconectado después de ${attemptNumber} intentos`);
+      if (this.connectedUserId) {
+        this.socket.emit('user:online', this.connectedUserId);
+      }
+    });
+
+    this.socket.on('reconnect_error', (error: any) => {
+      console.error('❌ Error al reconectar socket:', error);
     });
   }
 
   disconnect(): void {
     if (!this.socket) return;
+    console.log('🔌 Desconectando socket para usuario:', this.connectedUserId);
     this.socket.disconnect();
     this.socket = null;
+    this.connectedUserId = null;
+  }
+
+  isConnected(): boolean {
+    return this.socket && this.socket.connected;
+  }
+
+  getConnectedUserId(): string | null {
+    return this.connectedUserId;
   }
 
   onUserOnline(): Observable<{ userId: string }> {

@@ -66,6 +66,7 @@
     <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" novalidate>
       <div class="form-grid">
         <div class="form-column">
+          <!-- USERNAME -->
           <div class="form-group">
             <label class="form-label" for="username">
               {{ 'REGISTER.USERNAME_LABEL' | translate }}
@@ -79,22 +80,36 @@
               #usernameCtrl="ngModel"
               required
               minlength="3"
-              [placeholder]="'REGISTER.USERNAME_PLACEHOLDER' | translate" />
-            <div *ngIf="(usernameCtrl.touched || formSubmitted) && usernameCtrl.invalid" class="error-message">
-              <span>⚠</span>
-              <span *ngIf="usernameCtrl.errors?.['required']">
+              maxlength="30"
+              [placeholder]="'REGISTER.USERNAME_PLACEHOLDER' | translate"
+              (blur)="validateUsername()" />
+            
+            <div *ngIf="(usernameCtrl.touched || formSubmitted) && !validateUsername()" class="error-message">
+              <span>⚠ </span>
+              <span *ngIf="nuevoUsuario.username.length === 0">
                 {{ 'REGISTER.USERNAME_REQUIRED' | translate }}
               </span>
-              <span *ngIf="usernameCtrl.errors?.['minlength']">
-                {{ 'REGISTER.USERNAME_MIN' | translate }}
+              <span *ngIf="nuevoUsuario.username.length > 0 && nuevoUsuario.username.length < 3">
+                {{ 'REGISTER.USERNAME_MIN_LENGTH' | translate }}
+              </span>
+              <span *ngIf="nuevoUsuario.username.length > 30">
+                {{ 'REGISTER.USERNAME_MAX_LENGTH' | translate }}
+              </span>
+              <span *ngIf="!usernameStartsWithLetter() && nuevoUsuario.username.length >= 3">
+                {{ 'REGISTER.USERNAME_START_LETTER' | translate }}
+              </span>
+              <span *ngIf="!usernameHasValidChars() && nuevoUsuario.username.length >= 3">
+                {{ 'REGISTER.USERNAME_VALID_CHARS' | translate }}
               </span>
             </div>
+            
             <div *ngIf="usernameExists" class="error-message">
-              <span>⚠</span>
+              <span>⚠ </span>
               <span>{{ 'REGISTER.USERNAME_EXISTS' | translate }}</span>
             </div>
           </div>
 
+          <!-- EMAIL -->
           <div class="form-group">
             <label class="form-label" for="gmail">
               {{ 'REGISTER.EMAIL_LABEL' | translate }}
@@ -108,9 +123,24 @@
               #gmailCtrl="ngModel"
               required
               email
-              [placeholder]="'REGISTER.EMAIL_PLACEHOLDER' | translate" />
+              [placeholder]="'REGISTER.EMAIL_PLACEHOLDER' | translate"
+              (input)="validateEmail()"
+              (blur)="validateEmail()" />
+            
+            <!-- Indicadores de validación de email -->
+            <div *ngIf="nuevoUsuario.gmail && (gmailCtrl.touched || formSubmitted)" class="validation-checks">
+              <div class="validation-item" [class.valid]="emailValidations.format" [class.invalid]="!emailValidations.format">
+                <span class="check-icon">{{ emailValidations.format ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.EMAIL_FORMAT_VALID' | translate }}</span>
+              </div>
+              <div class="validation-item" [class.valid]="emailValidations.notTemporary" [class.invalid]="!emailValidations.notTemporary">
+                <span class="check-icon">{{ emailValidations.notTemporary ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.EMAIL_NOT_TEMPORARY' | translate }}</span>
+              </div>
+            </div>
+            
             <div *ngIf="(gmailCtrl.touched || formSubmitted) && gmailCtrl.invalid" class="error-message">
-              <span>⚠</span>
+              <span>⚠ </span>
               <span *ngIf="gmailCtrl.errors?.['required']">
                 {{ 'REGISTER.EMAIL_REQUIRED' | translate }}
               </span>
@@ -118,14 +148,50 @@
                 {{ 'REGISTER.EMAIL_INVALID' | translate }}
               </span>
             </div>
+            
             <div *ngIf="emailExists" class="error-message">
-              <span>⚠</span>
+              <span>⚠ </span>
               <span>{{ 'REGISTER.EMAIL_EXISTS' | translate }}</span>
+            </div>
+          </div>
+
+          <!-- BIRTHDAY -->
+          <div class="form-group">
+            <label class="form-label" for="birthday">
+              {{ 'REGISTER.BIRTHDAY_LABEL' | translate }}
+            </label>
+            <input
+              id="birthday"
+              type="date"
+              class="form-input"
+              [(ngModel)]="birthdayStr"
+              name="birthday"
+              #birthdayCtrl="ngModel"
+              required
+              [max]="maxDate"
+              [min]="minDate" />
+            
+            <div *ngIf="(birthdayCtrl.touched || formSubmitted) && birthdayCtrl.invalid" class="error-message">
+              <span>⚠ </span>
+              <span *ngIf="birthdayCtrl.errors?.['required']">
+                {{ 'REGISTER.BIRTHDAY_REQUIRED' | translate }}
+              </span>
+            </div>
+            
+            <div *ngIf="birthdayStr && isTooYoung()" class="error-message">
+              <span>⚠ </span>
+              <span>{{ 'REGISTER.BIRTHDAY_MIN_AGE' | translate }}</span>
+            </div>
+            
+            <div *ngIf="birthdayStr && isFutureDate()" class="error-message">
+              <span>⚠ </span>
+              <span>{{ 'REGISTER.BIRTHDAY_FUTURE' | translate }}</span>
             </div>
           </div>
         </div>
 
         <div class="form-column">
+          <!-- PASSWORD -->
           <div class="form-group">
             <label class="form-label" for="password">
               {{ 'REGISTER.PASSWORD_LABEL' | translate }}
@@ -139,65 +205,78 @@
                 name="password"
                 #passwordCtrl="ngModel"
                 required
-                minlength="7"
-                [placeholder]="'REGISTER.PASSWORD_PLACEHOLDER' | translate" />
+                minlength="8"
+                [placeholder]="'REGISTER.PASSWORD_PLACEHOLDER' | translate"
+                (input)="validatePassword()"
+                (blur)="validatePassword()" />
               <button type="button" class="toggle-pass" (click)="togglePassword()">
                 {{ showPassword ? '🙈' : '👁️' }}
               </button>
             </div>
-            <div *ngIf="(passwordCtrl.touched || formSubmitted) && passwordCtrl.invalid" class="error-message">
-              <span>⚠</span>
-              <span *ngIf="passwordCtrl.errors?.['required']">
-                {{ 'REGISTER.PASSWORD_REQUIRED' | translate }}
-              </span>
-              <span *ngIf="passwordCtrl.errors?.['minlength']">
-                {{ 'REGISTER.PASSWORD_MIN' | translate }}
-              </span>
+            
+            <!-- Barra de fortaleza de contraseña -->
+            <div *ngIf="nuevoUsuario.password" class="password-strength-bar">
+              <div class="strength-bar" [class]="getPasswordStrengthClass()" [style.width.%]="(passwordStrength / 5) * 100"></div>
+            </div>
+            <div *ngIf="nuevoUsuario.password" class="strength-text" [class]="getPasswordStrengthClass()">
+              {{ ('REGISTER.PASSWORD_STRENGTH_' + getPasswordStrengthText().toUpperCase()) | translate }}
+            </div>
+            
+            <!-- Requisitos de contraseña -->
+            <div *ngIf="nuevoUsuario.password && (passwordCtrl.touched || formSubmitted)" class="validation-checks">
+              <div class="validation-item" [class.valid]="passwordValidations.length" [class.invalid]="!passwordValidations.length">
+                <span class="check-icon">{{ passwordValidations.length ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.PASSWORD_REQ_LENGTH' | translate }}</span>
+              </div>
+              <div class="validation-item" [class.valid]="passwordValidations.uppercase" [class.invalid]="!passwordValidations.uppercase">
+                <span class="check-icon">{{ passwordValidations.uppercase ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.PASSWORD_REQ_UPPERCASE' | translate }}</span>
+              </div>
+              <div class="validation-item" [class.valid]="passwordValidations.lowercase" [class.invalid]="!passwordValidations.lowercase">
+                <span class="check-icon">{{ passwordValidations.lowercase ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.PASSWORD_REQ_LOWERCASE' | translate }}</span>
+              </div>
+              <div class="validation-item" [class.valid]="passwordValidations.number" [class.invalid]="!passwordValidations.number">
+                <span class="check-icon">{{ passwordValidations.number ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.PASSWORD_REQ_NUMBER' | translate }}</span>
+              </div>
+              <div class="validation-item" [class.valid]="passwordValidations.special" [class.invalid]="!passwordValidations.special">
+                <span class="check-icon">{{ passwordValidations.special ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.PASSWORD_REQ_SPECIAL' | translate }}</span>
+              </div>
             </div>
           </div>
 
+          <!-- CONFIRM PASSWORD -->
           <div class="form-group">
             <label class="form-label" for="confirmarPassword">
               {{ 'REGISTER.CONFIRM_PASSWORD_LABEL' | translate }}
             </label>
-            <input
-              id="confirmarPassword"
-              type="password"
-              class="form-input"
-              [(ngModel)]="confirmarPassword"
-              name="confirmarPassword"
-              #confirmarCtrl="ngModel"
-              required
-              [placeholder]="'REGISTER.CONFIRM_PASSWORD_PLACEHOLDER' | translate" />
+            <div class="password-wrapper">
+              <input
+                id="confirmarPassword"
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                class="form-input"
+                [(ngModel)]="confirmarPassword"
+                name="confirmarPassword"
+                #confirmarCtrl="ngModel"
+                required
+                [placeholder]="'REGISTER.CONFIRM_PASSWORD_PLACEHOLDER' | translate" />
+              <button type="button" class="toggle-pass" (click)="toggleConfirmPassword()">
+                {{ showConfirmPassword ? '🙈' : '👁️' }}
+              </button>
+            </div>
+            
             <div
-              *ngIf="(confirmarCtrl.touched || formSubmitted) && confirmarPassword !== nuevoUsuario.password"
+              *ngIf="(confirmarCtrl.touched || formSubmitted) && confirmarPassword && !passwordsMatch()"
               class="error-message">
-              <span>⚠</span>
+              <span>⚠ </span>
               <span>{{ 'REGISTER.CONFIRM_PASSWORD_MISMATCH' | translate }}</span>
             </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="birthday">
-              {{ 'REGISTER.BIRTHDAY_LABEL' | translate }}
-            </label>
-            <input
-              id="birthday"
-              type="date"
-              class="form-input"
-              [(ngModel)]="birthdayStr"
-              name="birthday"
-              #birthdayCtrl="ngModel"
-              required
-              [max]="maxDate" />
-            <div *ngIf="(birthdayCtrl.touched || formSubmitted) && birthdayCtrl.invalid" class="error-message">
-              <span>⚠</span>
-              <span *ngIf="birthdayCtrl.errors?.['required']">
-                {{ 'REGISTER.BIRTHDAY_REQUIRED' | translate }}
-              </span>
-              <span *ngIf="birthdayStr && isFutureDate()">
-                {{ 'REGISTER.BIRTHDAY_FUTURE' | translate }}
-              </span>
+            
+            <div *ngIf="confirmarPassword && passwordsMatch()" class="success-message">
+              <span>✓ </span>
+              <span>{{ 'REGISTER.PASSWORDS_MATCH' | translate }}</span>
             </div>
           </div>
         </div>
@@ -207,7 +286,7 @@
         <button
           type="submit"
           class="login-button"
-          [disabled]="isSubmitting">
+          [disabled]="isSubmitting || !isFormValid()">
           <span *ngIf="isSubmitting" class="loading-spinner"></span>
           {{
             isSubmitting

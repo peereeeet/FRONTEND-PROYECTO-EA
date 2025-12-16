@@ -64,7 +64,23 @@
     "BIRTHDAY_FUTURE": "Doit être antérieure à aujourd'hui.",
     "BUTTON": "S'inscrire",
     "BUTTON_LOADING": "Enregistrement...",
-    "BACK_TO_LOGIN": "Retour à la connexion"
+    "BACK_TO_LOGIN": "Retour à la connexion",
+    "USERNAME_MIN_LENGTH": "Le nom doit contenir au moins 3 caractères",
+    "USERNAME_MAX_LENGTH": "Le nom ne peut pas dépasser 30 caractères",
+    "USERNAME_START_LETTER": "Doit commencer par une lettre",
+    "USERNAME_VALID_CHARS": "Seulement des lettres, chiffres et tirets bas",
+    "EMAIL_FORMAT_VALID": "Format d'email valide",
+    "EMAIL_NOT_TEMPORARY": "N'est pas un email temporaire",
+    "BIRTHDAY_MIN_AGE": "Vous devez avoir au moins 13 ans pour vous inscrire",
+    "PASSWORD_STRENGTH_WEAK": "Faible",
+    "PASSWORD_STRENGTH_MEDIUM": "Moyenne",
+    "PASSWORD_STRENGTH_STRONG": "Forte",
+    "PASSWORD_REQ_LENGTH": "Minimum 8 caractères",
+    "PASSWORD_REQ_UPPERCASE": "Une lettre majuscule",
+    "PASSWORD_REQ_LOWERCASE": "Une lettre minuscule",
+    "PASSWORD_REQ_NUMBER": "Un chiffre",
+    "PASSWORD_REQ_SPECIAL": "Un caractère spécial (!@#$...)",
+    "PASSWORDS_MATCH": "Les mots de passe correspondent"
   },
 
   "LANG": {

@@ -1,8 +1,24 @@
 <div class="evento-container">
+  <div class="space-background"></div>
+  <div class="stars"></div>
+
+  <header class="app-bar">
+    <div class="app-bar__content">
+      <h1 class="app-bar__title">GESTIÓN DE EVENTOS</h1>
+      <div class="app-bar__actions">
+        <button class="theme-toggle-btn" (click)="toggleTheme()">
+          {{ theme() === 'dark' ? '☀️' : '🌙' }}
+        </button>
+        <button type="button" class="btn-back" (click)="goHome()">
+          ← Volver a Home
+        </button>
+      </div>
+    </div>
+  </header>
+
   <div class="evento-form">
     <div class="form-header">
       <h2>Completa los datos del evento</h2>
-      <button type="button" class="btn-back" (click)="goHome()">← Volver a Home</button>
     </div>
 
     <form (ngSubmit)="onSubmit()">
@@ -163,22 +179,22 @@
           <span>{{ getParticipantsNames(evento) }}</span>
         </p>
 
-<div class="rating-summary" style="margin-top:8px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-  <strong>⭐ Valoraciones:</strong>
-  <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0">
-    Media {{ evento.avgRating | number:'1.1-2' }} ({{ evento.ratingsCount }} valoraciones)
-  </span>
-  <span *ngIf="!evento.ratingsCount || evento.ratingsCount === 0">
-    Sin valoraciones aún
-  </span>
+        <div class="rating-summary" style="margin-top:8px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <strong>⭐ Valoraciones:</strong>
+          <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0">
+            Media {{ evento.avgRating | number:'1.1-2' }} ({{ evento.ratingsCount }} valoraciones)
+          </span>
+          <span *ngIf="!evento.ratingsCount || evento.ratingsCount === 0">
+            Sin valoraciones aún
+          </span>
 
-  <button
-    type="button"
-    class="btn-rate-link"
-    (click)="goToRatings(evento)">
-    ⭐ Ver / Valorar
-  </button>
-</div>
+          <button
+            type="button"
+            class="btn-rate-link"
+            (click)="openRatingsModal(evento)">
+            ⭐ Ver Valoraciones
+          </button>
+        </div>
 
         <div class="actions">
           <button class="btn-edit" (click)="openEditModal(i)">✏️ Modificar Evento</button>
@@ -189,6 +205,7 @@
   </div>
 </div>
 
+<!-- Modal de eliminación -->
 <div class="modal-overlay" *ngIf="showDeleteModal">
   <div class="modal">
     <h3>¿Eliminar evento?</h3>
@@ -200,6 +217,7 @@
   </div>
 </div>
 
+<!-- Modal de edición -->
 <div class="modal-overlay" *ngIf="showEditModal">
   <div class="modal large-modal">
     <div class="modal-header">
@@ -330,5 +348,99 @@
         <button type="submit" class="btn-confirm">💾 Guardar Cambios</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Modal de valoraciones (solo lectura) -->
+<div class="modal-overlay" *ngIf="showRatingsModal">
+  <div class="modal modal--large ratings-modal">
+    <div class="modal-header">
+      <h3>⭐ Valoraciones de {{ ratingsEventoName }}</h3>
+      <button class="btn-close" (click)="closeRatingsModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="ratings-summary">
+        <div>
+          <strong>Valoración media:</strong>
+          {{ ratingsAvg != null ? (ratingsAvg | number:'1.1-2') : '—' }}
+        </div>
+        <div>
+          <strong>Total de valoraciones:</strong>
+          {{ ratingsCount != null ? ratingsCount : 0 }}
+        </div>
+      </div>
+
+      <div *ngIf="ratingsLoading" class="loading-ratings">
+        <div class="spinner-small"></div>
+        <p>Cargando valoraciones...</p>
+      </div>
+
+      <ng-container *ngIf="!ratingsLoading">
+        <!-- Info de paginación -->
+        <div class="list-info" *ngIf="ratingsList && ratingsList.length > 0">
+          <span class="counter">
+            Mostrando {{ ((ratingsPage-1)*ratingsPageSize) + 1 }} - {{ Math.min(ratingsPage*ratingsPageSize, ratingsTotalItems) }} de {{ ratingsTotalItems }}
+          </span>
+          <span class="total">
+            Página {{ ratingsPage }} / {{ ratingsTotalPages }}
+          </span>
+        </div>
+
+        <!-- Lista de valoraciones -->
+        <ul class="ratings-list" *ngIf="ratingsList && ratingsList.length > 0">
+          <li *ngFor="let r of ratingsList">
+            <div class="rating-content">
+              <div class="rating-header-row">
+                <div class="rating-user-badge">
+                  <span class="user-avatar">👤</span>
+                  <div class="user-details">
+                    <strong class="username">{{ r.usuario.username || 'Usuario' }}</strong>
+                    <span class="rating-date">{{ r.createdAt | date:'short' }}</span>
+                  </div>
+                </div>
+                <div class="rating-score-badge">
+                  <span class="stars-inline">
+                    <span *ngFor="let s of stars" [class.star-active]="s <= r.puntuacion">★</span>
+                  </span>
+                  <strong>{{ r.puntuacion }}/5</strong>
+                </div>
+              </div>
+              
+              <div class="rating-comment-box" *ngIf="r.comentario">
+                <p>{{ r.comentario }}</p>
+              </div>
+              <div class="rating-no-comment" *ngIf="!r.comentario">
+                <em>Sin comentario</em>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Sin valoraciones -->
+        <div class="empty-ratings" *ngIf="!ratingsList || ratingsList.length === 0">
+          <p>⭐ Aún no hay valoraciones para este evento</p>
+        </div>
+
+        <!-- Paginación -->
+        <div class="ratings-pagination" *ngIf="ratingsList && ratingsList.length > 0 && ratingsTotalPages > 1">
+          <button 
+            class="btn-pagination" 
+            (click)="changeRatingsPage(-1)" 
+            [disabled]="ratingsPage <= 1">
+            « Anterior
+          </button>
+          <span class="pagination-info">Página {{ ratingsPage }} de {{ ratingsTotalPages }}</span>
+          <button 
+            class="btn-pagination" 
+            (click)="changeRatingsPage(1)" 
+            [disabled]="ratingsPage >= ratingsTotalPages">
+            Siguiente »
+          </button>
+        </div>
+      </ng-container>
+
+      <p class="msg msg--error" *ngIf="ratingsError">{{ ratingsError }}</p>
+    </div>
   </div>
 </div>
