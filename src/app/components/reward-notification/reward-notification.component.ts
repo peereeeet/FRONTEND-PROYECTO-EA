@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { RewardNotificationService, RewardData } from '../../services/reward-notification.service';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-reward-notification',
@@ -26,7 +26,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
         <div class="reward-body">
           <div class="reward-action">
-            <p class="action-text">{{ getActionText() }}</p>
+            <p class="action-text">{{ actionText }}</p>
           </div>
 
           <div class="reward-section points-section">
@@ -81,7 +81,6 @@ import { TranslateModule } from '@ngx-translate/core';
     </div>
   `,
   styles: [`
-    /* Overlay */
     .reward-overlay {
       position: fixed;
       inset: 0;
@@ -94,7 +93,6 @@ import { TranslateModule } from '@ngx-translate/core';
       padding: 20px;
     }
 
-    /* Card principal */
     .reward-card {
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       border-radius: 24px;
@@ -107,7 +105,6 @@ import { TranslateModule } from '@ngx-translate/core';
       overflow: hidden;
     }
 
-    /* Header */
     .reward-header {
       background: linear-gradient(135deg, #3b82f6, #1d4ed8);
       padding: 24px;
@@ -157,7 +154,6 @@ import { TranslateModule } from '@ngx-translate/core';
       transform: rotate(90deg);
     }
 
-    /* Body */
     .reward-body {
       padding: 24px;
       display: flex;
@@ -187,7 +183,6 @@ import { TranslateModule } from '@ngx-translate/core';
       padding: 16px;
     }
 
-    /* Puntos */
     .points-section {
       background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.15));
       border-color: rgba(251, 191, 36, 0.4);
@@ -228,7 +223,6 @@ import { TranslateModule } from '@ngx-translate/core';
       text-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
     }
 
-    /* Nivel */
     .level-section {
       background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(139, 92, 246, 0.15));
       border-color: rgba(167, 139, 250, 0.4);
@@ -282,7 +276,6 @@ import { TranslateModule } from '@ngx-translate/core';
       text-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
     }
 
-    /* Insignias */
     .badges-section {
       background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.15));
       border-color: rgba(34, 197, 94, 0.4);
@@ -338,7 +331,6 @@ import { TranslateModule } from '@ngx-translate/core';
       color: #6ee7b7;
     }
 
-    /* Footer */
     .reward-footer {
       padding: 20px 24px;
       background: rgba(15, 23, 42, 0.5);
@@ -380,7 +372,6 @@ import { TranslateModule } from '@ngx-translate/core';
       background: rgba(148, 163, 184, 0.3);
     }
 
-    /* Responsive */
     @media (max-width: 640px) {
       .reward-card {
         max-width: 100%;
@@ -421,10 +412,12 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class RewardNotificationComponent implements OnInit, OnDestroy {
   currentReward: RewardData | null = null;
+  actionText: string = '';
   private destroy$ = new Subject<void>();
 
   constructor(
     private rewardService: RewardNotificationService,
+    private translate: TranslateService,
     private router: Router
   ) {}
 
@@ -434,13 +427,21 @@ export class RewardNotificationComponent implements OnInit, OnDestroy {
       .subscribe(reward => {
         this.currentReward = reward;
         
-        // Auto-cerrar después de 10 segundos
         if (reward) {
+          this.actionText = this.rewardService.getTextoAccion(reward.accion);
+          console.log('🎮 Reward notification shown:', {
+            action: reward.accion,
+            text: this.actionText,
+            points: reward.puntosGanados
+          });
+          
           setTimeout(() => {
             if (this.currentReward === reward) {
               this.closeNotification();
             }
           }, 10000);
+        } else {
+          this.actionText = '';
         }
       });
   }
@@ -448,11 +449,6 @@ export class RewardNotificationComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  getActionText(): string {
-    if (!this.currentReward) return '';
-    return this.rewardService.getTextoAccion(this.currentReward.accion);
   }
 
   closeNotification() {

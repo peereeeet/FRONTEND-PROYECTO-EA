@@ -67,8 +67,9 @@ export class MisEventosComponent implements OnInit {
   myScore = 0;
   myComment = '';
   saving = false;
+  userHasRated = false;
+  existingRatingId: string | null = null;
 
-  // Variables para gamificación - seguir patrón de crear-eventos
   private progresoInicial: any = null;
 
   showEditModal = false;
@@ -106,7 +107,6 @@ export class MisEventosComponent implements OnInit {
     (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
 
-  // Servicios para gamificación - inyección directa
   private gamificacionService = inject(GamificacionService);
   private rewardService = inject(RewardNotificationService);
 
@@ -138,7 +138,6 @@ export class MisEventosComponent implements OnInit {
         error: (err) => console.error('Error en heartbeat desde mis-eventos', err)
       });
       
-      // Cargar progreso inicial para comparación posterior
       this.cargarProgresoInicial();
     }
 
@@ -259,49 +258,32 @@ export class MisEventosComponent implements OnInit {
     return arr.some((p: any) => (typeof p === 'string' ? p === this.currentUserId : p?._id === this.currentUserId));
   }
 
-  /**
-   * Verifica si un evento ya ha finalizado (la fecha/hora del evento ya pasó)
-   */
   isEventoFinalizado(ev: Evento): boolean {
     if (!ev?.schedule) return false;
     
-    // schedule puede ser string o string[], tomamos el primer elemento si es array
     const scheduleValue = Array.isArray(ev.schedule) ? ev.schedule[0] : ev.schedule;
     if (!scheduleValue) return false;
     
     const scheduleDate = new Date(scheduleValue);
     const now = new Date();
     
-    // Verificar que la fecha es válida
     if (isNaN(scheduleDate.getTime())) return false;
     
     return scheduleDate < now;
   }
 
-  /**
-   * Obtiene eventos inscritos que están por venir (fecha futura)
-   */
   get eventosInscritosFuturos(): Evento[] {
     return this.eventosInscritos.filter(ev => !this.isEventoFinalizado(ev));
   }
 
-  /**
-   * Obtiene eventos inscritos que ya han pasado (fecha pasada)
-   */
   get eventosInscritosPasados(): Evento[] {
     return this.eventosInscritos.filter(ev => this.isEventoFinalizado(ev));
   }
 
-  /**
-   * Obtiene eventos creados que están por venir (fecha futura)
-   */
   get eventosCreadosFuturos(): Evento[] {
     return this.eventosCreados.filter(ev => !this.isEventoFinalizado(ev));
   }
 
-  /**
-   * Obtiene eventos creados que ya han pasado (fecha pasada)
-   */
   get eventosCreadosPasados(): Evento[] {
     return this.eventosCreados.filter(ev => this.isEventoFinalizado(ev));
   }
@@ -369,6 +351,10 @@ export class MisEventosComponent implements OnInit {
     this.loadRatingsList();
     this.refreshRatingsAggregates();
     this.recalcRatingsPager();
+
+    this.userHasRated = false;
+    this.existingRatingId = null;
+    this.checkUserRating();
   }
 
   closeRatingsModal(): void {
@@ -460,13 +446,36 @@ export class MisEventosComponent implements OnInit {
         this.loadRatingsList();
         this.refreshRatingsAggregates();
         this.loadMisEventos();
-        
-        // 🎮 Detectar cambios de progreso y mostrar notificación
         this.detectarCambiosProgreso();
       },
       error: (err) => {
         this.saving = false;
-        this.ratingsError = err?.error?.message || 'No se pudo guardar la valoración';
+        if (err.status === 409) {
+          this.ratingsError = 'Ya has valorado este evento anteriormente';
+          this.userHasRated = true;
+          this.checkUserRating();
+        } else {
+          this.ratingsError = err?.error?.message || 'No se pudo guardar';
+        }
+      }
+    });
+  }
+
+  checkUserRating(): void {
+    if (!this.ratingsEventoId) return;
+    
+    this.ratingsSrv.getMyRatingForEvent(this.ratingsEventoId).subscribe({
+      next: (rating) => {
+        this.userHasRated = true;
+        this.existingRatingId = rating._id;
+        this.myScore = rating.puntuacion;
+        this.myComment = rating.comentario || '';
+      },
+      error: (err) => {
+        if (err.status === 404) {
+          this.userHasRated = false;
+          this.existingRatingId = null;
+        }
       }
     });
   }
@@ -738,12 +747,6 @@ hasLocation(evento: any): boolean {
     this.activeTab = tab;
   }
 
-  // ========== MÉTODOS DE GAMIFICACIÓN ==========
-  
-  /**
-   * Cargar progreso inicial del usuario para comparación posterior
-   * Sigue el mismo patrón que crear-eventos.component.ts
-   */
   private cargarProgresoInicial(): void {
     this.gamificacionService.obtenerMiProgreso().subscribe({
       next: (progreso) => {
@@ -761,16 +764,11 @@ hasLocation(evento: any): boolean {
     });
   }
 
-  /**
-   * Detectar cambios en el progreso después de una acción (dejar valoración)
-   * y mostrar la notificación de recompensa
-   */
   private detectarCambiosProgreso(): void {
     setTimeout(() => {
       this.gamificacionService.obtenerMiProgreso().subscribe({
         next: (progresoNuevo) => {
           if (!this.progresoInicial) {
-            // Si no hay progreso inicial, guardarlo ahora
             this.progresoInicial = {
               nivel: progresoNuevo.nivel,
               puntos: progresoNuevo.puntos,
@@ -781,16 +779,12 @@ hasLocation(evento: any): boolean {
           }
 
           const subisteDeNivel = progresoNuevo.nivel !== this.progresoInicial.nivel;
-          
-          // Detectar nuevas insignias
           const insigniasAnteriores = new Set(this.progresoInicial.insigniasIds || []);
           const insigniasDesbloqueadas = progresoNuevo.insignias.filter(
             (ins: any) => !insigniasAnteriores.has(ins._id)
           );
 
           const puntosGanados = this.rewardService.getPuntosAccion('dejarValoracion');
-
-          // Mostrar notificación usando el servicio
           this.rewardService.showReward({
             puntosGanados,
             accion: 'dejarValoracion',
@@ -800,7 +794,6 @@ hasLocation(evento: any): boolean {
             subisteDeNivel
           });
 
-          // Actualizar progreso inicial para futuras comparaciones
           this.progresoInicial = {
             nivel: progresoNuevo.nivel,
             puntos: progresoNuevo.puntos,
@@ -819,6 +812,6 @@ hasLocation(evento: any): boolean {
           console.error('Error al detectar cambios de progreso:', err);
         }
       });
-    }, 800); // Delay de 800ms para asegurar que el backend haya procesado los puntos
+    }, 800);
   }
 }

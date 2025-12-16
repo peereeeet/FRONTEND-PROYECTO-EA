@@ -411,6 +411,7 @@
     "VIEW_PROFILE_BUTTON": "👤 Veure El Meu Perfil",
     "ACTION_CREATE_EVENT": "Esdeveniment creat amb èxit!",
     "ACTION_JOIN_EVENT": "T'has unit a l'esdeveniment!",
-    "ACTION_MAKE_FRIEND": "Nou amic afegit!"
+    "ACTION_MAKE_FRIEND": "Nou amic afegit!",
+    "ACTION_LEAVE_RATING": "Valoració deixada amb èxit!"
   }
 }

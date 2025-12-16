@@ -367,6 +367,9 @@
     "YOUR_RATING_COMMENT_LABEL": "Comentario (opcional):",
     "YOUR_RATING_COMMENT_PLACEHOLDER": "Escribe tu opinión.",
     "YOUR_RATING_SAVE_BUTTON": "Guardar valoración",
+    "ALREADY_RATED_TITLE": "Ya has valorado este evento",
+    "ALREADY_RATED_HINT": "No puedes enviar otra valoración para este evento",
+    "USER_LABEL": "Usuario",
     "ERROR": "Error al guardar la valoración.",
     "INFO": "Valoración guardada correctamente.",
     "SEARCH_PLACEHOLDER": "Buscar comentarios…",
@@ -411,6 +414,7 @@
     "VIEW_PROFILE_BUTTON": "👤 Ver Mi Perfil",
     "ACTION_CREATE_EVENT": "¡Evento creado con éxito!",
     "ACTION_JOIN_EVENT": "¡Te uniste al evento!",
-    "ACTION_MAKE_FRIEND": "¡Nuevo amigo agregado!"
+    "ACTION_MAKE_FRIEND": "¡Nuevo amigo agregado!",
+    "ACTION_LEAVE_RATING": "¡Valoración dejada con éxito!"
   }
 }

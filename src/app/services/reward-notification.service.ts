@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 export interface RewardData {
   puntosGanados: number;
@@ -13,6 +14,12 @@ export interface RewardData {
 @Injectable({ providedIn: 'root' })
 export class RewardNotificationService {
   private rewardSubject = new BehaviorSubject<RewardData | null>(null);
+  
+  constructor(private translate: TranslateService) {
+    if (!this.translate.currentLang) {
+      this.translate.use(this.translate.defaultLang || 'es');
+    }
+  }
   
   get reward$(): Observable<RewardData | null> {
     return this.rewardSubject.asObservable();
@@ -37,12 +44,27 @@ export class RewardNotificationService {
   }
   
   getTextoAccion(accion: 'crearEvento' | 'unirseEvento' | 'hacerAmigo' | 'dejarValoracion'): string {
-    const textos = {
-      crearEvento: '¡Has creado un evento!',
-      unirseEvento: '¡Te has unido a un evento!',
-      hacerAmigo: '¡Has hecho un nuevo amigo!',
-      dejarValoracion: '¡Has dejado una valoración!'
+    const keys = {
+      crearEvento: 'GAMIFICATION.ACTION_CREATE_EVENT',
+      unirseEvento: 'GAMIFICATION.ACTION_JOIN_EVENT',
+      hacerAmigo: 'GAMIFICATION.ACTION_MAKE_FRIEND',
+      dejarValoracion: 'GAMIFICATION.ACTION_LEAVE_RATING'
     };
-    return textos[accion];
+    
+    const key = keys[accion];
+    const translation = this.translate.instant(key);
+    
+    if (translation === key) {
+      console.warn(`Translation not found for key: ${key}`);
+      const fallbacks = {
+        crearEvento: '¡Evento creado con éxito!',
+        unirseEvento: '¡Te uniste al evento!',
+        hacerAmigo: '¡Nuevo amigo agregado!',
+        dejarValoracion: '¡Valoración dejada con éxito!'
+      };
+      return fallbacks[accion];
+    }
+    
+    return translation;
   }
 }
