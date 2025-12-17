@@ -54,6 +54,7 @@ export class MisEventosComponent implements OnInit {
   ratingsLoading = false;
   ratingsError = '';
   ratingsInfo = '';
+  filtroActivo: 'todos' | 'publicos' | 'privados' = 'todos';
 
   q = '';
   page: number = 1;
@@ -124,6 +125,26 @@ export class MisEventosComponent implements OnInit {
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
+  }
+
+  get eventoscreadosFiltrados() {
+    if (this.filtroActivo === 'todos') {
+      return this.eventosCreados;
+    } else if (this.filtroActivo === 'publicos') {
+      return this.eventosCreados.filter(e => !e.isPrivate);
+    } else {
+      return this.eventosCreados.filter(e => e.isPrivate);
+    }
+  }
+
+  get eventosinscritosFiltrados() {
+    if (this.filtroActivo === 'todos') {
+      return this.eventosInscritos;
+    } else if (this.filtroActivo === 'publicos') {
+      return this.eventosInscritos.filter(e => !e.isPrivate);
+    } else {
+      return this.eventosInscritos.filter(e => e.isPrivate);
+    }
   }
 
   ngOnInit(): void {
@@ -751,6 +772,18 @@ hasLocation(evento: any): boolean {
 
   switchTab(tab: 'joined' | 'created'): void {
     this.activeTab = tab;
+  }
+
+  cambiarFiltro(filtro: 'todos' | 'publicos' | 'privados'): void {
+    this.filtroActivo = filtro;
+  }
+
+  getBadgeClass(evento: Evento): string {
+    return evento.isPrivate ? 'badge-privado' : 'badge-publico';
+  }
+
+  getBadgeText(evento: Evento): string {
+    return evento.isPrivate ? '🔒 Privado' : '🌐 Público';
   }
 
   private cargarProgresoInicial(): void {

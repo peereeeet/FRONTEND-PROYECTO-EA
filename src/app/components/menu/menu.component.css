@@ -2745,3 +2745,55 @@
 .dark-theme .sidebar::-webkit-scrollbar-thumb:hover {
   background: rgba(37, 99, 235, 0.6);
 }
+
+.invitaciones-link {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(255, 68, 68, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+  border: 2px solid var(--bg-primary, #0a0e27);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(255, 68, 68, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(255, 68, 68, 0.6);
+  }
+}
+
+/* Ajustes para el enlace de invitaciones */
+.menu-link.invitaciones-link {
+  padding-right: 2.5rem; /* Espacio para el badge */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notification-badge {
+    top: 4px;
+    right: 4px;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    min-width: 18px;
+    height: 18px;
+  }
+}

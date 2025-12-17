@@ -214,4 +214,43 @@ export class EventoService {
       totalItems: number;
     }>(`${this.apiUrl}/search`, { params });
   }
+
+  inviteUsersToEvent(eventoId: string, userIds: string[]): Observable<{ message: string; evento: Evento }> {
+    return this.http.post<{ message: string; evento: Evento }>(
+      `${this.apiUrl}/${eventoId}/invite`,
+      { userIds }
+    );
+  }
+
+  acceptInvitation(eventoId: string): Observable<{ message: string; evento: Evento }> {
+    return this.http.post<{ message: string; evento: Evento }>(
+      `${this.apiUrl}/${eventoId}/accept-invitation`,
+      {}
+    );
+  }
+
+  rejectInvitation(eventoId: string): Observable<{ message: string; evento: Evento }> {
+    return this.http.post<{ message: string; evento: Evento }>(
+      `${this.apiUrl}/${eventoId}/reject-invitation`,
+      {}
+    );
+  }
+
+  getPendingInvitations(): Observable<{ count: number; invitaciones: Evento[] }> {
+    return this.http.get<{ count: number; invitaciones: Evento[] }>(
+      `${this.apiUrl}/invitations/pending`
+    );
+  }
+
+  removeInvitedUser(eventoId: string, userId: string): Observable<{ message: string; evento: Evento }> {
+    return this.http.delete<{ message: string; evento: Evento }>(
+      `${this.apiUrl}/${eventoId}/remove-invite/${userId}`
+    );
+  }
+
+  getEventosVisibles(): Observable<{ count: number; eventos: Evento[] }> {
+    return this.http.get<{ count: number; eventos: Evento[] }>(
+      `${this.apiUrl}/visible`
+    );
+  }
 }

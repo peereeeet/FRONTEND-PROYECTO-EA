@@ -242,8 +242,9 @@
 
 .top-bar__left {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
 }
 
 .top-title {
@@ -257,6 +258,43 @@
   margin: 0;
   font-size: 0.85rem;
   color: var(--text-secondary);
+}
+
+.filtros-container {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-filtro {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  color: var(--text-secondary, #a0a0a0);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-filtro:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary, #ffffff);
+  transform: translateY(-1px);
+}
+
+.btn-filtro.activo {
+  background: linear-gradient(135deg, #00d9ff 0%, #00b8e6 100%);
+  border-color: var(--primary-color, #00d9ff);
+  color: var(--bg-primary, #0a0e27);
+  box-shadow: 0 4px 15px rgba(0, 217, 255, 0.3);
 }
 
 .lang-switcher-menu {
@@ -591,13 +629,20 @@
   color: var(--text-primary);
 }
 
-.empty-state-card {
+.empty-state-card, .no-eventos {
   text-align: center;
   padding: 60px 20px;
   background: var(--surface-elev);
   border: 2px dashed var(--border);
   border-radius: 20px;
   margin-bottom: 24px;
+}
+
+.no-eventos p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 20px 0;
 }
 
 .empty-icon {
@@ -664,6 +709,60 @@
   font-weight: 800;
   color: var(--text-primary);
   margin: 0;
+}
+
+.card-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ===== BADGES ===== */
+.badge-privado {
+  background: rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.badge-publico {
+  background: rgba(0, 217, 255, 0.2);
+  color: #00d9ff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.categoria-badge, .badge-category {
+  background: rgba(138, 43, 226, 0.2);
+  color: #da70d6;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(138, 43, 226, 0.3);
+}
+
+.badge-finished {
+  background: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 /* ===== ETIQUETAS DE ROL (CREADOR / INSCRITO) ===== */

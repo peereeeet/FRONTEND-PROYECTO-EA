@@ -110,14 +110,14 @@
               </div>
 
               <div class="form-group categoria-searchable">
-                <label for="categoria">Categoría</label>
+                <label for="categoria">{{ 'CREATE_EVENT_EXTENDED.CATEGORY_LABEL' | translate }}</label>
                 <div class="categoria-input-wrapper">
                   <input
                     id="categoria"
                     type="text"
                     [(ngModel)]="categoriaSearch"
                     name="categoriaSearch"
-                    placeholder="Buscar o seleccionar categoría..."
+                    [placeholder]="'CREATE_EVENT_EXTENDED.CATEGORY_SEARCH_PLACEHOLDER' | translate"
                     class="categoria-input"
                     (focus)="onCategoriaInputFocus()"
                     (blur)="onCategoriaInputBlur()"
@@ -129,7 +129,7 @@
                   
                   <div class="categoria-dropdown" *ngIf="showCategoriaDropdown && categoriasFiltradas.length > 0">
                     <div class="categoria-count">
-                      {{ categoriasFiltradas.length }} categoría(s) encontrada(s)
+                      {{ 'CREATE_EVENT_EXTENDED.CATEGORY_COUNT' | translate : {count: categoriasFiltradas.length} }}
                     </div>
                     <div class="categoria-options">
                       <button
@@ -146,8 +146,94 @@
                   
                   <div class="categoria-dropdown categoria-no-results" *ngIf="showCategoriaDropdown && categoriasFiltradas.length === 0">
                     <div class="categoria-empty">
-                      ❌ No se encontraron categorías con "{{ categoriaSearch }}"
+                      ❌ {{ 'CREATE_EVENT_EXTENDED.CATEGORY_NO_RESULTS' | translate : {query: categoriaSearch} }}
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group form-group--full">
+                <label class="toggle-container">
+                  <input 
+                    type="checkbox" 
+                    [(ngModel)]="newEvent.isPrivate"
+                    name="isPrivate"
+                    class="toggle-input">
+                  <span class="toggle-label">
+                    <span class="toggle-icon">🔒</span>
+                    {{ 'CREATE_EVENT_EXTENDED.PRIVATE_LABEL' | translate }}
+                  </span>
+                </label>
+                <small class="form-hint">
+                  {{ 'CREATE_EVENT_EXTENDED.PRIVATE_HINT' | translate }}
+                </small>
+              </div>
+
+              <div class="form-group form-group--full" *ngIf="newEvent.isPrivate">
+                <label>{{ 'CREATE_EVENT_EXTENDED.INVITE_FRIENDS_LABEL' | translate : {count: amigosSeleccionados.length} }}</label>
+                
+                <div class="amigos-selector">
+
+                  <div class="search-amigos">
+                    <input 
+                      type="text" 
+                      [(ngModel)]="searchAmigoQuery"
+                      name="searchAmigo"
+                      [placeholder]="'CREATE_EVENT_EXTENDED.SEARCH_FRIENDS_PLACEHOLDER' | translate"
+                      class="search-input">
+                  </div>
+
+                  <div class="selection-buttons" *ngIf="amigos.length > 0">
+                    <button 
+                      type="button" 
+                      (click)="seleccionarTodosAmigos()"
+                      class="btn-selection">
+                      ✓ {{ 'CREATE_EVENT_EXTENDED.SELECT_ALL_BUTTON' | translate }}
+                    </button>
+                    <button 
+                      type="button" 
+                      (click)="deseleccionarTodosAmigos()"
+                      class="btn-selection">
+                      ✗ {{ 'CREATE_EVENT_EXTENDED.DESELECT_ALL_BUTTON' | translate }}
+                    </button>
+                  </div>
+
+                  <div class="amigos-list" *ngIf="amigos.length > 0">
+                    <div 
+                      *ngFor="let amigo of amigosFiltrados" 
+                      class="amigo-item"
+                      [class.selected]="isAmigoSeleccionado(amigo._id)"
+                      (click)="toggleAmigoSeleccion(amigo._id)">
+                      <div class="amigo-info">
+                        <div class="amigo-avatar">
+                          {{ amigo.username.charAt(0).toUpperCase() }}
+                        </div>
+                        <div class="amigo-details">
+                          <span class="amigo-name">{{ amigo.username }}</span>
+                          <span class="amigo-email">{{ amigo.gmail }}</span>
+                        </div>
+                      </div>
+                      <div class="amigo-checkbox">
+                        <span *ngIf="isAmigoSeleccionado(amigo._id)" class="check-icon">✓</span>
+                      </div>
+                    </div>
+
+                    <div *ngIf="amigosFiltrados.length === 0 && searchAmigoQuery" class="no-amigos">
+                      <p>{{ 'CREATE_EVENT_EXTENDED.NO_FRIENDS_FOUND' | translate : {query: searchAmigoQuery} }}</p>
+                    </div>
+                  </div>
+
+                  <div *ngIf="amigos.length === 0" class="no-amigos">
+                    <div class="empty-amigos">
+                      <span class="icon">👥</span>
+                      <p>{{ 'CREATE_EVENT_EXTENDED.NO_FRIENDS_TITLE' | translate }}</p>
+                      <small>{{ 'CREATE_EVENT_EXTENDED.NO_FRIENDS_HINT' | translate }}</small>
+                    </div>
+                  </div>
+
+                  <div class="selected-count" *ngIf="amigosSeleccionados.length > 0">
+                    <span class="count-icon">✓</span>
+                    <span>{{ 'CREATE_EVENT_EXTENDED.SELECTED_COUNT' | translate : {count: amigosSeleccionados.length} }}</span>
                   </div>
                 </div>
               </div>

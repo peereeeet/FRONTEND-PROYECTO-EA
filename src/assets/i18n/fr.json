@@ -128,6 +128,7 @@
     "EVENTS_CREATE": "Créer un nouvel événement",
     "EVENTS_EXPLORE_MAP": "Explorer les événements (carte)",
     "EVENTS_MY": "Mes événements",
+    "INVITATIONS": "Invitations",
     "LOADING": "Chargement…",
 
     "FRIENDS_TITLE": "Amis",
@@ -370,7 +371,11 @@
     "CREATOR_CANNOT_LEAVE": "Vous ne pouvez pas partir en tant que créateur",
     "SECTION_UPCOMING": "Événements à Venir",
     "SECTION_PAST": "Événements Passés",
-    "BADGE_FINISHED": "Terminé"
+    "BADGE_FINISHED": "Terminé",
+
+    "FILTER_ALL": "Tous",
+    "FILTER_PUBLIC": "Publics",
+    "FILTER_PRIVATE": "Privés"
   },
 
   "RATINGS": {
@@ -429,5 +434,50 @@
     "ACTION_JOIN_EVENT": "Vous avez rejoint l'événement!",
     "ACTION_MAKE_FRIEND": "Nouvel ami ajouté!",
     "ACTION_LEAVE_RATING": "Évaluation soumise avec succès!"
+  },
+
+  "INVITATIONS": {
+    "BACK_BUTTON": "Retour",
+    "TITLE": "Invitations",
+    "LOADING": "Chargement des invitations...",
+    "NO_PENDING": "Vous n'avez aucune invitation en attente",
+    "HAS_SINGULAR": "Vous avez 1 invitation en attente",
+    "HAS_PLURAL": "Vous avez {{count}} invitations en attente",
+    "MY_EVENTS_BUTTON": "Mes Événements",
+    "LOADING_YOUR": "Chargement de vos invitations...",
+    "RETRY_BUTTON": "Réessayer",
+    "EMPTY_TITLE": "Aucune invitation en attente",
+    "EMPTY_TEXT": "Lorsque quelqu'un vous invite à un événement privé, les invitations apparaîtront ici.",
+    "VIEW_EVENTS_BUTTON": "Voir mes événements",
+    "PRIVATE_BADGE": "Événement Privé",
+    "ORGANIZER_LABEL": "Organisateur:",
+    "DATE_LABEL": "Date:",
+    "LOCATION_LABEL": "Lieu:",
+    "ACCEPT_BUTTON": "Accepter",
+    "REJECT_BUTTON": "Refuser",
+    "PROCESSING": "Traitement en cours...",
+    "ERROR_LOADING": "Erreur lors du chargement des invitations",
+    "ERROR_ACCEPT": "Erreur lors de l'acceptation de l'invitation",
+    "ERROR_REJECT": "Erreur lors du refus de l'invitation",
+    "DATE_NOT_SPECIFIED": "Date non spécifiée",
+    "DATE_INVALID": "Date invalide",
+    "UNKNOWN": "Inconnu"
+  },
+
+  "CREATE_EVENT_EXTENDED": {
+    "CATEGORY_LABEL": "Catégorie",
+    "CATEGORY_SEARCH_PLACEHOLDER": "Rechercher ou sélectionner une catégorie...",
+    "CATEGORY_COUNT": "{{count}} catégorie(s) trouvée(s)",
+    "CATEGORY_NO_RESULTS": "Aucune catégorie trouvée avec \"{{query}}\"",
+    "PRIVATE_LABEL": "Événement Privé",
+    "PRIVATE_HINT": "Les événements privés ne sont visibles que par les utilisateurs invités",
+    "INVITE_FRIENDS_LABEL": "Inviter des amis ({{count}} sélectionnés)",
+    "SEARCH_FRIENDS_PLACEHOLDER": "Rechercher des amis...",
+    "SELECT_ALL_BUTTON": "Tout sélectionner",
+    "DESELECT_ALL_BUTTON": "Tout désélectionner",
+    "NO_FRIENDS_FOUND": "Aucun ami trouvé avec \"{{query}}\"",
+    "NO_FRIENDS_TITLE": "Vous n'avez pas encore ajouté d'amis",
+    "NO_FRIENDS_HINT": "Ajoutez des amis depuis votre profil pour les inviter à des événements privés",
+    "SELECTED_COUNT": "{{count}} ami(s) sélectionné(s)"
   }
 }

@@ -128,6 +128,7 @@
     "EVENTS_CREATE": "Create new event",
     "EVENTS_EXPLORE_MAP": "Explore events (map)",
     "EVENTS_MY": "My events",
+    "INVITATIONS": "Invitations",
     "LOADING": "Loading…",
 
     "FRIENDS_TITLE": "Friends",
@@ -370,7 +371,11 @@
     "CREATOR_CANNOT_LEAVE": "You cannot leave as the creator",
     "SECTION_UPCOMING": "Upcoming Events",
     "SECTION_PAST": "Past Events",
-    "BADGE_FINISHED": "Finished"
+    "BADGE_FINISHED": "Finished",
+
+    "FILTER_ALL": "All",
+    "FILTER_PUBLIC": "Public",
+    "FILTER_PRIVATE": "Private"
   },
 
  "RATINGS": {
@@ -432,5 +437,50 @@
     "ACTION_JOIN_EVENT": "You joined the event!",
     "ACTION_MAKE_FRIEND": "New friend added!",
     "ACTION_LEAVE_RATING": "Rating submitted successfully!"
+  },
+
+  "INVITATIONS": {
+    "BACK_BUTTON": "Back",
+    "TITLE": "Invitations",
+    "LOADING": "Loading invitations...",
+    "NO_PENDING": "You have no pending invitations",
+    "HAS_SINGULAR": "You have 1 pending invitation",
+    "HAS_PLURAL": "You have {{count}} pending invitations",
+    "MY_EVENTS_BUTTON": "My Events",
+    "LOADING_YOUR": "Loading your invitations...",
+    "RETRY_BUTTON": "Retry",
+    "EMPTY_TITLE": "No pending invitations",
+    "EMPTY_TEXT": "When someone invites you to a private event, invitations will appear here.",
+    "VIEW_EVENTS_BUTTON": "View my events",
+    "PRIVATE_BADGE": "Private Event",
+    "ORGANIZER_LABEL": "Organizer:",
+    "DATE_LABEL": "Date:",
+    "LOCATION_LABEL": "Location:",
+    "ACCEPT_BUTTON": "Accept",
+    "REJECT_BUTTON": "Reject",
+    "PROCESSING": "Processing...",
+    "ERROR_LOADING": "Error loading invitations",
+    "ERROR_ACCEPT": "Error accepting invitation",
+    "ERROR_REJECT": "Error rejecting invitation",
+    "DATE_NOT_SPECIFIED": "Date not specified",
+    "DATE_INVALID": "Invalid date",
+    "UNKNOWN": "Unknown"
+  },
+
+  "CREATE_EVENT_EXTENDED": {
+    "CATEGORY_LABEL": "Category",
+    "CATEGORY_SEARCH_PLACEHOLDER": "Search or select category...",
+    "CATEGORY_COUNT": "{{count}} category(ies) found",
+    "CATEGORY_NO_RESULTS": "No categories found with \"{{query}}\"",
+    "PRIVATE_LABEL": "Private Event",
+    "PRIVATE_HINT": "Private events are only visible to invited users",
+    "INVITE_FRIENDS_LABEL": "Invite Friends ({{count}} selected)",
+    "SEARCH_FRIENDS_PLACEHOLDER": "Search friends...",
+    "SELECT_ALL_BUTTON": "Select all",
+    "DESELECT_ALL_BUTTON": "Deselect all",
+    "NO_FRIENDS_FOUND": "No friends found with \"{{query}}\"",
+    "NO_FRIENDS_TITLE": "You haven't added any friends yet",
+    "NO_FRIENDS_HINT": "Add friends from your profile to invite them to private events",
+    "SELECTED_COUNT": "{{count}} friend(s) selected"
   }
 }
