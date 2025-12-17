@@ -1237,7 +1237,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.loadingMap = true;
       this.errorMessage = '';
   
-      this.eventoService.getUpcomingEventos(1, 1000).subscribe({
+      this.eventoService.getEventosVisibles().subscribe({
         next: (resp: any) => {
           const lista =
             resp?.eventos ||

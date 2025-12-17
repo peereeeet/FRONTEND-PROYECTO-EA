@@ -288,24 +288,36 @@
     "BACK_TO_MENU": "Volver al menú",
     "GO_TO_EXPLORE": "Explorar eventos (mapa)",
     "GO_TO_MY_EVENTS": "Mis eventos",
-
     "FORM_TITLE": "Completa los datos del evento",
-
     "FIELD_NAME_LABEL": "Título del evento",
     "FIELD_NAME_PLACEHOLDER": "Ej: Reunión de planificación Q4",
     "FIELD_NAME_ERROR_MIN": "⚠ El título es obligatorio (mínimo 3 caracteres).",
-
     "FIELD_ADDRESS_LABEL": "Dirección",
     "FIELD_ADDRESS_PLACEHOLDER": "Ej: C/ Mallorca 123, Barcelona",
-
+    "FIELD_ADDRESS_PLACEHOLDER_DETAILED": "Ej: Calle Gran Vía, 123, 28013 Madrid, España",
+    "ADDRESS_VALIDATE_TITLE": "Validar dirección",
+    "ADDRESS_CLEAR_TITLE": "Limpiar dirección",
+    "ADDRESS_SUGGESTIONS_TITLE": "Sugerencias",
+    "ADDRESS_SEARCHING": "Buscando direcciones...",
+    "ADDRESS_PROVIDE_MORE_SPECIFIC": "Por favor, proporciona una dirección más específica",
+    "ADDRESS_COMPLETENESS": "completo",
+    "ADDRESS_COMPONENT_STREET": "Calle/Avenida",
+    "ADDRESS_COMPONENT_NUMBER": "Número",
+    "ADDRESS_COMPONENT_POSTAL": "Código postal",
+    "ADDRESS_COMPONENT_CITY": "Ciudad",
+    "ADDRESS_COMPONENT_COUNTRY": "País",
+    "ADDRESS_VALID_COMPLETE": "Dirección válida y completa",
+    "ADDRESS_INCOMPLETE": "Dirección incompleta",
+    "ADDRESS_INVALID": "Dirección no válida",
+    "ADDRESS_MISSING": "Faltan",
+    "ADDRESS_FORMATTED_TITLE": "Dirección completa:",
+    "ADDRESS_EXAMPLE_HINT": "Ejemplo: Calle Gran Vía, 123, 28013 Madrid, España",
     "FIELD_DATE_LABEL": "Fecha",
     "FIELD_TIME_LABEL": "Hora",
-
     "SCHEDULE_SET": "📅 Establecer horario",
     "SCHEDULE_CLEAR": "❌ Quitar",
     "SCHEDULE_SELECTED": "Seleccionado:",
     "SCHEDULE_NONE": "Sin horario establecido",
-
     "ERROR_MESSAGE_PREFIX": "⚠",
     "SUBMIT_DEFAULT": "💾 Guardar evento",
     "SUBMIT_SAVING": "Guardando…"
