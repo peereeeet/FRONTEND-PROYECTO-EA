@@ -288,24 +288,36 @@
     "BACK_TO_MENU": "Back to menu",
     "GO_TO_EXPLORE": "Explore events (map)",
     "GO_TO_MY_EVENTS": "My events",
-
     "FORM_TITLE": "Fill in the event details",
-
     "FIELD_NAME_LABEL": "Event title",
     "FIELD_NAME_PLACEHOLDER": "E.g. Q4 planning meeting",
     "FIELD_NAME_ERROR_MIN": "⚠ The title is mandatory (minimum 3 characters).",
-
     "FIELD_ADDRESS_LABEL": "Address",
     "FIELD_ADDRESS_PLACEHOLDER": "E.g. Mallorca St 123, Barcelona",
-
+    "FIELD_ADDRESS_PLACEHOLDER_DETAILED": "E.g. Gran Vía Street, 123, 28013 Madrid, Spain",
+    "ADDRESS_VALIDATE_TITLE": "Validate address",
+    "ADDRESS_CLEAR_TITLE": "Clear address",
+    "ADDRESS_SUGGESTIONS_TITLE": "Suggestions",
+    "ADDRESS_SEARCHING": "Searching addresses...",
+    "ADDRESS_PROVIDE_MORE_SPECIFIC": "Please provide a more specific address",
+    "ADDRESS_COMPLETENESS": "complete",
+    "ADDRESS_COMPONENT_STREET": "Street/Avenue",
+    "ADDRESS_COMPONENT_NUMBER": "Number",
+    "ADDRESS_COMPONENT_POSTAL": "Postal code",
+    "ADDRESS_COMPONENT_CITY": "City",
+    "ADDRESS_COMPONENT_COUNTRY": "Country",
+    "ADDRESS_VALID_COMPLETE": "Valid and complete address",
+    "ADDRESS_INCOMPLETE": "Incomplete address",
+    "ADDRESS_INVALID": "Invalid address",
+    "ADDRESS_MISSING": "Missing",
+    "ADDRESS_FORMATTED_TITLE": "Full address:",
+    "ADDRESS_EXAMPLE_HINT": "Example: Gran Vía Street, 123, 28013 Madrid, Spain",
     "FIELD_DATE_LABEL": "Date",
     "FIELD_TIME_LABEL": "Time",
-
     "SCHEDULE_SET": "📅 Set schedule",
     "SCHEDULE_CLEAR": "❌ Remove",
     "SCHEDULE_SELECTED": "Selected:",
     "SCHEDULE_NONE": "No schedule set",
-
     "ERROR_MESSAGE_PREFIX": "⚠",
     "SUBMIT_DEFAULT": "💾 Save event",
     "SUBMIT_SAVING": "Saving…"

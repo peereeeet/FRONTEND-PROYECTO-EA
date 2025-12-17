@@ -558,6 +558,28 @@
   padding: 0;
   display: grid;
   gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.friends-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.friends-list::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-radius: 3px;
+}
+
+.friends-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.friends-list::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
 
 .friends-list li {

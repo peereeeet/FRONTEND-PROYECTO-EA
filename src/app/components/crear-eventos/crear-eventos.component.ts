@@ -12,6 +12,8 @@ import { ThemeService } from '../../services/theme.service';
 import { GamificacionService } from '../../services/gamificacion.service';
 import { RewardNotificationService } from '../../services/reward-notification.service';
 import { RewardNotificationComponent } from '../reward-notification/reward-notification.component';
+import { GeocodingService, GeocodingResult, AddressValidation } from '../../services/geocoding.service';
+import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
 type NewEventDTO = {
   name: string;
@@ -40,6 +42,7 @@ export class CrearEventosComponent implements OnInit {
   private themeService = inject(ThemeService);
   private gamificacionService = inject(GamificacionService);
   private rewardService = inject(RewardNotificationService);
+  private geocodingService = inject(GeocodingService);
   
   theme = this.themeService.theme;
 
@@ -58,6 +61,13 @@ export class CrearEventosComponent implements OnInit {
     isPrivate: false,
     invitedUsers: [],
   };
+
+  addressSuggestions: GeocodingResult[] = [];
+  showAddressSuggestions = false;
+  searchingAddress = false;
+  validatingAddress = false;
+  addressValidation: AddressValidation | null = null;
+  private addressSearchSubject = new Subject<string>();
 
   dateStr = '';
   timeStr = '';
@@ -158,6 +168,32 @@ export class CrearEventosComponent implements OnInit {
     )).toISOString().slice(0, 10);
     
     this.categoriaSearch = this.newEvent.categoria || '';
+
+    this.addressSearchSubject
+    .pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(query => {
+        if (!query || query.trim().length < 3) {
+          this.searchingAddress = false;
+          return [];
+        }
+        this.searchingAddress = true;
+        return this.geocodingService.searchAddress(query, 'es');
+      })
+    )
+    .subscribe({
+      next: (results) => {
+        this.addressSuggestions = results;
+        this.searchingAddress = false;
+        this.showAddressSuggestions = results.length > 0;
+      },
+      error: (error) => {
+        console.error('Error buscando direcciones:', error);
+        this.searchingAddress = false;
+        this.addressSuggestions = [];
+      }
+    });
   }
 
   private progresoInicial: any = null;
@@ -424,6 +460,25 @@ export class CrearEventosComponent implements OnInit {
       if (!Number.isNaN(parsed)) lng = parsed;
     }
 
+    if (this.newEvent.address && this.addressValidation) {
+      if (!this.addressValidation.isValid) {
+        this.errorMessage = `La dirección está incompleta. Faltan: ${this.addressValidation.missingComponents.join(', ')}`;
+        
+        const addressInput = document.getElementById('address');
+        if (addressInput) {
+          addressInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          addressInput.focus();
+        }
+        return;
+      }
+    }
+
+    if (this.newEvent.address && !this.addressValidation) {
+      this.validateCurrentAddress();
+      this.errorMessage = 'Por favor, valida la dirección antes de continuar (haz clic en el botón ✓)';
+      return;
+    }
+
     const payload: any = {
       name: this.newEvent.name.trim(),
       schedule: this.newEvent.schedule,
@@ -453,6 +508,10 @@ export class CrearEventosComponent implements OnInit {
           'No se pudo crear el evento.';
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this.addressSearchSubject.complete();
   }
 
   goBackToMenu(): void {
@@ -537,5 +596,171 @@ export class CrearEventosComponent implements OnInit {
 
   deseleccionarTodosAmigos(): void {
     this.amigosSeleccionados = [];
+  }
+
+  onAddressInput(event: any): void {
+    const value = event.target.value;
+    
+    if (!value || value.trim().length < 3) {
+      this.addressValidation = null;
+      this.addressSuggestions = [];
+      this.showAddressSuggestions = false;
+      return;
+    }
+
+    this.addressSearchSubject.next(value);
+  }
+
+  onAddressFocus(): void {
+    if (this.addressSuggestions.length > 0) {
+      this.showAddressSuggestions = true;
+    }
+  }
+
+  onAddressBlur(): void {
+    setTimeout(() => {
+      this.showAddressSuggestions = false;
+    }, 200);
+  }
+
+  selectAddressSuggestion(suggestion: GeocodingResult): void {
+    const formattedAddress = this.formatSuggestionAddress(suggestion);
+    this.newEvent.address = formattedAddress;
+    
+    this.newEvent.lat = parseFloat(suggestion.lat);
+    this.newEvent.lng = parseFloat(suggestion.lon);
+    
+    this.latStr = suggestion.lat;
+    this.lngStr = suggestion.lon;
+    
+    this.validateAddress(suggestion);
+    
+    this.showAddressSuggestions = false;
+    this.addressSuggestions = [];
+  }
+
+  formatSuggestionAddress(suggestion: GeocodingResult): string {
+    const addr = suggestion.address;
+    const parts: string[] = [];
+
+    if (addr.road) {
+      if (addr.house_number) {
+        parts.push(`${addr.road}, ${addr.house_number}`);
+      } else {
+        parts.push(addr.road);
+      }
+    }
+
+    if (addr.postcode) {
+      parts.push(addr.postcode);
+    }
+
+    const city = addr.city || addr.town || addr.village || addr.municipality;
+    if (city) {
+      parts.push(city);
+    }
+
+    if (addr.country) {
+      parts.push(addr.country);
+    }
+
+    return parts.join(', ');
+  }
+
+  validateCurrentAddress(): void {
+    if (!this.newEvent.address || this.validatingAddress) {
+      return;
+    }
+
+    this.validatingAddress = true;
+    this.addressValidation = null;
+
+    this.geocodingService.validateAddress(this.newEvent.address).subscribe({
+      next: (validation: AddressValidation) => {
+        this.addressValidation = validation;
+        this.validatingAddress = false;
+
+        if (validation.isValid) {
+          this.geocodingService.geocodeAddress(this.newEvent.address!).subscribe({
+            next: (coords: { lat: number; lng: number } | null) => {
+              if (coords) {
+                this.newEvent.lat = coords.lat;
+                this.newEvent.lng = coords.lng;
+                this.latStr = coords.lat.toString();
+                this.lngStr = coords.lng.toString();
+              }
+            }
+          });
+        }
+      },
+      error: (error: any) => {
+        console.error('Error validando dirección:', error);
+        this.validatingAddress = false;
+        this.addressValidation = {
+          isValid: false,
+          hasStreet: false,
+          hasNumber: false,
+          hasPostalCode: false,
+          hasCity: false,
+          hasCountry: false,
+          completeness: 0,
+          missingComponents: ['Todos'],
+          warnings: ['Error al validar la dirección']
+        };
+      }
+    });
+  }
+
+  private validateAddress(result: GeocodingResult): void {
+    const addr = result.address;
+    const missingComponents: string[] = [];
+
+    const hasStreet = !!(addr.road);
+    const hasNumber = !!(addr.house_number);
+    const hasPostalCode = !!(addr.postcode);
+    const hasCity = !!(addr.city || addr.town || addr.village || addr.municipality);
+    const hasCountry = !!(addr.country);
+
+    if (!hasStreet) missingComponents.push('Calle/Avenida');
+    if (!hasNumber) missingComponents.push('Número');
+    if (!hasPostalCode) missingComponents.push('Código postal');
+    if (!hasCity) missingComponents.push('Ciudad/Localidad');
+    if (!hasCountry) missingComponents.push('País');
+
+    let completeness = 0;
+    if (hasStreet) completeness += 20;
+    if (hasNumber) completeness += 20;
+    if (hasPostalCode) completeness += 20;
+    if (hasCity) completeness += 20;
+    if (hasCountry) completeness += 20;
+
+    const warnings: string[] = [];
+    if (result.type === 'road' && !hasNumber) {
+      warnings.push('Se detectó una calle pero falta el número específico');
+    }
+
+    this.addressValidation = {
+      isValid: completeness >= 80,
+      hasStreet,
+      hasNumber,
+      hasPostalCode,
+      hasCity,
+      hasCountry,
+      completeness,
+      missingComponents,
+      warnings,
+      formattedAddress: result.display_name
+    };
+  }
+
+  clearAddress(): void {
+    this.newEvent.address = '';
+    this.newEvent.lat = null;
+    this.newEvent.lng = null;
+    this.latStr = '';
+    this.lngStr = '';
+    this.addressValidation = null;
+    this.addressSuggestions = [];
+    this.showAddressSuggestions = false;
   }
 }

@@ -288,24 +288,36 @@
     "BACK_TO_MENU": "Tornar al menú",
     "GO_TO_EXPLORE": "Explorar esdeveniments (mapa)",
     "GO_TO_MY_EVENTS": "Els meus esdeveniments",
-
     "FORM_TITLE": "Completa les dades de l'esdeveniment",
-
     "FIELD_NAME_LABEL": "Títol de l'esdeveniment",
     "FIELD_NAME_PLACEHOLDER": "Ex: Reunió de planificació Q4",
     "FIELD_NAME_ERROR_MIN": "⚠ El títol és obligatori (mínim 3 caràcters).",
-
     "FIELD_ADDRESS_LABEL": "Adreça",
     "FIELD_ADDRESS_PLACEHOLDER": "Ex: C/ Mallorca 123, Barcelona",
-
+    "FIELD_ADDRESS_PLACEHOLDER_DETAILED": "Ex: Carrer Gran Via, 123, 08015 Barcelona, Espanya",
+    "ADDRESS_VALIDATE_TITLE": "Validar adreça",
+    "ADDRESS_CLEAR_TITLE": "Esborrar adreça",
+    "ADDRESS_SUGGESTIONS_TITLE": "Suggeriments",
+    "ADDRESS_SEARCHING": "Cercant adreces...",
+    "ADDRESS_PROVIDE_MORE_SPECIFIC": "Si us plau, proporciona una adreça més específica",
+    "ADDRESS_COMPLETENESS": "complet",
+    "ADDRESS_COMPONENT_STREET": "Carrer/Avinguda",
+    "ADDRESS_COMPONENT_NUMBER": "Número",
+    "ADDRESS_COMPONENT_POSTAL": "Codi postal",
+    "ADDRESS_COMPONENT_CITY": "Ciutat",
+    "ADDRESS_COMPONENT_COUNTRY": "País",
+    "ADDRESS_VALID_COMPLETE": "Adreça vàlida i completa",
+    "ADDRESS_INCOMPLETE": "Adreça incompleta",
+    "ADDRESS_INVALID": "Adreça no vàlida",
+    "ADDRESS_MISSING": "Falten",
+    "ADDRESS_FORMATTED_TITLE": "Adreça completa:",
+    "ADDRESS_EXAMPLE_HINT": "Exemple: Carrer Gran Via, 123, 08015 Barcelona, Espanya",
     "FIELD_DATE_LABEL": "Data",
     "FIELD_TIME_LABEL": "Hora",
-
     "SCHEDULE_SET": "📅 Establir horari",
     "SCHEDULE_CLEAR": "❌ Treure",
     "SCHEDULE_SELECTED": "Seleccionat:",
     "SCHEDULE_NONE": "Sense horari establert",
-
     "ERROR_MESSAGE_PREFIX": "⚠",
     "SUBMIT_DEFAULT": "💾 Desar esdeveniment",
     "SUBMIT_SAVING": "Desant…"

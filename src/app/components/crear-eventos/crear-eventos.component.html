@@ -98,15 +98,184 @@
                 </small>
               </div>
 
-              <div class="form-group">
-                <label for="address">{{ 'CREATE_EVENT.FIELD_ADDRESS_LABEL' | translate }}</label>
-                <input
-                  id="address"
-                  type="text"
-                  [(ngModel)]="newEvent.address"
-                  name="address"
-                  [placeholder]="'CREATE_EVENT.FIELD_ADDRESS_PLACEHOLDER' | translate"
-                />
+              <div class="form-group form-group--full address-section">
+                <label for="address" class="address-label">
+                  <span class="label-text">{{ 'CREATE_EVENT.FIELD_ADDRESS_LABEL' | translate }}</span>
+                  <span class="label-badge" *ngIf="addressValidation && addressValidation.completeness > 0">
+                    {{ addressValidation.completeness }}% {{ 'CREATE_EVENT.ADDRESS_COMPLETENESS' | translate }}
+                  </span>
+                </label>
+                
+                <div class="address-input-wrapper">
+                  <input
+                    id="address"
+                    type="text"
+                    [(ngModel)]="newEvent.address"
+                    name="address"
+                    [placeholder]="'CREATE_EVENT.FIELD_ADDRESS_PLACEHOLDER_DETAILED' | translate"
+                    (input)="onAddressInput($event)"
+                    (focus)="onAddressFocus()"
+                    (blur)="onAddressBlur()"
+                    class="address-input"
+                    [class.address-input--valid]="addressValidation?.isValid"
+                    [class.address-input--invalid]="addressValidation && !addressValidation.isValid && addressValidation.completeness > 0"
+                    autocomplete="off"
+                  />
+                  
+                  <button 
+                    type="button" 
+                    class="validate-address-btn"
+                    (click)="validateCurrentAddress()"
+                    [disabled]="!newEvent.address || validatingAddress"
+                    [title]="'CREATE_EVENT.ADDRESS_VALIDATE_TITLE' | translate">
+                    <span *ngIf="!validatingAddress">✓</span>
+                    <span *ngIf="validatingAddress" class="spinner-small">⟳</span>
+                  </button>
+
+                  <button 
+                    type="button" 
+                    class="clear-address-btn"
+                    *ngIf="newEvent.address"
+                    (click)="clearAddress()"
+                    [title]="'CREATE_EVENT.ADDRESS_CLEAR_TITLE' | translate">
+                    ✕
+                  </button>
+                </div>
+
+                <div class="address-suggestions" *ngIf="showAddressSuggestions && addressSuggestions.length > 0">
+                  <div class="suggestions-header">
+                    <span class="suggestions-icon">📍</span>
+                    <span class="suggestions-title">{{ 'CREATE_EVENT.ADDRESS_SUGGESTIONS_TITLE' | translate }} ({{ addressSuggestions.length }})</span>
+                  </div>
+                  <div class="suggestions-list">
+                    <button
+                      type="button"
+                      class="suggestion-item"
+                      *ngFor="let suggestion of addressSuggestions; let i = index"
+                      (click)="selectAddressSuggestion(suggestion)"
+                      [class.suggestion-item--best]="i === 0">
+                      <div class="suggestion-main">
+                        <span class="suggestion-icon" *ngIf="i === 0">⭐</span>
+                        <span class="suggestion-text">{{ formatSuggestionAddress(suggestion) }}</span>
+                      </div>
+                      <div class="suggestion-details" *ngIf="suggestion.address">
+                        <span class="detail-badge" *ngIf="suggestion.address.house_number">
+                          🏠 {{ suggestion.address.house_number }}
+                        </span>
+                        <span class="detail-badge" *ngIf="suggestion.address.postcode">
+                          📮 {{ suggestion.address.postcode }}
+                        </span>
+                        <span class="detail-badge" *ngIf="suggestion.address.city || suggestion.address.town">
+                          🏙️ {{ suggestion.address.city || suggestion.address.town }}
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="address-suggestions address-loading" *ngIf="searchingAddress && !addressSuggestions.length">
+                  <div class="loading-content">
+                    <span class="spinner">⟳</span>
+                    <span>{{ 'CREATE_EVENT.ADDRESS_SEARCHING' | translate }}</span>
+                  </div>
+                </div>
+
+                <div class="address-validation" *ngIf="addressValidation && newEvent.address">
+                  <div class="completeness-bar-container">
+                    <div class="completeness-bar">
+                      <div 
+                        class="completeness-fill"
+                        [style.width.%]="addressValidation.completeness"
+                        [class.completeness-fill--low]="addressValidation.completeness < 50"
+                        [class.completeness-fill--medium]="addressValidation.completeness >= 50 && addressValidation.completeness < 80"
+                        [class.completeness-fill--high]="addressValidation.completeness >= 80">
+                      </div>
+                    </div>
+                    <span class="completeness-label">{{ addressValidation.completeness }}%</span>
+                  </div>
+
+                  <div class="address-components">
+                    <div 
+                      class="component-chip"
+                      [class.component-chip--valid]="addressValidation.hasStreet"
+                      [class.component-chip--invalid]="!addressValidation.hasStreet">
+                      <span class="component-icon">{{ addressValidation.hasStreet ? '✓' : '✗' }}</span>
+                      <span class="component-text">{{ 'CREATE_EVENT.ADDRESS_COMPONENT_STREET' | translate }}</span>
+                    </div>
+                    
+                    <div 
+                      class="component-chip"
+                      [class.component-chip--valid]="addressValidation.hasNumber"
+                      [class.component-chip--invalid]="!addressValidation.hasNumber">
+                      <span class="component-icon">{{ addressValidation.hasNumber ? '✓' : '✗' }}</span>
+                      <span class="component-text">{{ 'CREATE_EVENT.ADDRESS_COMPONENT_NUMBER' | translate }}</span>
+                    </div>
+                    
+                    <div 
+                      class="component-chip"
+                      [class.component-chip--valid]="addressValidation.hasPostalCode"
+                      [class.component-chip--invalid]="!addressValidation.hasPostalCode">
+                      <span class="component-icon">{{ addressValidation.hasPostalCode ? '✓' : '✗' }}</span>
+                      <span class="component-text">{{ 'CREATE_EVENT.ADDRESS_COMPONENT_POSTAL' | translate }}</span>
+                    </div>
+                    
+                    <div 
+                      class="component-chip"
+                      [class.component-chip--valid]="addressValidation.hasCity"
+                      [class.component-chip--invalid]="!addressValidation.hasCity">
+                      <span class="component-icon">{{ addressValidation.hasCity ? '✓' : '✗' }}</span>
+                      <span class="component-text">{{ 'CREATE_EVENT.ADDRESS_COMPONENT_CITY' | translate }}</span>
+                    </div>
+                    
+                    <div 
+                      class="component-chip"
+                      [class.component-chip--valid]="addressValidation.hasCountry"
+                      [class.component-chip--invalid]="!addressValidation.hasCountry">
+                      <span class="component-icon">{{ addressValidation.hasCountry ? '✓' : '✗' }}</span>
+                      <span class="component-text">{{ 'CREATE_EVENT.ADDRESS_COMPONENT_COUNTRY' | translate }}</span>
+                    </div>
+                  </div>
+
+                  <div class="validation-message">
+                    <div class="validation-alert validation-alert--success" *ngIf="addressValidation.isValid">
+                      <span class="alert-icon">✓</span>
+                      <span class="alert-text">{{ 'CREATE_EVENT.ADDRESS_VALID_COMPLETE' | translate }}</span>
+                    </div>
+                    
+                    <div class="validation-alert validation-alert--warning" *ngIf="!addressValidation.isValid && addressValidation.completeness >= 50">
+                      <span class="alert-icon">⚠️</span>
+                      <div class="alert-content">
+                        <span class="alert-text">{{ 'CREATE_EVENT.ADDRESS_INCOMPLETE' | translate }}</span>
+                        <small class="alert-details">
+                          {{ 'CREATE_EVENT.ADDRESS_MISSING' | translate }}: {{ addressValidation.missingComponents.join(', ') }}
+                        </small>
+                      </div>
+                    </div>
+                    
+                    <div class="validation-alert validation-alert--error" *ngIf="!addressValidation.isValid && addressValidation.completeness < 50">
+                      <span class="alert-icon">✗</span>
+                      <div class="alert-content">
+                        <span class="alert-text">{{ 'CREATE_EVENT.ADDRESS_INVALID' | translate }}</span>
+                        <small class="alert-details">
+                          {{ addressValidation.warnings[0] || ('CREATE_EVENT.ADDRESS_PROVIDE_MORE_SPECIFIC' | translate) }}
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="formatted-address" *ngIf="addressValidation.formattedAddress && addressValidation.isValid">
+                    <div class="formatted-header">
+                      <span class="formatted-icon">📍</span>
+                      <span class="formatted-title">{{ 'CREATE_EVENT.ADDRESS_FORMATTED_TITLE' | translate }}</span>
+                    </div>
+                    <div class="formatted-text">{{ addressValidation.formattedAddress }}</div>
+                  </div>
+                </div>
+
+                <small class="form-hint" *ngIf="!newEvent.address || !addressValidation">
+                  <span class="hint-icon">💡</span>
+                  {{ 'CREATE_EVENT.ADDRESS_EXAMPLE_HINT' | translate }}
+                </small>
               </div>
 
               <div class="form-group categoria-searchable">

@@ -288,24 +288,36 @@
     "BACK_TO_MENU": "Retour au menu",
     "GO_TO_EXPLORE": "Explorer les événements (carte)",
     "GO_TO_MY_EVENTS": "Mes événements",
-
     "FORM_TITLE": "Complétez les informations de l'événement",
-
     "FIELD_NAME_LABEL": "Titre de l'événement",
     "FIELD_NAME_PLACEHOLDER": "Ex: Réunion de planification Q4",
     "FIELD_NAME_ERROR_MIN": "⚠ Le titre est obligatoire (minimum 3 caractères).",
-
     "FIELD_ADDRESS_LABEL": "Adresse",
     "FIELD_ADDRESS_PLACEHOLDER": "Ex: Rue Mallorca 123, Barcelone",
-
+    "FIELD_ADDRESS_PLACEHOLDER_DETAILED": "Ex: Avenue des Champs-Élysées, 123, 75008 Paris, France",
+    "ADDRESS_VALIDATE_TITLE": "Valider l'adresse",
+    "ADDRESS_CLEAR_TITLE": "Effacer l'adresse",
+    "ADDRESS_SUGGESTIONS_TITLE": "Suggestions",
+    "ADDRESS_SEARCHING": "Recherche d'adresses...",
+    "ADDRESS_PROVIDE_MORE_SPECIFIC": "Veuillez fournir une adresse plus spécifique",
+    "ADDRESS_COMPLETENESS": "complet",
+    "ADDRESS_COMPONENT_STREET": "Rue/Avenue",
+    "ADDRESS_COMPONENT_NUMBER": "Numéro",
+    "ADDRESS_COMPONENT_POSTAL": "Code postal",
+    "ADDRESS_COMPONENT_CITY": "Ville",
+    "ADDRESS_COMPONENT_COUNTRY": "Pays",
+    "ADDRESS_VALID_COMPLETE": "Adresse valide et complète",
+    "ADDRESS_INCOMPLETE": "Adresse incomplète",
+    "ADDRESS_INVALID": "Adresse non valide",
+    "ADDRESS_MISSING": "Manquants",
+    "ADDRESS_FORMATTED_TITLE": "Adresse complète:",
+    "ADDRESS_EXAMPLE_HINT": "Exemple: Avenue des Champs-Élysées, 123, 75008 Paris, France",
     "FIELD_DATE_LABEL": "Date",
     "FIELD_TIME_LABEL": "Heure",
-
     "SCHEDULE_SET": "📅 Définir l'horaire",
     "SCHEDULE_CLEAR": "❌ Supprimer",
     "SCHEDULE_SELECTED": "Sélectionné:",
     "SCHEDULE_NONE": "Aucun horaire défini",
-
     "ERROR_MESSAGE_PREFIX": "⚠",
     "SUBMIT_DEFAULT": "💾 Enregistrer l'événement",
     "SUBMIT_SAVING": "Enregistrement…"
