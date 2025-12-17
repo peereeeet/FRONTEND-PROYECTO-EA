@@ -1,0 +1,188 @@
+<div class="menu-page" [attr.data-theme]="theme()">
+  <div class="menu-bg"></div>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <div class="brand-logo">E</div>
+        <div class="brand-text">
+          <span class="brand-name">Eventer</span>
+          <span class="brand-sub">{{ 'INVITATIONS.TITLE' | translate }}</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <span class="nav-section-label">{{ 'MENU.EVENTS_TITLE' | translate }}</span>
+
+        <button class="nav-item" (click)="volverAlMenu()">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">{{ 'INVITATIONS.BACK_BUTTON' | translate }}</span>
+        </button>
+
+        <button class="nav-item nav-item--active">
+          <span class="nav-icon">📩</span>
+          <span class="nav-text">{{ 'INVITATIONS.TITLE' | translate }}</span>
+        </button>
+
+        <button class="nav-item" (click)="irAEventos()">
+          <span class="nav-icon">📅</span>
+          <span class="nav-text">{{ 'INVITATIONS.MY_EVENTS_BUTTON' | translate }}</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Panel -->
+    <div class="main-panel">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <div class="top-bar__left">
+          <h1 class="top-title">📩 {{ 'INVITATIONS.TITLE' | translate }}</h1>
+        </div>
+
+        <div class="top-bar__right">
+          <div class="lang-switcher-menu">
+            <button type="button" class="lang-toggle" (click)="toggleLangMenu()">
+              <span class="lang-icon">🌐</span>
+              <span class="lang-current">
+                {{
+                  currentLang === 'es'
+                    ? ('LANG.ES' | translate)
+                    : currentLang === 'en'
+                    ? ('LANG.EN' | translate)
+                    : currentLang === 'cat'
+                    ? ('LANG.CAT' | translate)
+                    : ('LANG.FR' | translate)
+                }}
+              </span>
+              <span class="lang-arrow">▾</span>
+            </button>
+
+            <div class="lang-dropdown" *ngIf="showLangMenu">
+              <button type="button" class="lang-option" [class.active]="currentLang === 'es'" (click)="selectLanguage('es')">
+                {{ 'LANG.ES' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'en'" (click)="selectLanguage('en')">
+                {{ 'LANG.EN' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'cat'" (click)="selectLanguage('cat')">
+                {{ 'LANG.CAT' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'fr'" (click)="selectLanguage('fr')">
+                {{ 'LANG.FR' | translate }}
+              </button>
+            </div>
+
+            <button class="theme-toggle-btn" (click)="toggleTheme()">
+              {{ theme() === 'dark' ? '☀️' : '🌙' }}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <section class="content">
+        <!-- Loading State -->
+        <div *ngIf="loading" class="state-container">
+          <div class="loading-spinner"></div>
+          <p class="state-text">{{ 'INVITATIONS.LOADING_YOUR' | translate }}</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="error && !loading" class="state-container state-error">
+          <div class="error-icon">⚠️</div>
+          <p class="state-text">{{ error }}</p>
+          <button class="btn-retry" (click)="cargarInvitaciones()">
+            🔄 {{ 'INVITATIONS.RETRY_BUTTON' | translate }}
+          </button>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && !error && invitaciones.length === 0" class="state-container state-empty">
+          <div class="empty-icon">🔭</div>
+          <h2 class="empty-title">{{ 'INVITATIONS.EMPTY_TITLE' | translate }}</h2>
+          <p class="empty-text">{{ 'INVITATIONS.EMPTY_TEXT' | translate }}</p>
+          <button class="btn btn--primary" (click)="irAEventos()">
+            {{ 'INVITATIONS.VIEW_EVENTS_BUTTON' | translate }}
+          </button>
+        </div>
+
+        <!-- Lista de Invitaciones -->
+        <div *ngIf="!loading && !error && invitaciones.length > 0" class="invitations-grid">
+          <div 
+            *ngFor="let evento of invitaciones" 
+            class="invitation-card"
+            [class.procesando]="estaProcesando(evento)">
+            
+            <!-- Card Header -->
+            <div class="card-header">
+              <div class="card-badges">
+                <span class="badge badge--private">
+                  🔒 {{ 'INVITATIONS.PRIVATE_BADGE' | translate }}
+                </span>
+                <span class="badge badge--category" *ngIf="evento.categoria">
+                  {{ evento.categoria }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body">
+              <h3 class="event-title">{{ evento.name }}</h3>
+              
+              <div class="event-details">
+                <div class="detail-row">
+                  <span class="detail-icon">👤</span>
+                  <div class="detail-content">
+                    <span class="detail-label">{{ 'INVITATIONS.ORGANIZER_LABEL' | translate }}</span>
+                    <span class="detail-value">{{ getNombreCreador(evento) }}</span>
+                  </div>
+                </div>
+
+                <div class="detail-row">
+                  <span class="detail-icon">📅</span>
+                  <div class="detail-content">
+                    <span class="detail-label">{{ 'INVITATIONS.DATE_LABEL' | translate }}</span>
+                    <span class="detail-value">{{ formatearFecha(evento.schedule) }}</span>
+                  </div>
+                </div>
+
+                <div class="detail-row" *ngIf="evento.address">
+                  <span class="detail-icon">📍</span>
+                  <div class="detail-content">
+                    <span class="detail-label">{{ 'INVITATIONS.LOCATION_LABEL' | translate }}</span>
+                    <span class="detail-value">{{ evento.address }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Actions -->
+            <div class="card-actions">
+              <button 
+                class="btn btn--success"
+                (click)="aceptarInvitacion(evento)"
+                [disabled]="estaProcesando(evento)">
+                <span *ngIf="!estaProcesando(evento)">✓ {{ 'INVITATIONS.ACCEPT_BUTTON' | translate }}</span>
+                <span *ngIf="estaProcesando(evento)">{{ 'INVITATIONS.PROCESSING' | translate }}</span>
+              </button>
+              
+              <button 
+                class="btn btn--danger-outline"
+                (click)="rechazarInvitacion(evento)"
+                [disabled]="estaProcesando(evento)">
+                <span *ngIf="!estaProcesando(evento)">✗ {{ 'INVITATIONS.REJECT_BUTTON' | translate }}</span>
+                <span *ngIf="estaProcesando(evento)">{{ 'INVITATIONS.PROCESSING' | translate }}</span>
+              </button>
+            </div>
+
+            <!-- Processing Overlay -->
+            <div *ngIf="estaProcesando(evento)" class="card-overlay">
+              <div class="overlay-spinner"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

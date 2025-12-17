@@ -128,6 +128,7 @@
     "EVENTS_CREATE": "Crear nou esdeveniment",
     "EVENTS_EXPLORE_MAP": "Explorar esdeveniments (mapa)",
     "EVENTS_MY": "Els meus esdeveniments",
+    "INVITATIONS": "Invitacions",
     "LOADING": "Carregant…",
 
     "FRIENDS_TITLE": "Amics",
@@ -370,7 +371,11 @@
     "CREATOR_CANNOT_LEAVE": "No pots abandonar essent el creador",
     "SECTION_UPCOMING": "Propers Esdeveniments",
     "SECTION_PAST": "Esdeveniments Passats",
-    "BADGE_FINISHED": "Finalitzat"
+    "BADGE_FINISHED": "Finalitzat",
+
+    "FILTER_ALL": "Tots",
+    "FILTER_PUBLIC": "Públics",
+    "FILTER_PRIVATE": "Privats"
   },
 
   "RATINGS": {
@@ -429,5 +434,51 @@
     "ACTION_JOIN_EVENT": "T'has unit a l'esdeveniment!",
     "ACTION_MAKE_FRIEND": "Nou amic afegit!",
     "ACTION_LEAVE_RATING": "Valoració deixada amb èxit!"
+  },
+
+
+  "INVITATIONS": {
+    "BACK_BUTTON": "Tornar",
+    "TITLE": "Invitacions",
+    "LOADING": "Carregant invitacions...",
+    "NO_PENDING": "No tens invitacions pendents",
+    "HAS_SINGULAR": "Tens 1 invitació pendent",
+    "HAS_PLURAL": "Tens {{count}} invitacions pendents",
+    "MY_EVENTS_BUTTON": "Els Meus Esdeveniments",
+    "LOADING_YOUR": "Carregant les teves invitacions...",
+    "RETRY_BUTTON": "Reintentar",
+    "EMPTY_TITLE": "No tens invitacions pendents",
+    "EMPTY_TEXT": "Quan algú t'inviti a un esdeveniment privat, les invitacions apareixeran aquí.",
+    "VIEW_EVENTS_BUTTON": "Veure els meus esdeveniments",
+    "PRIVATE_BADGE": "Esdeveniment Privat",
+    "ORGANIZER_LABEL": "Organitzador:",
+    "DATE_LABEL": "Data:",
+    "LOCATION_LABEL": "Lloc:",
+    "ACCEPT_BUTTON": "Acceptar",
+    "REJECT_BUTTON": "Rebutjar",
+    "PROCESSING": "Processant...",
+    "ERROR_LOADING": "Error al carregar les invitacions",
+    "ERROR_ACCEPT": "Error en acceptar la invitació",
+    "ERROR_REJECT": "Error en rebutjar la invitació",
+    "DATE_NOT_SPECIFIED": "Data no especificada",
+    "DATE_INVALID": "Data no vàlida",
+    "UNKNOWN": "Desconegut"
+  },
+
+  "CREATE_EVENT_EXTENDED": {
+    "CATEGORY_LABEL": "Categoria",
+    "CATEGORY_SEARCH_PLACEHOLDER": "Cercar o seleccionar categoria...",
+    "CATEGORY_COUNT": "{{count}} categoria(es) trobada(es)",
+    "CATEGORY_NO_RESULTS": "No s'han trobat categories amb \"{{query}}\"",
+    "PRIVATE_LABEL": "Esdeveniment Privat",
+    "PRIVATE_HINT": "Els esdeveniments privats només són visibles per als usuaris invitats",
+    "INVITE_FRIENDS_LABEL": "Convidar Amics ({{count}} seleccionats)",
+    "SEARCH_FRIENDS_PLACEHOLDER": "Cercar amics...",
+    "SELECT_ALL_BUTTON": "Seleccionar tots",
+    "DESELECT_ALL_BUTTON": "Deseleccionar tots",
+    "NO_FRIENDS_FOUND": "No s'han trobat amics amb \"{{query}}\"",
+    "NO_FRIENDS_TITLE": "Encara no tens amics afegits",
+    "NO_FRIENDS_HINT": "Afegeix amics des del teu perfil per poder convidar-los a esdeveniments privats",
+    "SELECTED_COUNT": "{{count}} amic(s) seleccionat(s)"
   }
 }

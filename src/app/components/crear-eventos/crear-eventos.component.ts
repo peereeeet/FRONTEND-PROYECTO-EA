@@ -21,6 +21,8 @@ type NewEventDTO = {
   lat?: number | null;
   lng?: number | null;
   categoria?: string;
+  isPrivate?: boolean;
+  invitedUsers?: string[];
 };
 
 @Component({
@@ -53,6 +55,8 @@ export class CrearEventosComponent implements OnInit {
     lat: null,
     lng: null,
     categoria: '',
+    isPrivate: false,
+    invitedUsers: [],
   };
 
   dateStr = '';
@@ -70,6 +74,10 @@ export class CrearEventosComponent implements OnInit {
 
   categoriaSearch = '';
   showCategoriaDropdown = false;
+
+  amigos: User[] = [];
+  amigosSeleccionados: string[] = [];
+  searchAmigoQuery = '';
 
   constructor(private translate: TranslateService) {
     this.translate.use(this.currentLang);
@@ -120,6 +128,17 @@ export class CrearEventosComponent implements OnInit {
     );
   }
 
+  get amigosFiltrados(): User[] {
+    if (!this.searchAmigoQuery.trim()) {
+      return this.amigos;
+    }
+    const query = this.searchAmigoQuery.toLowerCase();
+    return this.amigos.filter(amigo =>
+      amigo.username.toLowerCase().includes(query) ||
+      amigo.gmail.toLowerCase().includes(query)
+    );
+  }
+
   ngOnInit(): void {
     this.auth.currentUser$.subscribe((u) => {
       if (!u) {
@@ -129,6 +148,7 @@ export class CrearEventosComponent implements OnInit {
       this.me = u as User;
       this.loadUsers();
       this.cargarProgresoInicial();
+      this.cargarAmigos();
     });
     const t = new Date();
     this.todayISO = new Date(Date.UTC(
@@ -404,7 +424,7 @@ export class CrearEventosComponent implements OnInit {
       if (!Number.isNaN(parsed)) lng = parsed;
     }
 
-    const payload: Evento = {
+    const payload: any = {
       name: this.newEvent.name.trim(),
       schedule: this.newEvent.schedule,
       address: this.newEvent.address?.trim() || '',
@@ -412,6 +432,8 @@ export class CrearEventosComponent implements OnInit {
       categoria: this.newEvent.categoria || '',
       lat,
       lng,
+      isPrivate: this.newEvent.isPrivate || false,
+      invitados: this.newEvent.isPrivate ? this.amigosSeleccionados : []
     } as any as Evento;
 
     this.saving = true;
@@ -461,5 +483,59 @@ export class CrearEventosComponent implements OnInit {
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+
+  cargarAmigos(): void {
+      const currentUser = this.auth.getCurrentUser();
+      const currentUserId = currentUser?._id;
+      
+      if (!currentUserId) return;
+
+      this.userService.getUserById(currentUserId).subscribe({
+        next: (usuario) => {
+          if (usuario && usuario.friends) {
+            const friendIds = usuario.friends.map((f: any) => 
+              typeof f === 'string' ? f : f._id
+            );
+            
+            friendIds.forEach((friendId: string) => {
+              this.userService.getUserById(friendId).subscribe({
+                next: (amigo) => {
+                  if (amigo && !this.amigos.find(a => a._id === amigo._id)) {
+                    this.amigos.push(amigo);
+                  }
+                },
+                error: (err) => console.error('Error cargando amigo:', err)
+              });
+            });
+          }
+        },
+        error: (err) => console.error('Error cargando usuario:', err)
+      });
+    }
+
+  toggleAmigoSeleccion(amigoId: string | undefined): void {
+    if (!amigoId) return;
+    const index = this.amigosSeleccionados.indexOf(amigoId);
+    if (index > -1) {
+      this.amigosSeleccionados.splice(index, 1);
+    } else {
+      this.amigosSeleccionados.push(amigoId);
+    }
+  }
+
+  isAmigoSeleccionado(amigoId: string | undefined): boolean {
+    if (!amigoId) return false;
+    return this.amigosSeleccionados.includes(amigoId);
+  }
+
+  seleccionarTodosAmigos(): void {
+    this.amigosSeleccionados = this.amigosFiltrados
+      .map(a => a._id)
+      .filter((id): id is string => id !== undefined);
+  }
+
+  deseleccionarTodosAmigos(): void {
+    this.amigosSeleccionados = [];
   }
 }
