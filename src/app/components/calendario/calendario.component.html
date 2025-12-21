@@ -1,0 +1,115 @@
+<div class="calendar-page">
+  <div class="calendar-container glass-panel">
+    
+    <!-- HEADER -->
+    <header class="calendar-header">
+      <button class="btn-back" (click)="goBack()">
+        ⬅ Volver
+      </button>
+
+      <h2 class="month-title">{{ currentMonthName | titlecase }}</h2>
+      
+      <div class="calendar-controls">
+        <button class="theme-toggle-btn" (click)="toggleTheme()" title="Cambiar tema">
+          {{ theme() === 'dark' ? '☀️' : '🌙' }}
+        </button>
+        <button class="btn-control" (click)="prevMonth()">❮</button>
+        <button class="btn-control" (click)="goToToday()">Hoy</button>
+        <button class="btn-control" (click)="nextMonth()">❯</button>
+      </div>
+    </header>
+
+    <!-- WEEK DAYS -->
+    <div class="calendar-grid-header">
+      <div *ngFor="let day of weekDays" class="week-day">{{ day }}</div>
+    </div>
+
+    <!-- DAYS GRID -->
+    <div class="calendar-grid">
+      <div 
+        *ngFor="let day of calendarGrid()" 
+        class="day-cell"
+        [class.not-current-month]="!day.isCurrentMonth"
+        [class.is-today]="day.isToday"
+        (click)="openCreateModal(day.date)"
+      >
+        <span class="day-number">{{ day.date.getDate() }}</span>
+        
+        <div class="day-events-list">
+          <div 
+            *ngFor="let ev of day.events" 
+            class="event-item"
+            [class.participating]="isParticipating(ev)"
+            (click)="openEventDetails(ev); $event.stopPropagation()"
+          >
+            <span class="event-time">{{ getEventTime(ev) }}</span>
+            <span class="event-name">{{ ev.name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div *ngIf="loading()" class="loading-overlay">
+      <div class="spinner"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Simple Modal for Event Details -->
+<div class="modal-backdrop" *ngIf="selectedEvent()" (click)="closeModal()">
+  <div class="modal-content glass-panel" (click)="$event.stopPropagation()">
+    <h3>{{ selectedEvent()?.name }}</h3>
+    <p><strong>Categoría:</strong> {{ selectedEvent()?.categoria }}</p>
+    <p><strong>Dirección:</strong> {{ selectedEvent()?.address }}</p>
+    <p *ngIf="selectedEvent() && isParticipating(selectedEvent()!)" class="participating-badge">
+      ✅ Participas en este evento
+    </p>
+    <button class="btn-close" (click)="closeModal()">Cerrar</button>
+  </div>
+</div>
+
+<!-- Mockup Create Modal -->
+<div class="modal-backdrop" *ngIf="showCreateModal()" (click)="closeCreateModal()">
+  <div class="modal-content create-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>✨ Nuevo Evento</h3>
+      <button class="close-btn" (click)="closeCreateModal()">×</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="mockup-date-display">
+        📅 {{ createDate() | date:'fullDate' }}
+      </div>
+
+      <form (submit)="saveEventMock(); $event.preventDefault()">
+        <div class="form-group">
+          <label>Nombre del Evento</label>
+          <input type="text" [(ngModel)]="newEventMock.name" name="name" placeholder="Ej: Fiesta en la playa" class="mockup-input">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label>Hora</label>
+            <input type="time" [(ngModel)]="newEventMock.time" name="time" class="mockup-input">
+          </div>
+          <div class="form-group half">
+            <label>Categoría</label>
+            <select [(ngModel)]="newEventMock.category" name="category" class="mockup-input">
+              <option value="">Seleccionar...</option>
+              <option value="fiesta">🎉 Fiesta</option>
+              <option value="deporte">⚽ Deporte</option>
+              <option value="cultura">🎨 Cultura</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Ubicación</label>
+          <input type="text" [(ngModel)]="newEventMock.address" name="address" placeholder="Ej: Calle Principal 123" class="mockup-input">
+        </div>
+
+        <button type="submit" class="btn-create-mock">Crear Evento</button>
+      </form>
+    </div>
+  </div>
+</div>
