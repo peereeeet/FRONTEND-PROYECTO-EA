@@ -253,4 +253,12 @@ export class EventoService {
       `${this.apiUrl}/visible`
     );
   }
+
+  getCalendarEvents(dateFrom: string, dateTo: string): Observable<Evento[]> {
+    const params = new HttpParams()
+      .set('dateFrom', dateFrom)
+      .set('dateTo', dateTo);
+
+    return this.http.get<Evento[]>(`${this.apiUrl}/calendar`, { params });
+  }
 }
