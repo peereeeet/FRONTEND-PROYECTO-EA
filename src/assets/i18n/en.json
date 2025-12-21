@@ -129,6 +129,7 @@
     "EVENTS_EXPLORE_MAP": "Explore events (map)",
     "EVENTS_MY": "My events",
     "INVITATIONS": "Invitations",
+    "CALENDAR": "Calendar",
     "LOADING": "Loading…",
 
     "FRIENDS_TITLE": "Friends",
@@ -320,7 +321,13 @@
     "SCHEDULE_NONE": "No schedule set",
     "ERROR_MESSAGE_PREFIX": "⚠",
     "SUBMIT_DEFAULT": "💾 Save event",
-    "SUBMIT_SAVING": "Saving…"
+    "SUBMIT_SAVING": "Saving…",
+    "FIELD_ADDRESS_VERIFIED_BADGE": "✅ Address Verified",
+    "FIELD_ADDRESS_NOT_VERIFIED_BADGE": "⚠ Incomplete Address",
+    "FIELD_ADDRESS_VERIFYING": "Verifying address...",
+    "FIELD_ADDRESS_ERROR_MIN": "⚠ Address is required (minimum 5 characters).",
+    "FIELD_CATEGORY_ERROR_REQUIRED": "⚠ Category is required.",
+    "SUBMIT_LOADING": "Creating..."
   },
 
   "MY_EVENTS": {
@@ -494,5 +501,46 @@
     "NO_FRIENDS_TITLE": "You haven't added any friends yet",
     "NO_FRIENDS_HINT": "Add friends from your profile to invite them to private events",
     "SELECTED_COUNT": "{{count}} friend(s) selected"
+  },
+
+  "CALENDAR": {
+    "TITLE": "Calendar",
+    "MAIN_TITLE": "Event Calendar",
+    "GO_TO_TODAY": "Go to Today",
+    "NAVIGATION": "Navigation",
+    "BACK_TO_MENU": "Back to Menu",
+    "CREATE_EVENT": "Create Event",
+    "MY_EVENTS": "My Events",
+    "SETTINGS": "Settings",
+    "TOGGLE_THEME": "Toggle Theme",
+    "LEGEND": "Legend",
+    "LEGEND_TODAY": "Today",
+    "LEGEND_EVENT": "Event",
+    "LEGEND_PARTICIPATING": "Participating",
+    "PREV_MONTH": "Previous Month",
+    "NEXT_MONTH": "Next Month",
+    "CREATE_EVENT_ON": "Create event on this date",
+    "LOADING": "Loading events...",
+    "CATEGORY": "Category",
+    "ADDRESS": "Address",
+    "DATE_TIME": "Date and Time",
+    "YOU_ARE_PARTICIPATING": "You are participating in this event",
+    "CLOSE": "Close",
+    "NEW_EVENT": "New Event",
+    "EVENT_NAME": "Event Name",
+    "EVENT_NAME_PLACEHOLDER": "E.g: Beach party",
+    "TIME": "Time",
+    "SELECT_CATEGORY": "Select...",
+    "CAT_PARTY": "Party",
+    "CAT_SPORT": "Sport",
+    "CAT_CULTURE": "Culture",
+    "LOCATION": "Location",
+    "LOCATION_PLACEHOLDER": "E.g: Main Street 123",
+    "CANCEL": "Cancel",
+    "CREATE_BUTTON": "Create Event",
+    "SELECTED_DATE": "Selected date",
+    "BASIC_INFO": "Basic Information",
+    "LOCATION_INFO": "Location",
+    "TIME_CATEGORY": "Time and Category"
   }
 }
