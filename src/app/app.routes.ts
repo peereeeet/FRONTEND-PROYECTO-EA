@@ -11,6 +11,7 @@ import { PerfilComponent } from './components/perfil/perfil.component';
 import { MisEventosComponent } from './components/mis-eventos/mis-eventos.component';
 import { CrearEventosComponent } from './components/crear-eventos/crear-eventos.component';
 import { InvitacionesComponent } from './components/invitaciones/invitaciones.component';
+import { CalendarioComponent } from './components/calendario/calendario.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -61,6 +62,11 @@ export const routes: Routes = [
   { path: 'crear-evento',
     component: CrearEventosComponent,
     canActivate: [authGuard] },
+  { 
+    path: 'calendario', 
+    component: CalendarioComponent, 
+    canActivate: [authGuard] 
+  },
   { 
     path: '**', 
     redirectTo: 'login' 
