@@ -129,6 +129,7 @@
     "EVENTS_EXPLORE_MAP": "Explorar eventos (mapa)",
     "EVENTS_MY": "Mis eventos",
     "INVITATIONS": "Invitaciones",
+    "CALENDAR": "Calendario",
     "LOADING": "Cargando…",
 
     "FRIENDS_TITLE": "Amigos",
@@ -320,7 +321,13 @@
     "SCHEDULE_NONE": "Sin horario establecido",
     "ERROR_MESSAGE_PREFIX": "⚠",
     "SUBMIT_DEFAULT": "💾 Guardar evento",
-    "SUBMIT_SAVING": "Guardando…"
+    "SUBMIT_SAVING": "Guardando…",
+    "FIELD_ADDRESS_VERIFIED_BADGE": "✅ Dirección Verificada",
+    "FIELD_ADDRESS_NOT_VERIFIED_BADGE": "⚠ Dirección Incompleta",
+    "FIELD_ADDRESS_VERIFYING": "Verificando dirección...",
+    "FIELD_ADDRESS_ERROR_MIN": "⚠ La dirección es obligatoria (mínimo 5 caracteres).",
+    "FIELD_CATEGORY_ERROR_REQUIRED": "⚠ La categoría es obligatoria.",
+    "SUBMIT_LOADING": "Creando..."
   },
 
   "MY_EVENTS": {
@@ -494,5 +501,46 @@
     "NO_FRIENDS_TITLE": "No tienes amigos agregados aún",
     "NO_FRIENDS_HINT": "Añade amigos desde tu perfil para poder invitarlos a eventos privados",
     "SELECTED_COUNT": "{{count}} amigo(s) seleccionado(s)"
+  },
+
+  "CALENDAR": {
+    "TITLE": "Calendario",
+    "MAIN_TITLE": "Calendario de Eventos",
+    "GO_TO_TODAY": "Ir a Hoy",
+    "NAVIGATION": "Navegación",
+    "BACK_TO_MENU": "Volver al Menú",
+    "CREATE_EVENT": "Crear Evento",
+    "MY_EVENTS": "Mis Eventos",
+    "SETTINGS": "Configuración",
+    "TOGGLE_THEME": "Cambiar Tema",
+    "LEGEND": "Leyenda",
+    "LEGEND_TODAY": "Hoy",
+    "LEGEND_EVENT": "Evento",
+    "LEGEND_PARTICIPATING": "Participando",
+    "PREV_MONTH": "Mes Anterior",
+    "NEXT_MONTH": "Mes Siguiente",
+    "CREATE_EVENT_ON": "Crear evento en esta fecha",
+    "LOADING": "Cargando eventos...",
+    "CATEGORY": "Categoría",
+    "ADDRESS": "Dirección",
+    "DATE_TIME": "Fecha y Hora",
+    "YOU_ARE_PARTICIPATING": "Participas en este evento",
+    "CLOSE": "Cerrar",
+    "NEW_EVENT": "Nuevo Evento",
+    "EVENT_NAME": "Nombre del Evento",
+    "EVENT_NAME_PLACEHOLDER": "Ej: Fiesta en la playa",
+    "TIME": "Hora",
+    "SELECT_CATEGORY": "Seleccionar...",
+    "CAT_PARTY": "Fiesta",
+    "CAT_SPORT": "Deporte",
+    "CAT_CULTURE": "Cultura",
+    "LOCATION": "Ubicación",
+    "LOCATION_PLACEHOLDER": "Ej: Calle Principal 123",
+    "CANCEL": "Cancelar",
+    "CREATE_BUTTON": "Crear Evento",
+    "SELECTED_DATE": "Fecha seleccionada",
+    "BASIC_INFO": "Información Básica",
+    "LOCATION_INFO": "Ubicación",
+    "TIME_CATEGORY": "Hora y Categoría"
   }
 }

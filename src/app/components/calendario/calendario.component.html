@@ -1,114 +1,388 @@
-<div class="calendar-page">
-  <div class="calendar-container glass-panel">
-    
-    <!-- HEADER -->
-    <header class="calendar-header">
-      <button class="btn-back" (click)="goBack()">
-        ⬅ Volver
-      </button>
+<div class="menu-page">
+  <div class="menu-bg"></div>
 
-      <h2 class="month-title">{{ currentMonthName | titlecase }}</h2>
-      
-      <div class="calendar-controls">
-        <button class="theme-toggle-btn" (click)="toggleTheme()" title="Cambiar tema">
-          {{ theme() === 'dark' ? '☀️' : '🌙' }}
-        </button>
-        <button class="btn-control" (click)="prevMonth()">❮</button>
-        <button class="btn-control" (click)="goToToday()">Hoy</button>
-        <button class="btn-control" (click)="nextMonth()">❯</button>
-      </div>
-    </header>
-
-    <!-- WEEK DAYS -->
-    <div class="calendar-grid-header">
-      <div *ngFor="let day of weekDays" class="week-day">{{ day }}</div>
-    </div>
-
-    <!-- DAYS GRID -->
-    <div class="calendar-grid">
-      <div 
-        *ngFor="let day of calendarGrid()" 
-        class="day-cell"
-        [class.not-current-month]="!day.isCurrentMonth"
-        [class.is-today]="day.isToday"
-        (click)="openCreateModal(day.date)"
-      >
-        <span class="day-number">{{ day.date.getDate() }}</span>
-        
-        <div class="day-events-list">
-          <div 
-            *ngFor="let ev of day.events" 
-            class="event-item"
-            [class.participating]="isParticipating(ev)"
-            (click)="openEventDetails(ev); $event.stopPropagation()"
-          >
-            <span class="event-time">{{ getEventTime(ev) }}</span>
-            <span class="event-name">{{ ev.name }}</span>
-          </div>
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <div class="brand-logo">E</div>
+        <div class="brand-text">
+          <span class="brand-name">Eventer</span>
+          <span class="brand-sub">{{ 'CALENDAR.TITLE' | translate }}</span>
         </div>
       </div>
-    </div>
-    
-    <div *ngIf="loading()" class="loading-overlay">
-      <div class="spinner"></div>
+
+      <nav class="sidebar__nav">
+        <span class="nav-section-label">{{ 'MENU.EVENTS_TITLE' | translate }}</span>
+
+        <button class="nav-item" (click)="goBack()">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">{{ 'CALENDAR.BACK_TO_MENU' | translate }}</span>
+        </button>
+
+        <button class="nav-item" (click)="goToCrearEvento()">
+          <span class="nav-icon">➕</span>
+          <span class="nav-text">{{ 'CALENDAR.CREATE_EVENT' | translate }}</span>
+        </button>
+
+        <button class="nav-item" (click)="goToMisEventos()">
+          <span class="nav-icon">📅</span>
+          <span class="nav-text">{{ 'CALENDAR.MY_EVENTS' | translate }}</span>
+        </button>
+
+        <button class="nav-item nav-item--active">
+          <span class="nav-icon">🗓️</span>
+          <span class="nav-text">{{ 'CALENDAR.TITLE' | translate }}</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- PANEL PRINCIPAL -->
+    <div class="main-panel">
+      <!-- TOP BAR -->
+      <header class="top-bar">
+        <div class="top-bar__left">
+          <h1 class="top-title">{{ 'CALENDAR.MAIN_TITLE' | translate }}</h1>
+        </div>
+
+        <div class="top-bar__right">
+          <div class="lang-switcher-menu">
+            <button type="button" class="lang-toggle" (click)="toggleLangMenu()">
+              <span class="lang-icon">🌐</span>
+              <span class="lang-current">
+                {{
+                  currentLang === 'es'
+                    ? ('LANG.ES' | translate)
+                    : currentLang === 'en'
+                    ? ('LANG.EN' | translate)
+                    : currentLang === 'cat'
+                    ? ('LANG.CAT' | translate)
+                    : ('LANG.FR' | translate)
+                }}
+              </span>
+              <span class="lang-arrow">▾</span>
+            </button>
+
+            <div class="lang-dropdown" *ngIf="showLangMenu">
+              <button type="button" class="lang-option" [class.active]="currentLang === 'es'" (click)="selectLanguage('es')">
+                {{ 'LANG.ES' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'en'" (click)="selectLanguage('en')">
+                {{ 'LANG.EN' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'cat'" (click)="selectLanguage('cat')">
+                {{ 'LANG.CAT' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'fr'" (click)="selectLanguage('fr')">
+                {{ 'LANG.FR' | translate }}
+              </button>
+            </div>
+
+            <button class="theme-toggle-btn" (click)="toggleTheme()">
+              {{ theme() === 'dark' ? '☀️' : '🌙' }}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENIDO PRINCIPAL -->
+      <section class="content">
+        <div class="calendar-container">
+          
+          <!-- CALENDAR HEADER -->
+          <div class="calendar-header">
+            <button class="btn-control btn-control--prev" (click)="prevMonth()" [title]="'CALENDAR.PREV_MONTH' | translate">
+              <span>◄</span>
+            </button>
+            
+            <div class="month-display">
+              <span class="month-name">{{ currentMonthName | titlecase }}</span>
+            </div>
+            
+            <button class="btn-control btn-control--next" (click)="nextMonth()" [title]="'CALENDAR.NEXT_MONTH' | translate">
+              <span>►</span>
+            </button>
+          </div>
+
+          <div class="calendar-actions">
+            <button class="btn btn--secondary btn--sm" (click)="goToToday()">
+              <span class="btn-icon">📅</span>
+              {{ 'CALENDAR.GO_TO_TODAY' | translate }}
+            </button>
+          </div>
+
+          <!-- WEEK DAYS -->
+          <div class="calendar-grid-header">
+            <div *ngFor="let day of weekDays" class="week-day">{{ day }}</div>
+          </div>
+
+          <!-- DAYS GRID -->
+          <div class="calendar-grid">
+            <div 
+              *ngFor="let day of calendarGrid()" 
+              class="day-cell"
+              [class.not-current-month]="!day.isCurrentMonth"
+              [class.is-today]="day.isToday"
+              [class.has-events]="day.events.length > 0"
+              (click)="openCreateModal(day.date)"
+              [title]="'CALENDAR.CREATE_EVENT_ON' | translate"
+            >
+              <div class="day-header">
+                <span class="day-number">{{ day.date.getDate() }}</span>
+                <span class="event-count" *ngIf="day.events.length > 0">
+                  {{ day.events.length }}
+                </span>
+              </div>
+              
+              <div class="day-events-list">
+                <div 
+                  *ngFor="let ev of day.events" 
+                  class="event-item"
+                  [class.participating]="isParticipating(ev)"
+                  (click)="openEventDetails(ev); $event.stopPropagation()"
+                  [title]="ev.name"
+                >
+                  <span class="event-time">{{ getEventTime(ev) }}</span>
+                  <span class="event-name">{{ ev.name }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Loading Overlay -->
+          <div *ngIf="loading()" class="loading-overlay">
+            <div class="spinner"></div>
+            <p class="loading-text">{{ 'CALENDAR.LOADING' | translate }}</p>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </div>
 
-<!-- Simple Modal for Event Details -->
+<!-- Modal for Event Details -->
 <div class="modal-backdrop" *ngIf="selectedEvent()" (click)="closeModal()">
-  <div class="modal-content glass-panel" (click)="$event.stopPropagation()">
-    <h3>{{ selectedEvent()?.name }}</h3>
-    <p><strong>Categoría:</strong> {{ selectedEvent()?.categoria }}</p>
-    <p><strong>Dirección:</strong> {{ selectedEvent()?.address }}</p>
-    <p *ngIf="selectedEvent() && isParticipating(selectedEvent()!)" class="participating-badge">
-      ✅ Participas en este evento
-    </p>
-    <button class="btn-close" (click)="closeModal()">Cerrar</button>
+  <div class="modal-content event-details-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <span class="modal-icon">📌</span>
+        {{ selectedEvent()?.name }}
+      </h3>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="detail-group" *ngIf="selectedEvent()?.categoria">
+        <span class="detail-label">{{ 'CALENDAR.CATEGORY' | translate }}</span>
+        <span class="detail-value">{{ selectedEvent()?.categoria }}</span>
+      </div>
+
+      <div class="detail-group" *ngIf="selectedEvent()?.address">
+        <span class="detail-label">{{ 'CALENDAR.ADDRESS' | translate }}</span>
+        <span class="detail-value">{{ selectedEvent()?.address }}</span>
+      </div>
+
+      <div class="detail-group" *ngIf="selectedEvent()?.schedule">
+        <span class="detail-label">{{ 'CALENDAR.DATE_TIME' | translate }}</span>
+        <span class="detail-value">{{ getEventFullDateTime(selectedEvent()!) }}</span>
+      </div>
+
+      <div class="participating-badge" *ngIf="selectedEvent() && isParticipating(selectedEvent()!)">
+        <span class="badge-icon">✅</span>
+        <span>{{ 'CALENDAR.YOU_ARE_PARTICIPATING' | translate }}</span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn--secondary" (click)="closeModal()">
+        {{ 'CALENDAR.CLOSE' | translate }}
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- Mockup Create Modal -->
+<!-- Create Event Modal - AMPLIADO Y MÁS ESPACIOSO -->
 <div class="modal-backdrop" *ngIf="showCreateModal()" (click)="closeCreateModal()">
-  <div class="modal-content create-modal" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>✨ Nuevo Evento</h3>
+  <div class="modal-content create-modal modal-large" (click)="$event.stopPropagation()">
+    <div class="modal-header modal-header-large">
+      <h3 class="modal-title modal-title-large">
+        <span class="modal-icon">✨</span>
+        {{ 'CALENDAR.NEW_EVENT' | translate }}
+      </h3>
       <button class="close-btn" (click)="closeCreateModal()">×</button>
     </div>
     
-    <div class="modal-body">
-      <div class="mockup-date-display">
-        📅 {{ createDate() | date:'fullDate' }}
+    <div class="modal-body modal-body-spacious">
+      
+      <!-- Date Display - Mejorado -->
+      <div class="date-display-large">
+        <span class="date-icon">📅</span>
+        <div class="date-info">
+          <span class="date-label">{{ 'CALENDAR.SELECTED_DATE' | translate }}</span>
+          <span class="date-value">{{ createDate() | date:'fullDate' }}</span>
+        </div>
       </div>
 
-      <form (submit)="saveEventMock(); $event.preventDefault()">
-        <div class="form-group">
-          <label>Nombre del Evento</label>
-          <input type="text" [(ngModel)]="newEventMock.name" name="name" placeholder="Ej: Fiesta en la playa" class="mockup-input">
-        </div>
-
-        <div class="form-row">
-          <div class="form-group half">
-            <label>Hora</label>
-            <input type="time" [(ngModel)]="newEventMock.time" name="time" class="mockup-input">
+      <form (submit)="onSubmitEvent(); $event.preventDefault()" class="event-form-spacious">
+        
+        <!-- Sección: Información Básica -->
+        <div class="form-section">
+          <div class="section-header">
+            <span class="section-icon">📝</span>
+            <h4 class="section-title">{{ 'CALENDAR.BASIC_INFO' | translate }}</h4>
           </div>
-          <div class="form-group half">
-            <label>Categoría</label>
-            <select [(ngModel)]="newEventMock.category" name="category" class="mockup-input">
-              <option value="">Seleccionar...</option>
-              <option value="fiesta">🎉 Fiesta</option>
-              <option value="deporte">⚽ Deporte</option>
-              <option value="cultura">🎨 Cultura</option>
-            </select>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'CALENDAR.EVENT_NAME' | translate }}</label>
+            <input 
+              type="text" 
+              [(ngModel)]="newEvent.name" 
+              name="name" 
+              [placeholder]="'CALENDAR.EVENT_NAME_PLACEHOLDER' | translate"
+              class="form-input"
+              required
+              minlength="3">
+            <small class="error-text" *ngIf="formSubmitted && (!newEvent.name || newEvent.name.trim().length < 3)">
+              {{ 'CREATE_EVENT.FIELD_NAME_ERROR_MIN' | translate }}
+            </small>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Ubicación</label>
-          <input type="text" [(ngModel)]="newEventMock.address" name="address" placeholder="Ej: Calle Principal 123" class="mockup-input">
+        <!-- Sección: Ubicación -->
+        <div class="form-section">
+          <div class="section-header">
+            <span class="section-icon">📍</span>
+            <h4 class="section-title">{{ 'CALENDAR.LOCATION_INFO' | translate }}</h4>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'CREATE_EVENT.FIELD_ADDRESS_LABEL' | translate }}</label>
+            <div class="address-input-wrapper">
+              <input 
+                type="text" 
+                [(ngModel)]="newEvent.address" 
+                name="address" 
+                [placeholder]="'CREATE_EVENT.FIELD_ADDRESS_PLACEHOLDER' | translate"
+                class="form-input"
+                (input)="onAddressInput($event)"
+                (focus)="onAddressFocus()"
+                (blur)="onAddressBlur()"
+                autocomplete="off"
+                required
+                minlength="5">
+
+              <div class="address-validation-status" *ngIf="addressValidation">
+                <span 
+                  class="validation-badge"
+                  [class.valid]="addressValidation.isValid"
+                  [class.invalid]="!addressValidation.isValid">
+                  {{ addressValidation.isValid ? ('CREATE_EVENT.FIELD_ADDRESS_VERIFIED_BADGE' | translate) : ('CREATE_EVENT.FIELD_ADDRESS_NOT_VERIFIED_BADGE' | translate) }}
+                </span>
+                <div class="validation-progress">
+                  <div 
+                    class="validation-progress-bar" 
+                    [style.width.%]="addressValidation.completeness"
+                    [class.complete]="addressValidation.isValid">
+                  </div>
+                </div>
+              </div>
+
+              <div class="address-suggestions" *ngIf="showAddressSuggestions && addressSuggestions.length > 0">
+                <div 
+                  class="suggestion-item" 
+                  *ngFor="let suggestion of addressSuggestions"
+                  (click)="selectAddressSuggestion(suggestion)">
+                  <div class="suggestion-icon">📍</div>
+                  <div class="suggestion-text">
+                    <div class="suggestion-name">{{ suggestion.display_name }}</div>
+                    <div class="suggestion-type">{{ suggestion.type }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="address-loading" *ngIf="searchingAddress">
+                <div class="spinner-small"></div>
+                <span>{{ 'CREATE_EVENT.FIELD_ADDRESS_VERIFYING' | translate }}</span>
+              </div>
+            </div>
+            <small class="error-text" *ngIf="formSubmitted && (!newEvent.address || newEvent.address.trim().length < 5)">
+              {{ 'CREATE_EVENT.FIELD_ADDRESS_ERROR_MIN' | translate }}
+            </small>
+          </div>
         </div>
 
-        <button type="submit" class="btn-create-mock">Crear Evento</button>
+        <!-- Sección: Hora y Categoría -->
+        <div class="form-section">
+          <div class="section-header">
+            <span class="section-icon">🕐</span>
+            <h4 class="section-title">{{ 'CALENDAR.TIME_CATEGORY' | translate }}</h4>
+          </div>
+
+          <div class="form-row-spacious">
+            <div class="form-group">
+              <label class="form-label">{{ 'CALENDAR.TIME' | translate }}</label>
+              <input 
+                type="time" 
+                [(ngModel)]="timeStr" 
+                name="time" 
+                class="form-input"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">{{ 'CREATE_EVENT_EXTENDED.CATEGORY_LABEL' | translate }}</label>
+              <div class="categoria-input-wrapper">
+                <input
+                  type="text"
+                  [(ngModel)]="categoriaSearch"
+                  name="categoriaSearch"
+                  [placeholder]="'CREATE_EVENT_EXTENDED.CATEGORY_SEARCH_PLACEHOLDER' | translate"
+                  (focus)="onCategoriaInputFocus()"
+                  (blur)="onCategoriaInputBlur()"
+                  (input)="onCategoriaSearchChange()"
+                  autocomplete="off"
+                  class="form-input"
+                />
+                
+                <div class="categoria-dropdown" *ngIf="showCategoriaDropdown">
+                  <div class="categoria-count">
+                    {{ 'CREATE_EVENT_EXTENDED.CATEGORY_COUNT' | translate: {count: categoriasFiltradas.length} }}
+                  </div>
+                  <div 
+                    class="categoria-item" 
+                    *ngFor="let cat of categoriasFiltradas"
+                    (click)="selectCategoria(cat)">
+                    {{ cat }}
+                  </div>
+                  <div class="categoria-empty" *ngIf="categoriasFiltradas.length === 0">
+                    {{ 'CREATE_EVENT_EXTENDED.CATEGORY_NO_RESULTS' | translate: {query: categoriaSearch} }}
+                  </div>
+                </div>
+              </div>
+              <small class="error-text" *ngIf="formSubmitted && !newEvent.categoria">
+                {{ 'CREATE_EVENT.FIELD_CATEGORY_ERROR_REQUIRED' | translate }}
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" *ngIf="errorMessage">
+          <span class="error-icon">⚠️</span>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions-spacious">
+          <button type="button" class="btn btn--secondary btn--lg" (click)="closeCreateModal()">
+            <span class="btn-icon">❌</span>
+            {{ 'CALENDAR.CANCEL' | translate }}
+          </button>
+          <button type="submit" class="btn btn--primary btn--lg" [disabled]="saving">
+            <span class="btn-icon">{{ saving ? '⏳' : '✅' }}</span>
+            {{ saving ? ('CREATE_EVENT.SUBMIT_LOADING' | translate) : ('CALENDAR.CREATE_BUTTON' | translate) }}
+          </button>
+        </div>
       </form>
     </div>
   </div>

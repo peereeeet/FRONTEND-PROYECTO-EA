@@ -522,6 +522,10 @@ export class CrearEventosComponent implements OnInit {
     this.router.navigate(['/mis-eventos']);
   }
 
+  goToCalendar(): void {
+    this.router.navigate(['/calendario']);
+  }
+
   changeLanguage(lang: 'es' | 'en') {
     if (this.currentLang === lang) return;
     this.currentLang = lang;

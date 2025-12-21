@@ -129,6 +129,7 @@
     "EVENTS_EXPLORE_MAP": "Explorar esdeveniments (mapa)",
     "EVENTS_MY": "Els meus esdeveniments",
     "INVITATIONS": "Invitacions",
+    "CALENDAR": "Calendari",
     "LOADING": "Carregant…",
 
     "FRIENDS_TITLE": "Amics",
@@ -320,7 +321,13 @@
     "SCHEDULE_NONE": "Sense horari establert",
     "ERROR_MESSAGE_PREFIX": "⚠",
     "SUBMIT_DEFAULT": "💾 Desar esdeveniment",
-    "SUBMIT_SAVING": "Desant…"
+    "SUBMIT_SAVING": "Desant…",
+    "FIELD_ADDRESS_VERIFIED_BADGE": "✅ Adreça Verificada",
+    "FIELD_ADDRESS_NOT_VERIFIED_BADGE": "⚠ Adreça Incompleta",
+    "FIELD_ADDRESS_VERIFYING": "Verificant adreça...",
+    "FIELD_ADDRESS_ERROR_MIN": "⚠ L'adreça és obligatòria (mínim 5 caràcters).",
+    "FIELD_CATEGORY_ERROR_REQUIRED": "⚠ La categoria és obligatòria.",
+    "SUBMIT_LOADING": "Creant..."
   },
 
   "MY_EVENTS": {
@@ -492,5 +499,46 @@
     "NO_FRIENDS_TITLE": "Encara no tens amics afegits",
     "NO_FRIENDS_HINT": "Afegeix amics des del teu perfil per poder convidar-los a esdeveniments privats",
     "SELECTED_COUNT": "{{count}} amic(s) seleccionat(s)"
+  },
+  
+  "CALENDAR": {
+    "TITLE": "Calendari",
+    "MAIN_TITLE": "Calendari d'Esdeveniments",
+    "GO_TO_TODAY": "Anar a Avui",
+    "NAVIGATION": "Navegació",
+    "BACK_TO_MENU": "Tornar al Menú",
+    "CREATE_EVENT": "Crear Esdeveniment",
+    "MY_EVENTS": "Els Meus Esdeveniments",
+    "SETTINGS": "Configuració",
+    "TOGGLE_THEME": "Canviar Tema",
+    "LEGEND": "Llegenda",
+    "LEGEND_TODAY": "Avui",
+    "LEGEND_EVENT": "Esdeveniment",
+    "LEGEND_PARTICIPATING": "Participant",
+    "PREV_MONTH": "Mes Anterior",
+    "NEXT_MONTH": "Mes Següent",
+    "CREATE_EVENT_ON": "Crear esdeveniment en aquesta data",
+    "LOADING": "Carregant esdeveniments...",
+    "CATEGORY": "Categoria",
+    "ADDRESS": "Adreça",
+    "DATE_TIME": "Data i Hora",
+    "YOU_ARE_PARTICIPATING": "Participes en aquest esdeveniment",
+    "CLOSE": "Tancar",
+    "NEW_EVENT": "Nou Esdeveniment",
+    "EVENT_NAME": "Nom de l'Esdeveniment",
+    "EVENT_NAME_PLACEHOLDER": "Ex: Festa a la platja",
+    "TIME": "Hora",
+    "SELECT_CATEGORY": "Seleccionar...",
+    "CAT_PARTY": "Festa",
+    "CAT_SPORT": "Esport",
+    "CAT_CULTURE": "Cultura",
+    "LOCATION": "Ubicació",
+    "LOCATION_PLACEHOLDER": "Ex: Carrer Principal 123",
+    "CANCEL": "Cancel·lar",
+    "CREATE_BUTTON": "Crear Esdeveniment",
+    "SELECTED_DATE": "Data seleccionada",
+    "BASIC_INFO": "Informació Bàsica",
+    "LOCATION_INFO": "Ubicació",
+    "TIME_CATEGORY": "Hora i Categoria"
   }
 }
