@@ -155,12 +155,46 @@ export class EventoService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  joinEvento(id: string): Observable<Evento> {
-    return this.http.post<Evento>(`${this.apiUrl}/${id}/join`, {});
+  joinEvento(id: string): Observable<{ 
+    message: string; 
+    evento: Evento;
+    enListaEspera: boolean;
+  }> {
+    return this.http.post<{ 
+      message: string; 
+      evento: Evento;
+      enListaEspera: boolean;
+    }>(`${this.apiUrl}/${id}/join`, {});
   }
 
-  leaveEvento(id: string): Observable<Evento> {
-    return this.http.post<Evento>(`${this.apiUrl}/${id}/leave`, {});
+  leaveEvento(id: string): Observable<{
+    message: string;
+    evento: Evento;
+  }> {
+    return this.http.post<{
+      message: string;
+      evento: Evento;
+    }>(`${this.apiUrl}/${id}/leave`, {});
+  }
+
+  leaveWaitlist(id: string): Observable<{
+    message: string;
+    evento: Evento;
+  }> {
+    return this.http.delete<{
+      message: string;
+      evento: Evento;
+    }>(`${this.apiUrl}/${id}/waitlist`);
+  }
+
+  getWaitlistPosition(id: string): Observable<{
+    position: number;
+    enListaEspera: boolean;
+  }> {
+    return this.http.get<{
+      position: number;
+      enListaEspera: boolean;
+    }>(`${this.apiUrl}/${id}/waitlist/position`);
   }
 
   getMisEventos(): Observable<{ eventosCreados: Evento[]; eventosInscritos: Evento[] }> {
@@ -222,11 +256,16 @@ export class EventoService {
     );
   }
 
-  acceptInvitation(eventoId: string): Observable<{ message: string; evento: Evento }> {
-    return this.http.post<{ message: string; evento: Evento }>(
-      `${this.apiUrl}/${eventoId}/accept-invitation`,
-      {}
-    );
+  acceptInvitation(eventoId: string): Observable<{ 
+    message: string; 
+    evento: Evento;
+    enListaEspera?: boolean;
+  }> {
+    return this.http.post<{ 
+      message: string; 
+      evento: Evento;
+      enListaEspera?: boolean;
+    }>(`${this.apiUrl}/${eventoId}/accept-invitation`, {});
   }
 
   rejectInvitation(eventoId: string): Observable<{ message: string; evento: Evento }> {

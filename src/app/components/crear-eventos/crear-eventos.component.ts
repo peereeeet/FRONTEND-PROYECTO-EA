@@ -25,6 +25,7 @@ type NewEventDTO = {
   categoria?: string;
   isPrivate?: boolean;
   invitedUsers?: string[];
+  maxParticipantes?: number | null;
 };
 
 @Component({
@@ -60,6 +61,7 @@ export class CrearEventosComponent implements OnInit {
     categoria: '',
     isPrivate: false,
     invitedUsers: [],
+    maxParticipantes: null,
   };
 
   addressSuggestions: GeocodingResult[] = [];
@@ -488,6 +490,7 @@ export class CrearEventosComponent implements OnInit {
       lat,
       lng,
       isPrivate: this.newEvent.isPrivate || false,
+      maxParticipantes: this.newEvent.maxParticipantes,
       invitados: this.newEvent.isPrivate ? this.amigosSeleccionados : []
     } as any as Evento;
 
@@ -766,5 +769,9 @@ export class CrearEventosComponent implements OnInit {
     this.addressValidation = null;
     this.addressSuggestions = [];
     this.showAddressSuggestions = false;
+  }
+
+  setUnlimitedParticipants(): void {
+    this.newEvent.maxParticipantes = null;
   }
 }

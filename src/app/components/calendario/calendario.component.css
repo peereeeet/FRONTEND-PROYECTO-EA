@@ -1762,3 +1762,102 @@
     gap: 24px;
   }
 }
+/* Estilos para el campo de límite de participantes */
+.form-hint {
+  display: block;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
+[data-theme="dark"] .form-hint {
+  color: #9ca3af;
+}
+
+/* Asegurar que el input de número tenga el estilo correcto */
+.form-input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.form-input[type="number"]::-webkit-outer-spin-button,
+.form-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Mejorar la apariencia del error para el campo de participantes */
+.form-group .error-text {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .form-group .error-text {
+  color: #f87171;
+}
+/* Estilos para fechas pasadas - no se pueden seleccionar */
+.day-cell.is-past {
+  opacity: 0.4;
+  cursor: not-allowed !important;
+  background-color: #f3f4f6;
+  pointer-events: none;
+}
+
+.day-cell.is-past .day-number {
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.day-cell.is-past:hover {
+  background-color: #f3f4f6;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Tema oscuro para fechas pasadas */
+[data-theme="dark"] .day-cell.is-past {
+  background-color: #1f2937;
+  opacity: 0.3;
+}
+
+[data-theme="dark"] .day-cell.is-past .day-number {
+  color: #6b7280;
+}
+
+[data-theme="dark"] .day-cell.is-past:hover {
+  background-color: #1f2937;
+}
+
+/* Excepción: Día de hoy siempre se puede clickear */
+.day-cell.is-today.is-past {
+  opacity: 1;
+  cursor: pointer !important;
+  pointer-events: auto;
+  background-color: var(--primary-color);
+}
+
+.day-cell.is-today.is-past .day-number {
+  color: white;
+  text-decoration: none;
+}
+
+.day-cell.is-today.is-past:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Mejorar visual de días futuros */
+.day-cell:not(.is-past):hover {
+  background-color: #e0e7ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .day-cell:not(.is-past):hover {
+  background-color: #374151;
+}

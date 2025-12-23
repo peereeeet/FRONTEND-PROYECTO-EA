@@ -23,6 +23,8 @@ export interface Evento {
   isPrivate?: boolean;
   invitados?: Usuario[] | string[];
   invitacionesPendientes?: Usuario[] | string[];
+  maxParticipantes?: number | null;
+  listaEspera?: Usuario[] | string[];
 }
 
 export type EventoCategoria = 

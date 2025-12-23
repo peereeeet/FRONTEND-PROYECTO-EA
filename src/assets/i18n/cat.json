@@ -281,7 +281,10 @@
     "MODAL_CREATOR_NOTE": "Com a creador no pots sortir de l'esdeveniment.",
     "MODAL_BUTTON_JOIN": "Unir-me a l'esdeveniment",
     "MODAL_BUTTON_LEAVE": "Sortir de l'esdeveniment",
-    "MODAL_BUTTON_CLOSE": "Tancar"
+    "MODAL_BUTTON_CLOSE": "Tancar",
+
+    "BUTTON_LEAVE_WAITLIST": "Sortir de llista d'espera",
+      "WAITLIST_MESSAGE": "Estàs a la llista d'espera d'aquest esdeveniment"
   },
 
   "CREATE_EVENT": {
@@ -498,9 +501,33 @@
     "NO_FRIENDS_FOUND": "No s'han trobat amics amb \"{{query}}\"",
     "NO_FRIENDS_TITLE": "Encara no tens amics afegits",
     "NO_FRIENDS_HINT": "Afegeix amics des del teu perfil per poder convidar-los a esdeveniments privats",
-    "SELECTED_COUNT": "{{count}} amic(s) seleccionat(s)"
+    "SELECTED_COUNT": "{{count}} amic(s) seleccionat(s)",
+    "MAX_PARTICIPANTS_LABEL": "Límit de Participants",
+    "MAX_PARTICIPANTS_PLACEHOLDER": "Ex: 20",
+    "MAX_PARTICIPANTS_UNLIMITED": "Sense límit",
+    "MAX_PARTICIPANTS_HINT": "Deixa buit per sense límit o introdueix un número",
+    "MAX_PARTICIPANTS_ERROR_MIN": "⚠ El límit ha de ser més gran que 0",
+    "MAX_PARTICIPANTS_FULL": "Esdeveniment complet ({{current}}/{{max}})",
+    "MAX_PARTICIPANTS_AVAILABLE": "Places disponibles: {{available}}/{{max}}"
+  },
+
+  "WAITLIST": {
+    "WAITLIST_JOINED": "En llista d'espera",
+    "WAITLIST_FULL_EVENT": "Esdeveniment complet",
+    "WAITLIST_JOIN_BUTTON": "Unir-se a la llista d'espera",
+    "WAITLIST_LEAVE_BUTTON": "Sortir de la llista d'espera",
+    "WAITLIST_ADDED_SUCCESS": "Has estat afegit a la llista d'espera",
+    "WAITLIST_LEFT_SUCCESS": "Has sortit de la llista d'espera",
+    "WAITLIST_AUTO_JOINED": "Has estat inscrit automàticament a l'esdeveniment des de la llista d'espera"
   },
   
+  "SEARCH": {
+    "EVENT_FULL": "Esdeveniment complet",
+    "IN_WAITLIST": "A llista d'espera",
+    "BUTTON_LEAVE_WAITLIST": "Sortir de llista d'espera",
+    "BUTTON_JOIN_WAITLIST": "Unir-se a llista d'espera"
+  },
+
   "CALENDAR": {
     "TITLE": "Calendari",
     "MAIN_TITLE": "Calendari d'Esdeveniments",
@@ -539,6 +566,7 @@
     "SELECTED_DATE": "Data seleccionada",
     "BASIC_INFO": "Informació Bàsica",
     "LOCATION_INFO": "Ubicació",
-    "TIME_CATEGORY": "Hora i Categoria"
+    "TIME_CATEGORY": "Hora i Categoria",
+    "PAST_DATE": "No es poden crear esdeveniments en dates passades"
   }
 }

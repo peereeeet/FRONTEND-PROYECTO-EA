@@ -373,13 +373,39 @@
                         </div>
                       </div>
 
+                      <!-- Badges de estado -->
+                      <div class="evento-status-badges" *ngIf="isEventoLleno(evento) || estaEnListaEspera(evento)">
+                        <span 
+                          *ngIf="isEventoLleno(evento) && !isUserInSearchEvento(evento) && !estaEnListaEsperaSearch(evento)" 
+                          class="badge badge--warning">
+                          🔒 {{ 'SEARCH.EVENT_FULL' | translate }} ({{ evento.participantes?.length || 0 }}/{{ evento.maxParticipantes }})
+                        </span>
+
+                        <span 
+                          *ngIf="estaEnListaEsperaSearch(evento)" 
+                          class="badge badge--info">
+                          ⏳ {{ 'SEARCH.IN_WAITLIST' | translate }}
+                        </span>
+                      </div>
+
                       <div class="evento-actions">
-                        <button
-                          *ngIf="!isUserInEvento(evento) && !isUserCreator(evento)"
-                          class="btn btn-join"
-                          (click)="joinEvento(evento)">
-                          ➕ {{ 'EVENTS.BUTTON_JOIN' | translate }}
-                        </button>
+                        <ng-container *ngIf="!isUserInEvento(evento) && !isUserCreator(evento)">
+                          
+                          <button
+                            *ngIf="estaEnListaEsperaSearch(evento)"
+                            class="btn btn-waitlist-leave"
+                            (click)="leaveWaitlistSearch(evento)">
+                            🚫 {{ 'SEARCH.BUTTON_LEAVE_WAITLIST' | translate }}
+                          </button>
+
+                          <button
+                            *ngIf="!estaEnListaEsperaSearch(evento)"
+                            class="btn"
+                            [ngClass]="isEventoLleno(evento) ? 'btn-waitlist-join' : 'btn-join'"
+                            (click)="joinSearchEvento(evento)">
+                            {{ isEventoLleno(evento) ? ('⏳ ' + ('SEARCH.BUTTON_JOIN_WAITLIST' | translate)) : ('➕ ' + ('EVENTS.BUTTON_JOIN' | translate)) }}
+                          </button>
+                        </ng-container>
 
                         <button
                           *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
@@ -592,13 +618,39 @@
                           </div>
                         </div>
 
+                        <!-- Badges de estado -->
+                        <div class="evento-status-badges" *ngIf="isEventoLleno(evento) || estaEnListaEsperaSearch(evento)">
+                          <span 
+                            *ngIf="isEventoLleno(evento) && !isUserInSearchEvento(evento) && !estaEnListaEsperaSearch(evento)" 
+                            class="badge badge--warning">
+                            🔒 {{ 'SEARCH.EVENT_FULL' | translate }} ({{ evento.participantes?.length || 0 }}/{{ evento.maxParticipantes }})
+                          </span>
+
+                          <span 
+                            *ngIf="estaEnListaEsperaSearch(evento)" 
+                            class="badge badge--info">
+                            ⏳ {{ 'SEARCH.IN_WAITLIST' | translate }}
+                          </span>
+                        </div>
+
                         <div class="evento-actions">
-                          <button
-                            *ngIf="!isUserInSearchEvento(evento) && !isUserCreatorSearch(evento)"
-                            class="btn btn-join"
-                            (click)="joinSearchEvento(evento)">
-                            ➕ {{ 'EVENTS.BUTTON_JOIN' | translate }}
-                          </button>
+                          <ng-container *ngIf="!isUserInSearchEvento(evento) && !isUserCreatorSearch(evento)">
+                            
+                            <button
+                              *ngIf="estaEnListaEsperaSearch(evento)"
+                              class="btn btn-waitlist-leave"
+                              (click)="leaveWaitlistSearch(evento)">
+                              🚫 {{ 'SEARCH.BUTTON_LEAVE_WAITLIST' | translate }}
+                            </button>
+
+                            <button
+                              *ngIf="!estaEnListaEsperaSearch(evento)"
+                              class="btn"
+                              [ngClass]="isEventoLleno(evento) ? 'btn-waitlist-join' : 'btn-join'"
+                              (click)="joinSearchEvento(evento)">
+                              {{ isEventoLleno(evento) ? ('⏳ ' + ('SEARCH.BUTTON_JOIN_WAITLIST' | translate)) : ('➕ ' + ('EVENTS.BUTTON_JOIN' | translate)) }}
+                            </button>
+                          </ng-container>
 
                           <button
                             *ngIf="isUserInSearchEvento(evento) && !isUserCreatorSearch(evento)"
@@ -708,13 +760,15 @@
           </div>
 
           <div class="modal-actions">
+            <!-- Botón para unirse al evento -->
             <button
-              *ngIf="selectedEvent && !isUserInEvento(selectedEvent) && !isUserCreator(selectedEvent)"
+              *ngIf="selectedEvent && !isUserInEvento(selectedEvent) && !isUserCreator(selectedEvent) && !estaEnListaEspera(selectedEvent)"
               class="btn btn-join"
               (click)="joinEvento(selectedEvent)">
               ➕ {{ 'EXPLORE.MODAL_BUTTON_JOIN' | translate }}
             </button>
 
+            <!-- Botón para salir del evento -->
             <button
               *ngIf="selectedEvent && isUserInEvento(selectedEvent) && !isUserCreator(selectedEvent)"
               class="btn btn-leave"
@@ -722,10 +776,23 @@
               👋 {{ 'EXPLORE.MODAL_BUTTON_LEAVE' | translate }}
             </button>
 
+            <!-- Botón para salir de la lista de espera -->
+            <button
+              *ngIf="selectedEvent && estaEnListaEspera(selectedEvent) && !isUserCreator(selectedEvent)"
+              class="btn btn-leave"
+              (click)="leaveWaitlist(selectedEvent)">
+              🚫 {{ 'EXPLORE.BUTTON_LEAVE_WAITLIST' | translate }}
+            </button>
+
             <p
               *ngIf="selectedEvent && isUserCreator(selectedEvent)"
               class="creator-note">
               ℹ️ {{ 'EXPLORE.MODAL_CREATOR_NOTE' | translate }}
+            </p>
+
+            <!-- Indicador de lista de espera -->
+            <p *ngIf="selectedEvent && estaEnListaEspera(selectedEvent)" class="waitlist-note">
+              ⏳ {{ 'EXPLORE.WAITLIST_MESSAGE' | translate }}
             </p>
 
             <button type="button" class="btn" (click)="closeEventModal()">
@@ -918,20 +985,48 @@
                   <div class="event-invite-name">
                     {{ getEventInviteData(m).name }}
                   </div>
+                  
+                  <!-- Badge de evento lleno -->
+                  <div class="event-invite-status" *ngIf="isInvitedEventFull(m) && !isCurrentUserInInvitedEvent(m) && !isCurrentUserInWaitlistForInvitedEvent(m)">
+                    <span class="badge badge--warning">
+                      🔒 {{ 'SEARCH.EVENT_FULL' | translate }}
+                    </span>
+                  </div>
+                  
+                  <!-- Badge de lista de espera -->
+                  <div class="event-invite-status" *ngIf="isCurrentUserInWaitlistForInvitedEvent(m)">
+                    <span class="badge badge--info">
+                      ⏳ {{ 'SEARCH.IN_WAITLIST' | translate }}
+                    </span>
+                  </div>
+                  
                   <div class="event-invite-footer">
-                    <ng-container *ngIf="!isCurrentUserInInvitedEvent(m); else alreadyInTpl">
+                    <!-- Usuario no está en el evento ni en lista de espera -->
+                    <ng-container *ngIf="!isCurrentUserInInvitedEvent(m) && !isCurrentUserInWaitlistForInvitedEvent(m)">
                       <button
                         type="button"
                         class="btn btn--primary btn-join-event"
                         (click)="joinFromInvite(m)">
-                        {{ 'MENU.CHAT_EVENT_INVITE_JOIN' | translate }}
+                        {{ isInvitedEventFull(m) ? ('⏳ ' + ('SEARCH.BUTTON_JOIN_WAITLIST' | translate)) : ('MENU.CHAT_EVENT_INVITE_JOIN' | translate) }}
                       </button>
                     </ng-container>
-                    <ng-template #alreadyInTpl>
+                    
+                    <!-- Usuario está en lista de espera -->
+                    <ng-container *ngIf="isCurrentUserInWaitlistForInvitedEvent(m) && !isCurrentUserInInvitedEvent(m)">
+                      <button
+                        type="button"
+                        class="btn btn-leave btn-waitlist-leave"
+                        (click)="leaveWaitlistFromInvite(m)">
+                        🚫 {{ 'SEARCH.BUTTON_LEAVE_WAITLIST' | translate }}
+                      </button>
+                    </ng-container>
+                    
+                    <!-- Usuario ya está inscrito -->
+                    <ng-container *ngIf="isCurrentUserInInvitedEvent(m)">
                       <span class="already-joined">
                         {{ 'MENU.CHAT_EVENT_INVITE_ALREADY_IN' | translate }}
                       </span>
-                    </ng-template>
+                    </ng-container>
                   </div>
                 </div>
               </ng-template>
