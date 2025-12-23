@@ -326,6 +326,36 @@
                 </div>
               </div>
 
+              <div class="form-group">
+                <label for="maxParticipantes">{{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_LABEL' | translate }}</label>
+                <div class="max-participants-wrapper">
+                  <input
+                    id="maxParticipantes"
+                    type="number"
+                    [(ngModel)]="newEvent.maxParticipantes"
+                    name="maxParticipantes"
+                    [placeholder]="'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_PLACEHOLDER' | translate"
+                    class="max-participants-input"
+                    min="1"
+                    step="1"
+                  />
+                  <button 
+                    type="button" 
+                    class="btn-unlimited"
+                    (click)="setUnlimitedParticipants()"
+                    [class.active]="!newEvent.maxParticipantes">
+                    ∞ {{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_UNLIMITED' | translate }}
+                  </button>
+                </div>
+                <small class="form-hint">
+                  <span class="hint-icon">💡</span>
+                  {{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_HINT' | translate }}
+                </small>
+                <small class="error-text" *ngIf="formSubmitted && newEvent.maxParticipantes !== null && newEvent.maxParticipantes !== undefined && newEvent.maxParticipantes <= 0">
+                  {{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_ERROR_MIN' | translate }}
+                </small>
+              </div>
+
               <div class="form-group form-group--full">
                 <label class="toggle-container">
                   <input 

@@ -124,8 +124,10 @@
               [class.not-current-month]="!day.isCurrentMonth"
               [class.is-today]="day.isToday"
               [class.has-events]="day.events.length > 0"
+              [class.is-past]="!isFutureDate(day.date)"
               (click)="openCreateModal(day.date)"
-              [title]="'CALENDAR.CREATE_EVENT_ON' | translate"
+              [title]="isFutureDate(day.date) ? ('CALENDAR.CREATE_EVENT_ON' | translate) : ('CALENDAR.PAST_DATE' | translate)"
+              [style.cursor]="isFutureDate(day.date) ? 'pointer' : 'not-allowed'"
             >
               <div class="day-header">
                 <span class="day-number">{{ day.date.getDate() }}</span>
@@ -363,6 +365,31 @@
                 {{ 'CREATE_EVENT.FIELD_CATEGORY_ERROR_REQUIRED' | translate }}
               </small>
             </div>
+          </div>
+        </div>
+
+        <!-- Sección: Límite de Participantes -->
+        <div class="form-section">
+          <div class="section-header">
+            <span class="section-icon">👥</span>
+            <h4 class="section-title">{{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_LABEL' | translate }}</h4>
+          </div>
+
+          <div class="form-group">
+            <input
+              type="number"
+              [(ngModel)]="newEvent.maxParticipantes"
+              name="maxParticipantes"
+              min="1"
+              [placeholder]="'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_PLACEHOLDER' | translate"
+              class="form-input"
+            />
+            <small class="form-hint">
+              {{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_HINT' | translate }}
+            </small>
+            <small class="error-text" *ngIf="(newEvent.maxParticipantes ?? 0) !== null && (newEvent.maxParticipantes ?? 0) < 1 && newEvent.maxParticipantes !== null">
+              {{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_ERROR_MIN' | translate }}
+            </small>
           </div>
         </div>
 

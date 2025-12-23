@@ -26,6 +26,7 @@ type NewEventDTO = {
   lat?: number | null;
   lng?: number | null;
   categoria?: string;
+  maxParticipantes?: number | null;
 };
 
 @Component({
@@ -59,7 +60,8 @@ export class CalendarioComponent implements OnInit {
     participants: [],
     lat: null,
     lng: null,
-    categoria: ''
+    categoria: '',
+    maxParticipantes: null
   };
 
   timeStr = '18:00';
@@ -277,6 +279,14 @@ export class CalendarioComponent implements OnInit {
            d1.getFullYear() === d2.getFullYear();
   }
 
+  isFutureDate(date: Date): boolean {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate >= today;
+  }
+
   getEventsForDate(date: Date): Evento[] {
     return this.events().filter(ev => {
       if (!ev.schedule) return false;
@@ -313,6 +323,11 @@ export class CalendarioComponent implements OnInit {
   }
 
   openCreateModal(date: Date): void {
+    if (!this.isFutureDate(date)) {
+      console.log('Cannot create event in the past:', date);
+      return;
+    }
+
     console.log('Opening create modal for date:', date);
     this.createDate.set(date);
     this.showCreateModal.set(true);
@@ -324,7 +339,8 @@ export class CalendarioComponent implements OnInit {
       participants: [],
       lat: null,
       lng: null,
-      categoria: ''
+      categoria: '',
+      maxParticipantes: null
     };
     this.timeStr = '18:00';
     this.categoriaSearch = '';
@@ -502,9 +518,14 @@ export class CalendarioComponent implements OnInit {
       this.newEvent.participants.push(this.me._id);
     }
 
+    const payload: any = {
+      ...this.newEvent,
+      maxParticipantes: this.newEvent.maxParticipantes
+    };
+
     this.saving = true;
 
-    this.eventoService.createEventoFromPanel(this.newEvent).subscribe({
+    this.eventoService.createEventoFromPanel(payload).subscribe({
       next: (response: any) => {
         console.log('Evento creado con éxito', response);
         this.saving = false;

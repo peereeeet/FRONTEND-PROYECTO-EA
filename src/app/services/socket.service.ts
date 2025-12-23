@@ -143,4 +143,23 @@ export class SocketService {
       return () => this.socket?.off('friendRequest:received', handler);
     });
   }
+
+  onPlazaDisponible(): Observable<{
+    eventoId: string;
+    eventoName: string;
+    mensaje: string;
+  }> {
+    return new Observable(sub => {
+      if (!this.socket) return;
+
+      const handler = (payload: any) => sub.next(payload);
+      this.socket.on('evento:plazaDisponible', handler);
+
+      return () => {
+        if (this.socket) {
+          this.socket.off('evento:plazaDisponible', handler);
+        }
+      };
+    });
+  }
 }

@@ -281,7 +281,10 @@
     "MODAL_CREATOR_NOTE": "As the creator, you can't leave the event.",
     "MODAL_BUTTON_JOIN": "Join event",
     "MODAL_BUTTON_LEAVE": "Leave event",
-    "MODAL_BUTTON_CLOSE": "Close"
+    "MODAL_BUTTON_CLOSE": "Close",
+
+    "BUTTON_LEAVE_WAITLIST": "Leave waitlist",
+      "WAITLIST_MESSAGE": "You are on the waitlist for this event"
   },
 
   "CREATE_EVENT": {
@@ -500,7 +503,31 @@
     "NO_FRIENDS_FOUND": "No friends found with \"{{query}}\"",
     "NO_FRIENDS_TITLE": "You haven't added any friends yet",
     "NO_FRIENDS_HINT": "Add friends from your profile to invite them to private events",
-    "SELECTED_COUNT": "{{count}} friend(s) selected"
+    "SELECTED_COUNT": "{{count}} friend(s) selected",
+    "MAX_PARTICIPANTS_LABEL": "Participant Limit",
+    "MAX_PARTICIPANTS_PLACEHOLDER": "E.g: 20",
+    "MAX_PARTICIPANTS_UNLIMITED": "Unlimited",
+    "MAX_PARTICIPANTS_HINT": "Leave empty for unlimited or enter a number",
+    "MAX_PARTICIPANTS_ERROR_MIN": "⚠ Limit must be greater than 0",
+    "MAX_PARTICIPANTS_FULL": "Event full ({{current}}/{{max}})",
+    "MAX_PARTICIPANTS_AVAILABLE": "Available slots: {{available}}/{{max}}"
+  },
+
+  "WAITLIST": {
+    "WAITLIST_JOINED": "On waiting list",
+    "WAITLIST_FULL_EVENT": "Event full",
+    "WAITLIST_JOIN_BUTTON": "Join waiting list",
+    "WAITLIST_LEAVE_BUTTON": "Leave waiting list",
+    "WAITLIST_ADDED_SUCCESS": "You've been added to the waiting list",
+    "WAITLIST_LEFT_SUCCESS": "You've left the waiting list",
+    "WAITLIST_AUTO_JOINED": "You've been automatically added to the event!"
+  },
+
+  "SEARCH": {
+    "EVENT_FULL": "Event full",
+    "IN_WAITLIST": "On waitlist",
+    "BUTTON_LEAVE_WAITLIST": "Leave waitlist",
+    "BUTTON_JOIN_WAITLIST": "Join waitlist"
   },
 
   "CALENDAR": {
@@ -541,6 +568,7 @@
     "SELECTED_DATE": "Selected date",
     "BASIC_INFO": "Basic Information",
     "LOCATION_INFO": "Location",
-    "TIME_CATEGORY": "Time and Category"
+    "TIME_CATEGORY": "Time and Category",
+    "PAST_DATE": "Cannot create events on past dates"
   }
 }
