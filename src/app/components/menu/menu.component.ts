@@ -96,6 +96,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   chatText = signal('');
   private chatSocketsInitialized = false;
   eventInviteMembership: Record<string, boolean> = {};
+  eventWaitlistStatus: Record<string, boolean> = {};
+  eventIsFullStatus: Record<string, boolean> = {};
 
   allEventos: Evento[] = [];
   eventosFiltrados: Evento[] = [];
@@ -290,6 +292,13 @@ export class MenuComponent implements OnInit, OnDestroy {
       });
 
     this.cargarInvitacionesPendientes();
+
+    this.socketService.onPlazaDisponible().subscribe({
+      next: (data) => {
+        this.errorMessage = '¡Has sido añadido automáticamente al evento!';
+        this.loadingEvents();
+      }
+    });
 
     interval(30000)
       .pipe(takeUntil(this.destroy$))
@@ -963,15 +972,81 @@ export class MenuComponent implements OnInit, OnDestroy {
         const participantes = (evento?.participantes || []).map((p: any) =>
           typeof p === 'string' ? p : String(p._id)
         );
+        const listaEspera = (evento?.listaEspera || []).map((p: any) =>
+          typeof p === 'string' ? p : String(p._id)
+        );
+        
         const joined = participantes.includes(myId);
+        const inWaitlist = listaEspera.includes(myId);
+        const isFull = evento.maxParticipantes 
+          ? participantes.length >= evento.maxParticipantes 
+          : false;
+        
         this.eventInviteMembership[eventId] = joined;
+        this.eventWaitlistStatus[eventId] = inWaitlist;
+        this.eventIsFullStatus[eventId] = isFull;
       },
       error: (err) => {
         this.eventInviteMembership[eventId] = false;
+        this.eventWaitlistStatus[eventId] = false;
+        this.eventIsFullStatus[eventId] = false;
       }
     });
 
     return false;
+  }
+
+  isCurrentUserInWaitlistForInvitedEvent(msg: ChatMessage): boolean {
+    const data = this.getEventInviteData(msg);
+    const eventId = data.id;
+
+    if (!eventId) {
+      return false;
+    }
+
+    return this.eventWaitlistStatus[eventId] || false;
+  }
+
+  isInvitedEventFull(msg: ChatMessage): boolean {
+    const data = this.getEventInviteData(msg);
+    const eventId = data.id;
+
+    if (!eventId) {
+      return false;
+    }
+
+    return this.eventIsFullStatus[eventId] || false;
+  }
+
+  leaveWaitlistFromInvite(msg: ChatMessage): void {
+    const data = this.getEventInviteData(msg);
+    if (!data.id) return;
+
+    this.eventoService.leaveWaitlist(data.id).subscribe({
+      next: (response: any) => {
+        alert('Has salido de la lista de espera');
+        this.eventInviteMembership[data.id] = false;
+        this.eventWaitlistStatus[data.id] = false;
+        
+        const meUser = this.me();
+        if (meUser?._id) {
+          this.eventoService.getEventoById(data.id).subscribe({
+            next: (evento) => {
+              const participantes = (evento?.participantes || []).map((p: any) =>
+                typeof p === 'string' ? p : String(p._id)
+              );
+              const isFull = evento.maxParticipantes 
+                ? participantes.length >= evento.maxParticipantes 
+                : false;
+              this.eventIsFullStatus[data.id] = isFull;
+            }
+          });
+        }
+      },
+      error: (err) => {
+        alert(err?.error?.message || 'Error al salir de la lista de espera');
+      }
+    });
   }
 
   joinFromInvite(msg: ChatMessage): void {
@@ -979,8 +1054,27 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (!data.id) return;
 
     this.eventoService.joinEvento(data.id).subscribe({
-      next: () => {
-        this.eventInviteMembership[data.id] = true;
+      next: (response: any) => {
+        if (response.enListaEspera) {
+          this.eventInviteMembership[data.id] = false;
+          this.eventWaitlistStatus[data.id] = true;
+          alert(response.message || 'Has sido añadido a la lista de espera del evento');
+        } else {
+          this.eventInviteMembership[data.id] = true;
+          this.eventWaitlistStatus[data.id] = false;
+          alert(response.message || 'Te has unido al evento correctamente');
+        }
+        
+        if (response.evento) {
+          const evento = response.evento;
+          const participantes = (evento?.participantes || []).map((p: any) =>
+            typeof p === 'string' ? p : String(p._id)
+          );
+          const isFull = evento.maxParticipantes 
+            ? participantes.length >= evento.maxParticipantes 
+            : false;
+          this.eventIsFullStatus[data.id] = isFull;
+        }
 
         const meUser = this.me();
         if (meUser) {
@@ -990,6 +1084,9 @@ export class MenuComponent implements OnInit, OnDestroy {
           }
         }
       },
+      error: (err) => {
+        alert(err?.error?.message || 'Error al unirse al evento');
+      }
     });
   }
 
@@ -1331,20 +1428,28 @@ export class MenuComponent implements OnInit, OnDestroy {
   
     joinEvento(ev: Evento): void {
       if (!ev._id) return;
-  
+
       this.eventoService.joinEvento(ev._id).subscribe({
-        next: (updated: any) => {
+        next: (response: any) => {
           const idx = this.allEventos.findIndex(e => e._id === ev._id);
           if (idx !== -1) {
-            this.allEventos[idx] = updated;
+            this.allEventos[idx] = response.evento || response;
           }
+          
           this.actualizarListaSegunMapa();
           this.pintarMarcadores();
+          
           if (this.selectedEvent && this.selectedEvent._id === ev._id) {
-            this.selectedEvent = updated;
+            this.selectedEvent = response.evento || response;
           }
-          this.detectarCambiosProgreso('unirseEvento');
-      
+
+          if (response.enListaEspera) {
+            this.errorMessage = response.message || 'Has sido añadido a la lista de espera';
+          } else {
+            this.errorMessage = response.message || 'Te has unido al evento';
+            this.detectarCambiosProgreso('unirseEvento');
+          }
+
           const meUser = this.me();
           if (meUser) {
             const myId = this.getId(meUser);
@@ -1640,9 +1745,21 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (!evento._id) return;
 
     this.eventoService.joinEvento(evento._id as string).subscribe({
-      next: () => {
+      next: (response: any) => {
+        const idx = this.searchEventos.findIndex(e => e._id === evento._id);
+        if (idx !== -1) {
+          this.searchEventos[idx] = response.evento || response;
+        }
+        
         this.performSearch();
-        this.detectarCambiosProgreso('unirseEvento');
+        
+        if (response.enListaEspera) {
+          this.errorMessage = response.message || 'Has sido añadido a la lista de espera';
+        } else {
+          this.errorMessage = response.message || 'Te has unido al evento';
+          this.detectarCambiosProgreso('unirseEvento');
+        }
+        
         const m = this.me();
         if (m) {
           const myId = this.getId(m);
@@ -1651,7 +1768,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error al unirse al evento:', err);
-        this.errorMessage = 'Error al unirse al evento';
+        this.errorMessage = err?.error?.message || 'Error al unirse al evento';
       }
     });
   }
@@ -1742,6 +1859,82 @@ export class MenuComponent implements OnInit, OnDestroy {
   navegarInvitaciones(): void {
     this.router.navigate(['/invitaciones']).then(() => {
       setTimeout(() => this.cargarInvitacionesPendientes(), 500);
+    });
+  }
+
+  isEventoLleno(evento: Evento): boolean {
+    if (!evento.maxParticipantes) return false;
+    const participantes = evento.participantes?.length || 0;
+    return participantes >= evento.maxParticipantes;
+  }
+
+  estaEnListaEspera(evento: Evento): boolean {
+    if (!this.me()?._id) return false;
+    if (!evento.listaEspera) return false;
+    
+    const myId = this.getId(this.me()!);
+    
+    return evento.listaEspera.some((user: any) => {
+      return typeof user === 'string' 
+        ? user === myId 
+        : user._id === myId;
+    });
+  }
+
+  estaEnListaEsperaSearch(evento: Evento): boolean {
+    if (!this.me()?._id) return false;
+    if (!evento.listaEspera) return false;
+    
+    const myId = this.getId(this.me()!);
+    
+    return evento.listaEspera.some((user: any) => {
+      return typeof user === 'string' 
+        ? user === myId 
+        : user._id === myId;
+    });
+  }
+
+  leaveWaitlist(ev: Evento): void {
+    if (!ev._id) return;
+
+    this.eventoService.leaveWaitlist(ev._id).subscribe({
+      next: (response: any) => {
+        const idx = this.allEventos.findIndex(e => e._id === ev._id);
+        if (idx !== -1) {
+          this.allEventos[idx] = response.evento || response;
+        }
+        
+        this.actualizarListaSegunMapa();
+        this.pintarMarcadores();
+        
+        if (this.selectedEvent && this.selectedEvent._id === ev._id) {
+          this.selectedEvent = response.evento || response;
+        }
+
+        this.errorMessage = 'Has salido de la lista de espera';
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.message || 'Error al salir de lista de espera.';
+      }
+    });
+  }
+
+  leaveWaitlistSearch(evento: Evento): void {
+    if (!evento._id) return;
+
+    this.eventoService.leaveWaitlist(evento._id).subscribe({
+      next: (response: any) => {
+        const idx = this.searchEventos.findIndex(e => e._id === evento._id);
+        if (idx !== -1) {
+          this.searchEventos[idx] = response.evento || response;
+        }
+        
+        this.performSearch();
+        this.errorMessage = 'Has salido de la lista de espera';
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.message || 'Error al salir de lista de espera.';
+      }
     });
   }
 }

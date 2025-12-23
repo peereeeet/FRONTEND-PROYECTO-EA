@@ -1957,3 +1957,178 @@
     font-size: 0.6875rem;
   }
 }
+/* ========================================
+   LÍMITE DE PARTICIPANTES - NUEVOS ESTILOS
+   ======================================== */
+
+.max-participants-wrapper {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.max-participants-input {
+  flex: 1;
+  padding: 12px 16px;
+  background: var(--surface-elev);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.max-participants-input:hover {
+  border-color: var(--accent-light);
+  background: var(--surface-card);
+  transform: translateY(-1px);
+}
+
+.max-participants-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--glow);
+  background: var(--surface-card);
+  transform: translateY(-1px);
+}
+
+.max-participants-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.65;
+  font-weight: 400;
+}
+
+/* Chrome, Safari, Edge - Ocultar flechas del input number */
+.max-participants-input::-webkit-outer-spin-button,
+.max-participants-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox - Ocultar flechas del input number */
+.max-participants-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.btn-unlimited {
+  padding: 12px 20px;
+  background: var(--surface-elev);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  outline: none;
+  min-width: 140px;
+  justify-content: center;
+  letter-spacing: -0.01em;
+  font-family: inherit;
+}
+
+.btn-unlimited:hover {
+  background: var(--surface-card);
+  border-color: var(--accent-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--glow);
+}
+
+.btn-unlimited:active {
+  transform: translateY(0);
+}
+
+.btn-unlimited.active {
+  background: var(--gradient-primary);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 16px var(--glow-strong);
+  font-weight: 800;
+}
+
+.btn-unlimited.active:hover {
+  box-shadow: 0 6px 20px var(--glow-strong);
+  transform: translateY(-2px);
+}
+
+/* Animación sutil del botón activo */
+@keyframes pulse-infinity {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Validación y errores para límite de participantes */
+.max-participants-input:invalid {
+  border-color: #ef4444;
+}
+
+.max-participants-input.error {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.max-participants-input.error:focus {
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+}
+
+/* Estados de accesibilidad */
+.max-participants-input:disabled,
+.btn-unlimited:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.max-participants-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn-unlimited:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Responsive para límite de participantes */
+@media (max-width: 768px) {
+  .max-participants-wrapper {
+    gap: 10px;
+  }
+
+  .max-participants-input {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .btn-unlimited {
+    padding: 10px 16px;
+    font-size: 13px;
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .max-participants-wrapper {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .max-participants-input {
+    width: 100%;
+  }
+
+  .btn-unlimited {
+    width: 100%;
+    min-width: unset;
+  }
+}

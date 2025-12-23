@@ -281,7 +281,10 @@
     "MODAL_CREATOR_NOTE": "Como creador, no puedes salir del evento.",
     "MODAL_BUTTON_JOIN": "Unirme al evento",
     "MODAL_BUTTON_LEAVE": "Salir del evento",
-    "MODAL_BUTTON_CLOSE": "Cerrar"
+    "MODAL_BUTTON_CLOSE": "Cerrar",
+
+    "BUTTON_LEAVE_WAITLIST": "Salir de lista de espera",
+    "WAITLIST_MESSAGE": "Estás en la lista de espera de este evento"
   },
 
   "CREATE_EVENT": {
@@ -500,7 +503,31 @@
     "NO_FRIENDS_FOUND": "No se encontraron amigos con \"{{query}}\"",
     "NO_FRIENDS_TITLE": "No tienes amigos agregados aún",
     "NO_FRIENDS_HINT": "Añade amigos desde tu perfil para poder invitarlos a eventos privados",
-    "SELECTED_COUNT": "{{count}} amigo(s) seleccionado(s)"
+    "SELECTED_COUNT": "{{count}} amigo(s) seleccionado(s)",
+    "MAX_PARTICIPANTS_LABEL": "Límite de Participantes",
+    "MAX_PARTICIPANTS_PLACEHOLDER": "Ej: 20",
+    "MAX_PARTICIPANTS_UNLIMITED": "Sin límite",
+    "MAX_PARTICIPANTS_HINT": "Deja vacío para sin límite o introduce un número",
+    "MAX_PARTICIPANTS_ERROR_MIN": "⚠ El límite debe ser mayor a 0",
+    "MAX_PARTICIPANTS_FULL": "Evento completo ({{current}}/{{max}})",
+    "MAX_PARTICIPANTS_AVAILABLE": "Plazas disponibles: {{available}}/{{max}}"
+  },
+
+  "WAITLIST": {
+    "WAITLIST_JOINED": "En lista de espera",
+    "WAITLIST_FULL_EVENT": "Evento completo",
+    "WAITLIST_JOIN_BUTTON": "Unirse a lista de espera",
+    "WAITLIST_LEAVE_BUTTON": "Salir de lista de espera",
+    "WAITLIST_ADDED_SUCCESS": "Has sido añadido a la lista de espera",
+    "WAITLIST_LEFT_SUCCESS": "Has salido de la lista de espera",
+    "WAITLIST_AUTO_JOINED": "¡Has sido añadido automáticamente al evento!"
+  },
+
+  "SEARCH": {
+    "EVENT_FULL": "Evento completo",
+    "IN_WAITLIST": "En lista de espera",
+    "BUTTON_LEAVE_WAITLIST": "Salir de lista de espera",
+    "BUTTON_JOIN_WAITLIST": "Unirse a lista de espera"
   },
 
   "CALENDAR": {
@@ -541,6 +568,7 @@
     "SELECTED_DATE": "Fecha seleccionada",
     "BASIC_INFO": "Información Básica",
     "LOCATION_INFO": "Ubicación",
-    "TIME_CATEGORY": "Hora y Categoría"
+    "TIME_CATEGORY": "Hora y Categoría",
+    "PAST_DATE": "No se pueden crear eventos en fechas pasadas"
   }
 }
