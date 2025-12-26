@@ -1,0 +1,108 @@
+<!-- Botón flotante para abrir/cerrar el chat -->
+<button 
+  class="chat-toggle-btn" 
+  (click)="toggleChat()"
+  [class.open]="isChatOpen"
+  aria-label="Toggle chat">
+  <span class="icon" *ngIf="!isChatOpen">🤖</span>
+  <span class="icon" *ngIf="isChatOpen">✕</span>
+</button>
+
+<!-- Ventana del chat -->
+<div class="chat-container" [class.open]="isChatOpen">
+  <!-- Header del chat -->
+  <div class="chat-header">
+    <div class="header-content">
+      <div class="bot-avatar">🤖</div>
+      <div class="header-text">
+        <h3>Asistente de Eventos</h3>
+        <p>Estoy aquí para ayudarte</p>
+      </div>
+    </div>
+    <button class="clear-btn" (click)="clearChat()" title="Limpiar chat">
+      🗑️
+    </button>
+  </div>
+
+  <!-- Área de mensajes -->
+  <div class="chat-messages" #messageContainer>
+    <div *ngFor="let message of messages" 
+         class="message-wrapper"
+         [class.user-message]="!message.isBot"
+         [class.bot-message]="message.isBot">
+      
+      <div class="message-content">
+        <div class="message-bubble">
+          <p>{{ message.text }}</p>
+          <span class="timestamp">
+            {{ message.timestamp | date: 'HH:mm' }}
+          </span>
+        </div>
+
+        <!-- Eventos relacionados si los hay -->
+        <div class="related-events" *ngIf="message.relatedEvents && message.relatedEvents.length > 0">
+          <h4>Eventos encontrados:</h4>
+          <div class="event-cards">
+            <div class="event-card" *ngFor="let event of message.relatedEvents" (click)="viewEvent(event._id)">
+              <div class="event-header">
+                <h5>{{ event.name }}</h5>
+                <span class="event-category">{{ event.categoria }}</span>
+              </div>
+              <div class="event-details">
+                <p class="event-date">📅 {{ event.schedule | date: 'dd/MM/yyyy HH:mm' }}</p>
+                <p class="event-location">📍 {{ event.address }}</p>
+                <p class="event-participants">👥 {{ event.participantes?.length || 0 }} participantes</p>
+              </div>
+              <button class="view-event-btn">Ver detalles</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicador de carga -->
+    <div class="message-wrapper bot-message" *ngIf="isLoading">
+      <div class="message-content">
+        <div class="message-bubble loading">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sugerencias de preguntas rápidas -->
+  <div class="quick-questions" *ngIf="messages.length <= 1 && !isLoading">
+    <p class="quick-title">Preguntas sugeridas:</p>
+    <div class="question-chips">
+      <button 
+        class="question-chip" 
+        *ngFor="let question of quickQuestions"
+        (click)="useQuickQuestion(question)">
+        {{ question }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Input para escribir mensajes -->
+  <div class="chat-input">
+    <textarea
+      [(ngModel)]="userInput"
+      (keypress)="onKeyPress($event)"
+      placeholder="Escribe tu pregunta..."
+      rows="1"
+      [disabled]="isLoading"
+      maxlength="500"></textarea>
+    <button 
+      class="send-btn" 
+      (click)="sendMessage()"
+      [disabled]="!userInput.trim() || isLoading"
+      aria-label="Enviar mensaje">
+      <span *ngIf="!isLoading">➤</span>
+      <span *ngIf="isLoading" class="spinner">⟳</span>
+    </button>
+  </div>
+</div>
