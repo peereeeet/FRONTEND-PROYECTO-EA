@@ -1,54 +1,5 @@
-/* ===== VARIABLES DE TEMA ===== */
+/* Las variables CSS globales están definidas en src/assets/css/global-theme.css */
 
-:root {
-  /* Modo claro */
-  --bg-gradient-start: #e5e7eb;
-  --bg-gradient-end: #dbeafe;
-  --bg: #f3f4f6;
-  --bg-panel: rgba(255, 255, 255, 0.96);
-  --bg-elev: rgba(248, 250, 252, 0.96);
-  --bg-secondary: #ffffff;
-  --surface: #f9fafb;
-  --surface-card: rgba(255, 255, 255, 0.96);
-  --surface-elev: rgba(248, 250, 252, 0.96);
-  --text-primary: #0f172a;
-  --text-secondary: #6b7280;
-  --border: rgba(148, 163, 184, 0.5);
-  --accent: #1d4ed8;
-  --accent-light: #3b82f6;
-  --glow-purple: rgba(79, 70, 229, 0.18);
-  --glow-purple-strong: rgba(79, 70, 229, 0.36);
-  --gradient-primary: linear-gradient(135deg, #38bdf8, #1d4ed8);
-  
-  --shadow-sm: 0 4px 10px rgba(0,0,0,0.08);
-  --shadow-md: 0 12px 26px rgba(0,0,0,0.12);
-  --shadow-lg: 0 24px 48px rgba(0,0,0,0.16);
-}
-
-.dark-theme {
-  /* Modo oscuro */
-  --bg-gradient-start: #020617;
-  --bg-gradient-end: #020617;
-  --bg: #020617;
-  --bg-panel: rgba(15, 23, 42, 0.98);
-  --bg-elev: rgba(15, 23, 42, 0.92);
-  --bg-secondary: #020617;
-  --surface: #020617;
-  --surface-card: rgba(15, 23, 42, 0.96);
-  --surface-elev: rgba(15, 23, 42, 0.95);
-  --text-primary: #e5e7eb;
-  --text-secondary: #9ca3af;
-  --border: rgba(30, 64, 175, 0.9);
-  --accent: #3b82f6;
-  --accent-light: #60a5fa;
-  --glow-purple: rgba(56, 189, 248, 0.16);
-  --glow-purple-strong: rgba(37, 99, 235, 0.42);
-  --gradient-primary: linear-gradient(135deg, #38bdf8, #1d4ed8);
-  
-  --shadow-sm: 0 6px 16px rgba(15, 23, 42, 0.7);
-  --shadow-md: 0 12px 26px rgba(15, 23, 42, 0.85);
-  --shadow-lg: 0 28px 60px rgba(15, 23, 42, 0.96);
-}
 
 /* ===== BACKGROUND GLOBAL ===== */
 
@@ -140,7 +91,7 @@
   background: rgba(59, 130, 246, 0.15);
 }
 
-.dark-theme .lang-option:hover {
+.dark-theme, [data-theme="dark"] .lang-option:hover {
   background: rgba(30,64,175,0.15);
 }
 
@@ -149,7 +100,7 @@
   color: var(--accent);
 }
 
-.dark-theme .lang-option.active {
+.dark-theme, [data-theme="dark"] .lang-option.active {
   background: rgba(30,64,175,0.35);
   color: #e0f2fe;
 }
@@ -284,7 +235,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-.dark-theme .nav-item:hover {
+.dark-theme, [data-theme="dark"] .nav-item:hover {
   background: rgba(37, 99, 235, 0.25);
 }
 
@@ -293,7 +244,7 @@
   border-color: #ef4444;
 }
 
-.dark-theme .nav-item--danger:hover {
+.dark-theme, [data-theme="dark"] .nav-item--danger:hover {
   background: rgba(239, 68, 68, 0.25);
 }
 
@@ -321,7 +272,7 @@
   align-items: center;
 }
 
-.dark-theme .top-bar {
+.dark-theme, [data-theme="dark"] .top-bar {
   background: radial-gradient(circle at 0 0, rgba(37, 99, 235, 0.4), transparent 60%);
 }
 
@@ -443,7 +394,7 @@
   font-weight: 700;
 }
 
-.dark-theme .count-pill {
+.dark-theme, [data-theme="dark"] .count-pill {
   background: rgba(37, 99, 235, 0.35);
   border: 1px solid rgba(59, 130, 246, 0.7);
   color: #bfdbfe;
@@ -523,7 +474,7 @@
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), transparent);
 }
 
-.dark-theme .modal-header {
+.dark-theme, [data-theme="dark"] .modal-header {
   background: radial-gradient(circle at 0 0, rgba(37, 99, 235, 0.25), transparent);
 }
 
@@ -683,7 +634,7 @@
   border-color: var(--accent);
 }
 
-.dark-theme .btn--ghost:hover {
+.dark-theme, [data-theme="dark"] .btn--ghost:hover {
   background: rgba(37, 99, 235, 0.2);
 }
 
@@ -744,11 +695,11 @@
   background: rgba(59, 130, 246, 0.5);
 }
 
-.dark-theme .sidebar::-webkit-scrollbar-thumb {
+.dark-theme, [data-theme="dark"] .sidebar::-webkit-scrollbar-thumb {
   background: rgba(37, 99, 235, 0.4);
 }
 
-.dark-theme .sidebar::-webkit-scrollbar-thumb:hover {
+.dark-theme, [data-theme="dark"] .sidebar::-webkit-scrollbar-thumb:hover {
   background: rgba(37, 99, 235, 0.6);
 }
 
@@ -1013,7 +964,7 @@
   font-weight: 700;
 }
 
-.dark-theme .badges-count {
+.dark-theme, [data-theme="dark"] .badges-count {
   background: rgba(37, 99, 235, 0.3);
   border-color: rgba(59, 130, 246, 0.7);
   color: #bfdbfe;

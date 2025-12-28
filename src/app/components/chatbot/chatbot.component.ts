@@ -1,10 +1,14 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AiService, AiSearchResponse } from '../../services/ai.service';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { ChatbotStateService } from '../../services/chatbot-state.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme.service';
+import { EventoService } from '../../services/evento.service';
+import { Evento } from '../../models/evento.model';
 
 export interface ChatMessage {
   text: string;
@@ -16,26 +20,29 @@ export interface ChatMessage {
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css']
 })
 export class ChatbotComponent implements OnInit {
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
   
+  private themeService = inject(ThemeService);
+  private translateService = inject(TranslateService);
+  private eventoService = inject(EventoService);
+  
+  theme = this.themeService.theme;
   messages: ChatMessage[] = [];
   userInput: string = '';
   isLoading: boolean = false;
   isChatOpen: boolean = false;
   userId: string | null = null;
 
-  // Sugerencias de preguntas rápidas
-  quickQuestions: string[] = [
-    '¿Qué eventos hay este fin de semana?',
-    'Eventos de deportes en Barcelona',
-    '¿Eventos de música disponibles?',
-    'Eventos gratuitos cerca de mí'
-  ];
+  selectedEvent: Evento | null = null;
+  showEventModal: boolean = false;
+  isLoadingEvent: boolean = false;
+  
+  quickQuestions: string[] = [];
 
   constructor(
     private aiService: AiService,
@@ -45,23 +52,66 @@ export class ChatbotComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Obtener el userId si está autenticado
     const user = this.authService.getCurrentUser();
     this.userId = user?._id || null;
 
-    // Mensaje de bienvenida
-    this.messages.push({
-      text: '¡Hola! Soy tu asistente de eventos. ¿En qué puedo ayudarte hoy?',
-      isBot: true,
-      timestamp: new Date()
+    this.translateService.onLangChange.subscribe(() => {
+      this.loadQuickQuestions();
+      if (this.messages.length === 1 && this.messages[0].isBot) {
+        this.translateService.get('CHATBOT.WELCOME_MESSAGE').subscribe(text => {
+          this.messages[0].text = text;
+        });
+      }
     });
 
-    // Suscribirse al estado del chat desde el servicio
+    this.loadInitialMessages();
+
     this.chatbotStateService.chatOpen$.subscribe(isOpen => {
       this.isChatOpen = isOpen;
       if (isOpen) {
         setTimeout(() => this.scrollToBottom(), 100);
       }
+    });
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        if (this.isChatOpen) {
+          this.isChatOpen = false;
+          this.chatbotStateService.closeChat();
+        }
+      }
+    });
+  }
+
+  private loadInitialMessages(): void {
+    this.loadQuickQuestions();
+    
+    setTimeout(() => {
+      this.translateService.get('CHATBOT.WELCOME_MESSAGE').subscribe(text => {
+        if (this.messages.length === 0) {
+          this.messages.push({
+            text: text,
+            isBot: true,
+            timestamp: new Date()
+          });
+        }
+      });
+    }, 100);
+  }
+
+  private loadQuickQuestions(): void {
+    this.translateService.get([
+      'CHATBOT.QUICK_Q1',
+      'CHATBOT.QUICK_Q2',
+      'CHATBOT.QUICK_Q3',
+      'CHATBOT.QUICK_Q4'
+    ]).subscribe(translations => {
+      this.quickQuestions = [
+        translations['CHATBOT.QUICK_Q1'],
+        translations['CHATBOT.QUICK_Q2'],
+        translations['CHATBOT.QUICK_Q3'],
+        translations['CHATBOT.QUICK_Q4']
+      ];
     });
   }
 
@@ -76,8 +126,6 @@ export class ChatbotComponent implements OnInit {
     if (!this.userInput.trim() || this.isLoading) {
       return;
     }
-
-    // Agregar mensaje del usuario
     const userMessage: ChatMessage = {
       text: this.userInput,
       isBot: false,
@@ -91,8 +139,9 @@ export class ChatbotComponent implements OnInit {
 
     setTimeout(() => this.scrollToBottom(), 100);
 
-    // Llamar al servicio de IA
-    this.aiService.searchEventsWithAi(query, this.userId || undefined).subscribe({
+    const currentLang = this.translateService.currentLang || this.translateService.defaultLang || 'es';
+
+    this.aiService.searchEventsWithAi(query, this.userId || undefined, currentLang).subscribe({
       next: (response: AiSearchResponse) => {
         const botMessage: ChatMessage = {
           text: response.answer,
@@ -106,14 +155,16 @@ export class ChatbotComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al consultar IA:', error);
-        const errorMessage: ChatMessage = {
-          text: 'Lo siento, hubo un error al procesar tu consulta. Por favor, intenta de nuevo.',
-          isBot: true,
-          timestamp: new Date()
-        };
-        this.messages.push(errorMessage);
-        this.isLoading = false;
-        setTimeout(() => this.scrollToBottom(), 100);
+        this.translateService.get('CHATBOT.ERROR_MESSAGE').subscribe(text => {
+          const errorMessage: ChatMessage = {
+            text: text,
+            isBot: true,
+            timestamp: new Date()
+          };
+          this.messages.push(errorMessage);
+          this.isLoading = false;
+          setTimeout(() => this.scrollToBottom(), 100);
+        });
       }
     });
   }
@@ -124,16 +175,197 @@ export class ChatbotComponent implements OnInit {
   }
 
   viewEvent(eventId: string): void {
-    this.isChatOpen = false;
-    this.router.navigate(['/evento', eventId]);
+    this.isLoadingEvent = true;
+    this.showEventModal = true;
+
+    this.eventoService.getEventoById(eventId).subscribe({
+      next: (evento) => {
+        this.selectedEvent = evento;
+        this.isLoadingEvent = false;
+      },
+      error: (err) => {
+        console.error('Error cargando evento:', err);
+        this.isLoadingEvent = false;
+        this.showEventModal = false;
+      }
+    });
+  }
+
+  closeEventModal(): void {
+    this.showEventModal = false;
+    this.selectedEvent = null;
+  }
+
+  isUserInEvent(): boolean {
+    if (!this.selectedEvent || !this.userId) return false;
+    
+    return (this.selectedEvent.participantes || []).some((p: any) => 
+      typeof p === 'string' ? p === this.userId : p._id === this.userId
+    );
+  }
+
+  isUserCreator(): boolean {
+    if (!this.selectedEvent || !this.userId) return false;
+    
+    const creador = this.selectedEvent.creador;
+    if (typeof creador === 'string') {
+      return creador === this.userId;
+    }
+    return creador?._id === this.userId;
+  }
+
+  isEventFull(): boolean {
+    if (!this.selectedEvent || !this.selectedEvent.maxParticipantes) return false;
+    
+    const participantesCount = (this.selectedEvent.participantes || []).length;
+    return participantesCount >= this.selectedEvent.maxParticipantes;
+  }
+
+  isUserInWaitlist(): boolean {
+    if (!this.selectedEvent || !this.userId) return false;
+    
+    return (this.selectedEvent.listaEspera || []).some((p: any) => 
+      typeof p === 'string' ? p === this.userId : p._id === this.userId
+    );
+  }
+
+  getCreadorUsername(creador: any): string {
+    if (!creador) return 'Usuario';
+    if (typeof creador === 'string') return 'Usuario';
+    return creador.username || 'Usuario';
+  }
+
+  getScheduleDate(schedule: string | string[]): string {
+    if (Array.isArray(schedule)) {
+      return schedule[0] || '';
+    }
+    return schedule;
+  }
+
+  joinEvent(): void {
+    if (!this.selectedEvent?._id) return;
+
+    this.isLoadingEvent = true;
+
+    this.eventoService.joinEvento(this.selectedEvent._id).subscribe({
+      next: (response) => {
+        this.selectedEvent = response.evento;
+        this.isLoadingEvent = false;
+      },
+      error: (err) => {
+        console.error('Error uniéndose al evento:', err);
+        this.isLoadingEvent = false;
+        this.translateService.get('CHATBOT.MODAL.JOIN_ERROR').subscribe(msg => {
+          alert(msg);
+        });
+      }
+    });
+  }
+
+  showConfirmModal: boolean = false;
+  confirmModalData: {
+    title: string;
+    message: string;
+    confirmText: string;
+    cancelText: string;
+    onConfirm: () => void;
+  } | null = null;
+
+  openConfirmModal(title: string, message: string, confirmText: string, cancelText: string, onConfirm: () => void): void {
+    this.confirmModalData = { title, message, confirmText, cancelText, onConfirm };
+    this.showConfirmModal = true;
+  }
+
+  closeConfirmModal(): void {
+    this.showConfirmModal = false;
+    this.confirmModalData = null;
+  }
+
+  confirmAction(): void {
+    if (this.confirmModalData?.onConfirm) {
+      this.confirmModalData.onConfirm();
+    }
+    this.closeConfirmModal();
+  }
+
+  leaveEvent(): void {
+    if (!this.selectedEvent?._id) return;
+
+    this.translateService.get([
+      'CHATBOT.MODAL.LEAVE_CONFIRM_TITLE',
+      'CHATBOT.MODAL.LEAVE_CONFIRM',
+      'CHATBOT.MODAL.CONFIRM',
+      'CHATBOT.MODAL.CANCEL'
+    ]).subscribe(translations => {
+      this.openConfirmModal(
+        translations['CHATBOT.MODAL.LEAVE_CONFIRM_TITLE'],
+        translations['CHATBOT.MODAL.LEAVE_CONFIRM'],
+        translations['CHATBOT.MODAL.CONFIRM'],
+        translations['CHATBOT.MODAL.CANCEL'],
+        () => {
+          this.isLoadingEvent = true;
+
+          this.eventoService.leaveEvento(this.selectedEvent!._id!).subscribe({
+            next: (response) => {
+              this.selectedEvent = response.evento;
+              this.isLoadingEvent = false;
+            },
+            error: (err) => {
+              console.error('Error abandonando evento:', err);
+              this.isLoadingEvent = false;
+              this.translateService.get('CHATBOT.MODAL.LEAVE_ERROR').subscribe(msg => {
+                alert(msg);
+              });
+            }
+          });
+        }
+      );
+    });
+  }
+
+  leaveWaitlist(): void {
+    if (!this.selectedEvent?._id) return;
+
+    this.translateService.get([
+      'CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM_TITLE',
+      'CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM',
+      'CHATBOT.MODAL.CONFIRM',
+      'CHATBOT.MODAL.CANCEL'
+    ]).subscribe(translations => {
+      this.openConfirmModal(
+        translations['CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM_TITLE'],
+        translations['CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM'],
+        translations['CHATBOT.MODAL.CONFIRM'],
+        translations['CHATBOT.MODAL.CANCEL'],
+        () => {
+          this.isLoadingEvent = true;
+
+          this.eventoService.leaveWaitlist(this.selectedEvent!._id!).subscribe({
+            next: (response) => {
+              this.selectedEvent = response.evento;
+              this.isLoadingEvent = false;
+            },
+            error: (err) => {
+              console.error('Error saliendo de lista de espera:', err);
+              this.isLoadingEvent = false;
+              this.translateService.get('CHATBOT.MODAL.LEAVE_WAITLIST_ERROR').subscribe(msg => {
+                alert(msg);
+              });
+            }
+          });
+        }
+      );
+    });
   }
 
   clearChat(): void {
-    this.messages = [{
-      text: '¡Hola! Soy tu asistente de eventos. ¿En qué puedo ayudarte hoy?',
-      isBot: true,
-      timestamp: new Date()
-    }];
+    this.translateService.get('CHATBOT.WELCOME_MESSAGE').subscribe(text => {
+      this.messages = [{
+        text: text,
+        isBot: true,
+        timestamp: new Date()
+      }];
+    });
   }
 
   private scrollToBottom(): void {

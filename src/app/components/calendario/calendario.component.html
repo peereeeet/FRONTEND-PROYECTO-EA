@@ -51,11 +51,11 @@
               <span class="lang-icon">🌐</span>
               <span class="lang-current">
                 {{
-                  currentLang === 'es'
+                  currentLang() === 'es'
                     ? ('LANG.ES' | translate)
-                    : currentLang === 'en'
+                    : currentLang() === 'en'
                     ? ('LANG.EN' | translate)
-                    : currentLang === 'cat'
+                    : currentLang() === 'cat'
                     ? ('LANG.CAT' | translate)
                     : ('LANG.FR' | translate)
                 }}
@@ -64,16 +64,16 @@
             </button>
 
             <div class="lang-dropdown" *ngIf="showLangMenu">
-              <button type="button" class="lang-option" [class.active]="currentLang === 'es'" (click)="selectLanguage('es')">
+              <button type="button" class="lang-option" [class.active]="currentLang() === 'es'" (click)="selectLanguage('es')">
                 {{ 'LANG.ES' | translate }}
               </button>
-              <button type="button" class="lang-option" [class.active]="currentLang === 'en'" (click)="selectLanguage('en')">
+              <button type="button" class="lang-option" [class.active]="currentLang() === 'en'" (click)="selectLanguage('en')">
                 {{ 'LANG.EN' | translate }}
               </button>
-              <button type="button" class="lang-option" [class.active]="currentLang === 'cat'" (click)="selectLanguage('cat')">
+              <button type="button" class="lang-option" [class.active]="currentLang() === 'cat'" (click)="selectLanguage('cat')">
                 {{ 'LANG.CAT' | translate }}
               </button>
-              <button type="button" class="lang-option" [class.active]="currentLang === 'fr'" (click)="selectLanguage('fr')">
+              <button type="button" class="lang-option" [class.active]="currentLang() === 'fr'" (click)="selectLanguage('fr')">
                 {{ 'LANG.FR' | translate }}
               </button>
             </div>
@@ -96,7 +96,7 @@
             </button>
             
             <div class="month-display">
-              <span class="month-name">{{ currentMonthName | titlecase }}</span>
+              <span class="month-name">{{ currentMonthName() | titlecase }}</span>
             </div>
             
             <button class="btn-control btn-control--next" (click)="nextMonth()" [title]="'CALENDAR.NEXT_MONTH' | translate">
@@ -164,41 +164,146 @@
 
 <!-- Modal for Event Details -->
 <div class="modal-backdrop" *ngIf="selectedEvent()" (click)="closeModal()">
-  <div class="modal-content event-details-modal" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3 class="modal-title">
-        <span class="modal-icon">📌</span>
-        {{ selectedEvent()?.name }}
-      </h3>
-      <button class="close-btn" (click)="closeModal()">×</button>
+  <div class="modal-content event-details-modal-extended" (click)="$event.stopPropagation()" [attr.data-theme]="theme()">
+    <!-- Loading -->
+    <div class="modal-loading" *ngIf="isLoadingEvent">
+      <div class="spinner-large">⟳</div>
+      <p>{{ 'CHATBOT.MODAL.LOADING' | translate }}</p>
     </div>
 
-    <div class="modal-body">
-      <div class="detail-group" *ngIf="selectedEvent()?.categoria">
-        <span class="detail-label">{{ 'CALENDAR.CATEGORY' | translate }}</span>
-        <span class="detail-value">{{ selectedEvent()?.categoria }}</span>
+    <!-- Contenido del evento -->
+    <div *ngIf="!isLoadingEvent && selectedEvent()">
+      <!-- Header -->
+      <div class="modal-header-extended">
+        <div class="modal-title-section">
+          <h2>{{ selectedEvent()?.name }}</h2>
+          <span class="modal-category-extended">{{ selectedEvent()?.categoria }}</span>
+        </div>
+        <button class="modal-close-btn-extended" (click)="closeModal()" [title]="'CHATBOT.MODAL.CLOSE' | translate">
+          ✕
+        </button>
       </div>
 
-      <div class="detail-group" *ngIf="selectedEvent()?.address">
-        <span class="detail-label">{{ 'CALENDAR.ADDRESS' | translate }}</span>
-        <span class="detail-value">{{ selectedEvent()?.address }}</span>
+      <!-- Body -->
+      <div class="modal-body-extended">
+        <!-- Información del evento -->
+        <div class="modal-info-section-extended">
+          <div class="modal-info-item-extended">
+            <span class="info-icon-extended">📅</span>
+            <div class="info-content-extended">
+              <span class="info-label-extended">{{ 'CHATBOT.MODAL.DATE' | translate }}</span>
+              <span class="info-value-extended">{{ getScheduleDate(selectedEvent()!.schedule) | date: 'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          </div>
+
+          <div class="modal-info-item-extended" *ngIf="selectedEvent()?.address">
+            <span class="info-icon-extended">📍</span>
+            <div class="info-content-extended">
+              <span class="info-label-extended">{{ 'CHATBOT.MODAL.LOCATION' | translate }}</span>
+              <span class="info-value-extended">{{ selectedEvent()?.address }}</span>
+            </div>
+          </div>
+
+          <div class="modal-info-item-extended">
+            <span class="info-icon-extended">👥</span>
+            <div class="info-content-extended">
+              <span class="info-label-extended">{{ 'CHATBOT.MODAL.PARTICIPANTS' | translate }}</span>
+              <span class="info-value-extended">
+                {{ selectedEvent()?.participantes?.length || 0 }}
+                <span *ngIf="selectedEvent()?.maxParticipantes"> / {{ selectedEvent()?.maxParticipantes }}</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="modal-info-item-extended" *ngIf="selectedEvent()?.listaEspera && selectedEvent()!.listaEspera!.length > 0">
+            <span class="info-icon-extended">⏳</span>
+            <div class="info-content-extended">
+              <span class="info-label-extended">{{ 'CHATBOT.MODAL.WAITLIST' | translate }}</span>
+              <span class="info-value-extended">{{ selectedEvent()!.listaEspera!.length }} {{ 'CHATBOT.MODAL.IN_WAITLIST' | translate }}</span>
+            </div>
+          </div>
+
+          <div class="modal-info-item-extended" *ngIf="selectedEvent()?.creador">
+            <span class="info-icon-extended">👤</span>
+            <div class="info-content-extended">
+              <span class="info-label-extended">{{ 'CHATBOT.MODAL.CREATOR' | translate }}</span>
+              <span class="info-value-extended">
+                {{ getCreadorUsername(selectedEvent()!.creador) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Avisos -->
+        <div class="modal-notice-extended modal-notice-creator-extended" *ngIf="isUserCreator()">
+          <span class="notice-icon-extended">ℹ️</span>
+          <p>{{ 'CHATBOT.MODAL.YOU_ARE_CREATOR' | translate }}</p>
+        </div>
+
+        <div class="modal-notice-extended modal-notice-full-extended" *ngIf="isEventFull() && !isUserInEvent() && !isUserInWaitlist()">
+          <span class="notice-icon-extended">🔒</span>
+          <p>{{ 'CHATBOT.MODAL.EVENT_FULL' | translate }}</p>
+        </div>
+
+        <div class="modal-notice-extended modal-notice-waitlist-extended" *ngIf="isUserInWaitlist()">
+          <span class="notice-icon-extended">⏳</span>
+          <p>{{ 'CHATBOT.MODAL.YOU_IN_WAITLIST' | translate }}</p>
+        </div>
+
+        <div class="modal-notice-extended modal-notice-joined-extended" *ngIf="isUserInEvent()">
+          <span class="notice-icon-extended">✅</span>
+          <p>{{ 'CHATBOT.MODAL.YOU_JOINED' | translate }}</p>
+        </div>
       </div>
 
-      <div class="detail-group" *ngIf="selectedEvent()?.schedule">
-        <span class="detail-label">{{ 'CALENDAR.DATE_TIME' | translate }}</span>
-        <span class="detail-value">{{ getEventFullDateTime(selectedEvent()!) }}</span>
-      </div>
+      <!-- Footer con acciones -->
+      <div class="modal-footer-extended">
+        <!-- Si ya está inscrito -->
+        <button 
+          class="modal-btn-extended modal-btn-leave-extended" 
+          *ngIf="isUserInEvent() && !isUserCreator()"
+          (click)="leaveEventCalendar()"
+          [disabled]="isLoadingEvent">
+          <span class="btn-icon-extended">🚪</span>
+          {{ 'CHATBOT.MODAL.LEAVE_EVENT' | translate }}
+        </button>
 
-      <div class="participating-badge" *ngIf="selectedEvent() && isParticipating(selectedEvent()!)">
-        <span class="badge-icon">✅</span>
-        <span>{{ 'CALENDAR.YOU_ARE_PARTICIPATING' | translate }}</span>
-      </div>
-    </div>
+        <!-- Si está en lista de espera -->
+        <button 
+          class="modal-btn-extended modal-btn-leave-waitlist-extended" 
+          *ngIf="isUserInWaitlist()"
+          (click)="leaveWaitlistCalendar()"
+          [disabled]="isLoadingEvent">
+          <span class="btn-icon-extended">🚫</span>
+          {{ 'CHATBOT.MODAL.LEAVE_WAITLIST' | translate }}
+        </button>
 
-    <div class="modal-footer">
-      <button class="btn btn--secondary" (click)="closeModal()">
-        {{ 'CALENDAR.CLOSE' | translate }}
-      </button>
+        <!-- Si no está inscrito y el evento no está lleno -->
+        <button 
+          class="modal-btn-extended modal-btn-join-extended" 
+          *ngIf="!isUserInEvent() && !isUserInWaitlist() && !isEventFull()"
+          (click)="joinEventCalendar()"
+          [disabled]="isLoadingEvent">
+          <span class="btn-icon-extended">✅</span>
+          {{ 'CHATBOT.MODAL.JOIN_EVENT' | translate }}
+        </button>
+
+        <!-- Si no está inscrito y el evento está lleno -->
+        <button 
+          class="modal-btn-extended modal-btn-join-waitlist-extended" 
+          *ngIf="!isUserInEvent() && !isUserInWaitlist() && isEventFull()"
+          (click)="joinEventCalendar()"
+          [disabled]="isLoadingEvent">
+          <span class="btn-icon-extended">⏳</span>
+          {{ 'CHATBOT.MODAL.JOIN_WAITLIST' | translate }}
+        </button>
+
+        <button 
+          class="modal-btn-extended modal-btn-close-extended" 
+          (click)="closeModal()">
+          {{ 'CHATBOT.MODAL.CLOSE' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -411,6 +516,25 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+<!-- MODAL DE CONFIRMACIÓN -->
+<div class="confirm-modal-overlay-calendar" *ngIf="showConfirmModal" (click)="closeConfirmModal()" [attr.data-theme]="theme()">
+  <div class="confirm-modal-calendar" (click)="$event.stopPropagation()">
+    <div class="confirm-modal-header-calendar">
+      <h3>{{ confirmModalData?.title }}</h3>
+    </div>
+    <div class="confirm-modal-body-calendar">
+      <p>{{ confirmModalData?.message }}</p>
+    </div>
+    <div class="confirm-modal-footer-calendar">
+      <button class="confirm-btn-calendar confirm-btn-cancel-calendar" (click)="closeConfirmModal()">
+        {{ confirmModalData?.cancelText }}
+      </button>
+      <button class="confirm-btn-calendar confirm-btn-confirm-calendar" (click)="confirmAction()">
+        {{ confirmModalData?.confirmText }}
+      </button>
     </div>
   </div>
 </div>
