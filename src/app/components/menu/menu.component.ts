@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
 import { ThemeService } from '../../services/theme.service';
 import { Router, RouterModule } from '@angular/router';
+import { ChatbotStateService } from '../../services/chatbot-state.service';
 import { User } from '../../models/user.model';
 import { Evento, CATEGORIAS_EVENTO, EventoCategoria } from '../../models/evento.model';
 import { FormsModule } from '@angular/forms';
@@ -42,6 +43,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   theme = this.themeService.theme;
   private socketService = inject(SocketService);
+  private chatbotStateService = inject(ChatbotStateService);
   private readonly EVENT_INVITE_PREFIX = '__EVENT_INVITE__|';
   @ViewChild('chatMessagesContainer') chatMessagesContainer?: ElementRef<HTMLDivElement>;
   private userLocationMarker?: maplibregl.Marker;
@@ -467,6 +469,9 @@ export class MenuComponent implements OnInit, OnDestroy {
       state: { userId: String(user._id) }
     });
   }
+  openChatbot(): void {
+  this.chatbotStateService.openChat();
+}
 
   goToEventoDetalle(eventoId: string): void {
     this.router.navigate(['/evento', eventoId]);
