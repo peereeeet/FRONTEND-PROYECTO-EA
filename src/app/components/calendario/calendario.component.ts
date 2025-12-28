@@ -47,8 +47,19 @@ export class CalendarioComponent implements OnInit {
   loading = signal(false);
   
   selectedEvent = signal<Evento | null>(null);
+  isLoadingEvent = false;
+  userId: string | null = null;
 
-  weekDays = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+  showConfirmModal = false;
+  confirmModalData: {
+    title: string;
+    message: string;
+    confirmText: string;
+    cancelText: string;
+    onConfirm: () => void;
+  } | null = null;
+
+  weekDays: string[] = [];
 
   showCreateModal = signal(false);
   createDate = signal<Date | null>(null);
@@ -79,7 +90,7 @@ export class CalendarioComponent implements OnInit {
   showCategoriaDropdown = false;
   categoriasDisponibles = CATEGORIAS_EVENTO;
 
-  currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
+  currentLang = signal<'es' | 'en' | 'cat' | 'fr'>((localStorage.getItem('lang') as any) || 'es');
   showLangMenu = false;
 
   me: any = null;
@@ -97,11 +108,20 @@ export class CalendarioComponent implements OnInit {
   ngOnInit(): void {
     const savedLang = localStorage.getItem('lang') as 'es' | 'en' | 'cat' | 'fr';
     if (savedLang) {
-      this.currentLang = savedLang;
+      this.currentLang.set(savedLang);  // ← Usar .set()
       this.translateService.use(savedLang);
     }
+    // Cargar días de la semana desde traducciones
+    this.loadWeekDays();
+
+    // Suscribirse a cambios de idioma para actualizar los días
+    this.translateService.onLangChange.subscribe(() => {
+      this.loadWeekDays();
+    });
 
     this.me = this.authService.getCurrentUser();
+    this.userId = this.me?._id || null;
+    
     this.addressSearchSubject
       .pipe(
         debounceTime(500),
@@ -125,6 +145,16 @@ export class CalendarioComponent implements OnInit {
       });
   }
 
+  private loadWeekDays(): void {
+    this.translateService.get("CALENDAR.WEEKDAYS").subscribe((days: string[]) => {
+      if (days && Array.isArray(days)) {
+        this.weekDays = days;
+      } else {
+        this.weekDays = ["L", "M", "X", "J", "V", "S", "D"];
+      }
+    });
+  }
+
   get categoriasFiltradas(): EventoCategoria[] {
     if (!this.categoriaSearch || this.categoriaSearch.trim() === '') {
       return this.categoriasDisponibles;
@@ -144,7 +174,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr') {
-    this.currentLang = lang;
+    this.currentLang.set(lang);
     this.translateService.use(lang);
     localStorage.setItem('lang', lang);
     this.showLangMenu = false;
@@ -163,16 +193,24 @@ export class CalendarioComponent implements OnInit {
   }
 
   getEventFullDateTime(ev: Evento): string {
-    if (!ev.schedule) return '';
+    const lang = this.currentLang();
+    if (!ev.schedule) return "";
     const raw = Array.isArray(ev.schedule) ? ev.schedule[0] : ev.schedule;
     const date = new Date(raw);
-    return date.toLocaleString('es-ES', { 
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    const localeMap: { [key: string]: string } = {
+      "es": "es-ES",
+      "en": "en-US",
+      "cat": "ca-ES",
+      "fr": "fr-FR"
+    };
+    const locale = localeMap[lang] || "es-ES";
+    return date.toLocaleString(locale, { 
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
     });
   }
 
@@ -226,9 +264,20 @@ export class CalendarioComponent implements OnInit {
     return days;
   });
 
-  get currentMonthName(): string {
-    return this.currentDate().toLocaleString('es-ES', { month: 'long', year: 'numeric' });
-  }
+  currentMonthName = computed(() => {
+    const date = this.currentDate();
+    const lang = this.currentLang();  // ← Leer la señal con ()
+    const year = date.getFullYear();
+    const localeMap: { [key: string]: string } = {
+      "es": "es-ES",
+      "en": "en-US",
+      "cat": "ca-ES",
+      "fr": "fr-FR"
+    };
+    const locale = localeMap[lang] || "es-ES";
+    const monthName = date.toLocaleString(locale, { month: "long" });
+    return `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${year}`;
+  });
 
   prevMonth() {
     const d = this.currentDate();
@@ -552,5 +601,168 @@ export class CalendarioComponent implements OnInit {
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     const dd = String(date.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
+  }
+
+  getScheduleDate(schedule: string | string[]): string {
+    if (Array.isArray(schedule)) {
+      return schedule[0] || '';
+    }
+    return schedule;
+  }
+
+  getCreadorUsername(creador: any): string {
+    if (!creador) return 'Usuario';
+    if (typeof creador === 'string') return 'Usuario';
+    return creador.username || 'Usuario';
+  }
+
+  isUserInEvent(): boolean {
+    const event = this.selectedEvent();
+    if (!event || !this.userId) return false;
+    
+    return (event.participantes || []).some((p: any) => 
+      typeof p === 'string' ? p === this.userId : p._id === this.userId
+    );
+  }
+
+  isUserCreator(): boolean {
+    const event = this.selectedEvent();
+    if (!event || !this.userId) return false;
+    
+    const creador = event.creador;
+    if (typeof creador === 'string') {
+      return creador === this.userId;
+    }
+    return creador?._id === this.userId;
+  }
+
+  isEventFull(): boolean {
+    const event = this.selectedEvent();
+    if (!event || !event.maxParticipantes) return false;
+    
+    const participantesCount = (event.participantes || []).length;
+    return participantesCount >= event.maxParticipantes;
+  }
+
+  isUserInWaitlist(): boolean {
+    const event = this.selectedEvent();
+    if (!event || !this.userId) return false;
+    
+    return (event.listaEspera || []).some((p: any) => 
+      typeof p === 'string' ? p === this.userId : p._id === this.userId
+    );
+  }
+
+  joinEventCalendar(): void {
+    const event = this.selectedEvent();
+    if (!event?._id) return;
+
+    this.isLoadingEvent = true;
+
+    this.eventoService.joinEvento(event._id).subscribe({
+      next: (response) => {
+        this.selectedEvent.set(response.evento);
+        this.isLoadingEvent = false;
+        this.loadEventsForMonth(this.currentDate());
+      },
+      error: (err) => {
+        console.error('Error uniéndose al evento:', err);
+        this.isLoadingEvent = false;
+        this.translateService.get('CHATBOT.MODAL.JOIN_ERROR').subscribe(msg => {
+          alert(msg);
+        });
+      }
+    });
+  }
+
+  openConfirmModal(title: string, message: string, confirmText: string, cancelText: string, onConfirm: () => void): void {
+    this.confirmModalData = { title, message, confirmText, cancelText, onConfirm };
+    this.showConfirmModal = true;
+  }
+
+  closeConfirmModal(): void {
+    this.showConfirmModal = false;
+    this.confirmModalData = null;
+  }
+
+  confirmAction(): void {
+    if (this.confirmModalData?.onConfirm) {
+      this.confirmModalData.onConfirm();
+    }
+    this.closeConfirmModal();
+  }
+
+  leaveEventCalendar(): void {
+    const event = this.selectedEvent();
+    if (!event?._id) return;
+
+    this.translateService.get([
+      'CHATBOT.MODAL.LEAVE_CONFIRM_TITLE',
+      'CHATBOT.MODAL.LEAVE_CONFIRM',
+      'CHATBOT.MODAL.CONFIRM',
+      'CHATBOT.MODAL.CANCEL'
+    ]).subscribe(translations => {
+      this.openConfirmModal(
+        translations['CHATBOT.MODAL.LEAVE_CONFIRM_TITLE'],
+        translations['CHATBOT.MODAL.LEAVE_CONFIRM'],
+        translations['CHATBOT.MODAL.CONFIRM'],
+        translations['CHATBOT.MODAL.CANCEL'],
+        () => {
+          this.isLoadingEvent = true;
+
+          this.eventoService.leaveEvento(event._id!).subscribe({
+            next: (response) => {
+              this.selectedEvent.set(response.evento);
+              this.isLoadingEvent = false;
+              this.loadEventsForMonth(this.currentDate());
+            },
+            error: (err) => {
+              console.error('Error abandonando evento:', err);
+              this.isLoadingEvent = false;
+              this.translateService.get('CHATBOT.MODAL.LEAVE_ERROR').subscribe(msg => {
+                alert(msg);
+              });
+            }
+          });
+        }
+      );
+    });
+  }
+
+  leaveWaitlistCalendar(): void {
+    const event = this.selectedEvent();
+    if (!event?._id) return;
+
+    this.translateService.get([
+      'CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM_TITLE',
+      'CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM',
+      'CHATBOT.MODAL.CONFIRM',
+      'CHATBOT.MODAL.CANCEL'
+    ]).subscribe(translations => {
+      this.openConfirmModal(
+        translations['CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM_TITLE'],
+        translations['CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM'],
+        translations['CHATBOT.MODAL.CONFIRM'],
+        translations['CHATBOT.MODAL.CANCEL'],
+        () => {
+          this.isLoadingEvent = true;
+
+          this.eventoService.leaveWaitlist(event._id!).subscribe({
+            next: (response) => {
+              this.selectedEvent.set(response.evento);
+              this.isLoadingEvent = false;
+              this.loadEventsForMonth(this.currentDate());
+            },
+            error: (err) => {
+              console.error('Error saliendo de lista de espera:', err);
+              this.isLoadingEvent = false;
+              this.translateService.get('CHATBOT.MODAL.LEAVE_WAITLIST_ERROR').subscribe(msg => {
+                alert(msg);
+              });
+            }
+          });
+        }
+      );
+    });
   }
 }

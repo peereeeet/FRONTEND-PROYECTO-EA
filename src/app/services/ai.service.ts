@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 export interface AiSearchRequest {
   query: string;
   userId?: string;
+  language?: string;
 }
 
 export interface AiSearchResponse {
@@ -19,9 +20,9 @@ export class AiService {
 
   constructor(private http: HttpClient) {}
 
-  searchEventsWithAi(query: string, userId?: string): Observable<AiSearchResponse> {
+  searchEventsWithAi(query: string, userId?: string, language?: string): Observable<AiSearchResponse> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const body: AiSearchRequest = { query, userId };
+    const body: AiSearchRequest = { query, userId, language: language || 'es' };
     
     return this.http.post<AiSearchResponse>(`${this.apiUrl}/search`, body, { headers });
   }
