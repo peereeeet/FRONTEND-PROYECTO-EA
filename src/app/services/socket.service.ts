@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { environment } from '../environments/environment.prod';
 
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private socket: any = null;
-  private readonly url = 'http://localhost:3000';
+  private readonly url = environment.apiUrl;
   private connectedUserId: string | null = null;
 
   constructor() {}
