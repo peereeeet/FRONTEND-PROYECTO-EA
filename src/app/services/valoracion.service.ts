@@ -10,8 +10,8 @@ export class ValoracionService {
 
   constructor(private http: HttpClient) {}
 
-  create(eventoId: string, payload: { puntuacion: number; comentario?: string }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/event/${eventoId}`, payload);
+  create(eventoId: string, payload: { puntuacion: number; comentario?: string }): Observable<Valoracion> {
+    return this.http.post<Valoracion>(`${this.apiUrl}/event/${eventoId}`, payload);
   }
 
   getMyRatingForEvent(eventoId: string): Observable<Valoracion> {

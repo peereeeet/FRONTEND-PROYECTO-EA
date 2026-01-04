@@ -66,7 +66,7 @@ export class SocketService {
   }
 
   isConnected(): boolean {
-    return this.socket && this.socket.connected;
+    return !!this.socket?.connected;
   }
 
   getConnectedUserId(): string | null {

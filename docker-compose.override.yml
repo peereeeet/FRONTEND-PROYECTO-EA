@@ -1,0 +1,15 @@
+services:
+  frontend:
+    build:
+      target: dev
+    container_name: frontend-dev
+    # Bind mount source code for hot reload
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "4200:4200"
+    # Command to ensure host binding for access from host machine
+    command: npm start -- --host 0.0.0.0 --poll 2000
+    environment:
+      - NODE_ENV=development

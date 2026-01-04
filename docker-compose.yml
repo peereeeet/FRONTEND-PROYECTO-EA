@@ -1,0 +1,12 @@
+services:
+  frontend:
+    # Build context is usually needed for both, though dev overrides it largely.
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
