@@ -13,7 +13,10 @@
       </div>
 
       <div class="sidebar__user">
-        <div class="avatar avatar--lg">👤</div>
+        <div class="avatar avatar--lg">
+          <img *ngIf="me()?.profilePhoto" [src]="me()!.profilePhoto" alt="Profile" class="avatar-img" />
+          <span *ngIf="!me()?.profilePhoto">👤</span>
+        </div>
         <div class="user-meta">
           <h2 class="user-name">
             {{ me()?.username || ('MENU.USER_FALLBACK' | translate) }}
@@ -215,7 +218,10 @@
                 <ul class="friends-list">
                   <li *ngFor="let f of friendsPaged()">
                     <div class="friend-left">
-                      <div class="avatar avatar--sm">🙂</div>
+                      <div class="avatar avatar--sm">
+                        <img *ngIf="f.profilePhoto" [src]="f.profilePhoto" alt="" class="avatar-img" />
+                        <span *ngIf="!f.profilePhoto">🙂</span>
+                      </div>
                       <div class="friend-data">
                         <div class="friend-name">{{ f.username }}</div>
                         <div class="friend-mail">{{ f.gmail }}</div>
@@ -846,29 +852,35 @@
           </div>
 
           <div class="user-row" *ngFor="let u of modalPageItems">
+            <div class="user-avatar">
+              <div class="avatar avatar--sm">
+                <img *ngIf="u.profilePhoto" [src]="u.profilePhoto" alt="" class="avatar-img" />
+                <span *ngIf="!u.profilePhoto">👤</span>
+              </div>
+            </div>
             <span class="user-name">
               {{ u.username }}
               <small>({{ u.gmail }})</small>
             </span>
 
             <ng-container *ngIf="isPendingFrom(u._id!); else checkSent">
-              <button type="button" class="btn btn--pending" (click)="openRequestsModal()">
-                📨 {{ 'MENU.MODAL_REQUEST_PENDING' | translate }}
-              </button>
+            <button type="button" class="btn btn--pending" (click)="openRequestsModal()">
+              📨 {{ 'MENU.MODAL_REQUEST_PENDING' | translate }}
+            </button>
             </ng-container>
 
             <ng-template #checkSent>
-              <ng-container *ngIf="isPendingTo(u._id!); else canAddTpl">
-                <span class="sent-text">
-                  ✅ {{ 'MENU.MODAL_REQUEST_SENT' | translate }}
-                </span>
-              </ng-container>
+            <ng-container *ngIf="isPendingTo(u._id!); else canAddTpl">
+              <span class="sent-text">
+                ✅ {{ 'MENU.MODAL_REQUEST_SENT' | translate }}
+              </span>
+            </ng-container>
             </ng-template>
 
             <ng-template #canAddTpl>
-              <button type="button" class="btn btn--add" (click)="addFromModal(u._id!)">
-                ➕ {{ 'MENU.MODAL_ADD_BUTTON' | translate }}
-              </button>
+            <button type="button" class="btn btn--add" (click)="addFromModal(u._id!)">
+              ➕ {{ 'MENU.MODAL_ADD_BUTTON' | translate }}
+            </button>
             </ng-template>
           </div>
 
@@ -905,7 +917,10 @@
         <ul *ngIf="!requestsLoading() && requestsList().length">
           <li *ngFor="let u of requestsList()">
             <div class="request-left">
-              <div class="avatar avatar--sm">👤</div>
+              <div class="avatar avatar--sm">
+                <img *ngIf="u.profilePhoto" [src]="u.profilePhoto" alt="" class="avatar-img" />
+                <span *ngIf="!u.profilePhoto">👤</span>
+              </div>
               <div class="request-data">
                 <div class="request-name">{{ u.username }}</div>
                 <div class="request-mail">{{ u.gmail }}</div>

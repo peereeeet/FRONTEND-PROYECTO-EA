@@ -11,6 +11,7 @@ export interface User {
   rol?: 'admin' | 'usuario';
   isGoogleUser?: boolean;
   isOnline?: boolean;
+  profilePhoto?: string;
   friends?: Array<
     string |
     { _id: string; username: string; gmail: string; isOnline?: boolean }

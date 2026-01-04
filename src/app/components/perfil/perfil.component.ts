@@ -12,7 +12,7 @@ import { ThemeService } from '../../services/theme.service';
 import { GamificacionService } from '../../services/gamificacion.service';
 import { UsuarioProgreso, calcularProgresoNivel, getNivelInfo } from '../../models/gamificacion.model';
 
-type EditDTO = { username: string; gmail: string; birthday: string; password?: string };
+type EditDTO = { username: string; gmail: string; birthday: string; password?: string; };
 
 @Component({
   selector: 'app-perfil',
@@ -46,6 +46,16 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   checkingUsername = signal(false);
   usernameTaken    = signal(false);
+
+  profilePhotoUrl = signal<string>('');
+  
+  selectedPhotoFile = signal<File | null>(null);
+  photoPreviewUrl = signal<string | null>(null);
+  uploadingPhoto = signal(false);
+  uploadPhotoError = signal<string>('');
+
+  deletePhotoModalOpen = signal<boolean>(false);
+  deletingPhoto = signal<boolean>(false);
 
   deleteOpen = signal<boolean>(false);
   deleting = signal<boolean>(false);
@@ -89,6 +99,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
       const isOnline = (u as any).online ?? (u as any).isOnline ?? false;
       this.me.set({ ...(u as any), isOnline });
+      this.profilePhotoUrl.set((u as any)?.profilePhoto || '');
 
       const myId = this.getId(u);
       if (!myId) { this.loading.set(false); return; }
@@ -101,6 +112,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
           const merged = { ...(this.me() as any), ...(usr as any) };
           merged.isOnline = (merged.online ?? merged.isOnline ?? false);
           this.me.set(merged);
+          this.profilePhotoUrl.set(merged.profilePhoto || '');
           this.edit.set({
             username: merged.username ?? '',
             gmail: merged.gmail ?? '',
@@ -170,6 +182,11 @@ export class PerfilComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
     this.hbSub?.unsubscribe();
+    
+    const previewUrl = this.photoPreviewUrl();
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
   }
 
   getProgresoNivel() {
@@ -202,6 +219,125 @@ export class PerfilComponent implements OnInit, OnDestroy {
     } catch { return String(d); }
   }
 
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+    
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      this.uploadPhotoError.set('Solo se permiten imágenes (JPEG, PNG, GIF, WEBP)');
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.uploadPhotoError.set('La imagen no puede superar los 5MB');
+      return;
+    }
+
+    this.uploadPhotoError.set('');
+    this.selectedPhotoFile.set(file);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const oldPreview = this.photoPreviewUrl();
+      if (oldPreview) {
+        URL.revokeObjectURL(oldPreview);
+      }
+      this.photoPreviewUrl.set(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  uploadPhoto(): void {
+    const file = this.selectedPhotoFile();
+    const u = this.me();
+    const id = this.getId(u);
+
+    if (!file || !id) {
+      this.uploadPhotoError.set('No hay archivo seleccionado o usuario no válido');
+      return;
+    }
+
+    this.uploadingPhoto.set(true);
+    this.uploadPhotoError.set('');
+
+    this.userService.uploadProfilePhoto(id, file).subscribe({
+      next: (response) => {
+        const currentUser = this.me();
+        if (currentUser) {
+          const updated = { ...currentUser, profilePhoto: response.profilePhoto };
+          this.me.set(updated);
+          this.profilePhotoUrl.set(response.profilePhoto);
+        }
+
+        this.selectedPhotoFile.set(null);
+        const oldPreview = this.photoPreviewUrl();
+        if (oldPreview) {
+          URL.revokeObjectURL(oldPreview);
+        }
+        this.photoPreviewUrl.set(null);
+        
+        this.uploadingPhoto.set(false);
+      },
+      error: (err) => {
+        this.uploadingPhoto.set(false);
+        const msg = err?.error?.error || err?.error?.message || 'No se pudo subir la foto';
+        this.uploadPhotoError.set(msg);
+      }
+    });
+  }
+
+  cancelPhotoSelection(): void {
+    this.selectedPhotoFile.set(null);
+    const previewUrl = this.photoPreviewUrl();
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    this.photoPreviewUrl.set(null);
+    this.uploadPhotoError.set('');
+  }
+
+  openDeletePhotoModal(): void {
+    this.deletePhotoModalOpen.set(true);
+  }
+
+  closeDeletePhotoModal(): void {
+    this.deletePhotoModalOpen.set(false);
+  }
+
+  confirmDeletePhoto(): void {
+    const u = this.me();
+    const id = this.getId(u);
+
+    if (!id) return;
+
+    this.deletingPhoto.set(true);
+    this.uploadPhotoError.set('');
+
+    this.userService.deleteProfilePhoto(id).subscribe({
+      next: () => {
+        const currentUser = this.me();
+        if (currentUser) {
+          const updated = { ...currentUser, profilePhoto: undefined };
+          this.me.set(updated);
+          this.profilePhotoUrl.set('');
+        }
+        this.deletingPhoto.set(false);
+        this.deletePhotoModalOpen.set(false);
+      },
+      error: (err) => {
+        this.deletingPhoto.set(false);
+        const msg = err?.error?.error || err?.error?.message || 'No se pudo eliminar la foto';
+        this.uploadPhotoError.set(msg);
+      }
+    });
+  }
+
   openEdit(): void {
     const u = this.me();
     const username = (u?.username ?? '').toString();
@@ -223,10 +359,15 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.checkingUsername.set(false);
     this.checkingEmail.set(false);
     this.saveError.set('');
+    this.uploadPhotoError.set('');
+    this.selectedPhotoFile.set(null);
+    this.photoPreviewUrl.set(null);
     this.editOpen.set(true);
   }
+  
   closeEdit() { 
-    this.editOpen.set(false); 
+    this.editOpen.set(false);
+    this.cancelPhotoSelection();
   }
 
   saveEdit(): void {
@@ -236,6 +377,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
     const uname = (e.username || '').trim();
     const mail  = (e.gmail || '').trim();
+
     if (uname.length < 3) {
       this.saveError.set('El nombre de usuario debe tener al menos 3 caracteres.');
       return;
@@ -254,7 +396,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
     const patch: Partial<User & { password?: string }> = {
       username: uname || u.username,
       gmail:    mail  || u.gmail,
-      birthday: (e.birthday as any) ?? (u.birthday as any)
+      birthday: (e.birthday as any) ?? (u.birthday as any),
     };
     if (e.password && e.password.trim() !== '') {
       patch.password = e.password.trim();
@@ -267,6 +409,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
       next: (resp) => {
         const merged = { ...(this.me() as any), ...(resp.user as any) };
         this.me.set(merged);
+        this.profilePhotoUrl.set(merged.profilePhoto || '');
         this.saving.set(false);
         this.editOpen.set(false);
       },

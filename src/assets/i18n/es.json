@@ -197,23 +197,20 @@
 
   "PROFILE": {
     "TITLE": "Mi perfil",
+    "USER_FALLBACK": "Usuario",
     "LOADING": "Cargando…",
-
     "BACK_TO_MENU": "Volver al menú",
     "EDIT_BUTTON": "Modificar datos",
     "DELETE_BUTTON": "Eliminar cuenta",
-
     "STATUS_ONLINE": "En línea",
     "STATUS_OFFLINE": "Desconectado",
-
     "FIELD_USERNAME": "Nombre de usuario",
     "FIELD_EMAIL": "Correo",
     "FIELD_BIRTHDAY": "Cumpleaños",
     "FIELD_PASSWORD": "Contraseña",
-
+    "FIELD_PHOTO": "Foto de Perfil",
     "EVENTS_TITLE": "Eventos en los que participo",
     "EVENTS_EMPTY": "No participas en ningún evento.",
-
     "EDIT_MODAL_TITLE": "Modificar datos",
     "EDIT_USERNAME_LABEL": "Nombre de usuario",
     "EDIT_USERNAME_CHECKING": "Comprobando nombre…",
@@ -228,7 +225,19 @@
     "EDIT_CANCEL": "Cancelar",
     "EDIT_SAVE": "Guardar",
     "EDIT_SAVING": "Guardando…",
-
+    "PHOTO_SECTION_TITLE": "Foto de perfil",
+    "PHOTO_SELECT": "Seleccionar foto",
+    "PHOTO_CHANGE": "Cambiar foto",
+    "PHOTO_DELETE_BUTTON": "Eliminar foto",
+    "PHOTO_UPLOAD_BUTTON": "✓ Subir foto",
+    "PHOTO_UPLOADING": "Subiendo...",
+    "PHOTO_CANCEL": "× Cancelar",
+    "PHOTO_HINT": "JPEG, PNG, GIF o WEBP (máx. 5MB)",
+    "DELETE_PHOTO_MODAL_TITLE": "Eliminar foto de perfil",
+    "DELETE_PHOTO_MODAL_TEXT": "¿Estás seguro de que quieres eliminar tu <strong>foto de perfil</strong>?<br>Esta acción no se puede deshacer.",
+    "DELETE_PHOTO_CANCEL": "Cancelar",
+    "DELETE_PHOTO_CONFIRM": "Sí, eliminar foto",
+    "DELETE_PHOTO_DELETING": "Eliminando...",
     "DELETE_MODAL_TITLE": "Eliminar cuenta",
     "DELETE_MODAL_TEXT": "Esta acción es <strong>permanente</strong>. Escribe tu contraseña para confirmar.",
     "DELETE_PASSWORD_LABEL": "Contraseña",

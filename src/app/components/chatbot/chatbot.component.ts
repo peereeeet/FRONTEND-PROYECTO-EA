@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AiService, AiSearchResponse } from '../../services/ai.service';
@@ -9,6 +9,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
 import { EventoService } from '../../services/evento.service';
 import { Evento } from '../../models/evento.model';
+import { filter, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 export interface ChatMessage {
   text: string;
@@ -24,12 +26,13 @@ export interface ChatMessage {
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css']
 })
-export class ChatbotComponent implements OnInit {
+export class ChatbotComponent implements OnInit, OnDestroy {
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
   
   private themeService = inject(ThemeService);
   private translateService = inject(TranslateService);
   private eventoService = inject(EventoService);
+  private destroy$ = new Subject<void>();
   
   theme = this.themeService.theme;
   messages: ChatMessage[] = [];
@@ -37,6 +40,9 @@ export class ChatbotComponent implements OnInit {
   isLoading: boolean = false;
   isChatOpen: boolean = false;
   userId: string | null = null;
+
+  // Nueva propiedad para controlar la visibilidad del chatbot
+  shouldShowChatbot: boolean = true;
 
   selectedEvent: Evento | null = null;
   showEventModal: boolean = false;
@@ -55,32 +61,60 @@ export class ChatbotComponent implements OnInit {
     const user = this.authService.getCurrentUser();
     this.userId = user?._id || null;
 
-    this.translateService.onLangChange.subscribe(() => {
-      this.loadQuickQuestions();
-      if (this.messages.length === 1 && this.messages[0].isBot) {
-        this.translateService.get('CHATBOT.WELCOME_MESSAGE').subscribe(text => {
-          this.messages[0].text = text;
-        });
+    // Verificar la ruta actual al inicializar
+    this.checkCurrentRoute(this.router.url);
+
+    // Suscribirse a cambios de ruta
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntil(this.destroy$)
+    ).subscribe((event: any) => {
+      this.checkCurrentRoute(event.urlAfterRedirects || event.url);
+      
+      // Cerrar el chat al cambiar de ruta
+      if (this.isChatOpen) {
+        this.isChatOpen = false;
+        this.chatbotStateService.closeChat();
       }
     });
+
+    this.translateService.onLangChange
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadQuickQuestions();
+        if (this.messages.length === 1 && this.messages[0].isBot) {
+          this.translateService.get('CHATBOT.WELCOME_MESSAGE').subscribe(text => {
+            this.messages[0].text = text;
+          });
+        }
+      });
 
     this.loadInitialMessages();
 
-    this.chatbotStateService.chatOpen$.subscribe(isOpen => {
-      this.isChatOpen = isOpen;
-      if (isOpen) {
-        setTimeout(() => this.scrollToBottom(), 100);
-      }
-    });
-
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        if (this.isChatOpen) {
-          this.isChatOpen = false;
-          this.chatbotStateService.closeChat();
+    this.chatbotStateService.chatOpen$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isOpen => {
+        this.isChatOpen = isOpen;
+        if (isOpen) {
+          setTimeout(() => this.scrollToBottom(), 100);
         }
-      }
-    });
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Verifica la ruta actual y determina si el chatbot debe mostrarse
+   */
+  private checkCurrentRoute(url: string): void {
+    // Lista de rutas donde NO se debe mostrar el chatbot
+    const hiddenRoutes = ['/login', '/registrar'];
+    
+    // Verificar si la URL actual coincide con alguna ruta oculta
+    this.shouldShowChatbot = !hiddenRoutes.some(route => url.startsWith(route));
   }
 
   private loadInitialMessages(): void {
@@ -294,14 +328,14 @@ export class ChatbotComponent implements OnInit {
     this.translateService.get([
       'CHATBOT.MODAL.LEAVE_CONFIRM_TITLE',
       'CHATBOT.MODAL.LEAVE_CONFIRM',
-      'CHATBOT.MODAL.CONFIRM',
-      'CHATBOT.MODAL.CANCEL'
+      'COMMON.CONFIRM',
+      'COMMON.CANCEL'
     ]).subscribe(translations => {
       this.openConfirmModal(
         translations['CHATBOT.MODAL.LEAVE_CONFIRM_TITLE'],
         translations['CHATBOT.MODAL.LEAVE_CONFIRM'],
-        translations['CHATBOT.MODAL.CONFIRM'],
-        translations['CHATBOT.MODAL.CANCEL'],
+        translations['COMMON.CONFIRM'],
+        translations['COMMON.CANCEL'],
         () => {
           this.isLoadingEvent = true;
 
@@ -329,14 +363,14 @@ export class ChatbotComponent implements OnInit {
     this.translateService.get([
       'CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM_TITLE',
       'CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM',
-      'CHATBOT.MODAL.CONFIRM',
-      'CHATBOT.MODAL.CANCEL'
+      'COMMON.CONFIRM',
+      'COMMON.CANCEL'
     ]).subscribe(translations => {
       this.openConfirmModal(
         translations['CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM_TITLE'],
         translations['CHATBOT.MODAL.LEAVE_WAITLIST_CONFIRM'],
-        translations['CHATBOT.MODAL.CONFIRM'],
-        translations['CHATBOT.MODAL.CANCEL'],
+        translations['COMMON.CONFIRM'],
+        translations['COMMON.CANCEL'],
         () => {
           this.isLoadingEvent = true;
 

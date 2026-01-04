@@ -13,7 +13,10 @@
       </div>
 
       <div class="sidebar__user">
-        <div class="avatar avatar--lg">👤</div>
+        <div class="avatar avatar--lg">
+          <img *ngIf="profilePhotoUrl()" [src]="'http://localhost:3000' + profilePhotoUrl()" alt="Profile" class="avatar-img" />
+          <span *ngIf="!profilePhotoUrl()">👤</span>
+        </div>
         <div class="user-meta">
           <h2 class="user-name">
             {{ me()?.username || ('PROFILE.USER_FALLBACK' | translate) }}
@@ -101,13 +104,6 @@
             <div class="field">
               <div class="label">{{ 'PROFILE.FIELD_BIRTHDAY' | translate }}</div>
               <div class="value">{{ formatDate(me()?.birthday) }}</div>
-            </div>
-
-            <div class="field" *ngIf="!me()?.isGoogleUser">
-              <div class="label">{{ 'PROFILE.FIELD_PASSWORD' | translate }}</div>
-              <div class="value">
-                <span>{{ showPassword ? (realPassword || '—') : maskedPassword() }}</span>
-              </div>
             </div>
           </div>
         </div>
@@ -238,15 +234,69 @@
   </div>
 
   <!-- ===== MODALES ===== -->
+  
   <!-- EDITAR PERFIL -->
   <div class="modal-overlay" *ngIf="editOpen()" (click)="closeEdit()">
-    <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal modal--wide" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>{{ 'PROFILE.EDIT_MODAL_TITLE' | translate }}</h3>
         <button class="btn-close" (click)="closeEdit()">×</button>
       </div>
 
       <div class="modal-body">
+        <!-- Sección de foto de perfil -->
+        <div class="form-section photo-section">
+          <h4 class="section-title">{{ 'PROFILE.PHOTO_SECTION_TITLE' | translate }}</h4>
+          
+          <div class="photo-upload-area">
+            <!-- Vista previa de la foto actual -->
+            <div class="current-photo" *ngIf="profilePhotoUrl() && !photoPreviewUrl()">
+              <img [src]="'http://localhost:3000' + profilePhotoUrl()" alt="Foto actual" />
+              <button type="button" class="btn-remove-photo" (click)="openDeletePhotoModal()" [disabled]="uploadingPhoto()">
+                🗑️ {{ 'PROFILE.PHOTO_DELETE_BUTTON' | translate }}
+              </button>
+            </div>
+
+            <!-- Vista previa de la nueva foto seleccionada -->
+            <div class="photo-preview" *ngIf="photoPreviewUrl()">
+              <img [src]="photoPreviewUrl()!" alt="Vista previa" />
+              <div class="preview-actions">
+                <button type="button" class="btn btn--primary" (click)="uploadPhoto()" [disabled]="uploadingPhoto()">
+                  {{ uploadingPhoto() ? ('PROFILE.PHOTO_UPLOADING' | translate) : ('PROFILE.PHOTO_UPLOAD_BUTTON' | translate) }}
+                </button>
+                <button type="button" class="btn btn--ghost" (click)="cancelPhotoSelection()" [disabled]="uploadingPhoto()">
+                  {{ 'PROFILE.PHOTO_CANCEL' | translate }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Input para seleccionar archivo -->
+            <div class="file-input-wrapper" *ngIf="!photoPreviewUrl()">
+              <input 
+                type="file" 
+                id="photoInput" 
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                (change)="onPhotoSelected($event)"
+                [disabled]="uploadingPhoto()"
+              />
+              <label for="photoInput" class="file-input-label">
+                <span class="upload-icon">📷</span>
+                <span class="upload-text">
+                  {{ profilePhotoUrl() ? ('PROFILE.PHOTO_CHANGE' | translate) : ('PROFILE.PHOTO_SELECT' | translate) }}
+                </span>
+                <span class="upload-hint">{{ 'PROFILE.PHOTO_HINT' | translate }}</span>
+              </label>
+            </div>
+
+            <div *ngIf="uploadPhotoError()" class="msg msg--error photo-error">
+              {{ uploadPhotoError() }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <!-- Resto de campos del formulario -->
         <div class="form-row">
           <label>{{ 'PROFILE.EDIT_USERNAME_LABEL' | translate }}</label>
           <input type="text" [(ngModel)]="edit()!.username" (blur)="checkUsername()" minlength="3" />
@@ -289,6 +339,34 @@
     </div>
   </div>
 
+  <!-- ============ NUEVO: MODAL CONFIRMAR ELIMINAR FOTO ============ -->
+  <div class="modal-overlay" *ngIf="deletePhotoModalOpen()" (click)="closeDeletePhotoModal()">
+    <div class="modal modal--warning" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'PROFILE.DELETE_PHOTO_MODAL_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeDeletePhotoModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-icon modal-icon--warning">
+          🖼️
+        </div>
+        <p class="modal-message" [innerHTML]="'PROFILE.DELETE_PHOTO_MODAL_TEXT' | translate"></p>
+        
+        <div *ngIf="uploadPhotoError()" class="msg msg--error">{{ uploadPhotoError() }}</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn--ghost" (click)="closeDeletePhotoModal()" [disabled]="deletingPhoto()">
+          {{ 'PROFILE.DELETE_PHOTO_CANCEL' | translate }}
+        </button>
+        <button class="btn btn--warning" [disabled]="deletingPhoto()" (click)="confirmDeletePhoto()">
+          {{ deletingPhoto() ? ('PROFILE.DELETE_PHOTO_DELETING' | translate) : ('PROFILE.DELETE_PHOTO_CONFIRM' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- BORRAR CUENTA -->
   <div class="modal-overlay" *ngIf="deleteOpen()" (click)="closeDelete()">
     <div class="modal modal--danger" (click)="$event.stopPropagation()">
@@ -298,9 +376,13 @@
       </div>
 
       <div class="modal-body">
-        <p [innerHTML]="'PROFILE.DELETE_MODAL_TEXT' | translate"></p>
+        <div class="modal-icon modal-icon--danger">
+          ⚠️
+        </div>
+        <p class="modal-message" [innerHTML]="'PROFILE.DELETE_MODAL_TEXT' | translate"></p>
+        
         <div class="form-row" *ngIf="!me()?.isGoogleUser">
-          <input type="password" [(ngModel)]="deletePassword" minlength="7" />
+          <input type="password" [(ngModel)]="deletePassword" minlength="7" placeholder="{{ 'PROFILE.DELETE_PASSWORD_PLACEHOLDER' | translate }}" />
         </div>
 
         <div *ngIf="deleteError()" class="msg msg--error">{{ deleteError() }}</div>

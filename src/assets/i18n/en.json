@@ -198,22 +198,17 @@
   "PROFILE": {
     "TITLE": "My profile",
     "LOADING": "Loading…",
-
     "BACK_TO_MENU": "Back to menu",
     "EDIT_BUTTON": "Edit data",
     "DELETE_BUTTON": "Delete account",
-
     "STATUS_ONLINE": "Online",
     "STATUS_OFFLINE": "Offline",
-
     "FIELD_USERNAME": "Username",
     "FIELD_EMAIL": "Email",
     "FIELD_BIRTHDAY": "Birthday",
     "FIELD_PASSWORD": "Password",
-
     "EVENTS_TITLE": "Events I participate in",
     "EVENTS_EMPTY": "You are not participating in any event.",
-
     "EDIT_MODAL_TITLE": "Edit data",
     "EDIT_USERNAME_LABEL": "Username",
     "EDIT_USERNAME_CHECKING": "Checking username…",
@@ -228,14 +223,17 @@
     "EDIT_CANCEL": "Cancel",
     "EDIT_SAVE": "Save",
     "EDIT_SAVING": "Saving…",
-
     "DELETE_MODAL_TITLE": "Delete account",
     "DELETE_MODAL_TEXT": "This action is <strong>permanent</strong>. Type your password to confirm.",
     "DELETE_PASSWORD_LABEL": "Password",
     "DELETE_PASSWORD_PLACEHOLDER": "Your password",
     "DELETE_CANCEL": "Cancel",
     "DELETE_CONFIRM": "Delete permanently",
-    "DELETE_DELETING": "Deleting…"
+    "DELETE_DELETING": "Deleting…",
+    "FIELD_PHOTO": "Profile Photo",
+    "EDIT_PHOTO_LABEL": "Profile Photo URL",
+    "EDIT_PHOTO_PLACEHOLDER": "https://example.com/my-photo.jpg",
+    "EDIT_PHOTO_HINT": "Enter your profile photo URL (must start with http:// or https://)"
   },
 
   "EVENTS": {

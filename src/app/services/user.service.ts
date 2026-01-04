@@ -57,6 +57,22 @@ export class UserService {
     return this.http.put<{ ok: boolean; user: User }>(`${this.apiUrl}/${id}/self`, patch, { headers });
   }
 
+  uploadProfilePhoto(userId: string, file: File): Observable<{ ok: boolean; profilePhoto: string; user: User }> {
+    const formData = new FormData();
+    formData.append('photo', file);
+    
+    return this.http.post<{ ok: boolean; profilePhoto: string; user: User }>(
+      `${this.apiUrl}/${userId}/profile-photo`,
+      formData
+    );
+  }
+
+  deleteProfilePhoto(userId: string): Observable<{ ok: boolean; message: string }> {
+    return this.http.delete<{ ok: boolean; message: string }>(
+      `${this.apiUrl}/${userId}/profile-photo`
+    );
+  }
+
   checkUserExistsForReset(identifier: string) {
     return this.http.post<void>(`${this.apiUrl}/usuarios/forgot-password/check`, { emailOrUsername: identifier });
   }
