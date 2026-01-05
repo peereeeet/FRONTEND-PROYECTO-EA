@@ -72,6 +72,35 @@ export class SocketService {
     return this.connectedUserId;
   }
 
+  on(eventName: string): Observable<any> {
+    return new Observable((subscriber) => {
+      if (!this.socket) {
+        console.warn(`⚠️ Socket no conectado al intentar escuchar evento: ${eventName}`);
+        return;
+      }
+
+      const handler = (data: any) => {
+        subscriber.next(data);
+      };
+
+      this.socket.on(eventName, handler);
+
+      return () => {
+        if (this.socket) {
+          this.socket.off(eventName, handler);
+        }
+      };
+    });
+  }
+
+  emit(eventName: string, data?: any): void {
+    if (!this.socket) {
+      console.warn(`⚠️ Socket no conectado al intentar emitir evento: ${eventName}`);
+      return;
+    }
+    this.socket.emit(eventName, data);
+  }
+
   onUserOnline(): Observable<{ userId: string }> {
     return new Observable((sub) => {
       if (!this.socket) {

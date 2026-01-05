@@ -1,0 +1,91 @@
+<!-- Botón de notificaciones -->
+<div class="notification-trigger">
+  <button 
+    class="notification-btn" 
+    (click)="togglePanel()"
+    [class.has-unread]="unreadCount() > 0"
+    [attr.aria-label]="'NOTIFICATIONS.TITLE' | translate">
+    <span class="notification-icon">🔔</span>
+    <span class="notification-badge" *ngIf="unreadCount() > 0">
+      {{ unreadCount() > 99 ? '99+' : unreadCount() }}
+    </span>
+  </button>
+</div>
+
+<!-- Panel de notificaciones -->
+<div class="notification-panel" [class.show]="showPanel()">
+  <div class="notification-overlay" (click)="closePanel()"></div>
+  
+  <div class="notification-content">
+    <!-- Header -->
+    <div class="notification-header">
+      <h3 class="notification-title">
+        <span class="title-icon">🔔</span>
+        {{ 'NOTIFICATIONS.TITLE' | translate }}
+      </h3>
+      <div class="notification-actions">
+        <button 
+          class="action-btn" 
+          *ngIf="unreadCount() > 0"
+          (click)="markAllAsRead()"
+          [attr.title]="'NOTIFICATIONS.MARK_ALL_READ' | translate">
+          ✓
+        </button>
+        <button 
+          class="action-btn close-btn" 
+          (click)="closePanel()"
+          [attr.title]="'NOTIFICATIONS.CLOSE' | translate">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="notification-loading" *ngIf="loading()">
+      <div class="loading-spinner"></div>
+      <p>{{ 'NOTIFICATIONS.LOADING' | translate }}</p>
+    </div>
+
+    <!-- Lista de notificaciones -->
+    <div class="notification-list" *ngIf="!loading()">
+      <!-- Sin notificaciones -->
+      <div class="empty-state" *ngIf="!hasNotificaciones()">
+        <div class="empty-icon">🔕</div>
+        <p class="empty-text">{{ 'NOTIFICATIONS.EMPTY_TITLE' | translate }}</p>
+        <p class="empty-subtext">{{ 'NOTIFICATIONS.EMPTY_SUBTITLE' | translate }}</p>
+      </div>
+
+      <!-- Notificaciones -->
+      <div 
+        class="notification-item"
+        *ngFor="let notif of notificaciones()"
+        [class.unread]="!notif.read"
+        [class.notification-color]="getNotificacionColor(notif.type)"
+        (click)="onNotificacionClick(notif)">
+        
+        <!-- Icono -->
+        <div class="notif-icon" [attr.data-type]="notif.type">
+          {{ getNotificacionIcon(notif.type) }}
+        </div>
+
+        <!-- Contenido -->
+        <div class="notif-content">
+          <h4 class="notif-title">{{ notif.title }}</h4>
+          <p class="notif-message">{{ notif.message }}</p>
+          <span class="notif-time">{{ getRelativeTime(notif.createdAt) }}</span>
+        </div>
+
+        <!-- Indicador de no leído -->
+        <div class="notif-unread-dot" *ngIf="!notif.read"></div>
+
+        <!-- Botón eliminar -->
+        <button 
+          class="notif-delete"
+          (click)="deleteNotificacion(notif, $event)"
+          [attr.title]="'NOTIFICATIONS.DELETE' | translate">
+          🗑️
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

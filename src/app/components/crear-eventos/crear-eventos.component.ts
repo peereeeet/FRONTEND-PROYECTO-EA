@@ -14,6 +14,7 @@ import { RewardNotificationService } from '../../services/reward-notification.se
 import { RewardNotificationComponent } from '../reward-notification/reward-notification.component';
 import { GeocodingService, GeocodingResult, AddressValidation } from '../../services/geocoding.service';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
 
 type NewEventDTO = {
   name: string;
@@ -31,7 +32,7 @@ type NewEventDTO = {
 @Component({
   selector: 'app-crear-eventos',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, RewardNotificationComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, RewardNotificationComponent, NotificacionesComponent],
   templateUrl: './crear-eventos.component.html',
   styleUrls: ['./crear-eventos.component.css'],
 })

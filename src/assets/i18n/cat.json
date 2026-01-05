@@ -658,5 +658,27 @@
         "CONFIRM": "Confirmar",
         "CANCEL": "Cancel·lar"
       }
+    },
+
+    "NOTIFICATIONS": {
+      "TITLE": "Notificacions",
+      "MARK_ALL_READ": "Marcar totes com a llegides",
+      "CLOSE": "Tancar",
+      "LOADING": "Carregant notificacions...",
+      "EMPTY_TITLE": "No tens notificacions",
+      "EMPTY_SUBTITLE": "T'avisarem quan tinguis alguna cosa nova",
+      "VIEW_ALL": "Veure totes les notificacions",
+      "DELETE": "Eliminar",
+      "NOW": "Ara",
+      "MINUTES_AGO": "Fa {{minutes}}m",
+      "HOURS_AGO": "Fa {{hours}}h",
+      "DAYS_AGO": "Fa {{days}}d",
+      "TYPES": {
+        "friend_request": "Nova sol·licitud d'amistat",
+        "friend_accepted": "Sol·licitud acceptada",
+        "event_join": "Amic s'ha unit al teu esdeveniment",
+        "event_reminder": "Recordatori d'esdeveniment",
+        "new_message": "Missatge nou"
+      }
     }
 }

@@ -11,13 +11,14 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
 import { GamificacionService } from '../../services/gamificacion.service';
 import { UsuarioProgreso, calcularProgresoNivel, getNivelInfo } from '../../models/gamificacion.model';
+import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
 
 type EditDTO = { username: string; gmail: string; birthday: string; password?: string; };
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, TranslateModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, NotificacionesComponent],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.css']
 })

@@ -649,5 +649,27 @@
         "CONFIRM": "Confirm",
         "CANCEL": "Cancel"
       }
+    },
+
+    "NOTIFICATIONS": {
+      "TITLE": "Notifications",
+      "MARK_ALL_READ": "Mark all as read",
+      "CLOSE": "Close",
+      "LOADING": "Loading notifications...",
+      "EMPTY_TITLE": "No notifications",
+      "EMPTY_SUBTITLE": "We'll notify you when there's something new",
+      "VIEW_ALL": "View all notifications",
+      "DELETE": "Delete",
+      "NOW": "Now",
+      "MINUTES_AGO": "{{minutes}}m ago",
+      "HOURS_AGO": "{{hours}}h ago",
+      "DAYS_AGO": "{{days}}d ago",
+      "TYPES": {
+        "friend_request": "New friend request",
+        "friend_accepted": "Request accepted",
+        "event_join": "Friend joined your event",
+        "event_reminder": "Event reminder",
+        "new_message": "New message"
+      }
     }
 }

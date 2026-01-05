@@ -18,6 +18,7 @@ import * as maplibregl from 'maplibre-gl';
 import { RewardNotificationService } from '../../services/reward-notification.service';
 import { GamificacionService } from '../../services/gamificacion.service';
 import { RewardNotificationComponent } from '../reward-notification/reward-notification.component';
+import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
 
 type FriendLike = User;
 
@@ -30,7 +31,7 @@ interface EventStats {
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, RewardNotificationComponent, RouterModule],
+  imports: [CommonModule, FormsModule, TranslateModule, RewardNotificationComponent, RouterModule, NotificacionesComponent],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css']
 })

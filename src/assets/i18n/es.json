@@ -660,5 +660,27 @@
         "CONFIRM": "Confirmar",
         "CANCEL": "Cancelar"
       }
+    },
+
+    "NOTIFICATIONS": {
+      "TITLE": "Notificaciones",
+      "MARK_ALL_READ": "Marcar todas como leídas",
+      "CLOSE": "Cerrar",
+      "LOADING": "Cargando notificaciones...",
+      "EMPTY_TITLE": "No tienes notificaciones",
+      "EMPTY_SUBTITLE": "Te avisaremos cuando tengas algo nuevo",
+      "VIEW_ALL": "Ver todas las notificaciones",
+      "DELETE": "Eliminar",
+      "NOW": "Ahora",
+      "MINUTES_AGO": "Hace {{minutes}}m",
+      "HOURS_AGO": "Hace {{hours}}h",
+      "DAYS_AGO": "Hace {{days}}d",
+      "TYPES": {
+        "friend_request": "Nueva solicitud de amistad",
+        "friend_accepted": "Solicitud aceptada",
+        "event_join": "Amigo se unió a tu evento",
+        "event_reminder": "Recordatorio de evento",
+        "new_message": "Nuevo mensaje"
+      }
     }
 }

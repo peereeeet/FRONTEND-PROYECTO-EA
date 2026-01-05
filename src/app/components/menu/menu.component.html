@@ -14,7 +14,7 @@
 
       <div class="sidebar__user">
         <div class="avatar avatar--lg">
-          <img *ngIf="me()?.profilePhoto" [src]="me()!.profilePhoto" alt="Profile" class="avatar-img" />
+          <img *ngIf="me()?.profilePhoto" [src]="'http://localhost:3000' + me()!.profilePhoto" alt="Profile" class="avatar-img" />
           <span *ngIf="!me()?.profilePhoto">👤</span>
         </div>
         <div class="user-meta">
@@ -105,6 +105,8 @@
         </div>
 
         <div class="top-bar__right">
+          <app-notificaciones></app-notificaciones>
+
           <div class="lang-switcher-menu">
             <button
               type="button"
@@ -219,7 +221,7 @@
                   <li *ngFor="let f of friendsPaged()">
                     <div class="friend-left">
                       <div class="avatar avatar--sm">
-                        <img *ngIf="f.profilePhoto" [src]="f.profilePhoto" alt="" class="avatar-img" />
+                        <img *ngIf="f.profilePhoto" [src]="'http://localhost:3000' + f.profilePhoto" alt="" class="avatar-img" />
                         <span *ngIf="!f.profilePhoto">🙂</span>
                       </div>
                       <div class="friend-data">
@@ -854,7 +856,7 @@
           <div class="user-row" *ngFor="let u of modalPageItems">
             <div class="user-avatar">
               <div class="avatar avatar--sm">
-                <img *ngIf="u.profilePhoto" [src]="u.profilePhoto" alt="" class="avatar-img" />
+                <img *ngIf="u.profilePhoto" [src]="'http://localhost:3000' + u.profilePhoto" alt="" class="avatar-img" />
                 <span *ngIf="!u.profilePhoto">👤</span>
               </div>
             </div>
@@ -918,7 +920,7 @@
           <li *ngFor="let u of requestsList()">
             <div class="request-left">
               <div class="avatar avatar--sm">
-                <img *ngIf="u.profilePhoto" [src]="u.profilePhoto" alt="" class="avatar-img" />
+                <img *ngIf="u.profilePhoto" [src]="'http://localhost:3000' + u.profilePhoto" alt="" class="avatar-img" />
                 <span *ngIf="!u.profilePhoto">👤</span>
               </div>
               <div class="request-data">

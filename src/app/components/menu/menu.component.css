@@ -104,6 +104,9 @@
   place-items: center;
   color: #ffffff;
   border: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .avatar--lg {
@@ -116,6 +119,21 @@
   width: 40px;
   height: 40px;
   font-size: 1.2rem;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .user-meta {
@@ -2974,75 +2992,77 @@
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.25));
   border-color: rgba(99, 102, 241, 0.6);
 }
-/* ===== FOTOS DE PERFIL EN AVATARES ===== */
-.avatar {
-  overflow: hidden;
-  position: relative;
-  flex-shrink: 0;
+
+/* ===== CORRECCIONES PARA MENU.COMPONENT.CSS ===== */
+/* Agrega o reemplaza estos estilos en tu archivo menu.component.css */
+
+/* 1️⃣ CORRECCIÓN: Alineación del top-bar__right */
+.top-bar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Espacio entre notificaciones, idioma y tema */
 }
 
+/* Asegurar que el componente de notificaciones se muestre correctamente */
+app-notificaciones {
+  display: flex;
+  align-items: center;
+}
+
+/* 2️⃣ CORRECCIÓN: Avatar en solicitudes de amistad */
+/* Asegurar que el avatar se muestre correctamente */
 .avatar-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: inherit; /* Hereda el border-radius del contenedor .avatar */
 }
 
-.avatar span {
+/* Asegurar que el contenedor avatar tenga el tamaño correcto */
+.avatar--sm {
+  width: 36px;
+  height: 36px;
+  min-width: 36px; /* Importante: evita que se colapse */
+  min-height: 36px;
+  border-radius: 50%;
+  overflow: hidden; /* Importante: oculta cualquier parte de la imagen que sobresalga */
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
+  background: var(--surface-hover);
+  border: 2px solid var(--border);
 }
 
-.user-row {
+/* Si la imagen no carga, mostrar el emoji centrado */
+.avatar--sm span {
+  font-size: 1.2rem;
+}
+
+/* 3️⃣ MEJORA: Estilos para requests-left (solicitudes) */
+.request-left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.user-avatar {
-  flex-shrink: 0;
-}
-
-.user-name {
-  flex: 1;
-  min-width: 0;
-}
-/* ===== FOTOS DE PERFIL EN AVATARES ===== */
-.avatar {
-  overflow: hidden;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-.avatar span {
+.request-data {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.user-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.request-name {
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-.user-avatar {
-  flex-shrink: 0;
+.request-mail {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
-.user-name {
-  flex: 1;
-  min-width: 0;
+/* 4️⃣ EXTRA: Ajustes para el z-index del panel de notificaciones */
+/* Asegurar que el panel de notificaciones aparezca por encima de todo */
+app-notificaciones .notification-panel {
+  z-index: 9999;
 }

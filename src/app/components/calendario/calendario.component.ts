@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { GeocodingService, GeocodingResult, AddressValidation } from '../../services/geocoding.service';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
 
 interface CalendarDay {
   date: Date;
@@ -32,7 +33,7 @@ type NewEventDTO = {
 @Component({
   selector: 'app-calendario',
   standalone: true,
-  imports: [CommonModule, TranslateModule, FormsModule],
+  imports: [CommonModule, TranslateModule, FormsModule, NotificacionesComponent],
   templateUrl: './calendario.component.html',
   styleUrls: ['./calendario.component.css']
 })
@@ -108,13 +109,11 @@ export class CalendarioComponent implements OnInit {
   ngOnInit(): void {
     const savedLang = localStorage.getItem('lang') as 'es' | 'en' | 'cat' | 'fr';
     if (savedLang) {
-      this.currentLang.set(savedLang);  // ← Usar .set()
+      this.currentLang.set(savedLang);
       this.translateService.use(savedLang);
     }
-    // Cargar días de la semana desde traducciones
     this.loadWeekDays();
 
-    // Suscribirse a cambios de idioma para actualizar los días
     this.translateService.onLangChange.subscribe(() => {
       this.loadWeekDays();
     });
@@ -266,7 +265,7 @@ export class CalendarioComponent implements OnInit {
 
   currentMonthName = computed(() => {
     const date = this.currentDate();
-    const lang = this.currentLang();  // ← Leer la señal con ()
+    const lang = this.currentLang();
     const year = date.getFullYear();
     const localeMap: { [key: string]: string } = {
       "es": "es-ES",

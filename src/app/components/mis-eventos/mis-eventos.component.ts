@@ -18,11 +18,12 @@ import { ThemeService } from '../../services/theme.service';
 import { GamificacionService } from '../../services/gamificacion.service';
 import { RewardNotificationService } from '../../services/reward-notification.service';
 import { RewardNotificationComponent } from '../reward-notification/reward-notification.component';
+import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
 
 @Component({
   selector: 'app-mis-eventos',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, RewardNotificationComponent],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, RewardNotificationComponent, NotificacionesComponent],
   templateUrl: './mis-eventos.component.html',
   styleUrls: ['./mis-eventos.component.css']
 })

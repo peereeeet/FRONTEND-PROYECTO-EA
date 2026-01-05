@@ -5,11 +5,12 @@ import { EventoService } from '../../services/evento.service';
 import { Evento } from '../../models/evento.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
+import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
 
 @Component({
   selector: 'app-invitaciones',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, NotificacionesComponent],
   templateUrl: './invitaciones.component.html',
   styleUrls: ['./invitaciones.component.css']
 })
