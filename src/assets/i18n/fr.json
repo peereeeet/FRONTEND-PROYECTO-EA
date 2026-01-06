@@ -660,24 +660,33 @@
     },
 
     "NOTIFICATIONS": {
-      "TITLE": "Notifications",
-      "MARK_ALL_READ": "Tout marquer comme lu",
-      "CLOSE": "Fermer",
-      "LOADING": "Chargement des notifications...",
-      "EMPTY_TITLE": "Aucune notification",
-      "EMPTY_SUBTITLE": "Nous vous préviendrons lorsqu'il y aura du nouveau",
-      "VIEW_ALL": "Voir toutes les notifications",
-      "DELETE": "Supprimer",
-      "NOW": "Maintenant",
-      "MINUTES_AGO": "Il y a {{minutes}}m",
-      "HOURS_AGO": "Il y a {{hours}}h",
-      "DAYS_AGO": "Il y a {{days}}j",
-      "TYPES": {
-        "friend_request": "Nouvelle demande d'ami",
-        "friend_accepted": "Demande acceptée",
-        "event_join": "Un ami a rejoint votre événement",
-        "event_reminder": "Rappel d'événement",
-        "new_message": "Nouveau message"
-      }
+    "TITLE": "Notifications",
+    "MARK_ALL_READ": "Tout marquer comme lu",
+    "DELETE_ALL": "Tout supprimer",
+    "DELETE_ALL_CONFIRM": "Êtes-vous sûr de vouloir supprimer toutes les notifications?",
+    "CLOSE": "Fermer",
+    "LOADING": "Chargement des notifications...",
+    "EMPTY_TITLE": "Aucune notification",
+    "EMPTY_SUBTITLE": "Nous vous préviendrons lorsqu'il y aura du nouveau",
+    "VIEW_ALL": "Voir toutes les notifications",
+    "DELETE": "Supprimer",
+    "NOW": "Maintenant",
+    "MINUTES_AGO": "Il y a {{minutes}}m",
+    "HOURS_AGO": "Il y a {{hours}}h",
+    "DAYS_AGO": "Il y a {{days}}j",
+    "TYPES": {
+      "friend_request": "Nouvelle demande d'ami",
+      "friend_accepted": "Demande acceptée",
+      "event_join": "Un ami a rejoint votre événement",
+      "event_reminder": "Rappel d'événement",
+      "new_message": "Nouveau message"
+    },
+    "MESSAGES": {
+      "friend_request": "{{username}} vous a envoyé une demande d'ami",
+      "friend_accepted": "{{username}} a accepté votre demande d'ami",
+      "event_join": "{{username}} a rejoint votre événement \"{{eventName}}\"",
+      "event_reminder": "Votre événement \"{{eventName}}\" commence bientôt",
+      "new_message": "{{username}} vous a envoyé un message"
     }
+  }
 }

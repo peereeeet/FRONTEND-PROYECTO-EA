@@ -24,6 +24,7 @@
         {{ 'NOTIFICATIONS.TITLE' | translate }}
       </h3>
       <div class="notification-actions">
+        <!-- Botón marcar todas como leídas -->
         <button 
           class="action-btn" 
           *ngIf="unreadCount() > 0"
@@ -31,6 +32,17 @@
           [attr.title]="'NOTIFICATIONS.MARK_ALL_READ' | translate">
           ✓
         </button>
+        
+        <!-- Botón eliminar todas -->
+        <button 
+          class="action-btn delete-all-btn" 
+          *ngIf="hasNotificaciones()"
+          (click)="deleteAllNotificaciones()"
+          [attr.title]="'NOTIFICATIONS.DELETE_ALL' | translate">
+          🗑️
+        </button>
+        
+        <!-- Botón cerrar -->
         <button 
           class="action-btn close-btn" 
           (click)="closePanel()"
@@ -70,15 +82,15 @@
 
         <!-- Contenido -->
         <div class="notif-content">
-          <h4 class="notif-title">{{ notif.title }}</h4>
-          <p class="notif-message">{{ notif.message }}</p>
+          <h4 class="notif-title">{{ getTranslatedTitle(notif.type) }}</h4>
+          <p class="notif-message">{{ getTranslatedMessage(notif) }}</p>
           <span class="notif-time">{{ getRelativeTime(notif.createdAt) }}</span>
         </div>
 
         <!-- Indicador de no leído -->
         <div class="notif-unread-dot" *ngIf="!notif.read"></div>
 
-        <!-- Botón eliminar -->
+        <!-- Botón eliminar individual -->
         <button 
           class="notif-delete"
           (click)="deleteNotificacion(notif, $event)"

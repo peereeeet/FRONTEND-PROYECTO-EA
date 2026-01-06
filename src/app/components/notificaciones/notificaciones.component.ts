@@ -7,7 +7,7 @@ import { NotificacionService } from '../../services/notificacion.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { Notificacion } from '../../models/notificacion.model';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-notificaciones',
@@ -22,6 +22,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private router = inject(Router);
   private socketService = inject(SocketService);
+  private translate = inject(TranslateService);
 
   notificaciones = signal<Notificacion[]>([]);
   loading = signal(false);
@@ -54,7 +55,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    console.log('📥 Cargando notificaciones para usuario:', user._id);
+    console.log('🔥 Cargando notificaciones para usuario:', user._id);
     this.loading.set(true);
     this.notificacionService.getUserNotificaciones(user._id, 50)
       .pipe(takeUntil(this.destroy$))
@@ -134,8 +135,11 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     console.log('📬 Mostrando notificación:', notificacion.title);
     
     if ('Notification' in window && Notification.permission === 'granted') {
-      const notification = new Notification(notificacion.title, {
-        body: notificacion.message,
+      const translatedTitle = this.getTranslatedTitle(notificacion.type);
+      const translatedMessage = this.getTranslatedMessage(notificacion);
+      
+      const notification = new Notification(translatedTitle, {
+        body: translatedMessage,
         icon: '/assets/logo.png',
         badge: '/assets/logo.png',
         tag: notificacion._id,
@@ -199,6 +203,42 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     });
   }
 
+  deleteAllNotificaciones() {
+    const user = this.auth.getCurrentUser();
+    if (!user?._id) return;
+
+    const confirmMessage = this.translate.instant('NOTIFICATIONS.DELETE_ALL_CONFIRM');
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    console.log('🗑️ Eliminando todas las notificaciones');
+    const currentNotifs = this.notificaciones();
+    let deletedCount = 0;
+    let errorCount = 0;
+
+    currentNotifs.forEach((notif) => {
+      this.notificacionService.deleteNotificacion(notif._id).subscribe({
+        next: () => {
+          deletedCount++;
+          console.log(`✅ Notificación ${deletedCount}/${currentNotifs.length} eliminada`);
+        },
+        error: (err) => {
+          errorCount++;
+          console.error('❌ Error eliminando notificación:', err);
+        }
+      });
+    });
+
+    setTimeout(() => {
+      if (errorCount === 0) {
+        console.log(`✅ Todas las notificaciones eliminadas (${deletedCount})`);
+      } else {
+        console.warn(`⚠️ ${deletedCount} eliminadas, ${errorCount} errores`);
+      }
+    }, 1000);
+  }
+
   deleteNotificacion(notificacion: Notificacion, event: Event) {
     event.stopPropagation();
     console.log('🗑️ Eliminando notificación:', notificacion.title);
@@ -207,6 +247,43 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
       next: () => console.log('✅ Notificación eliminada'),
       error: (err) => console.error('❌ Error eliminando:', err)
     });
+  }
+
+  getTranslatedTitle(type: Notificacion['type']): string {
+    return this.translate.instant(`NOTIFICATIONS.TYPES.${type}`);
+  }
+
+  getTranslatedMessage(notif: Notificacion): string {
+    switch (notif.type) {
+      case 'friend_request':
+        return this.translate.instant('NOTIFICATIONS.MESSAGES.friend_request', {
+          username: notif.relatedUsername || 'Un usuario'
+        });
+      
+      case 'friend_accepted':
+        return this.translate.instant('NOTIFICATIONS.MESSAGES.friend_accepted', {
+          username: notif.relatedUsername || 'Un usuario'
+        });
+      
+      case 'event_join':
+        return this.translate.instant('NOTIFICATIONS.MESSAGES.event_join', {
+          username: notif.relatedUsername || 'Un amigo',
+          eventName: notif.relatedEventName || 'tu evento'
+        });
+      
+      case 'event_reminder':
+        return this.translate.instant('NOTIFICATIONS.MESSAGES.event_reminder', {
+          eventName: notif.relatedEventName || 'un evento'
+        });
+      
+      case 'new_message':
+        return this.translate.instant('NOTIFICATIONS.MESSAGES.new_message', {
+          username: notif.relatedUsername || 'Un usuario'
+        });
+      
+      default:
+        return notif.message;
+    }
   }
 
   getNotificacionIcon(type: Notificacion['type']): string {
@@ -239,11 +316,15 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'Ahora';
-    if (diffMins < 60) return `Hace ${diffMins}m`;
-    if (diffHours < 24) return `Hace ${diffHours}h`;
-    if (diffDays < 7) return `Hace ${diffDays}d`;
-    return notifDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    if (diffMins < 1) return this.translate.instant('NOTIFICATIONS.NOW');
+    if (diffMins < 60) return this.translate.instant('NOTIFICATIONS.MINUTES_AGO', { minutes: diffMins });
+    if (diffHours < 24) return this.translate.instant('NOTIFICATIONS.HOURS_AGO', { hours: diffHours });
+    if (diffDays < 7) return this.translate.instant('NOTIFICATIONS.DAYS_AGO', { days: diffDays });
+    
+    return notifDate.toLocaleDateString(this.translate.currentLang || 'es-ES', { 
+      day: 'numeric', 
+      month: 'short' 
+    });
   }
 
   requestNotificationPermission() {

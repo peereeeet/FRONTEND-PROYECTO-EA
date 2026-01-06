@@ -663,24 +663,33 @@
     },
 
     "NOTIFICATIONS": {
-      "TITLE": "Notificaciones",
-      "MARK_ALL_READ": "Marcar todas como leídas",
-      "CLOSE": "Cerrar",
-      "LOADING": "Cargando notificaciones...",
-      "EMPTY_TITLE": "No tienes notificaciones",
-      "EMPTY_SUBTITLE": "Te avisaremos cuando tengas algo nuevo",
-      "VIEW_ALL": "Ver todas las notificaciones",
-      "DELETE": "Eliminar",
-      "NOW": "Ahora",
-      "MINUTES_AGO": "Hace {{minutes}}m",
-      "HOURS_AGO": "Hace {{hours}}h",
-      "DAYS_AGO": "Hace {{days}}d",
-      "TYPES": {
-        "friend_request": "Nueva solicitud de amistad",
-        "friend_accepted": "Solicitud aceptada",
-        "event_join": "Amigo se unió a tu evento",
-        "event_reminder": "Recordatorio de evento",
-        "new_message": "Nuevo mensaje"
-      }
+    "TITLE": "Notificaciones",
+    "MARK_ALL_READ": "Marcar todas como leídas",
+    "DELETE_ALL": "Eliminar todas",
+    "DELETE_ALL_CONFIRM": "¿Estás seguro de que quieres eliminar todas las notificaciones?",
+    "CLOSE": "Cerrar",
+    "LOADING": "Cargando notificaciones...",
+    "EMPTY_TITLE": "No tienes notificaciones",
+    "EMPTY_SUBTITLE": "Te avisaremos cuando tengas algo nuevo",
+    "VIEW_ALL": "Ver todas las notificaciones",
+    "DELETE": "Eliminar",
+    "NOW": "Ahora",
+    "MINUTES_AGO": "Hace {{minutes}}m",
+    "HOURS_AGO": "Hace {{hours}}h",
+    "DAYS_AGO": "Hace {{days}}d",
+    "TYPES": {
+      "friend_request": "Nueva solicitud de amistad",
+      "friend_accepted": "Solicitud aceptada",
+      "event_join": "Amigo se unió a tu evento",
+      "event_reminder": "Recordatorio de evento",
+      "new_message": "Nuevo mensaje"
+    },
+    "MESSAGES": {
+      "friend_request": "{{username}} te ha enviado una solicitud de amistad",
+      "friend_accepted": "{{username}} ha aceptado tu solicitud de amistad",
+      "event_join": "{{username}} se ha unido a tu evento \"{{eventName}}\"",
+      "event_reminder": "Tu evento \"{{eventName}}\" comienza pronto",
+      "new_message": "{{username}} te ha enviado un mensaje"
     }
+  }
 }
