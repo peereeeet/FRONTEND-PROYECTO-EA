@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { io, Socket } from 'socket.io-client';
 import { environment } from '../environments/environment.prod';
+import * as io from 'socket.io-client';
 
 @Injectable({ providedIn: 'root' })
 export class SocketService {
@@ -23,7 +23,7 @@ export class SocketService {
     }
 
     console.log('🔌 Conectando socket para usuario:', userId);
-    this.socket = io(this.url, {
+    this.socket = io.connect(this.url, {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionDelay: 1000,
@@ -66,7 +66,7 @@ export class SocketService {
   }
 
   isConnected(): boolean {
-    return !!this.socket?.connected;
+    return this.socket && this.socket.connected;
   }
 
   getConnectedUserId(): string | null {
@@ -74,73 +74,111 @@ export class SocketService {
   }
 
   onUserOnline(): Observable<{ userId: string }> {
-    return new Observable(sub => {
-      if (!this.socket) return;
+    return new Observable((sub) => {
+      if (!this.socket) {
+        return;
+      }
 
-      const handler = (payload: any) => sub.next(payload);
+      const handler = (payload: { userId: string }) => sub.next(payload);
       this.socket.on('user:online', handler);
-
-      return () => this.socket?.off('user:online', handler);
+      return () => {
+        if (this.socket) {
+          this.socket.off('user:online', handler);
+        }
+      };
     });
   }
 
   onUserOffline(): Observable<{ userId: string }> {
-    return new Observable(sub => {
-      if (!this.socket) return;
+    return new Observable((sub) => {
+      if (!this.socket) {
+        return;
+      }
 
-      const handler = (payload: any) => sub.next(payload);
+      const handler = (payload: { userId: string }) => sub.next(payload);
       this.socket.on('user:offline', handler);
 
-      return () => this.socket?.off('user:offline', handler);
+      return () => {
+        if (this.socket) {
+          this.socket.off('user:offline', handler);
+        }
+      };
     });
   }
 
   joinChat(userId: string, friendId: string): void {
-    this.socket?.emit('chat:join', { userId, friendId });
+    if (!this.socket) return;
+    this.socket.emit('chat:join', { userId, friendId });
   }
 
   sendChatMessage(from: string, to: string, text: string): void {
-    this.socket?.emit('chat:message', { from, to, text });
+    if (!this.socket) return;
+    this.socket.emit('chat:message', { from, to, text });
   }
 
-  onChatMessage(): Observable<any> {
-    return new Observable(sub => {
+  onChatMessage(): Observable<{ _id?: string; from: string; to: string; text: string; createdAt: string }> {
+    return new Observable((sub) => {
       if (!this.socket) return;
 
       const handler = (msg: any) => sub.next(msg);
       this.socket.on('chat:message', handler);
 
-      return () => this.socket?.off('chat:message', handler);
+      return () => {
+        if (this.socket) {
+          this.socket.off('chat:message', handler);
+        }
+      };
     });
   }
 
   joinEventChat(eventId: string): void {
-    this.socket?.emit('eventChat:join', { eventId });
+    if (!this.socket) return;
+    this.socket.emit('eventChat:join', { eventId });
   }
 
   sendEventChatMessage(eventId: string, userId: string, username: string, text: string): void {
-    this.socket?.emit('eventChat:message', { eventId, userId, username, text });
+    if (!this.socket) return;
+    this.socket.emit('eventChat:message', { eventId, userId, username, text });
   }
 
-  onEventChatMessage(): Observable<any> {
+  onEventChatMessage(): Observable<{
+    _id?: string;
+    eventId: string;
+    userId: string;
+    username: string;
+    text: string;
+    createdAt: string;
+  }> {
     return new Observable(sub => {
       if (!this.socket) return;
 
       const handler = (msg: any) => sub.next(msg);
       this.socket.on('eventChat:message', handler);
 
-      return () => this.socket?.off('eventChat:message', handler);
+      return () => {
+        if (this.socket) {
+          this.socket.off('eventChat:message', handler);
+        }
+      };
     });
   }
 
-  onFriendRequestReceived(): Observable<any> {
+  onFriendRequestReceived(): Observable<{
+    fromUserId: string;
+    fromUsername: string;
+    fromGmail: string;
+  }> {
     return new Observable(sub => {
       if (!this.socket) return;
 
       const handler = (payload: any) => sub.next(payload);
       this.socket.on('friendRequest:received', handler);
 
-      return () => this.socket?.off('friendRequest:received', handler);
+      return () => {
+        if (this.socket) {
+          this.socket.off('friendRequest:received', handler);
+        }
+      };
     });
   }
 

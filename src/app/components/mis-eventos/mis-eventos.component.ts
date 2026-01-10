@@ -496,13 +496,13 @@ export class MisEventosComponent implements OnInit {
     if (!this.ratingsEventoId) return;
     
     this.ratingsSrv.getMyRatingForEvent(this.ratingsEventoId).subscribe({
-      next: (rating: Valoracion) => {
+      next: (rating) => {
         this.userHasRated = true;
         this.existingRatingId = rating._id;
         this.myScore = rating.puntuacion;
         this.myComment = rating.comentario || '';
       },
-      error: (err: any) => {
+      error: (err) => {
         if (err.status === 404) {
           this.userHasRated = false;
           this.existingRatingId = null;

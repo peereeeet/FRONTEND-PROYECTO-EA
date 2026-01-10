@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import {jwtDecode} from 'jwt-decode';
 import { environment } from '../environments/environment.prod';
-import { logger } from '../utils/logger';
 
 
 export interface User {
@@ -94,7 +93,7 @@ export class AuthService {
     const user = localStorage.getItem('currentUser')
     if (!user)
       return false
-        try {
+      try {
           const userData = JSON.parse(user);
           const token = localStorage.getItem('token');
 
@@ -110,9 +109,9 @@ export class AuthService {
           }
 
          return !!userData.isActive;
-        }
+        } 
       catch (error) {
-        logger.log("Error en el localStorage:", error);
+        console.log("Error en el localStorage:", error);
         return false;
       }
   }

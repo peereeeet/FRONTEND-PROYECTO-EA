@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { environment } from '../environments/environment.prod';
 
 export interface RewardData {
   puntosGanados: number;

@@ -95,16 +95,13 @@ export class LoginComponent {
   }
 
   ngOnInit(): void {
-  const user = this.authService.getCurrentUser();
-  this.currentLang = 'es';
-  this.translate.use('es');
-  localStorage.setItem('lang', 'es');
-  if (this.authService.isLoggedIn() && user?.rol == 'admin') {
-    this.router.navigate(['/home']);
-  } else {
-    this.router.navigate(['/menu']);
+    const user = this.authService.getCurrentUser();
+    if (this.authService.isLoggedIn() && user?.rol == 'admin') {
+      this.router.navigate(['/home']);
+    } else {
+      this.router.navigate(['/menu']);
+    }
   }
-}
 
   ngAfterViewInit(): void {
     this.initGoogleSignIn();
@@ -203,7 +200,7 @@ export class LoginComponent {
 
     const birth = new Date(raw);
     if (Number.isNaN(birth.getTime())) {
-      this.googleBirthdayError = 'La fecha de nacimiento no es válida.';
+      this.googleBirthdayError = 'La fecha de nacimiento no es v??lida.';
       return;
     }
 
@@ -236,12 +233,12 @@ export class LoginComponent {
           this.googleBirthdayError =
             error.error?.message ||
             this.translate.instant('LOGIN.ERROR_GOOGLE') ||
-            'Error al iniciar sesión con Google';
+            'Error al iniciar sesi??n con Google';
         },
       });
   }
 
-  // Navegación compartida para login normal y login con Google
+  // Navegaci??n compartida para login normal y login con Google
   private handleLoginSuccess(response: any): void {
     const role = response?.user?.rol;
     if (role === 'admin') {
@@ -291,7 +288,7 @@ export class LoginComponent {
   createAdmin(): void {
     this.authService.createAdminUser().subscribe({
       next: (response) => {
-        alert('Usuario admin creado exitosamente. Ahora puedes iniciar sesión con usuario: "admin" y contraseña: "admin"');
+        alert('Usuario admin creado exitosamente. Ahora puedes iniciar sesi??n con usuario: "admin" y contrase??a: "admin"');
 
         this.loginForm.patchValue({
           username: 'admin',
@@ -394,11 +391,11 @@ export class LoginComponent {
       next: () => {
         this.directSaving = false;
         this.closeDirect();
-        alert('Contraseña actualizada. Ya puedes iniciar sesión.');
+        alert('Contrase??a actualizada. Ya puedes iniciar sesi??n.');
       },
       error: (err: any) => {
         this.directSaving = false;
-        alert(err?.error?.message || 'No se pudo actualizar la contraseña.');
+        alert(err?.error?.message || 'No se pudo actualizar la contrase??a.');
       }
     });
   }

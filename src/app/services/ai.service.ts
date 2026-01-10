@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../environments/environment.prod';
 
 export interface AiSearchRequest {
   query: string;
@@ -16,7 +17,7 @@ export interface AiSearchResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AiService {
-  private apiUrl = 'http://localhost:3000/api/ai';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
