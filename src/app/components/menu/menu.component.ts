@@ -6,7 +6,7 @@ import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { EventoService } from '../../services/evento.service';
 import { ThemeService } from '../../services/theme.service';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { ChatbotStateService } from '../../services/chatbot-state.service';
 import { User } from '../../models/user.model';
 import { Evento, CATEGORIAS_EVENTO, EventoCategoria } from '../../models/evento.model';
@@ -41,6 +41,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private eventoService = inject(EventoService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private themeService = inject(ThemeService);
   theme = this.themeService.theme;
   private socketService = inject(SocketService);
@@ -307,6 +308,62 @@ export class MenuComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.cargarInvitacionesPendientes();
+      });
+
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        if (params['openChat']) {
+          const friendId = params['openChat'];
+          console.log('📱 Query param detectado: openChat =', friendId);
+          
+          setTimeout(() => {
+            const friend = this.friends().find(f => this.getId(f) === friendId);
+            if (friend) {
+              console.log('✅ Amigo encontrado, abriendo chat:', friend);
+              this.openChat(friend);
+              
+              this.router.navigate([], {
+                relativeTo: this.route,
+                queryParams: {},
+                replaceUrl: true
+              });
+            } else {
+              console.warn('⚠️ Amigo no encontrado en la lista:', friendId);
+              
+              this.userService.getUserById(friendId).subscribe({
+                next: (user) => {
+                  console.log('✅ Usuario obtenido por ID, abriendo chat:', user);
+                  this.openChat(user);
+                  
+                  this.router.navigate([], {
+                    relativeTo: this.route,
+                    queryParams: {},
+                    replaceUrl: true
+                  });
+                },
+                error: (err) => {
+                  console.error('❌ Error obteniendo usuario:', err);
+                }
+              });
+            }
+          }, 500);
+        }
+
+        if (params['openRequests'] === 'true') {
+          console.log('👋 Query param detectado: openRequests = true');
+          
+          setTimeout(() => {
+            console.log('✅ Abriendo modal de solicitudes de amistad');
+            this.openRequestsModal();
+            
+            this.router.navigate([], {
+              relativeTo: this.route,
+              queryParams: {},
+              replaceUrl: true
+            });
+          }, 500);
+        }
       });
   }
 

@@ -35,7 +35,6 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
   );
 
   ngOnInit() {
-    console.log('🔔 NotificacionesComponent inicializado');
     this.loadNotificaciones();
     this.subscribeToUnreadCount();
     this.subscribeToNewNotificaciones();
@@ -50,25 +49,19 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
 
   private loadNotificaciones() {
     const user = this.auth.getCurrentUser();
-    if (!user?._id) {
-      console.warn('⚠️ No hay usuario autenticado');
-      return;
-    }
+    if (!user?._id) return;
 
-    console.log('🔥 Cargando notificaciones para usuario:', user._id);
     this.loading.set(true);
     this.notificacionService.getUserNotificaciones(user._id, 50)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           if (response.ok) {
-            console.log('✅ Notificaciones cargadas:', response.data.length);
             this.notificaciones.set(response.data);
           }
           this.loading.set(false);
         },
-        error: (error) => {
-          console.error('❌ Error cargando notificaciones:', error);
+        error: () => {
           this.loading.set(false);
         }
       });
@@ -78,7 +71,6 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     this.notificacionService.unreadCount$
       .pipe(takeUntil(this.destroy$))
       .subscribe(count => {
-        console.log('🔢 Contador de no leídas actualizado:', count);
         this.unreadCount.set(count);
       });
 
@@ -98,17 +90,11 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
 
   private listenToSocketNotificaciones() {
     const user = this.auth.getCurrentUser();
-    if (!user?._id) {
-      console.warn('⚠️ No se puede escuchar notificaciones sin usuario autenticado');
-      return;
-    }
+    if (!user?._id) return;
 
-    console.log('👂 Escuchando evento notification:new para usuario:', user._id);
     this.socketService.on('notification:new')
       .pipe(takeUntil(this.destroy$))
       .subscribe((notificacion: any) => {
-        console.log('🔔 Nueva notificación recibida:', notificacion);
-        
         const notif: Notificacion = {
           _id: notificacion._id,
           userId: notificacion.userId || user._id,
@@ -126,14 +112,11 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
         
         this.notificacionService.addNotificacion(notif);
         this.showToastNotification(notif);
-        
         this.playNotificationSound();
       });
   }
 
   private showToastNotification(notificacion: Notificacion) {
-    console.log('📬 Mostrando notificación:', notificacion.title);
-    
     if ('Notification' in window && Notification.permission === 'granted') {
       const translatedTitle = this.getTranslatedTitle(notificacion.type);
       const translatedMessage = this.getTranslatedMessage(notificacion);
@@ -148,9 +131,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
 
       notification.onclick = () => {
         window.focus();
-        if (notificacion.actionUrl) {
-          this.router.navigate([notificacion.actionUrl]);
-        }
+        this.handleNotificationNavigationFromToast(notificacion);
         notification.close();
       };
 
@@ -162,10 +143,8 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     try {
       const audio = new Audio('/assets/sounds/notification.mp3');
       audio.volume = 0.3;
-      audio.play().catch(err => console.log('No se pudo reproducir sonido:', err));
-    } catch (err) {
-      console.log('Error reproduciendo sonido:', err);
-    }
+      audio.play().catch(() => {});
+    } catch (err) {}
   }
 
   togglePanel() {
@@ -177,30 +156,59 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
   }
 
   onNotificacionClick(notificacion: Notificacion) {
-    console.log('👆 Click en notificación:', notificacion.title);
-    
     if (!notificacion.read) {
-      this.notificacionService.markAsRead(notificacion._id).subscribe({
-        next: () => console.log('✅ Notificación marcada como leída'),
-        error: (err) => console.error('❌ Error marcando como leída:', err)
-      });
+      this.notificacionService.markAsRead(notificacion._id).subscribe();
     }
 
-    if (notificacion.actionUrl) {
-      this.router.navigate([notificacion.actionUrl]);
-      this.closePanel();
+    this.handleNotificationNavigation(notificacion);
+    this.closePanel();
+  }
+
+  private handleNotificationNavigation(notificacion: Notificacion) {
+    switch (notificacion.type) {
+      case 'new_message':
+        if (notificacion.relatedUserId) {
+          this.router.navigate(['/menu'], { 
+            queryParams: { openChat: notificacion.relatedUserId } 
+          });
+        }
+        break;
+
+      case 'friend_request':
+        this.router.navigate(['/menu'], { 
+          queryParams: { openRequests: 'true' } 
+        });
+        break;
+
+      case 'friend_accepted':
+        this.router.navigate(['/menu']);
+        break;
+
+      case 'event_join':
+      case 'event_reminder':
+      case 'event_spot_available':
+        if (notificacion.actionUrl) {
+          this.router.navigate([notificacion.actionUrl]);
+        }
+        break;
+
+      default:
+        if (notificacion.actionUrl) {
+          this.router.navigate([notificacion.actionUrl]);
+        }
+        break;
     }
+  }
+
+  private handleNotificationNavigationFromToast(notificacion: Notificacion) {
+    this.handleNotificationNavigation(notificacion);
   }
 
   markAllAsRead() {
     const user = this.auth.getCurrentUser();
     if (!user?._id) return;
 
-    console.log('✅ Marcando todas como leídas');
-    this.notificacionService.markAllAsRead(user._id).subscribe({
-      next: () => console.log('✅ Todas marcadas como leídas'),
-      error: (err) => console.error('❌ Error:', err)
-    });
+    this.notificacionService.markAllAsRead(user._id).subscribe();
   }
 
   deleteAllNotificaciones() {
@@ -208,45 +216,17 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     if (!user?._id) return;
 
     const confirmMessage = this.translate.instant('NOTIFICATIONS.DELETE_ALL_CONFIRM');
-    if (!confirm(confirmMessage)) {
-      return;
-    }
+    if (!confirm(confirmMessage)) return;
 
-    console.log('🗑️ Eliminando todas las notificaciones');
     const currentNotifs = this.notificaciones();
-    let deletedCount = 0;
-    let errorCount = 0;
-
     currentNotifs.forEach((notif) => {
-      this.notificacionService.deleteNotificacion(notif._id).subscribe({
-        next: () => {
-          deletedCount++;
-          console.log(`✅ Notificación ${deletedCount}/${currentNotifs.length} eliminada`);
-        },
-        error: (err) => {
-          errorCount++;
-          console.error('❌ Error eliminando notificación:', err);
-        }
-      });
+      this.notificacionService.deleteNotificacion(notif._id).subscribe();
     });
-
-    setTimeout(() => {
-      if (errorCount === 0) {
-        console.log(`✅ Todas las notificaciones eliminadas (${deletedCount})`);
-      } else {
-        console.warn(`⚠️ ${deletedCount} eliminadas, ${errorCount} errores`);
-      }
-    }, 1000);
   }
 
   deleteNotificacion(notificacion: Notificacion, event: Event) {
     event.stopPropagation();
-    console.log('🗑️ Eliminando notificación:', notificacion.title);
-    
-    this.notificacionService.deleteNotificacion(notificacion._id).subscribe({
-      next: () => console.log('✅ Notificación eliminada'),
-      error: (err) => console.error('❌ Error eliminando:', err)
-    });
+    this.notificacionService.deleteNotificacion(notificacion._id).subscribe();
   }
 
   getTranslatedTitle(type: Notificacion['type']): string {
@@ -281,6 +261,11 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
           username: notif.relatedUsername || 'Un usuario'
         });
       
+      case 'event_spot_available':
+        return this.translate.instant('NOTIFICATIONS.MESSAGES.event_spot_available', {
+          eventName: notif.relatedEventName || 'un evento'
+        });
+      
       default:
         return notif.message;
     }
@@ -292,7 +277,8 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
       friend_accepted: '🤝',
       event_join: '🎉',
       event_reminder: '⏰',
-      new_message: '💬'
+      new_message: '💬',
+      event_spot_available: '🎟️'
     };
     return icons[type] || '🔔';
   }
@@ -303,7 +289,8 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
       friend_accepted: 'green',
       event_join: 'purple',
       event_reminder: 'orange',
-      new_message: 'pink'
+      new_message: 'pink',
+      event_spot_available: 'yellow'
     };
     return colors[type] || 'gray';
   }
@@ -329,9 +316,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
 
   requestNotificationPermission() {
     if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().then(permission => {
-        console.log('🔔 Permiso de notificaciones:', permission);
-      });
+      Notification.requestPermission();
     }
   }
 }

@@ -81,6 +81,33 @@ export class NotificacionService {
     );
   }
 
+  markRelatedAsRead(
+    userId: string, 
+    relatedId: string, 
+    type: 'user' | 'event'
+  ): Observable<{ ok: boolean; message: string; count: number }> {
+    return this.http.patch<{ ok: boolean; message: string; count: number }>(
+      `${this.apiUrl}/${userId}/mark-related`,
+      { relatedId, type }
+    ).pipe(
+      tap(response => {
+        if (response.ok && response.count > 0) {
+          const currentNotificaciones = this.notificacionesSubject.value;
+          const updated = currentNotificaciones.map(n => {
+            if (type === 'user' && n.relatedUserId === relatedId && !n.read) {
+              return { ...n, read: true };
+            } else if (type === 'event' && n.relatedEventId === relatedId && !n.read) {
+              return { ...n, read: true };
+            }
+            return n;
+          });
+          this.notificacionesSubject.next(updated);
+          this.updateUnreadCount(updated);
+        }
+      })
+    );
+  }
+
   deleteNotificacion(notificacionId: string): Observable<{ ok: boolean; message: string }> {
     return this.http.delete<{ ok: boolean; message: string }>(
       `${this.apiUrl}/${notificacionId}`

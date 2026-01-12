@@ -682,14 +682,16 @@
       "friend_accepted": "Solicitud aceptada",
       "event_join": "Amigo se unió a tu evento",
       "event_reminder": "Recordatorio de evento",
-      "new_message": "Nuevo mensaje"
+      "new_message": "Nuevo mensaje",
+      "event_spot_available": "Plaza disponible"
     },
     "MESSAGES": {
       "friend_request": "{{username}} te ha enviado una solicitud de amistad",
       "friend_accepted": "{{username}} ha aceptado tu solicitud de amistad",
       "event_join": "{{username}} se ha unido a tu evento \"{{eventName}}\"",
       "event_reminder": "Tu evento \"{{eventName}}\" comienza pronto",
-      "new_message": "{{username}} te ha enviado un mensaje"
+      "new_message": "{{username}} te ha enviado un mensaje",
+      "event_spot_available": "Hay una plaza disponible en \"{{eventName}}\". ¡Ya estás inscrito!"
     }
   }
 }

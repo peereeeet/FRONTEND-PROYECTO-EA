@@ -652,33 +652,34 @@
     },
 
     "NOTIFICATIONS": {
-      "TITLE": "Notifications",
-      "MARK_ALL_READ": "Mark all as read",
-      "DELETE_ALL": "Delete all",
-      "DELETE_ALL_CONFIRM": "Are you sure you want to delete all notifications?",
-      "CLOSE": "Close",
-      "LOADING": "Loading notifications...",
-      "EMPTY_TITLE": "No notifications",
-      "EMPTY_SUBTITLE": "We'll notify you when there's something new",
-      "VIEW_ALL": "View all notifications",
-      "DELETE": "Delete",
-      "NOW": "Now",
-      "MINUTES_AGO": "{{minutes}}m ago",
-      "HOURS_AGO": "{{hours}}h ago",
-      "DAYS_AGO": "{{days}}d ago",
-      "TYPES": {
-        "friend_request": "New friend request",
-        "friend_accepted": "Request accepted",
-        "event_join": "Friend joined your event",
-        "event_reminder": "Event reminder",
-        "new_message": "New message"
-      },
-      "MESSAGES": {
-        "friend_request": "{{username}} sent you a friend request",
-        "friend_accepted": "{{username}} accepted your friend request",
-        "event_join": "{{username}} joined your event \"{{eventName}}\"",
-        "event_reminder": "Your event \"{{eventName}}\" is starting soon",
-        "new_message": "{{username}} sent you a message"
-      }
+    "TITLE": "Notifications",
+    "MARK_ALL_READ": "Mark all as read",
+    "DELETE_ALL": "Delete all",
+    "DELETE_ALL_CONFIRM": "Are you sure you want to delete all notifications?",
+    "CLOSE": "Close",
+    "LOADING": "Loading notifications...",
+    "EMPTY_TITLE": "No notifications",
+    "EMPTY_SUBTITLE": "We'll notify you when there's something new",
+    "VIEW_ALL": "View all notifications",
+    "DELETE": "Delete",
+    "NOW": "Now",
+    "MINUTES_AGO": "{{minutes}}m ago",
+    "HOURS_AGO": "{{hours}}h ago",
+    "DAYS_AGO": "{{days}}d ago",
+    "TYPES": {
+      "friend_request": "New friend request",
+      "friend_accepted": "Request accepted",
+      "event_join": "Friend joined your event",
+      "event_reminder": "Event reminder",
+      "new_message": "New message"
+    },
+    "MESSAGES": {
+      "friend_request": "{{username}} sent you a friend request",
+      "friend_accepted": "{{username}} accepted your friend request",
+      "event_join": "{{username}} joined your event \"{{eventName}}\"",
+      "event_reminder": "Your event \"{{eventName}}\" starts soon",
+      "new_message": "{{username}} sent you a message",
+      "event_spot_available": "A spot is available in \"{{eventName}}\". You're now registered!"
     }
+  }
 }
