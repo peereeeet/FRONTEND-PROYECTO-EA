@@ -92,6 +92,13 @@
           </span>
         </button>
 
+        <button class="nav-item" (click)="openBlockedModal()">
+          <span class="nav-icon">🚫</span>
+          <span class="nav-text">
+            {{ 'MENU.FRIENDS_BUTTON_BLOCKED' | translate }}
+          </span>
+        </button>
+
         <button class="btn btn--danger" (click)="onLogout()">
           {{ 'MENU.LOGOUT_BUTTON' | translate }}
         </button>
@@ -214,6 +221,9 @@
                     {{ newFriendRequests() }}
                   </span>
                 </button>
+                <button type="button" class="btn btn--ghost" (click)="openBlockedModal()">
+                  🚫 {{ 'MENU.FRIENDS_BUTTON_BLOCKED' | translate }}
+                </button>
               </div>
             </div>
 
@@ -245,6 +255,12 @@
                         (click)="openChat(f)"
                         title="Abrir chat">
                         💬
+                      </button>
+                      <button 
+                        class="btn btn--icon btn--danger-ghost"
+                        (click)="confirmBlockUser(f, 'friend'); $event.stopPropagation()"
+                        [title]="'MENU.FRIENDS_BLOCK' | translate">
+                        🚫
                       </button>
                       <button
                         type="button"
@@ -886,6 +902,13 @@
               ➕ {{ 'MENU.MODAL_ADD_BUTTON' | translate }}
             </button>
             </ng-template>
+
+            <button
+              class="btn btn--sm btn--danger"
+              (click)="confirmBlockUser(u, 'explore')"
+              [title]="'MENU.MODAL_BLOCK_BUTTON' | translate">
+              🚫
+            </button>
           </div>
 
           <div class="empty" *ngIf="!filteredUsers().length">
@@ -1105,6 +1128,101 @@
             {{ 'MENU.CONFIRM_REMOVE_CONFIRM' | translate }}
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" *ngIf="showBlockedModal()" (click)="closeBlockedModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>🚫 {{ 'MENU.BLOCKED_TITLE' | translate }}</h2>
+        <button class="modal-close" (click)="closeBlockedModal()">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <div *ngIf="blockedLoading()" class="loading-state">
+          <span class="spinner"></span>
+          <p>{{ 'MENU.BLOCKED_LOADING' | translate }}</p>
+        </div>
+
+        <div *ngIf="blockedError()" class="error-message">
+          {{ blockedError() }}
+        </div>
+
+        <div *ngIf="!blockedLoading() && blockedUsers().length > 0" class="blocked-list">
+          <div *ngFor="let user of blockedUsers()" class="blocked-item">
+            <div class="avatar avatar--md">
+              <img 
+                *ngIf="user.profilePhoto" 
+                [src]="'http://localhost:3000' + user.profilePhoto" 
+                alt="profile" 
+                class="avatar-img" />
+              <span *ngIf="!user.profilePhoto">👤</span>
+            </div>
+            
+            <div class="blocked-info">
+              <span class="blocked-name">{{ user.username }}</span>
+              <span class="blocked-email">{{ user.gmail }}</span>
+            </div>
+            
+            <button
+              class="btn btn--sm btn--success"
+              (click)="confirmUnblockUser(user)">
+              ✓ {{ 'MENU.BLOCKED_UNBLOCK' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="!blockedLoading() && blockedUsers().length === 0" class="empty-state">
+          <span class="empty-icon">🚫</span>
+          <p class="empty-text">{{ 'MENU.BLOCKED_EMPTY' | translate }}</p>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn--secondary" (click)="closeBlockedModal()">
+          {{ 'MENU.MODAL_CLOSE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMACIÓN: BLOQUEAR USUARIO -->
+  <div class="modal-overlay modal-overlay--dark" *ngIf="showBlockConfirm()" (click)="cancelBlockUser()">
+    <div class="confirm-modal" (click)="$event.stopPropagation()">
+      <div class="confirm-icon confirm-icon--danger">⚠️</div>
+      <h3 class="confirm-title">{{ 'MENU.CONFIRM_BLOCK_TITLE' | translate }}</h3>
+      <p class="confirm-text">
+        {{ 'MENU.CONFIRM_BLOCK_TEXT' | translate }} <strong>{{ userToBlock()?.username }}</strong>?
+      </p>
+      <p class="confirm-warning">
+        {{ 'MENU.CONFIRM_BLOCK_WARNING' | translate }}
+      </p>
+      <div class="confirm-actions">
+        <button class="btn btn--secondary" (click)="cancelBlockUser()">
+          {{ 'MENU.CONFIRM_BLOCK_CANCEL' | translate }}
+        </button>
+        <button class="btn btn--danger" (click)="blockUser()">
+          {{ 'MENU.CONFIRM_BLOCK_CONFIRM' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMACIÓN: DESBLOQUEAR USUARIO -->
+  <div class="modal-overlay modal-overlay--dark" *ngIf="showUnblockConfirm()" (click)="cancelUnblockUser()">
+    <div class="confirm-modal" (click)="$event.stopPropagation()">
+      <div class="confirm-icon confirm-icon--success">✓</div>
+      <h3 class="confirm-title">{{ 'MENU.BLOCKED_CONFIRM_TITLE' | translate }}</h3>
+      <p class="confirm-text">
+        {{ 'MENU.BLOCKED_CONFIRM_TEXT' | translate }} <strong>{{ userToUnblock()?.username }}</strong>?
+      </p>
+      <div class="confirm-actions">
+        <button class="btn btn--secondary" (click)="cancelUnblockUser()">
+          {{ 'MENU.BLOCKED_CONFIRM_CANCEL' | translate }}
+        </button>
+        <button class="btn btn--success" (click)="unblockUser()">
+          {{ 'MENU.BLOCKED_CONFIRM_CONFIRM' | translate }}
+        </button>
       </div>
     </div>
   </div>

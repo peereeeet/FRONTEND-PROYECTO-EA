@@ -180,4 +180,26 @@ export class UserService {
       text
     });
   }
+
+  blockUser(userId: string, blockId: string): Observable<{ ok: boolean; message: string }> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<{ ok: boolean; message: string }>(
+      `${this.apiUrl}/info/block`,
+      { id: userId, blockId },
+      { headers }
+    );
+  }
+
+  unblockUser(userId: string, unblockId: string): Observable<{ ok: boolean; message: string }> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<{ ok: boolean; message: string }>(
+      `${this.apiUrl}/info/unblock`,
+      { id: userId, unblockId },
+      { headers }
+    );
+  }
+
+  getBlockedUsers(userId: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}/${userId}/blocked`);
+  }
 }

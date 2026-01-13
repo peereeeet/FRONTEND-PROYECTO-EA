@@ -18,6 +18,15 @@ export interface User {
   >;
   friendRequest?: Array<string | { _id: string; username: string; gmail: string }>;
   sentRequests?: Array<string | { _id: string; username: string; gmail: string }>;
+  blockedUsers?: Array<string | { _id: string; username: string; gmail: string; profilePhoto?: string; isOnline?: boolean }>;
+}
+
+export interface BlockedUser {
+  _id: string;
+  username: string;
+  gmail: string;
+  profilePhoto?: string;
+  isOnline?: boolean;
 }
 
 export interface ChatMessage {

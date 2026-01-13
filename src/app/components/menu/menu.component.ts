@@ -103,6 +103,16 @@ export class MenuComponent implements OnInit, OnDestroy {
   eventWaitlistStatus: Record<string, boolean> = {};
   eventIsFullStatus: Record<string, boolean> = {};
 
+  showBlockedModal = signal(false);
+  blockedUsers = signal<User[]>([]);
+  blockedLoading = signal(false);
+  blockedError = signal('');
+  showBlockConfirm = signal(false);
+  userToBlock = signal<User | null>(null);
+  blockSource = signal<'friend' | 'explore'>('friend');
+  showUnblockConfirm = signal(false);
+  userToUnblock = signal<User | null>(null);
+
   allEventos: Evento[] = [];
   eventosFiltrados: Evento[] = [];
   eventos: Evento[] = [];
@@ -194,6 +204,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.refreshRequests();
         this.refreshSentRequests();
         this.cargarProgresoInicial();
+        this.loadBlockedUsers();
 
         this.userService.setOnline(myId).subscribe({
           next: (res) => {
@@ -501,7 +512,9 @@ export class MenuComponent implements OnInit, OnDestroy {
             ...u,
             isOnline: (u as any).online ?? (u as any).isOnline ?? false
           }));
-          this.friends.set(arr);
+          
+          const filtered = this.filterBlockedUsers(arr);
+          this.friends.set(filtered);
           this.loading.set(false);
         },
         error: err => {
@@ -1999,5 +2012,140 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.errorMessage = err?.error?.message || 'Error al salir de lista de espera.';
       }
     });
+  }
+
+  openBlockedModal(): void {
+    this.loadBlockedUsers();
+    this.showBlockedModal.set(true);
+  }
+
+  closeBlockedModal(): void {
+    this.showBlockedModal.set(false);
+  }
+
+  loadBlockedUsers(): void {
+    const userId = this.me()?._id;
+    if (!userId) return;
+
+    this.blockedLoading.set(true);
+    this.blockedError.set('');
+
+    this.userService.getBlockedUsers(userId).subscribe({
+      next: (users) => {
+        this.blockedUsers.set(users);
+        this.blockedLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios bloqueados:', err);
+        this.blockedError.set('Error al cargar usuarios bloqueados');
+        this.blockedLoading.set(false);
+      }
+    });
+  }
+
+  confirmBlockUser(user: User, source: 'friend' | 'explore'): void {
+    this.userToBlock.set(user);
+    this.blockSource.set(source);
+    this.showBlockConfirm.set(true);
+  }
+
+  cancelBlockUser(): void {
+    this.showBlockConfirm.set(false);
+    this.userToBlock.set(null);
+  }
+
+  blockUser(): void {
+    const userId = this.me()?._id;
+    const blockUser = this.userToBlock();
+    
+    if (!userId || !blockUser?._id) {
+      console.error('No se puede bloquear: falta userId o blockUser._id');
+      return;
+    }
+
+    this.userService.blockUser(userId, blockUser._id).subscribe({
+      next: (response) => {
+        console.log('Usuario bloqueado:', response);
+        
+        this.removeFriendFromLocal(blockUser._id!);
+        this.removeUserFromExploreLocal(blockUser._id!);
+        this.loadBlockedUsers();
+        
+        this.showBlockConfirm.set(false);
+        this.userToBlock.set(null);
+        
+        if (this.blockSource() === 'friend') {
+          const myId = this.me()?._id;
+          if (myId) {
+            this.cargarAmigos(myId);
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Error al bloquear usuario:', err);
+        alert('Error al bloquear usuario');
+        this.showBlockConfirm.set(false);
+      }
+    });
+  }
+
+  confirmUnblockUser(user: User): void {
+    this.userToUnblock.set(user);
+    this.showUnblockConfirm.set(true);
+  }
+
+  cancelUnblockUser(): void {
+    this.showUnblockConfirm.set(false);
+    this.userToUnblock.set(null);
+  }
+
+  unblockUser(): void {
+    const userId = this.me()?._id;
+    const unblockUser = this.userToUnblock();
+    
+    if (!userId || !unblockUser?._id) {
+      console.error('No se puede desbloquear: falta userId o unblockUser._id');
+      return;
+    }
+
+    this.userService.unblockUser(userId, unblockUser._id).subscribe({
+      next: (response) => {
+        console.log('Usuario desbloqueado:', response);
+        this.loadBlockedUsers();
+        this.showUnblockConfirm.set(false);
+        this.userToUnblock.set(null);
+      },
+      error: (err) => {
+        console.error('Error al desbloquear usuario:', err);
+        alert('Error al desbloquear usuario');
+        this.showUnblockConfirm.set(false);
+      }
+    });
+  }
+
+  private removeFriendFromLocal(friendId: string): void {
+    const currentFriends = this.friends();
+    const updated = currentFriends.filter(f => {
+      if (typeof f === 'string') return f !== friendId;
+      return f._id !== friendId;
+    });
+    this.friends.set(updated);
+  }
+
+  private removeUserFromExploreLocal(userId: string): void {
+    const currentUsers = this.filteredUsers();
+    const updated = currentUsers.filter(u => u._id !== userId);
+    this.filteredUsers.set(updated);
+  }
+
+  isUserBlocked(userId: string | undefined): boolean {
+    if (!userId) return false;
+    const blocked = this.blockedUsers();
+    return blocked.some(u => u._id === userId);
+  }
+
+  private filterBlockedUsers(users: User[]): User[] {
+    const blockedIds = this.blockedUsers().map(u => u._id);
+    return users.filter(u => !blockedIds.includes(u._id));
   }
 }
