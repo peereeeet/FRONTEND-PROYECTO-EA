@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable, Subject } from 'rxjs';
 import { User, ChatMessage, EventChatMessage  } from '../models/user.model';
-import { environment } from '../environments/environment.prod';
+import { environment } from '../environments/environment';
 
 export interface Page<T> {
   data: T[];
