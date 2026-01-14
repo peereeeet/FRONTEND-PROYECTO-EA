@@ -239,7 +239,7 @@
 
   <!-- ===== MODALES ===== -->
   
-  <!-- EDITAR PERFIL -->
+  <!-- ===== MODAL EDITAR ===== -->
   <div class="modal-overlay" *ngIf="editOpen()" (click)="closeEdit()">
     <div class="modal modal--wide" (click)="$event.stopPropagation()">
       <div class="modal-header">
@@ -299,34 +299,164 @@
         </div>
 
         <div class="form-divider"></div>
-
-        <!-- Resto de campos del formulario -->
+        <!-- USERNAME -->
         <div class="form-row">
           <label>{{ 'PROFILE.EDIT_USERNAME_LABEL' | translate }}</label>
-          <input type="text" [(ngModel)]="edit()!.username" (blur)="checkUsername()" minlength="3" />
+          <input 
+            type="text" 
+            [(ngModel)]="edit()!.username" 
+            (input)="validateUsername()"
+            (blur)="checkUsername()" 
+            minlength="3" 
+            maxlength="30"
+          />
+          
+          <!-- Validaciones de username en tiempo real -->
+          <div *ngIf="edit()!.username" class="validation-checks">
+            <div class="validation-item" [class.valid]="usernameValidations().length" [class.invalid]="!usernameValidations().length">
+              <span class="check-icon">{{ usernameValidations().length ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.USERNAME_MIN_LENGTH' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="usernameValidations().startsWithLetter" [class.invalid]="!usernameValidations().startsWithLetter">
+              <span class="check-icon">{{ usernameValidations().startsWithLetter ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.USERNAME_START_LETTER' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="usernameValidations().validChars" [class.invalid]="!usernameValidations().validChars">
+              <span class="check-icon">{{ usernameValidations().validChars ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.USERNAME_VALID_CHARS' | translate }}</span>
+            </div>
+          </div>
+          
           <div class="hint-row">
             <span *ngIf="checkingUsername()" class="hint info">{{ 'PROFILE.EDIT_USERNAME_CHECKING' | translate }}</span>
             <span *ngIf="usernameTaken()" class="hint error">{{ 'PROFILE.EDIT_USERNAME_TAKEN' | translate }}</span>
           </div>
         </div>
 
+        <!-- EMAIL -->
         <div class="form-row">
           <label>{{ 'PROFILE.EDIT_EMAIL_LABEL' | translate }}</label>
-          <input type="email" [(ngModel)]="edit()!.gmail" (blur)="checkEmail()" />
+          <input 
+            type="email" 
+            [(ngModel)]="edit()!.gmail" 
+            (input)="validateEmail()"
+            (blur)="checkEmail()" 
+          />
+          
+          <!-- Validaciones de email en tiempo real -->
+          <div *ngIf="edit()!.gmail" class="validation-checks">
+            <div class="validation-item" [class.valid]="emailValidations().format" [class.invalid]="!emailValidations().format">
+              <span class="check-icon">{{ emailValidations().format ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.EMAIL_FORMAT_VALID' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="emailValidations().notTemporary" [class.invalid]="!emailValidations().notTemporary">
+              <span class="check-icon">{{ emailValidations().notTemporary ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.EMAIL_NOT_TEMPORARY' | translate }}</span>
+            </div>
+          </div>
+          
           <div class="hint-row">
             <span *ngIf="checkingEmail()" class="hint info">{{ 'PROFILE.EDIT_EMAIL_CHECKING' | translate }}</span>
             <span *ngIf="emailTaken()" class="hint error">{{ 'PROFILE.EDIT_EMAIL_TAKEN' | translate }}</span>
           </div>
         </div>
 
+        <!-- BIRTHDAY -->
         <div class="form-row">
           <label>{{ 'PROFILE.EDIT_BIRTHDAY_LABEL' | translate }}</label>
-          <input type="date" [ngModel]="birthForInput()" (ngModelChange)="onBirthInput($event)" [attr.max]="todayISO()" />
+          <input 
+            type="date" 
+            [ngModel]="birthForInput()" 
+            (ngModelChange)="onBirthInput($event)" 
+            [attr.max]="maxDate"
+            [attr.min]="minDate"
+          />
+          
+          <!-- Validaciones de cumpleaños en tiempo real -->
+          <div *ngIf="edit()!.birthday" class="validation-checks">
+            <div class="validation-item" [class.valid]="birthdayValidations().notFuture" [class.invalid]="!birthdayValidations().notFuture">
+              <span class="check-icon">{{ birthdayValidations().notFuture ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.BIRTHDAY_NOT_FUTURE' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="birthdayValidations().minimumAge" [class.invalid]="!birthdayValidations().minimumAge">
+              <span class="check-icon">{{ birthdayValidations().minimumAge ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.BIRTHDAY_MIN_AGE' | translate }}</span>
+            </div>
+          </div>
         </div>
 
+        <!-- PASSWORD -->
         <div class="form-row">
           <label>{{ 'PROFILE.EDIT_NEW_PASSWORD_LABEL' | translate }}</label>
-          <input type="password" [(ngModel)]="edit()!.password" />
+          <div class="password-wrapper-profile">
+            <input 
+              [type]="showEditPassword ? 'text' : 'password'" 
+              [(ngModel)]="edit()!.password"
+              (input)="validatePassword()"
+              [placeholder]="'PROFILE.EDIT_NEW_PASSWORD_PLACEHOLDER' | translate"
+            />
+            <button type="button" class="toggle-pass-profile" (click)="toggleEditPassword()">
+              {{ showEditPassword ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          
+          <!-- Barra de fortaleza de contraseña -->
+          <div *ngIf="edit()!.password" class="password-strength-bar">
+            <div class="strength-bar" [class]="getPasswordStrengthClass()" [style.width.%]="(passwordStrength() / 5) * 100"></div>
+          </div>
+          <div *ngIf="edit()!.password" class="strength-text" [class]="getPasswordStrengthClass()">
+            {{ ('PROFILE.PASSWORD_STRENGTH_' + getPasswordStrengthText()) | translate }}
+          </div>
+          
+          <!-- Requisitos de contraseña -->
+          <div *ngIf="edit()!.password" class="validation-checks">
+            <div class="validation-item" [class.valid]="passwordValidations().length" [class.invalid]="!passwordValidations().length">
+              <span class="check-icon">{{ passwordValidations().length ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.PASSWORD_REQ_LENGTH' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="passwordValidations().uppercase" [class.invalid]="!passwordValidations().uppercase">
+              <span class="check-icon">{{ passwordValidations().uppercase ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.PASSWORD_REQ_UPPERCASE' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="passwordValidations().lowercase" [class.invalid]="!passwordValidations().lowercase">
+              <span class="check-icon">{{ passwordValidations().lowercase ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.PASSWORD_REQ_LOWERCASE' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="passwordValidations().number" [class.invalid]="!passwordValidations().number">
+              <span class="check-icon">{{ passwordValidations().number ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.PASSWORD_REQ_NUMBER' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="passwordValidations().special" [class.invalid]="!passwordValidations().special">
+              <span class="check-icon">{{ passwordValidations().special ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.PASSWORD_REQ_SPECIAL' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONFIRM PASSWORD -->
+        <div class="form-row" *ngIf="edit() && edit()!.password && edit()!.password?.trim() !== ''">
+          <label>{{ 'PROFILE.EDIT_CONFIRM_PASSWORD_LABEL' | translate }}</label>
+          <div class="password-wrapper-profile">
+            <input 
+              [type]="showEditConfirmPassword ? 'text' : 'password'" 
+              [ngModel]="confirmPassword()"
+              (ngModelChange)="confirmPassword.set($event)"
+              [placeholder]="'PROFILE.EDIT_CONFIRM_PASSWORD_PLACEHOLDER' | translate"
+            />
+            <button type="button" class="toggle-pass-profile" (click)="toggleEditConfirmPassword()">
+              {{ showEditConfirmPassword ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          
+          <!-- Mensaje de coincidencia de contraseñas -->
+          <div *ngIf="confirmPassword() && !passwordsMatch()" class="hint-row">
+            <span class="hint error">⚠ {{ 'PROFILE.PASSWORDS_MISMATCH' | translate }}</span>
+          </div>
+          
+          <div *ngIf="confirmPassword() && passwordsMatch()" class="success-message">
+            <span>✓ </span>
+            <span>{{ 'PROFILE.PASSWORDS_MATCH' | translate }}</span>
+          </div>
         </div>
 
         <div *ngIf="saveError()" class="msg msg--error">
@@ -336,7 +466,7 @@
 
       <div class="modal-actions">
         <button class="btn btn--ghost" (click)="closeEdit()">{{ 'PROFILE.EDIT_CANCEL' | translate }}</button>
-        <button class="btn btn--primary" [disabled]="saving()" (click)="saveEdit()">
+        <button class="btn btn--primary" [disabled]="saving() || !isFormValid()" (click)="saveEdit()">
           {{ saving() ? ('PROFILE.EDIT_SAVING' | translate) : ('PROFILE.EDIT_SAVE' | translate) }}
         </button>
       </div>
