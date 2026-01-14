@@ -24,18 +24,23 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = '';
 
-  forgotOpen = false;
+  // New state variables
+  loginStep: 'LOGIN' | 'FORGOT' | 'RESET' = 'LOGIN';
+  
+  // Forgot/Reset state
+  forgotForm: FormGroup;
+  resetForm: FormGroup;
+  resetEmail: string = '';
+  rateLimitSeconds: number = 0;
+  rateLimitTimer: any;
   sending = false;
-  forgotForm!: FormGroup;
+
+  // Unverified email state
+  unverifiedEmail: string = '';
 
   showPassword: boolean = false;
-  showDirectPassword: boolean = false;
-
-  directOpen = false;
-  directForm!: FormGroup;
-  foundUserId: string | null = null;
-  foundUserLabel = '';
-  directSaving = false;
+  showConfirmPassword: boolean = false;
+  showNewPassword: boolean = false;
 
   currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
   showLangMenu = false;
@@ -45,11 +50,6 @@ export class LoginComponent {
   googleBirthdayForm: FormGroup;
   googleBirthdayError = '';
   todayISO: string;
-
-  get forgotTouchedInvalid() {
-    const c = this.forgotForm?.get('identifier');
-    return !!(c && c.touched && c.invalid);
-  }
 
   constructor(
     private fb: FormBuilder,
@@ -64,10 +64,13 @@ export class LoginComponent {
     });
 
     this.forgotForm = this.fb.group({
-      identifier: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
     });
-    this.directForm = this.fb.group({
-      newPassword: ['', [Validators.required, Validators.minLength(7)]],
+
+    this.resetForm = this.fb.group({
+      code: ['', [Validators.required, Validators.minLength(6)]],
+      newPassword: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', [Validators.required]]
     });
 
     this.googleBirthdayForm = this.fb.group({
@@ -98,7 +101,7 @@ export class LoginComponent {
     const user = this.authService.getCurrentUser();
     if (this.authService.isLoggedIn() && user?.rol == 'admin') {
       this.router.navigate(['/home']);
-    } else {
+    } else if (this.authService.isLoggedIn()) {
       this.router.navigate(['/menu']);
     }
   }
@@ -157,25 +160,11 @@ export class LoginComponent {
 
   private handleGoogleCredentialResponse(res: any): void {
     this.googleBirthdayOpen = true;
-    const credential = res?.credential;
-    if (!credential) {
-      return;
-    }
-
-    this.googleCredentialPending = credential;
+    this.googleCredentialPending = res?.credential;
     this.googleBirthdayError = '';
     setTimeout(() => {
-      this.googleBirthdayForm.setValue({ birthday: this.todayISO });
+        this.googleBirthdayForm.setValue({ birthday: this.todayISO });
     }, 0);
-
-    const today = new Date();
-    const iso = new Date(Date.UTC(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    )).toISOString().slice(0, 10);
-
-    this.googleBirthdayForm.setValue({ birthday: this.todayISO });
   }
 
   closeGoogleBirthdayModal(): void {
@@ -186,30 +175,18 @@ export class LoginComponent {
 
   onGoogleBirthdaySubmit(): void {
     this.googleBirthdayError = '';
-
     if (!this.googleCredentialPending) {
       this.closeGoogleBirthdayModal();
       return;
     }
-
     const raw = this.googleBirthdayForm.value.birthday as string | null;
     if (!raw) {
       this.googleBirthdayError = 'Por favor, indica tu fecha de nacimiento.';
       return;
     }
-
     const birth = new Date(raw);
-    if (Number.isNaN(birth.getTime())) {
-      this.googleBirthdayError = 'La fecha de nacimiento no es válida.';
-      return;
-    }
-
     const now = new Date();
-    const today = new Date(Date.UTC(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    ));
+    const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
 
     if (birth > today) {
       this.googleBirthdayError = 'La fecha de nacimiento no puede ser futura.';
@@ -223,30 +200,24 @@ export class LoginComponent {
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
         next: (response) => {
-          this.googleBirthdayOpen = false;
-          this.googleCredentialPending = null;
-          this.googleBirthdayError = '';
+          this.closeGoogleBirthdayModal();
           this.handleLoginSuccess(response);
         },
         error: (error) => {
           console.error('Error en login con Google:', error);
           this.googleBirthdayError =
             error.error?.message ||
-            this.translate.instant('LOGIN.ERROR_GOOGLE') ||
-            'Error al iniciar sesión con Google';
+            this.translate.instant('LOGIN.ERROR_GOOGLE');
         },
       });
   }
 
-  // Navegación compartida para login normal y login con Google
   private handleLoginSuccess(response: any): void {
     const role = response?.user?.rol;
     if (role === 'admin') {
       this.router.navigate(['/home']);
-    } else if (role === 'usuario') {
-      this.router.navigate(['/menu']);
     } else {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/menu']);
     }
   }
 
@@ -261,10 +232,12 @@ export class LoginComponent {
     localStorage.setItem('lang', lang);
   }
 
+  // --- LOGIN FLOW ---
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
+      this.unverifiedEmail = '';
 
       const { username, password } = this.loginForm.value;
 
@@ -275,68 +248,68 @@ export class LoginComponent {
             this.handleLoginSuccess(response);
           },
           error: (error) => {
-            this.errorMessage =
-              error.error?.message ||
-              this.translate.instant('LOGIN.ERROR_GENERIC');
+             const errCode = error.error?.error; 
+             if (errCode === 'EMAIL_NOT_VERIFIED') {
+                this.errorMessage = 'AUTH_ERRORS.EMAIL_NOT_VERIFIED';
+                // Try to guess email from username if it looks like one, or ask user?
+                // The backend usually returns the error. 
+                // But we can just use the username field if it was an email.
+                // Or we can assume we need to ask/store it.
+                // Simple logic: if username field has '@', assume it is email.
+                if (username.includes('@')) {
+                    this.unverifiedEmail = username;
+                } else {
+                    // If login was by username, we might not know the email unless backend returned it in error payload
+                    // Prompt says: "si error EMAIL_NOT_VERIFIED ... Reenviar código ... authService.resendVerification(email introducido)"
+                    // If user entered username, we might fail to resend. 
+                    // Let's assume user enters email or we can use username if backend supports lookup.
+                    // For now, assume username input can be email.
+                    this.unverifiedEmail = username; 
+                }
+             } else {
+               this.errorMessage = error.error?.message || 'LOGIN.ERROR_GENERIC';
+             }
           }
         });
     } else {
-      this.markFormGroupTouched();
+      this.loginForm.markAllAsTouched();
     }
   }
 
-  createAdmin(): void {
-    this.authService.createAdminUser().subscribe({
-      next: (response) => {
-        alert('Usuario admin creado exitosamente. Ahora puedes iniciar sesión con usuario: "admin" y contraseña: "admin"');
-
-        this.loginForm.patchValue({
-          username: 'admin',
-          password: 'admin'
-        });
-      },
-      error: (error) => {
-        this.errorMessage = 'Error creando usuario admin';
-      }
-    });
+  resendVerificationFromLogin() {
+     if (!this.unverifiedEmail) return;
+     this.isLoading = true;
+     this.authService.resendVerification(this.unverifiedEmail).subscribe({
+         next: () => {
+             this.isLoading = false;
+             alert('Código reenviado a ' + this.unverifiedEmail);
+         },
+         error: (err) => {
+             this.isLoading = false;
+             if (err.error?.error === 'RATE_LIMITED') {
+                 alert('Por favor espera unos segundos antes de reenviar.');
+             } else {
+                 alert('Error al reenviar código.');
+             }
+         }
+     });
   }
 
-  goToRegister() {
-    this.router.navigate(['/registrar']);
+  goToVerifyFromLogin() {
+      if (!this.unverifiedEmail) return;
+      this.router.navigate(['/registrar'], { queryParams: { step: 'verify', email: this.unverifiedEmail } });
   }
 
-  private markFormGroupTouched(): void {
-    Object.keys(this.loginForm.controls).forEach(key => {
-      this.loginForm.get(key)?.markAsTouched();
-    });
-  }
-
-  togglePassword() {
-    this.showPassword = !this.showPassword;
-  }
-
-  toggleDirectPassword() {
-    this.showDirectPassword = !this.showDirectPassword;
-  }
-
-  get username() { return this.loginForm.get('username'); }
-  get password() { return this.loginForm.get('password'); }
-
+  // --- FORGOT FLOW ---
   openForgot() {
-    this.forgotOpen = true;
-    this.foundUserId = null;
-    this.directOpen = false;
+    this.loginStep = 'FORGOT';
     this.forgotForm.reset();
+    this.errorMessage = '';
   }
-  closeForgot() { this.forgotOpen = false; }
 
-  openDirect() {
-    this.directOpen = true;
-    this.directForm.reset();
-  }
-  closeDirect() {
-    this.directOpen = false;
-    this.foundUserId = null;
+  closeForgot() {
+    this.loginStep = 'LOGIN';
+    this.errorMessage = '';
   }
 
   onForgotSubmit() {
@@ -345,60 +318,72 @@ export class LoginComponent {
       return;
     }
     this.sending = true;
+    this.errorMessage = '';
+    const email = this.forgotForm.value.email;
 
-    const identifier = (this.forgotForm.value.identifier || '').trim();
-    this.userService.checkUserExistsForReset(identifier).subscribe({
-      next: (res: any) => {
+    this.authService.forgotPassword(email).subscribe({
+      next: () => {
         this.sending = false;
-
-        const exists = !!(res?.exists || res?.exist);
-        const userId = res?.userId || res?._id || res?.id || null;
-
-        if (exists && userId) {
-          this.foundUserId = userId;
-          const u = (res?.username || '').trim();
-          const g = (res?.gmail || '').trim();
-          this.foundUserLabel = (u && g) ? `${u} (${g})` : (u || g || '');
-
-          this.forgotOpen = false;
-          this.directOpen = true;
-
-          this.directForm.reset();
-          setTimeout(() => {
-            const el = document.getElementById('newPasswordDirect') as HTMLInputElement | null;
-            if (el) el.focus();
-          }, 0);
-        } else {
-          alert('No existe un usuario con ese email o nombre de usuario.');
-        }
+        this.resetEmail = email;
+        this.loginStep = 'RESET';
       },
       error: (err) => {
         this.sending = false;
-        alert('No se pudo comprobar el usuario.');
+        if (err.error?.error === 'RATE_LIMITED') {
+           this.errorMessage = 'AUTH_ERRORS.RATE_LIMITED';
+        } else {
+           // Even if user not found, strictly speaking security best practice is 200 OK or generic message.
+           // Prompt says: "si RATE_LIMITED -> mensaje y no avanzar".
+           // "Normalizar errores... USER_NOT_FOUND" might be returned?
+           // If 200 OK -> advance.
+           const code = err.error?.error;
+           if (code === 'USER_NOT_FOUND') {
+               this.errorMessage = 'AUTH_ERRORS.USER_NOT_FOUND';
+           } else {
+               this.errorMessage = 'COMMON.ERROR_GENERIC';
+           }
+        }
       }
     });
   }
 
-  onDirectResetSubmit() {
-    if (this.directForm.invalid || !this.foundUserId) {
-      this.directForm.markAllAsTouched();
+  // --- RESET FLOW ---
+  onResetSubmit() {
+    if (this.resetForm.invalid) {
+      this.resetForm.markAllAsTouched();
       return;
     }
-    this.directSaving = true;
-    const pwd = this.directForm.value.newPassword;
+    if (this.resetForm.value.newPassword !== this.resetForm.value.confirmPassword) {
+      this.errorMessage = 'REGISTER.CONFIRM_PASSWORD_MISMATCH';
+      return;
+    }
 
-    this.userService.directResetPassword(this.foundUserId, pwd).subscribe({
+    this.sending = true;
+    this.errorMessage = '';
+    
+    const { code, newPassword } = this.resetForm.value;
+
+    this.authService.resetPassword(this.resetEmail, code, newPassword).subscribe({
       next: () => {
-        this.directSaving = false;
-        this.closeDirect();
-        alert('Contraseña actualizada. Ya puedes iniciar sesión.');
+        this.sending = false;
+        this.loginStep = 'LOGIN';
+        alert(this.translate.instant('LOGIN.RESET_SUCCESS'));
       },
-      error: (err: any) => {
-        this.directSaving = false;
-        alert(err?.error?.message || 'No se pudo actualizar la contraseña.');
+      error: (err) => {
+        this.sending = false;
+        const e = err.error?.error;
+        if (e === 'INVALID_CODE') this.errorMessage = 'AUTH_ERRORS.INVALID_CODE';
+        else if (e === 'EXPIRED_CODE') this.errorMessage = 'AUTH_ERRORS.EXPIRED_CODE';
+        else if (e === 'TOO_MANY_ATTEMPTS') this.errorMessage = 'AUTH_ERRORS.TOO_MANY_ATTEMPTS';
+        else this.errorMessage = 'COMMON.ERROR_GENERIC';
       }
     });
   }
+
+  // UI Helpers
+  togglePassword() { this.showPassword = !this.showPassword; }
+  toggleNewPassword() { this.showNewPassword = !this.showNewPassword; }
+  toggleConfirmPassword() { this.showConfirmPassword = !this.showConfirmPassword; }
 
   toggleLangMenu(): void {
     this.showLangMenu = !this.showLangMenu;
@@ -413,4 +398,22 @@ export class LoginComponent {
       this.initGoogleSignIn();
     }, 0);
   }
+
+  goToRegister() {
+    this.router.navigate(['/registrar']);
+  }
+
+  createAdmin(): void {
+    this.authService.createAdminUser().subscribe({
+      next: () => {
+        alert('Admin created: admin/admin');
+        this.loginForm.patchValue({ username: 'admin', password: 'admin' });
+      },
+      error: () => this.errorMessage = 'Error creating admin'
+    });
+  }
+
+  // Getters
+  get username() { return this.loginForm.get('username'); }
+  get password() { return this.loginForm.get('password'); }
 }

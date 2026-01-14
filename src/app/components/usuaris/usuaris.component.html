@@ -112,7 +112,7 @@
           </div>
 
           <div class="form-group">
-            <label for="birthday" class="form-label">Aniversario:</label>
+            <label for="birthday" class="form-label">Fecha de nacimiento:</label>
             <input
               id="birthday"
               class="form-input"
@@ -120,12 +120,14 @@
               [(ngModel)]="birthdayStr"
               name="birthday"
               #birthdayCtrl="ngModel"
+              [min]="minDate"
+              [max]="maxDate"
               required />
             <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && birthdayCtrl.errors?.['required']">
-              ⚠️ El aniversario es obligatorio.
+              ⚠️ La fecha de nacimiento es obligatoria.
             </div>
             <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && !birthdayCtrl.errors?.['required'] && isFutureBirthday(birthdayStr)">
-              ⚠️ La fecha no puede ser posterior a hoy.
+              ⚠️ El usuario debe tener entre 13 y 125 años.
             </div>
           </div>
 
@@ -204,7 +206,7 @@
             </button>
           </p>
 
-          <p><strong>Aniversario: </strong>
+          <p><strong>Fecha de nacimiento: </strong>
             <strong>{{ usuario.birthday | date: 'dd-MM-yyyy' }}</strong>
           </p>
 
