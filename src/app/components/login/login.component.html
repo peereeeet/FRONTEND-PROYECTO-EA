@@ -285,3 +285,66 @@
     </div>
   </div>
 </div>
+
+  <!-- Modal Registro Completo con Google (Username + Birthday) -->
+  <div class="modal-overlay" *ngIf="googleRegisterOpen" (click)="closeGoogleRegisterModal()">
+    <div class="modal modal--register" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'LOGIN.GOOGLE_REGISTER_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeGoogleRegisterModal()">×</button>
+      </div>
+
+      <form [formGroup]="googleRegisterForm" (ngSubmit)="onGoogleRegisterSubmit()">
+        <p class="modal-text">
+          {{ 'LOGIN.GOOGLE_REGISTER_TEXT' | translate }}
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="googleUsername">
+            {{ 'LOGIN.GOOGLE_USERNAME_LABEL' | translate }}
+          </label>
+          <input
+            id="googleUsername"
+            type="text"
+            class="form-input"
+            formControlName="username"
+            [placeholder]="'LOGIN.GOOGLE_USERNAME_PLACEHOLDER' | translate" />
+          <div *ngIf="googleRegisterForm.get('username')?.invalid && googleRegisterForm.get('username')?.touched" 
+               class="error-message">
+            <span>⚠</span>
+            <span>{{ 'LOGIN.USERNAME_REQUIRED' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="googleRegisterBirthday">
+            {{ 'LOGIN.GOOGLE_BIRTHDAY_LABEL' | translate }}
+          </label>
+          <input
+            id="googleRegisterBirthday"
+            type="date"
+            class="form-input"
+            formControlName="birthday"
+            [attr.max]="todayISO" />
+          <div *ngIf="googleRegisterForm.get('birthday')?.invalid && googleRegisterForm.get('birthday')?.touched" 
+               class="error-message">
+            <span>⚠</span>
+            <span>{{ 'LOGIN.BIRTHDAY_REQUIRED' | translate }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="googleRegisterError" class="error-message">
+          <span>⚠</span>
+          <span>{{ googleRegisterError }}</span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn cancel" (click)="closeGoogleRegisterModal()">
+            {{ 'LOGIN.GOOGLE_REGISTER_CANCEL' | translate }}
+          </button>
+          <button type="submit" class="btn primary" [disabled]="isLoading">
+            {{ isLoading ? ('LOGIN.BUTTON_LOADING' | translate) : ('LOGIN.GOOGLE_REGISTER_CONFIRM' | translate) }}
+          </button>
+        </div>
+      </form>
+    </div>

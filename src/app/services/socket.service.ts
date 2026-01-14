@@ -228,4 +228,22 @@ export class SocketService {
       };
     });
   }
+
+  onFriendRequestUpdated(): Observable<{
+    type: 'accepted' | 'rejected';
+    userId: string;
+  }> {
+    return new Observable(sub => {
+      if (!this.socket) return;
+
+      const handler = (payload: any) => sub.next(payload);
+      this.socket.on('friendRequest:updated', handler);
+
+      return () => {
+        if (this.socket) {
+          this.socket.off('friendRequest:updated', handler);
+        }
+      };
+    });
+  }
 }

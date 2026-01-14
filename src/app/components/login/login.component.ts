@@ -41,10 +41,15 @@ export class LoginComponent {
   showLangMenu = false;
 
   googleBirthdayOpen = false;
+  googleRegisterOpen = false;
   private googleCredentialPending: string | null = null;
   googleBirthdayForm: FormGroup;
+  googleRegisterForm: FormGroup;
   googleBirthdayError = '';
+  googleRegisterError = '';
+  suggestedUsername = '';
   todayISO: string;
+  minBirthdayISO: string;
 
   get forgotTouchedInvalid() {
     const c = this.forgotForm?.get('identifier');
@@ -66,12 +71,23 @@ export class LoginComponent {
     this.forgotForm = this.fb.group({
       identifier: ['', [Validators.required]],
     });
+    
     this.directForm = this.fb.group({
       newPassword: ['', [Validators.required, Validators.minLength(7)]],
     });
 
     this.googleBirthdayForm = this.fb.group({
-      birthday: ['']
+      birthday: ['', [Validators.required]]
+    });
+
+    this.googleRegisterForm = this.fb.group({
+      username: ['', [
+        Validators.required, 
+        Validators.minLength(3),
+        Validators.maxLength(30),
+        Validators.pattern(/^[a-zA-Z][a-zA-Z0-9_]*$/)
+      ]],
+      birthday: ['', [Validators.required]]
     });
 
     const t = new Date();
@@ -81,13 +97,21 @@ export class LoginComponent {
       t.getDate()
     )).toISOString().slice(0, 10);
 
+    const minDate = new Date();
+    minDate.setFullYear(minDate.getFullYear() - 13);
+    this.minBirthdayISO = new Date(Date.UTC(
+      minDate.getFullYear(),
+      minDate.getMonth(),
+      minDate.getDate()
+    )).toISOString().slice(0, 10);
+
     this.translate.use(this.currentLang);
-    this.translate.addLangs(['es', 'en']);
+    this.translate.addLangs(['es', 'en', 'cat', 'fr']);
     this.translate.setDefaultLang('es');
 
-    const stored = (localStorage.getItem('lang') as 'es' | 'en' | null);
+    const stored = (localStorage.getItem('lang') as 'es' | 'en' | 'cat' | 'fr' | null);
     const browserLang = this.translate.getBrowserLang();
-    const langToUse: 'es' | 'en' =
+    const langToUse: 'es' | 'en' | 'cat' | 'fr' =
       stored || (browserLang === 'en' ? 'en' : 'es');
 
     this.currentLang = langToUse;
@@ -98,7 +122,7 @@ export class LoginComponent {
     const user = this.authService.getCurrentUser();
     if (this.authService.isLoggedIn() && user?.rol == 'admin') {
       this.router.navigate(['/home']);
-    } else {
+    } else if (this.authService.isLoggedIn()) {
       this.router.navigate(['/menu']);
     }
   }
@@ -156,26 +180,122 @@ export class LoginComponent {
   }
 
   private handleGoogleCredentialResponse(res: any): void {
-    this.googleBirthdayOpen = true;
     const credential = res?.credential;
-    if (!credential) {
+    if (!credential) return;
+
+    this.googleCredentialPending = credential;
+
+    this.authService.checkGoogleUser(credential).subscribe({
+      next: (result) => {
+        if (result.exists && !result.needsData) {
+          this.isLoading = true;
+          this.authService.loginWithGoogle(credential)
+            .pipe(finalize(() => (this.isLoading = false)))
+            .subscribe({
+              next: (response) => this.handleLoginSuccess(response),
+              error: (error) => {
+                this.errorMessage = error.error?.message || 'Error al iniciar sesión';
+              }
+            });
+        } else if (!result.exists) {
+          this.suggestedUsername = result.suggestedUsername || '';
+          this.googleRegisterOpen = true;
+          this.googleRegisterForm.patchValue({
+            username: this.suggestedUsername,
+            birthday: this.minBirthdayISO
+          });
+        } else if (result.needsData && !result.hasBirthday) {
+          this.googleBirthdayOpen = true;
+          this.googleBirthdayForm.setValue({ birthday: this.minBirthdayISO });
+        }
+      },
+      error: (error) => {
+        console.error('Error al verificar usuario:', error);
+        this.errorMessage = 'Error al verificar la cuenta de Google';
+      }
+    });
+  }
+
+  private validateUsernameFormat(username: string): boolean {
+    if (username.length < 3 || username.length > 30) return false;
+    const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]*$/;
+    if (!usernameRegex.test(username)) return false;
+    const reserved = ['admin', 'root', 'system', 'null', 'undefined'];
+    if (reserved.includes(username.toLowerCase())) return false;
+    return true;
+  }
+
+  private isTooYoung(birthdayStr: string): boolean {
+    if (!birthdayStr) return false;
+    const birthday = new Date(birthdayStr);
+    const today = new Date();
+    const age = today.getFullYear() - birthday.getFullYear();
+    const monthDiff = today.getMonth() - birthday.getMonth();
+    const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate()) 
+      ? age - 1 
+      : age;
+    return actualAge < 13;
+  }
+
+  private isFutureDate(birthdayStr: string): boolean {
+    if (!birthdayStr) return false;
+    const selected = new Date(birthdayStr);
+    const today = new Date();
+    return selected > today;
+  }
+
+  closeGoogleRegisterModal(): void {
+    this.googleRegisterOpen = false;
+    this.googleRegisterError = '';
+    this.googleCredentialPending = null;
+  }
+
+  onGoogleRegisterSubmit(): void {
+    if (this.googleRegisterForm.invalid || !this.googleCredentialPending) {
+      this.googleRegisterForm.markAllAsTouched();
       return;
     }
 
-    this.googleCredentialPending = credential;
-    this.googleBirthdayError = '';
-    setTimeout(() => {
-      this.googleBirthdayForm.setValue({ birthday: this.todayISO });
-    }, 0);
+    const { username, birthday } = this.googleRegisterForm.value;
+    
+    if (!this.validateUsernameFormat(username)) {
+      this.googleRegisterError = this.translate.instant('REGISTER.USERNAME_VALID_CHARS') || 
+        'El nombre de usuario debe empezar con una letra y solo contener letras, números y guiones bajos';
+      return;
+    }
 
-    const today = new Date();
-    const iso = new Date(Date.UTC(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    )).toISOString().slice(0, 10);
+    if (this.isTooYoung(birthday)) {
+      this.googleRegisterError = this.translate.instant('REGISTER.BIRTHDAY_MIN_AGE') || 
+        'Debes tener al menos 13 años para registrarte';
+      return;
+    }
 
-    this.googleBirthdayForm.setValue({ birthday: this.todayISO });
+    if (this.isFutureDate(birthday)) {
+      this.googleRegisterError = this.translate.instant('REGISTER.BIRTHDAY_FUTURE') || 
+        'La fecha de nacimiento no puede ser futura';
+      return;
+    }
+    
+    this.isLoading = true;
+    this.googleRegisterError = '';
+
+    this.authService.loginWithGoogle(this.googleCredentialPending, birthday, username)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: (response) => {
+          this.googleRegisterOpen = false;
+          this.googleCredentialPending = null;
+          this.handleLoginSuccess(response);
+        },
+        error: (error) => {
+          if (error.error?.message === 'USERNAME_EXISTS') {
+            this.googleRegisterError = this.translate.instant('LOGIN.USERNAME_EXISTS') || 
+              'Este nombre de usuario ya está en uso';
+          } else {
+            this.googleRegisterError = error.error?.message || 'Error al registrar';
+          }
+        }
+      });
   }
 
   closeGoogleBirthdayModal(): void {
@@ -194,25 +314,25 @@ export class LoginComponent {
 
     const raw = this.googleBirthdayForm.value.birthday as string | null;
     if (!raw) {
-      this.googleBirthdayError = 'Por favor, indica tu fecha de nacimiento.';
+      this.googleBirthdayError = this.translate.instant('LOGIN.BIRTHDAY_REQUIRED');
+      return;
+    }
+
+    if (this.isTooYoung(raw)) {
+      this.googleBirthdayError = this.translate.instant('REGISTER.BIRTHDAY_MIN_AGE') || 
+        'Debes tener al menos 13 años';
+      return;
+    }
+
+    if (this.isFutureDate(raw)) {
+      this.googleBirthdayError = this.translate.instant('REGISTER.BIRTHDAY_FUTURE') || 
+        'La fecha de nacimiento no puede ser futura';
       return;
     }
 
     const birth = new Date(raw);
     if (Number.isNaN(birth.getTime())) {
       this.googleBirthdayError = 'La fecha de nacimiento no es válida.';
-      return;
-    }
-
-    const now = new Date();
-    const today = new Date(Date.UTC(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    ));
-
-    if (birth > today) {
-      this.googleBirthdayError = 'La fecha de nacimiento no puede ser futura.';
       return;
     }
 
@@ -238,7 +358,6 @@ export class LoginComponent {
       });
   }
 
-  // Navegación compartida para login normal y login con Google
   private handleLoginSuccess(response: any): void {
     const role = response?.user?.rol;
     if (role === 'admin') {
@@ -254,7 +373,7 @@ export class LoginComponent {
     this.themeService.toggleTheme();
   }
 
-  changeLanguage(lang: 'es' | 'en') {
+  changeLanguage(lang: 'es' | 'en' | 'cat' | 'fr') {
     if (this.currentLang === lang) return;
     this.currentLang = lang;
     this.translate.use(lang);

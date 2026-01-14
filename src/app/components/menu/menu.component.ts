@@ -206,6 +206,20 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.cargarProgresoInicial();
         this.loadBlockedUsers();
 
+        const me = this.me();
+        if (me?._id) {
+          this.userService.getFriendRequests(me._id).subscribe({
+            next: (list) => {
+              const count = (list || []).length;
+              this.newFriendRequests.set(count);
+              console.log('✅ Contador inicial de solicitudes:', count);
+            },
+            error: (err) => {
+              console.error('Error al cargar solicitudes iniciales:', err);
+            }
+          });
+        }
+
         this.userService.setOnline(myId).subscribe({
           next: (res) => {
             this.me.update(m => m ? ({ ...(m as any), isOnline: res.online }) : m);
@@ -221,6 +235,54 @@ export class MenuComponent implements OnInit, OnDestroy {
             this.me.set({ ...(fresh as any), isOnline: isOnlineFresh });
           },
           error: () => {
+          }
+        });
+
+        this.socketService.onFriendRequestReceived()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (payload) => {
+            console.log('🔔 Nueva solicitud de amistad recibida:', payload);
+            
+            const currentCount = this.newFriendRequests();
+            this.newFriendRequests.set(currentCount + 1);
+            
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('Nueva solicitud de amistad', {
+                body: `${payload.fromUsername} te ha enviado una solicitud de amistad`,
+                icon: 'assets/images/logo.png'
+              });
+            }
+            
+            try {
+              const audio = new Audio('assets/sounds/notification.mp3');
+              audio.volume = 0.3;
+              audio.play().catch(() => {});
+            } catch (e) {
+            }
+          },
+          error: (err) => {
+            console.error('Error en socket friendRequest:received:', err);
+          }
+        });
+
+      this.socketService.onFriendRequestUpdated()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (payload) => {
+            console.log('🔔 Solicitud actualizada:', payload);
+            
+            const currentCount = this.newFriendRequests();
+            if (currentCount > 0) {
+              this.newFriendRequests.set(currentCount - 1);
+            }
+            
+            if (this.showRequestsModal()) {
+              this.openRequestsModal();
+            }
+          },
+          error: (err) => {
+            console.error('Error en socket friendRequest:updated:', err);
           }
         });
 
@@ -274,26 +336,6 @@ export class MenuComponent implements OnInit, OnDestroy {
             if (this.showRequestsModal()) {
               this.refreshRequests();
             }
-          });
-
-        this.friendsPollSub = interval(2000)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(() => {
-            const m = this.me();
-            const myId = m ? this.getId(m as any) : '';
-            if (!myId) return;
-
-            this.userService.getFriendRequests(myId).subscribe({
-              next: (list) => {
-                const count = (list || []).length;
-                if (this.newFriendRequests() !== count) {
-                  this.newFriendRequests.set(count);
-                }
-              },
-              error: (err) => {
-                console.error('Error refrescando solicitudes (polling)', err);
-              }
-            });
           });
       });
 

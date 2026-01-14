@@ -63,15 +63,25 @@ export class RegistrarComponent {
   ];
 
   constructor(private userService: UserService, private router: Router, private translate: TranslateService) {
-    const today = new Date();
-    this.maxDate = today.toISOString().split('T')[0];
+    const t = new Date();
+    this.maxDate = new Date(Date.UTC(
+      t.getFullYear(),
+      t.getMonth(),
+      t.getDate()
+    )).toISOString().split('T')[0];
     
-    const minDate = new Date();
-    minDate.setFullYear(minDate.getFullYear() - 13);
-    this.minDate = minDate.toISOString().split('T')[0];
+    const minDateCalc = new Date();
+    minDateCalc.setFullYear(minDateCalc.getFullYear() - 13);
+    this.minDate = new Date(Date.UTC(
+      minDateCalc.getFullYear(),
+      minDateCalc.getMonth(),
+      minDateCalc.getDate()
+    )).toISOString().split('T')[0];
+    
+    this.birthdayStr = this.minDate;
     
     this.translate.use(this.currentLang);
-    const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    const savedLang = (localStorage.getItem('lang') as 'es' | 'en' | 'cat' | 'fr') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
   }

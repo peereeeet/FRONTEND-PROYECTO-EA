@@ -58,9 +58,13 @@ export class AuthService {
     );
   }
 
-  loginWithGoogle(credential: string, birthday?: string): Observable<LoginResponse> {
+  loginWithGoogle(credential: string, birthday?: string, username?: string): Observable<LoginResponse> {
     return this.http
-      .post<LoginResponse>(`${this.apiUrl}/user/auth/google`, { credential, birthday })
+      .post<LoginResponse>(`${this.apiUrl}/user/auth/google`, { 
+        credential, 
+        birthday,
+        username
+      })
       .pipe(
         tap(response => {
           if (response.user) {
@@ -145,5 +149,15 @@ export class AuthService {
     }
     const user = JSON.parse(currentUser);
     return this.http.post(`${this.apiUrl}/user/refresh`, { refreshToken, userId: user._id });
+  }
+
+  checkGoogleUser(credential: string): Observable<{
+    exists: boolean;
+    needsData: boolean;
+    suggestedUsername?: string;
+    hasUsername?: boolean;
+    hasBirthday?: boolean;
+  }> {
+    return this.http.post<any>(`${this.apiUrl}/user/auth/google/check`, { credential });
   }
 }
