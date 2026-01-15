@@ -44,7 +44,11 @@
     "GOOGLE_BIRTHDAY_TEXT": "Abans d’acabar el registre amb Google, necessitem la teva data de naixement per completar el teu perfil.",
     "GOOGLE_BIRTHDAY_LABEL": "Data de naixement",
     "GOOGLE_BIRTHDAY_CANCEL": "Cancel·lar",
-    "GOOGLE_BIRTHDAY_CONFIRM": "Continuar"
+    "GOOGLE_BIRTHDAY_CONFIRM": "Continuar",
+    "GOOGLE_REGISTER_INTERESTS": "Què t'interessa? (Opcional)",
+    "GOOGLE_INTERESTS_SHOW": "Afegir els meus interessos",
+    "GOOGLE_INTERESTS_HIDE": "Amagar interessos",
+    "GOOGLE_INTERESTS_SELECT": "Seleccionar els meus interessos"
   },
 
   "REGISTER": {
@@ -88,7 +92,34 @@
     "PASSWORD_REQ_LOWERCASE": "Una lletra minúscula",
     "PASSWORD_REQ_NUMBER": "Un número",
     "PASSWORD_REQ_SPECIAL": "Un caràcter especial (!@#$...)",
-    "PASSWORDS_MATCH": "Les contrasenyes coincideixen"
+    "PASSWORDS_MATCH": "Les contrasenyes coincideixen",
+    "INTERESTS_OPTIONAL": "(Opcional) Els teus interessos"
+  },
+
+  "INTERESTS": {
+    "TITLE": "Què t'interessa?",
+    "SUBTITLE": "Selecciona els teus interessos per rebre recomanacions personalitzades",
+    "SELECTED": "Interessos seleccionats",
+    "SHOW": "Afegir els meus interessos",
+    "HIDE": "Amagar interessos",
+    "HINT": "Opcional: Això ens ajudarà a recomanar-te esdeveniments que t'agradin",
+    "CONFIRM": "Confirmar",
+    "CANCEL": "Cancel·lar",
+    "CATEGORIES": {
+      "SPORTS": "Esports",
+      "MUSIC": "Música",
+      "CULTURE": "Cultura",
+      "FOOD": "Gastronomia",
+      "SOCIAL": "Social",
+      "LEARNING": "Aprenentatge",
+      "TECH": "Tecnologia",
+      "WELLNESS": "Benestar",
+      "VOLUNTEER": "Voluntariat",
+      "NATURE": "Natura",
+      "GAMES": "Jocs",
+      "FAMILY": "Família",
+      "OTHER": "Altres"
+    }
   },
 
   "LANG": {

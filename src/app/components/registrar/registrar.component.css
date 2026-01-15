@@ -53,7 +53,6 @@
 
 /* ===== VALIDACIONES EN TIEMPO REAL ===== */
 
-/* Contenedor de checks de validación */
 .validation-checks {
   margin-top: 8px;
   padding: 10px;
@@ -65,7 +64,6 @@
   gap: 6px;
 }
 
-/* Cada item de validación */
 .validation-item {
   display: flex;
   align-items: center;
@@ -82,7 +80,6 @@
   min-width: 18px;
 }
 
-/* Estado válido */
 .validation-item.valid {
   color: #059669;
   background: rgba(16, 185, 129, 0.1);
@@ -92,7 +89,6 @@
   color: #10b981;
 }
 
-/* Estado inválido */
 .validation-item.invalid {
   color: #dc2626;
   background: rgba(239, 68, 68, 0.1);
@@ -134,7 +130,6 @@
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
 }
 
-/* Texto de fortaleza */
 .strength-text {
   margin-top: 4px;
   font-size: 0.8rem;
@@ -182,6 +177,76 @@
   color: #10b981;
 }
 
+/* ===== SELECTOR DE INTERESES ===== */
+
+.interests-toggle-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.interests-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 2px solid var(--border, #e2e8f0);
+  background: var(--surface-elev, #f8fafc);
+  color: var(--text-primary, #0f172a);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.1);
+}
+
+.interests-toggle-btn:hover {
+  border-color: var(--accent-blue, #1d4ed8);
+  background: var(--surface, #ffffff);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.2);
+}
+
+.toggle-icon {
+  font-size: 1.2rem;
+}
+
+.toggle-arrow {
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+.interests-toggle-btn:hover .toggle-arrow {
+  transform: translateY(2px);
+}
+
+.interests-hint {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 500;
+}
+
+.interests-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: var(--surface-elev, #f8fafc);
+  border: 2px solid var(--border, #e2e8f0);
+  border-radius: 16px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ===== RESPONSIVE ===== */
 
 @media (max-width: 700px) {
@@ -208,6 +273,11 @@
   
   .validation-item {
     padding: 3px 5px;
+  }
+
+  .interests-toggle-btn {
+    padding: 10px 16px;
+    font-size: 0.85rem;
   }
 }
 
@@ -236,4 +306,145 @@
   background: rgba(16, 185, 129, 0.15);
   border-color: #6ee7b7;
   color: #6ee7b7;
+}
+
+[data-theme="dark"] .interests-toggle-btn {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+[data-theme="dark"] .interests-toggle-btn:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: var(--accent-blue, #1d4ed8);
+}
+
+[data-theme="dark"] .interests-section {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* ==================================================================
+   ESTILOS PARA MODALES DE INTERESES
+   Añadir estos estilos a login.component.css y registrar.component.css
+   ================================================================== */
+
+/* MODAL DE INTERESES */
+.modal--interests {
+  max-width: 90%;
+  width: 900px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal--interests .modal-body {
+  padding: 20px;
+  max-height: calc(85vh - 180px);
+  overflow-y: auto;
+}
+
+.selected-count {
+  background: linear-gradient(135deg, #38bdf8, #1d4ed8);
+  color: white;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-left: 6px;
+  display: inline-block;
+}
+
+.interests-toggle-btn .selected-count,
+.interests-toggle-btn-modal .selected-count {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Botón de intereses mejorado */
+.interests-toggle-btn,
+.interests-toggle-btn-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 2px solid var(--border, #e2e8f0);
+  background: var(--surface-elev, #f8fafc);
+  color: var(--text-primary, #0f172a);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.1);
+  width: 100%;
+  justify-content: center;
+}
+
+.interests-toggle-btn:hover,
+.interests-toggle-btn-modal:hover {
+  border-color: var(--accent-blue, #1d4ed8);
+  background: var(--surface, #ffffff);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.2);
+}
+
+.interests-toggle-container-modal {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .modal--interests {
+    max-width: 95%;
+    max-height: 90vh;
+    width: calc(100vw - 20px);
+  }
+
+  .modal--interests .modal-body {
+    max-height: calc(90vh - 160px);
+    padding: 15px;
+  }
+
+  .interests-toggle-btn,
+  .interests-toggle-btn-modal {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+
+  .selected-count {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+  }
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .interests-toggle-btn,
+[data-theme="dark"] .interests-toggle-btn-modal {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: var(--text-primary, #f1f5f9);
+}
+
+[data-theme="dark"] .interests-toggle-btn:hover,
+[data-theme="dark"] .interests-toggle-btn-modal:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: var(--accent-blue, #1d4ed8);
+}
+
+[data-theme="dark"] .modal--interests {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+[data-theme="dark"] .modal--interests .modal-body {
+  background: rgba(30, 41, 59, 0.6);
 }

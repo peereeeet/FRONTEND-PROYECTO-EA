@@ -44,7 +44,11 @@
     "GOOGLE_BIRTHDAY_TEXT": "Avant de finaliser l'inscription avec Google, nous avons besoin de votre date de naissance pour compléter votre profil.",
     "GOOGLE_BIRTHDAY_LABEL": "Date de naissance",
     "GOOGLE_BIRTHDAY_CANCEL": "Annuler",
-    "GOOGLE_BIRTHDAY_CONFIRM": "Continuer"
+    "GOOGLE_BIRTHDAY_CONFIRM": "Continuer",
+    "GOOGLE_REGISTER_INTERESTS": "Qu'est-ce qui vous intéresse ? (Optionnel)",
+    "GOOGLE_INTERESTS_SHOW": "Ajouter mes intérêts",
+    "GOOGLE_INTERESTS_HIDE": "Masquer les intérêts",
+    "GOOGLE_INTERESTS_SELECT": "Sélectionner mes intérêts"
   },
 
   "REGISTER": {
@@ -88,7 +92,34 @@
     "PASSWORD_REQ_LOWERCASE": "Une lettre minuscule",
     "PASSWORD_REQ_NUMBER": "Un chiffre",
     "PASSWORD_REQ_SPECIAL": "Un caractère spécial (!@#$...)",
-    "PASSWORDS_MATCH": "Les mots de passe correspondent"
+    "PASSWORDS_MATCH": "Les mots de passe correspondent",
+    "INTERESTS_OPTIONAL": "(Optionnel) Vos intérêts"
+  },
+
+  "INTERESTS": {
+    "TITLE": "Qu'est-ce qui vous intéresse ?",
+    "SUBTITLE": "Sélectionnez vos intérêts pour recevoir des recommandations personnalisées",
+    "SELECTED": "Intérêts sélectionnés",
+    "SHOW": "Ajouter mes intérêts",
+    "HIDE": "Masquer les intérêts",
+    "HINT": "Optionnel : Cela nous aidera à vous recommander des événements que vous aimerez",
+    "CONFIRM": "Confirmer",
+    "CANCEL": "Annuler",
+    "CATEGORIES": {
+      "SPORTS": "Sports",
+      "MUSIC": "Musique",
+      "CULTURE": "Culture",
+      "FOOD": "Gastronomie",
+      "SOCIAL": "Social",
+      "LEARNING": "Apprentissage",
+      "TECH": "Technologie",
+      "WELLNESS": "Bien-être",
+      "VOLUNTEER": "Bénévolat",
+      "NATURE": "Nature",
+      "GAMES": "Jeux",
+      "FAMILY": "Famille",
+      "OTHER": "Autres"
+    }
   },
 
   "LANG": {

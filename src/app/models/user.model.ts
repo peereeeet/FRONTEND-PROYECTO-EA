@@ -12,6 +12,7 @@ export interface User {
   isGoogleUser?: boolean;
   isOnline?: boolean;
   profilePhoto?: string;
+  interests?: string[];
   friends?: Array<
     string |
     { _id: string; username: string; gmail: string; isOnline?: boolean }

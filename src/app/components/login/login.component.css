@@ -616,3 +616,324 @@
 .modal--birthday .modal-actions {
   margin-top: 14px;
 }
+/* ===========================
+   MODAL REGISTRO GOOGLE - INTERESES
+   =========================== */
+
+.modal--google-register {
+  max-width: 600px;
+}
+
+.interests-toggle-container-modal {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.interests-toggle-btn-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--surface-elev);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.1);
+}
+
+.interests-toggle-btn-modal:hover {
+  border-color: var(--accent-blue);
+  background: var(--surface);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.2);
+}
+
+.interests-toggle-btn-modal .toggle-icon {
+  font-size: 1.1rem;
+}
+
+.interests-toggle-btn-modal .toggle-arrow {
+  font-size: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.interests-toggle-btn-modal:hover .toggle-arrow {
+  transform: translateY(2px);
+}
+
+.interests-section-modal {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--surface-elev);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  animation: slideDown 0.3s ease-out;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .interests-toggle-btn-modal {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+[data-theme="dark"] .interests-toggle-btn-modal:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: var(--accent-blue);
+}
+
+[data-theme="dark"] .interests-section-modal {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .modal--google-register {
+    max-width: 95%;
+  }
+
+  .interests-section-modal {
+    max-height: 300px;
+  }
+}
+
+/* ===========================
+   MODAL REGISTRO GOOGLE - INTERESES
+   =========================== */
+
+.modal--google-register {
+  max-width: 600px;
+}
+
+.interests-toggle-container-modal {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.interests-toggle-btn-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--surface-elev);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.1);
+}
+
+.interests-toggle-btn-modal:hover {
+  border-color: var(--accent-blue);
+  background: var(--surface);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.2);
+}
+
+.interests-toggle-btn-modal .toggle-icon {
+  font-size: 1.1rem;
+}
+
+.interests-toggle-btn-modal .toggle-arrow {
+  font-size: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.interests-toggle-btn-modal:hover .toggle-arrow {
+  transform: translateY(2px);
+}
+
+.interests-section-modal {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--surface-elev);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  animation: slideDown 0.3s ease-out;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .interests-toggle-btn-modal {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+[data-theme="dark"] .interests-toggle-btn-modal:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: var(--accent-blue);
+}
+
+[data-theme="dark"] .interests-section-modal {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .modal--google-register {
+    max-width: 95%;
+  }
+
+  .interests-section-modal {
+    max-height: 300px;
+  }
+}
+
+/* ==================================================================
+   ESTILOS PARA MODALES DE INTERESES
+   Añadir estos estilos a login.component.css y registrar.component.css
+   ================================================================== */
+
+/* MODAL DE INTERESES */
+.modal--interests {
+  max-width: 90%;
+  width: 900px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal--interests .modal-body {
+  padding: 20px;
+  max-height: calc(85vh - 180px);
+  overflow-y: auto;
+}
+
+.selected-count {
+  background: linear-gradient(135deg, #38bdf8, #1d4ed8);
+  color: white;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-left: 6px;
+  display: inline-block;
+}
+
+.interests-toggle-btn .selected-count,
+.interests-toggle-btn-modal .selected-count {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Botón de intereses mejorado */
+.interests-toggle-btn,
+.interests-toggle-btn-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 2px solid var(--border, #e2e8f0);
+  background: var(--surface-elev, #f8fafc);
+  color: var(--text-primary, #0f172a);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.1);
+  width: 100%;
+  justify-content: center;
+}
+
+.interests-toggle-btn:hover,
+.interests-toggle-btn-modal:hover {
+  border-color: var(--accent-blue, #1d4ed8);
+  background: var(--surface, #ffffff);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.2);
+}
+
+.interests-toggle-container-modal {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .modal--interests {
+    max-width: 95%;
+    max-height: 90vh;
+    width: calc(100vw - 20px);
+  }
+
+  .modal--interests .modal-body {
+    max-height: calc(90vh - 160px);
+    padding: 15px;
+  }
+
+  .interests-toggle-btn,
+  .interests-toggle-btn-modal {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+
+  .selected-count {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+  }
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .interests-toggle-btn,
+[data-theme="dark"] .interests-toggle-btn-modal {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: var(--text-primary, #f1f5f9);
+}
+
+[data-theme="dark"] .interests-toggle-btn:hover,
+[data-theme="dark"] .interests-toggle-btn-modal:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: var(--accent-blue, #1d4ed8);
+}
+
+[data-theme="dark"] .modal--interests {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+[data-theme="dark"] .modal--interests .modal-body {
+  background: rgba(30, 41, 59, 0.6);
+}
