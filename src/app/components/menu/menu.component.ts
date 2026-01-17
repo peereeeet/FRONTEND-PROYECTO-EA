@@ -84,6 +84,14 @@ export class MenuComponent implements OnInit, OnDestroy {
   newFriendRequests = signal(0);
   invitacionesPendientes = signal(0);
 
+  chatSelectedImage = signal<File | null>(null);
+  chatImagePreview = signal<string | null>(null);
+  chatUploadingImage = signal<boolean>(false);
+  
+  showDeleteChatMessageModal = signal<boolean>(false);
+  chatMessageToDelete = signal<ChatMessage | null>(null);
+  deletingChatMessage = signal<boolean>(false);
+
   private progresoInicial: any = null;
 
   fPage: number = 1;
@@ -982,6 +990,21 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.scrollChatToBottom();
         }
       });
+    this.socketService
+      .onChatMessageDeleted()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ messageId, from, to }) => {
+        const me = this.me();
+        const friend = this.chatFriend();
+        if (!me || !friend) return;
+
+        const pair = [me._id, friend._id];
+        if (pair.includes(from) && pair.includes(to)) {
+          this.chatMessages.update(list =>
+            list.filter(m => m._id !== messageId)
+          );
+        }
+      });
   }
 
   openChat(friend: any): void {
@@ -1014,6 +1037,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.chatFriend.set(null);
     this.chatMessages.set([]);
     this.chatText.set('');
+    this.chatSelectedImage.set(null);
+    this.chatImagePreview.set(null);
+    this.chatUploadingImage.set(false);
   }
 
   onChatInput(event: Event): void {
@@ -1021,7 +1047,11 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.chatText.set(value);
   }
 
-  sendChat(): void {
+  async sendChat(): Promise<void> {
+    if (this.chatSelectedImage()) {
+      await this.sendChatWithImage();
+      return;
+    }
     const text = this.chatText().trim();
     if (!text) return;
 
@@ -1032,6 +1062,151 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.chatText.set('');
 
     this.socketService.sendChatMessage(me._id, friend._id, text);
+  }
+
+  getChatImageUrl(imageUrl: string): string {
+    const token = this.auth.getToken();
+    return `http://localhost:3000${imageUrl}?token=${token}`;
+  }
+
+  onChatImageSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    
+    if (!validTypes.includes(file.type)) {
+      this.chatError.set('Solo se permiten imágenes (JPG, PNG, GIF, WEBP)');
+      return;
+    }
+
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      this.chatError.set('La imagen es demasiado grande. Máximo 10MB');
+      return;
+    }
+
+    this.chatSelectedImage.set(file);
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.chatImagePreview.set(e.target.result);
+    };
+    reader.readAsDataURL(file);
+    this.chatError.set('');
+  }
+
+  cancelChatImage(): void {
+    this.chatSelectedImage.set(null);
+    this.chatImagePreview.set(null);
+    this.chatError.set('');
+  }
+
+  async uploadChatImage(): Promise<string | null> {
+    const file = this.chatSelectedImage();
+    const friend = this.chatFriend();
+    const me = this.me();
+    
+    if (!file || !friend?._id || !me?._id) {
+      return null;
+    }
+
+    this.chatUploadingImage.set(true);
+    this.chatError.set('');
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`http://localhost:3000/api/user/${me._id}/chat/${friend._id}/image`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.auth.getToken()}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al subir imagen');
+      }
+
+      const data = await response.json();
+      return data.imageUrl;
+    } catch (error: any) {
+      this.chatError.set(error.message || 'Error al subir la imagen');
+      return null;
+    } finally {
+      this.chatUploadingImage.set(false);
+    }
+  }
+
+  async sendChatWithImage(): Promise<void> {
+    const imageUrl = await this.uploadChatImage();
+    
+    if (imageUrl) {
+      const text = (this.chatText() || '').trim();
+      const me = this.me();
+      const friend = this.chatFriend();
+      
+      if (!me?._id || !friend?._id) return;
+
+      this.chatText.set('');
+      this.cancelChatImage();
+      
+      this.socketService.sendChatMessage(me._id, friend._id, text, imageUrl);
+    }
+  }
+
+  canDeleteChatMessage(msg: ChatMessage): boolean {
+    const me = this.me();
+    if (!me?._id) return false;
+    return msg.from === me._id;
+  }
+
+  confirmDeleteChatMessage(message: ChatMessage): void {
+    this.chatMessageToDelete.set(message);
+    this.showDeleteChatMessageModal.set(true);
+  }
+
+  closeDeleteChatMessageModal(): void {
+    this.showDeleteChatMessageModal.set(false);
+    this.chatMessageToDelete.set(null);
+  }
+
+  async deleteChatMessage(): Promise<void> {
+    const message = this.chatMessageToDelete();
+    if (!message?._id) return;
+
+    this.deletingChatMessage.set(true);
+    this.chatError.set('');
+
+    try {
+      const token = this.auth.getToken();
+      const response = await fetch(
+        `http://localhost:3000/api/user/chat/${message._id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al eliminar el mensaje');
+      }
+
+      this.closeDeleteChatMessageModal();
+    } catch (error: any) {
+      this.chatError.set(error.message || 'Error al eliminar el mensaje');
+    } finally {
+      this.deletingChatMessage.set(false);
+    }
   }
 
   isEventInvite(msg: ChatMessage): boolean {

@@ -233,7 +233,7 @@
                   <li *ngFor="let f of friendsPaged()">
                     <div class="friend-left">
                       <div class="avatar avatar--sm">
-                        <img *ngIf="f.profilePhoto" [src]="'http://localhost:3000' + f.profilePhoto" alt="" class="avatar-img" />
+                        <img *ngIf="f.profilePhoto" [src]="f.profilePhoto" alt="" class="avatar-img" />
                         <span *ngIf="!f.profilePhoto">🙂</span>
                       </div>
                       <div class="friend-data">
@@ -1267,8 +1267,25 @@
             [class.from-them]="m.from !== me()?._id">
 
             <div class="bubble">
+              <!-- Header del missatge amb botó d'eliminar -->
+              <div class="message-header" *ngIf="canDeleteChatMessage(m)">
+                <button 
+                  type="button" 
+                  class="btn-delete-message" 
+                  (click)="confirmDeleteChatMessage(m); $event.stopPropagation()"
+                  [title]="'MENU.CHAT_DELETE_MESSAGE' | translate">
+                  🗑️
+                </button>
+              </div>
+
               <ng-container *ngIf="!isEventInvite(m); else eventInviteTpl">
-                <div class="text">
+                <!-- Mostrar imatge si existeix -->
+                <div class="message-image" *ngIf="m.imageUrl">
+                  <img [src]="getChatImageUrl(m.imageUrl)" [alt]="chatFriend()?.username" />
+                </div>
+                
+                <!-- Mostrar text si existeix -->
+                <div class="text" *ngIf="m.text">
                   {{ m.text }}
                 </div>
               </ng-container>
@@ -1339,16 +1356,84 @@
         </div>
       </div>
 
+      <!-- Vista prèvia d'imatge seleccionada -->
+      <div class="chat-image-preview" *ngIf="chatImagePreview()">
+        <div class="preview-container">
+          <img [src]="chatImagePreview()!" alt="Vista previa" />
+          <button type="button" class="btn-cancel-image" (click)="cancelChatImage()" 
+                  [disabled]="chatUploadingImage()">
+            ×
+          </button>
+        </div>
+      </div>
+
       <div class="chat-input-row">
+        <input type="file" #chatImageInput accept="image/*" (change)="onChatImageSelect($event)" style="display: none;">
+        
+        <button type="button" class="btn btn-image" (click)="chatImageInput.click()" 
+                [disabled]="chatUploadingImage()" 
+                [title]="'MENU.CHAT_ADD_IMAGE' | translate">
+          📷
+        </button>
+        
         <input
           type="text"
           class="chat-input"
           [value]="chatText()"
           (input)="onChatInput($event)"
           (keyup.enter)="sendChat()"
-          [placeholder]="'MENU.CHAT_PLACEHOLDER' | translate" />
-        <button type="button" class="btn send-btn" (click)="sendChat()">
-          ➤
+          [placeholder]="'MENU.CHAT_PLACEHOLDER' | translate"
+          [disabled]="chatUploadingImage()" />
+        
+        <button type="button" class="btn send-btn" (click)="sendChat()" [disabled]="chatUploadingImage()">
+          <span *ngIf="!chatUploadingImage()">➤</span>
+          <span *ngIf="chatUploadingImage()">⏳</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmació eliminar missatge del chat -->
+  <div class="modal-overlay" *ngIf="showDeleteChatMessageModal()" (click)="closeDeleteChatMessageModal()">
+    <div class="modal modal--confirm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <span class="modal-icon">⚠️</span>
+          {{ 'MENU.CHAT_DELETE_MESSAGE_TITLE' | translate }}
+        </h3>
+        <button class="btn-close" (click)="closeDeleteChatMessageModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="confirm-text">{{ 'MENU.CHAT_DELETE_MESSAGE_CONFIRM' | translate }}</p>
+        
+        <div class="message-preview" *ngIf="chatMessageToDelete()">
+          <div class="bubble-preview">
+            <div class="message-image" *ngIf="chatMessageToDelete()?.imageUrl">
+              <img [src]="getChatImageUrl(chatMessageToDelete()!.imageUrl!)" alt="Preview" />
+            </div>
+            <div class="text" *ngIf="chatMessageToDelete()?.text">{{ chatMessageToDelete()?.text }}</div>
+          </div>
+        </div>
+
+        <div *ngIf="chatError()" class="msg msg--error">
+          {{ chatError() }}
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button 
+          class="btn btn--ghost" 
+          (click)="closeDeleteChatMessageModal()"
+          [disabled]="deletingChatMessage()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button 
+          class="btn btn--danger" 
+          (click)="deleteChatMessage()"
+          [disabled]="deletingChatMessage()">
+          <span *ngIf="!deletingChatMessage()">🗑️ {{ 'MENU.CHAT_DELETE_MESSAGE_BTN' | translate }}</span>
+          <span *ngIf="deletingChatMessage()">{{ 'MENU.CHAT_DELETING_MESSAGE' | translate }}</span>
         </button>
       </div>
     </div>

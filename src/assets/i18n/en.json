@@ -244,7 +244,13 @@
     "RECOMMENDED_NO_INTERESTS_TITLE": "Add your interests",
     "RECOMMENDED_NO_INTERESTS_TEXT": "To receive personalized recommendations, add your interests in your profile.",
     "RECOMMENDED_ADD_INTERESTS": "Go to my profile",
-    "RECOMMENDED_LOADING": "Loading recommendations..."
+    "RECOMMENDED_LOADING": "Loading recommendations...",
+    "CHAT_ADD_IMAGE": "Attach image",
+    "CHAT_DELETE_MESSAGE": "Delete message",
+    "CHAT_DELETE_MESSAGE_TITLE": "Delete Message",
+    "CHAT_DELETE_MESSAGE_CONFIRM": "Are you sure you want to delete this message? This action cannot be undone.",
+    "CHAT_DELETE_MESSAGE_BTN": "Delete",
+    "CHAT_DELETING_MESSAGE": "Deleting..."
   },
 
   "FRIENDS": {
@@ -422,64 +428,82 @@
     "GO_TO_EXPLORE": "Explore events (map)",
     "LOADING": "Loading events.",
     "ERROR_MESSAGE_PREFIX": "Error:",
-
     "CREATED_TITLE": "Events I created ({{count}})",
     "CREATED_EMPTY_TEXT": "You haven't created any events yet.",
     "BADGE_CREATOR": "Creator",
-
     "FIELD_ADDRESS": "Address:",
     "BUTTON_VIEW_MAP": "🗺 Map",
     "FIELD_SCHEDULE": "Schedule:",
     "FIELD_PARTICIPANTS": "Participants:",
-
     "RATINGS_LABEL": "Ratings:",
     "RATINGS_NONE": "No ratings",
     "BUTTON_VIEW_RATINGS": "Ratings",
     "BUTTON_EDIT": "✏️ Edit",
     "BUTTON_DELETE": "🗑️ Delete",
-
     "JOINED_TITLE": "Events I'm joined to ({{count}})",
     "JOINED_EMPTY_TEXT": "You are not joined to any event yet.",
     "JOINED_BUTTON_EXPLORE": "Explore events",
-
     "BADGE_JOINED": "Joined",
-
     "BUTTON_LEAVE": "Leave",
-
     "DELETE_MODAL_TITLE": "Delete event",
     "DELETE_MODAL_TEXT": "Are you sure you want to delete <strong>{{name}}</strong>?",
     "DELETE_MODAL_CANCEL": "Cancel",
     "DELETE_MODAL_CONFIRM": "🗑️ Delete",
-
     "LEAVE_MODAL_TITLE": "Leave event",
     "LEAVE_MODAL_TEXT": "Are you sure you want to leave <strong>{{name}}</strong>?",
     "LEAVE_MODAL_CANCEL": "Cancel",
     "LEAVE_MODAL_CONFIRM": "Leave",
-
     "BUTTON_SHARE_EVENT": "Send event",
     "SHARE_EVENT_TITLE": "Share event",
     "SHARE_EVENT_LOADING": "Loading friends...",
     "SHARE_EVENT_NO_FRIENDS": "You have no friends to send this event to.",
     "SHARE_EVENT_SEND": "Send",
-
     "BUTTON_EVENT_CHAT": "Chat",
     "EVENT_CHAT_TITLE": "Event chat",
     "EVENT_CHAT_LOADING": "Loading event messages...",
     "EVENT_CHAT_EMPTY": "There are no messages in this event yet.",
     "EVENT_CHAT_PLACEHOLDER": "Write a message for this event...",
-
     "TAB_JOINED": "Joined Events",
     "TAB_CREATED": "Created Events",
     "STATS_RATING": "Rating",
-
     "CREATOR_CANNOT_LEAVE": "You cannot leave as the creator",
     "SECTION_UPCOMING": "Upcoming Events",
     "SECTION_PAST": "Past Events",
     "BADGE_FINISHED": "Finished",
-
     "FILTER_ALL": "All",
     "FILTER_PUBLIC": "Public",
-    "FILTER_PRIVATE": "Private"
+    "FILTER_PRIVATE": "Private",
+    "BUTTON_ALBUM": "Album",
+    "EVENT_CHAT_ADD_IMAGE": "Attach image",
+    "EVENT_CHAT_UPLOADING_IMAGE": "Uploading image...",
+    "EVENT_CHAT_IMAGE_ERROR": "Error uploading image",
+    "DELETE_MESSAGE": "Delete message",
+    "DELETE_MESSAGE_TITLE": "Delete Message",
+    "DELETE_MESSAGE_CONFIRM": "Are you sure you want to delete this message? This action cannot be undone.",
+    "DELETE_MESSAGE_BTN": "Delete",
+    "DELETING_MESSAGE": "Deleting...",
+    "MESSAGE_DELETED_SUCCESS": "Message deleted successfully",
+    "MESSAGE_DELETE_ERROR": "Error deleting message"
+  },
+  "ALBUM": {
+    "TITLE": "Shared Album",
+    "UPLOAD_TITLE": "Upload photo or video",
+    "UPLOAD_HINT": "Share your best moments from the event with other participants",
+    "UPLOAD_CLICK": "Click to select a file",
+    "UPLOAD_FORMATS": "Images (JPG, PNG, GIF, WEBP) or videos (MP4, WEBM) - Max. 50MB",
+    "UPLOADING": "Uploading...",
+    "UPLOAD_BUTTON": "Upload",
+    "GALLERY_TITLE": "Event gallery",
+    "LOADING": "Loading photos...",
+    "EMPTY": "There are no photos or videos in this event yet. Be the first to upload one!",
+    "DOWNLOAD": "Download",
+    "DELETE": "Delete",
+    "CONFIRM_DELETE": "Are you sure you want to delete this photo/video?",
+    "CONFIRM_DELETE_TITLE": "Confirm Deletion",
+    "UPLOADED_BY": "Uploaded by",
+    "UPLOADED_ON": "Date",
+    "DELETING": "Deleting...",
+    "CANCEL": "Cancel"
   },
 
  "RATINGS": {

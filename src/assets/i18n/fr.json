@@ -236,7 +236,13 @@
     "RECOMMENDED_NO_INTERESTS_TITLE": "Ajoutez vos intérêts",
     "RECOMMENDED_NO_INTERESTS_TEXT": "Pour recevoir des recommandations personnalisées, ajoutez vos intérêts dans votre profil.",
     "RECOMMENDED_ADD_INTERESTS": "Aller à mon profil",
-    "RECOMMENDED_LOADING": "Chargement des recommandations..."
+    "RECOMMENDED_LOADING": "Chargement des recommandations...",
+    "CHAT_ADD_IMAGE": "Joindre une image",
+    "CHAT_DELETE_MESSAGE": "Supprimer le message",
+    "CHAT_DELETE_MESSAGE_TITLE": "Supprimer le Message",
+    "CHAT_DELETE_MESSAGE_CONFIRM": "Êtes-vous sûr de vouloir supprimer ce message? Cette action ne peut pas être annulée.",
+    "CHAT_DELETE_MESSAGE_BTN": "Supprimer",
+    "CHAT_DELETING_MESSAGE": "Suppression..."
   },
 
   "FRIENDS": {
@@ -425,64 +431,82 @@
     "GO_TO_EXPLORE": "Explorer les événements (carte)",
     "LOADING": "Chargement des événements.",
     "ERROR_MESSAGE_PREFIX": "Erreur:",
-
     "CREATED_TITLE": "📝 Événements que j'ai créés ({{count}})",
     "CREATED_EMPTY_TEXT": "Vous n'avez encore créé aucun événement",
     "BADGE_CREATOR": "Créateur",
-
     "FIELD_ADDRESS": "Adresse:",
     "BUTTON_VIEW_MAP": "🗺 Carte",
     "FIELD_SCHEDULE": "Horaire:",
     "FIELD_PARTICIPANTS": "Participants:",
-
     "RATINGS_LABEL": "Avis:",
     "RATINGS_NONE": "Aucun avis",
     "BUTTON_VIEW_RATINGS": "Avis",
     "BUTTON_EDIT": "✏️ Modifier",
     "BUTTON_DELETE": "🗑️ Supprimer",
-
     "JOINED_TITLE": "🎯 Événements auxquels je suis inscrit ({{count}})",
     "JOINED_EMPTY_TEXT": "Vous n'êtes inscrit à aucun événement",
     "JOINED_BUTTON_EXPLORE": "Explorer les événements",
-
     "BADGE_JOINED": "Inscrit",
-
     "BUTTON_LEAVE": "👋 Quitter",
-
     "DELETE_MODAL_TITLE": "Supprimer l'événement",
     "DELETE_MODAL_TEXT": "Êtes-vous sûr de vouloir supprimer <strong>{{name}}</strong> ?",
     "DELETE_MODAL_CANCEL": "Annuler",
     "DELETE_MODAL_CONFIRM": "🗑️ Supprimer",
-
     "LEAVE_MODAL_TITLE": "Quitter l'événement",
     "LEAVE_MODAL_TEXT": "Êtes-vous sûr de vouloir quitter <strong>{{name}}</strong> ?",
     "LEAVE_MODAL_CANCEL": "Annuler",
     "LEAVE_MODAL_CONFIRM": "Quitter",
-
     "BUTTON_SHARE_EVENT": "Envoyer événement",
     "SHARE_EVENT_TITLE": "Partager l'événement",
     "SHARE_EVENT_LOADING": "Chargement des amis...",
     "SHARE_EVENT_NO_FRIENDS": "Vous n'avez aucun ami à qui envoyer cet événement.",
     "SHARE_EVENT_SEND": "Envoyer",
-
     "BUTTON_EVENT_CHAT": "Chat",
     "EVENT_CHAT_TITLE": "Chat de l'événement",
     "EVENT_CHAT_LOADING": "Chargement des messages de l'événement...",
     "EVENT_CHAT_EMPTY": "Il n'y a pas encore de messages pour cet événement.",
     "EVENT_CHAT_PLACEHOLDER": "Écrivez un message pour cet événement...",
-
     "TAB_JOINED": "Événements Inscrit",
     "TAB_CREATED": "Événements Créés",
     "STATS_RATING": "Évaluation",
-
     "CREATOR_CANNOT_LEAVE": "Vous ne pouvez pas partir en tant que créateur",
     "SECTION_UPCOMING": "Événements à Venir",
     "SECTION_PAST": "Événements Passés",
     "BADGE_FINISHED": "Terminé",
-
     "FILTER_ALL": "Tous",
     "FILTER_PUBLIC": "Publics",
-    "FILTER_PRIVATE": "Privés"
+    "FILTER_PRIVATE": "Privés",
+    "BUTTON_ALBUM": "Album",
+    "EVENT_CHAT_ADD_IMAGE": "Joindre une image",
+    "EVENT_CHAT_UPLOADING_IMAGE": "Téléchargement de l'image...",
+    "EVENT_CHAT_IMAGE_ERROR": "Erreur lors du téléchargement de l'image",
+    "DELETE_MESSAGE": "Supprimer le message",
+    "DELETE_MESSAGE_TITLE": "Supprimer le Message",
+    "DELETE_MESSAGE_CONFIRM": "Êtes-vous sûr de vouloir supprimer ce message? Cette action ne peut pas être annulée.",
+    "DELETE_MESSAGE_BTN": "Supprimer",
+    "DELETING_MESSAGE": "Suppression...",
+    "MESSAGE_DELETED_SUCCESS": "Message supprimé avec succès",
+    "MESSAGE_DELETE_ERROR": "Erreur lors de la suppression du message"
+  },
+  "ALBUM": {
+    "TITLE": "Album Partagé",
+    "UPLOAD_TITLE": "Télécharger photo ou vidéo",
+    "UPLOAD_HINT": "Partagez vos meilleurs moments de l'événement avec les autres participants",
+    "UPLOAD_CLICK": "Cliquez pour sélectionner un fichier",
+    "UPLOAD_FORMATS": "Images (JPG, PNG, GIF, WEBP) ou vidéos (MP4, WEBM) - Max. 50MB",
+    "UPLOADING": "Téléchargement...",
+    "UPLOAD_BUTTON": "Télécharger",
+    "GALLERY_TITLE": "Galerie de l'événement",
+    "LOADING": "Chargement des photos...",
+    "EMPTY": "Il n'y a pas encore de photos ou de vidéos dans cet événement. Soyez le premier à en télécharger une!",
+    "DOWNLOAD": "Télécharger",
+    "DELETE": "Supprimer",
+    "CONFIRM_DELETE": "Êtes-vous sûr de vouloir supprimer cette photo/vidéo?",
+    "CONFIRM_DELETE_TITLE": "Confirmer la suppression",
+    "UPLOADED_BY": "Téléchargé par",
+    "UPLOADED_ON": "Date",
+    "DELETING": "Suppression...",
+    "CANCEL": "Annuler"
   },
 
   "RATINGS": {

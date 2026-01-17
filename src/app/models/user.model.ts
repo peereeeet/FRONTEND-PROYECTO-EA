@@ -35,6 +35,7 @@ export interface ChatMessage {
   from: string;
   to: string;
   text: string;
+  imageUrl?: string;
   createdAt: string;
 }
 
@@ -44,5 +45,6 @@ export interface EventChatMessage {
   userId: string;
   username: string;
   text: string;
+  imageUrl?: string;
   createdAt: string;
 }

@@ -202,4 +202,20 @@ export class UserService {
   getBlockedUsers(userId: string): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}/${userId}/blocked`);
   }
+
+  uploadChatImage(userId: string, friendId: string, file: File): Observable<{ ok: boolean; imageUrl: string }> {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    return this.http.post<{ ok: boolean; imageUrl: string }>(
+      `${this.apiUrl}/${userId}/chat/${friendId}/image`,
+      formData
+    );
+  }
+
+  deleteChatMessage(messageId: string): Observable<{ message: string; messageId: string; deletedImage: boolean }> {
+    return this.http.delete<{ message: string; messageId: string; deletedImage: boolean }>(
+      `${this.apiUrl}/chat/${messageId}`
+    );
+  }
 }

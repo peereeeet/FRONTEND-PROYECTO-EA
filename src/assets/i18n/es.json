@@ -244,7 +244,13 @@
     "RECOMMENDED_NO_INTERESTS_TITLE": "Añade tus intereses",
     "RECOMMENDED_NO_INTERESTS_TEXT": "Para recibir recomendaciones personalizadas, añade tus intereses en tu perfil.",
     "RECOMMENDED_ADD_INTERESTS": "Ir a mi perfil",
-    "RECOMMENDED_LOADING": "Cargando recomendaciones..."
+    "RECOMMENDED_LOADING": "Cargando recomendaciones...",
+    "CHAT_ADD_IMAGE": "Adjuntar imagen",
+    "CHAT_DELETE_MESSAGE": "Eliminar mensaje",
+    "CHAT_DELETE_MESSAGE_TITLE": "Eliminar mensaje",
+    "CHAT_DELETE_MESSAGE_CONFIRM": "¿Estás seguro de que deseas eliminar este mensaje? Esta acción no se puede deshacer.",
+    "CHAT_DELETE_MESSAGE_BTN": "Eliminar",
+    "CHAT_DELETING_MESSAGE": "Eliminando..."
   },
 
   "FRIENDS": {
@@ -433,64 +439,83 @@
     "GO_TO_EXPLORE": "Explorar eventos (mapa)",
     "LOADING": "Cargando eventos.",
     "ERROR_MESSAGE_PREFIX": "Error:",
-
     "CREATED_TITLE": "📝 Eventos que he creado ({{count}})",
     "CREATED_EMPTY_TEXT": "Aún no has creado ningún evento",
     "BADGE_CREATOR": "Creador",
-
     "FIELD_ADDRESS": "Dirección:",
     "BUTTON_VIEW_MAP": "🗺 Mapa",
     "FIELD_SCHEDULE": "Horario:",
     "FIELD_PARTICIPANTS": "Participantes:",
-
     "RATINGS_LABEL": "Valoraciones:",
     "RATINGS_NONE": "Sin valoraciones",
     "BUTTON_VIEW_RATINGS": "Valoraciones",
     "BUTTON_EDIT": "✏️ Modificar",
     "BUTTON_DELETE": "🗑️ Eliminar",
-
     "JOINED_TITLE": "🎯 Eventos en los que estoy inscrito ({{count}})",
     "JOINED_EMPTY_TEXT": "Aún no estás inscrito en ningún evento",
     "JOINED_BUTTON_EXPLORE": "Explorar eventos",
-
     "BADGE_JOINED": "Inscrito",
-
     "BUTTON_LEAVE": "👋 Abandonar",
-
     "DELETE_MODAL_TITLE": "Eliminar evento",
     "DELETE_MODAL_TEXT": "¿Seguro que quieres eliminar <strong>{{name}}</strong>?",
     "DELETE_MODAL_CANCEL": "Cancelar",
     "DELETE_MODAL_CONFIRM": "🗑️ Eliminar",
-
     "LEAVE_MODAL_TITLE": "Salir del evento",
     "LEAVE_MODAL_TEXT": "¿Seguro que quieres salir de <strong>{{name}}</strong>?",
     "LEAVE_MODAL_CANCEL": "Cancelar",
     "LEAVE_MODAL_CONFIRM": "Salir",
-
     "BUTTON_SHARE_EVENT": "Enviar evento",
     "SHARE_EVENT_TITLE": "Compartir evento",
     "SHARE_EVENT_LOADING": "Cargando amigos...",
     "SHARE_EVENT_NO_FRIENDS": "No tienes amigos para enviar este evento.",
     "SHARE_EVENT_SEND": "Enviar",
-
     "BUTTON_EVENT_CHAT": "Chat",
     "EVENT_CHAT_TITLE": "Chat del evento",
     "EVENT_CHAT_LOADING": "Cargando mensajes del evento...",
     "EVENT_CHAT_EMPTY": "Todavía no hay mensajes en este evento.",
     "EVENT_CHAT_PLACEHOLDER": "Escribe un mensaje para este evento...",
-
     "TAB_JOINED": "Eventos Inscrito",
     "TAB_CREATED": "Eventos Creados",
     "STATS_RATING": "Valoración",
-
     "CREATOR_CANNOT_LEAVE": "No puedes abandonar siendo el creador",
     "SECTION_UPCOMING": "Próximos Eventos",
     "SECTION_PAST": "Eventos Pasados",
     "BADGE_FINISHED": "Finalizado",
-
     "FILTER_ALL": "Todos",
     "FILTER_PUBLIC": "Públicos",
-    "FILTER_PRIVATE": "Privados"
+    "FILTER_PRIVATE": "Privados",
+    "BUTTON_ALBUM": "Álbum",
+    "EVENT_CHAT_ADD_IMAGE": "Adjuntar imagen",
+    "EVENT_CHAT_UPLOADING_IMAGE": "Subiendo imagen...",
+    "EVENT_CHAT_IMAGE_ERROR": "Error al subir la imagen",
+    "DELETE_MESSAGE": "Eliminar mensaje",
+    "DELETE_MESSAGE_TITLE": "Eliminar mensaje",
+    "DELETE_MESSAGE_CONFIRM": "¿Estás seguro de que deseas eliminar este mensaje? Esta acción no se puede deshacer.",
+    "DELETE_MESSAGE_BTN": "Eliminar",
+    "DELETING_MESSAGE": "Eliminando...",
+    "MESSAGE_DELETED_SUCCESS": "Mensaje eliminado correctamente",
+    "MESSAGE_DELETE_ERROR": "Error al eliminar el mensaje"
+  },
+
+  "ALBUM": {
+    "TITLE": "Álbum Compartido",
+    "UPLOAD_TITLE": "Subir foto o vídeo",
+    "UPLOAD_HINT": "Comparte tus mejores momentos del evento con los demás participantes",
+    "UPLOAD_CLICK": "Haz clic para seleccionar un archivo",
+    "UPLOAD_FORMATS": "Imágenes (JPG, PNG, GIF, WEBP) o vídeos (MP4, WEBM) - Máx. 50MB",
+    "UPLOADING": "Subiendo...",
+    "UPLOAD_BUTTON": "Subir",
+    "GALLERY_TITLE": "Galería del evento",
+    "LOADING": "Cargando fotos...",
+    "EMPTY": "Aún no hay fotos ni vídeos en este evento. ¡Sé el primero en subir uno!",
+    "DOWNLOAD": "Descargar",
+    "DELETE": "Eliminar",
+    "CONFIRM_DELETE": "¿Estás seguro de que quieres eliminar esta foto/vídeo?",
+    "CONFIRM_DELETE_TITLE": "Confirmar eliminación",
+    "UPLOADED_BY": "Subido por",
+    "UPLOADED_ON": "Fecha",
+    "DELETING": "Eliminando...",
+    "CANCEL": "Cancelar"
   },
 
   "RATINGS": {
