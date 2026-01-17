@@ -46,10 +46,6 @@ export class GeocodingService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * @param query
-   * @param countryCode
-   */
   searchAddress(query: string, countryCode?: string): Observable<GeocodingResult[]> {
     if (!query || query.trim().length < 3) {
       return of([]);
@@ -76,7 +72,6 @@ export class GeocodingService {
     ).pipe(
       map(results => this.filterAndSortResults(results)),
       catchError(error => {
-        console.error('Error en búsqueda de direcciones:', error);
         return of([]);
       })
     );
@@ -109,7 +104,6 @@ export class GeocodingService {
         };
       }),
       catchError(error => {
-        console.error('Error geocodificando dirección:', error);
         return of(null);
       })
     );
@@ -129,7 +123,6 @@ export class GeocodingService {
       }
     ).pipe(
       catchError(error => {
-        console.error('Error en geocodificación inversa:', error);
         return of(null);
       })
     );
@@ -159,7 +152,6 @@ export class GeocodingService {
         return this.analyzeAddressCompleteness(results[0]);
       }),
       catchError(error => {
-        console.error('Error validando dirección:', error);
         return of(this.createInvalidValidation('Error al validar la dirección'));
       })
     );

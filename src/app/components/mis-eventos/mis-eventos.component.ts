@@ -157,7 +157,6 @@ export class MisEventosComponent implements OnInit {
       this.socketService.connect(this.currentUserId);
       this.userService.heartbeat(this.currentUserId).subscribe({
         next: () => {},
-        error: (err) => console.error('Error en heartbeat desde mis-eventos', err)
       });
       
       this.cargarProgresoInicial();
@@ -186,10 +185,7 @@ export class MisEventosComponent implements OnInit {
     this.destroy$.next();
     this.destroy$.complete();
     if (this.currentUserId) {
-    this.userService.heartbeat(this.currentUserId).subscribe({
-      next: () => console.log('Heartbeat enviado al salir de mis-eventos'),
-      error: (err) => console.error('Error en heartbeat al salir', err)
-    });
+    this.userService.heartbeat(this.currentUserId).subscribe;
   }
   }
 
@@ -800,10 +796,8 @@ hasLocation(evento: any): boolean {
           insignias: progreso.insignias.length,
           insigniasIds: progreso.insignias.map((i: any) => i._id)
         };
-        console.log('📊 Progreso inicial cargado:', this.progresoInicial);
       },
       error: (err) => {
-        console.error('Error al cargar progreso inicial:', err);
       }
     });
   }
@@ -844,16 +838,8 @@ hasLocation(evento: any): boolean {
             insignias: progresoNuevo.insignias.length,
             insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
           };
-
-          console.log('🎮 Recompensa detectada:', {
-            accion: 'dejarValoracion',
-            puntosGanados,
-            subisteDeNivel,
-            insigniasDesbloqueadas: insigniasDesbloqueadas.length
-          });
         },
         error: (err) => {
-          console.error('Error al detectar cambios de progreso:', err);
         }
       });
     }, 800);

@@ -137,7 +137,6 @@ export class CalendarioComponent implements OnInit {
           this.showAddressSuggestions = results.length > 0;
         },
         error: (err) => {
-          console.error('Error searching address:', err);
           this.searchingAddress = false;
           this.addressSuggestions = [];
         }
@@ -306,16 +305,12 @@ export class CalendarioComponent implements OnInit {
     const endDay = lastDayDate.getDate().toString().padStart(2, '0');
     const end = `${lastDayDate.getFullYear()}-${endMonth}-${endDay}`;
 
-    console.log('Fetching calendar events:', { start, end });
-
     this.eventoService.getCalendarEvents(start, end).subscribe({
       next: (events) => {
-        console.log('Calendar events received:', events);
         this.events.set(events || []);
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error cargando eventos para calendario', err);
         this.loading.set(false);
       }
     });
@@ -372,11 +367,9 @@ export class CalendarioComponent implements OnInit {
 
   openCreateModal(date: Date): void {
     if (!this.isFutureDate(date)) {
-      console.log('Cannot create event in the past:', date);
       return;
     }
 
-    console.log('Opening create modal for date:', date);
     this.createDate.set(date);
     this.showCreateModal.set(true);
     
@@ -575,13 +568,11 @@ export class CalendarioComponent implements OnInit {
 
     this.eventoService.createEventoFromPanel(payload).subscribe({
       next: (response: any) => {
-        console.log('Evento creado con éxito', response);
         this.saving = false;
         this.closeCreateModal();
         this.loadEventsForMonth(this.currentDate());
       },
       error: (err) => {
-        console.error('Error al crear el evento', err);
         this.errorMessage = err?.error?.message || 'Error al crear el evento.';
         this.saving = false;
       }
@@ -665,7 +656,6 @@ export class CalendarioComponent implements OnInit {
         this.loadEventsForMonth(this.currentDate());
       },
       error: (err) => {
-        console.error('Error uniéndose al evento:', err);
         this.isLoadingEvent = false;
         this.translateService.get('CHATBOT.MODAL.JOIN_ERROR').subscribe(msg => {
           alert(msg);
@@ -716,7 +706,6 @@ export class CalendarioComponent implements OnInit {
               this.loadEventsForMonth(this.currentDate());
             },
             error: (err) => {
-              console.error('Error abandonando evento:', err);
               this.isLoadingEvent = false;
               this.translateService.get('CHATBOT.MODAL.LEAVE_ERROR').subscribe(msg => {
                 alert(msg);
@@ -753,7 +742,6 @@ export class CalendarioComponent implements OnInit {
               this.loadEventsForMonth(this.currentDate());
             },
             error: (err) => {
-              console.error('Error saliendo de lista de espera:', err);
               this.isLoadingEvent = false;
               this.translateService.get('CHATBOT.MODAL.LEAVE_WAITLIST_ERROR').subscribe(msg => {
                 alert(msg);

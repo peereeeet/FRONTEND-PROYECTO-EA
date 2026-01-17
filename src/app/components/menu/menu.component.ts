@@ -221,10 +221,8 @@ export class MenuComponent implements OnInit, OnDestroy {
             next: (list) => {
               const count = (list || []).length;
               this.newFriendRequests.set(count);
-              console.log('✅ Contador inicial de solicitudes:', count);
             },
             error: (err) => {
-              console.error('Error al cargar solicitudes iniciales:', err);
             }
           });
         }
@@ -234,7 +232,6 @@ export class MenuComponent implements OnInit, OnDestroy {
             this.me.update(m => m ? ({ ...(m as any), isOnline: res.online }) : m);
           },
           error: (err) => {
-            console.error('Error marcando usuario online al entrar en menú', err);
           }
         });
 
@@ -251,7 +248,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (payload) => {
-            console.log('🔔 Nueva solicitud de amistad recibida:', payload);
             
             const currentCount = this.newFriendRequests();
             this.newFriendRequests.set(currentCount + 1);
@@ -271,7 +267,6 @@ export class MenuComponent implements OnInit, OnDestroy {
             }
           },
           error: (err) => {
-            console.error('Error en socket friendRequest:received:', err);
           }
         });
 
@@ -279,8 +274,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (payload) => {
-            console.log('🔔 Solicitud actualizada:', payload);
-            
             const currentCount = this.newFriendRequests();
             if (currentCount > 0) {
               this.newFriendRequests.set(currentCount - 1);
@@ -291,7 +284,6 @@ export class MenuComponent implements OnInit, OnDestroy {
             }
           },
           error: (err) => {
-            console.error('Error en socket friendRequest:updated:', err);
           }
         });
 
@@ -311,7 +303,6 @@ export class MenuComponent implements OnInit, OnDestroy {
                 this.me.update(m => m ? ({ ...(m as any), isOnline: res.online }) : m);
               },
               error: (err) => {
-                console.error('Error en heartbeat (visibility)', err);
               }
             });
             this.cargarAmigos(myId);
@@ -327,7 +318,6 @@ export class MenuComponent implements OnInit, OnDestroy {
                 this.me.update(m => m ? ({ ...(m as any), isOnline: res.online }) : m);
               },
               error: (err) => {
-                console.error('Error en heartbeat (focus)', err);
               }
             });
             this.cargarAmigos(myId);
@@ -338,7 +328,6 @@ export class MenuComponent implements OnInit, OnDestroy {
           .onFriendRequestReceived()
           .pipe(takeUntil(this.destroy$))
           .subscribe((payload) => {
-            console.log('Nueva solicitud de amistad recibida vía WS', payload);
             this.newFriendRequests.update(v => v + 1);
             this.requestsLoading.set(true);
 
@@ -377,12 +366,10 @@ export class MenuComponent implements OnInit, OnDestroy {
       .subscribe(params => {
         if (params['openChat']) {
           const friendId = params['openChat'];
-          console.log('📱 Query param detectado: openChat =', friendId);
           
           setTimeout(() => {
             const friend = this.friends().find(f => this.getId(f) === friendId);
             if (friend) {
-              console.log('✅ Amigo encontrado, abriendo chat:', friend);
               this.openChat(friend);
               
               this.router.navigate([], {
@@ -391,11 +378,9 @@ export class MenuComponent implements OnInit, OnDestroy {
                 replaceUrl: true
               });
             } else {
-              console.warn('⚠️ Amigo no encontrado en la lista:', friendId);
               
               this.userService.getUserById(friendId).subscribe({
                 next: (user) => {
-                  console.log('✅ Usuario obtenido por ID, abriendo chat:', user);
                   this.openChat(user);
                   
                   this.router.navigate([], {
@@ -405,7 +390,6 @@ export class MenuComponent implements OnInit, OnDestroy {
                   });
                 },
                 error: (err) => {
-                  console.error('❌ Error obteniendo usuario:', err);
                 }
               });
             }
@@ -413,10 +397,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
 
         if (params['openRequests'] === 'true') {
-          console.log('👋 Query param detectado: openRequests = true');
-          
           setTimeout(() => {
-            console.log('✅ Abriendo modal de solicitudes de amistad');
             this.openRequestsModal();
             
             this.router.navigate([], {
@@ -455,10 +436,8 @@ export class MenuComponent implements OnInit, OnDestroy {
           insignias: progreso.insignias.length,
           insigniasIds: progreso.insignias.map((i: any) => i._id)
         };
-        console.log('📊 Progreso inicial cargado:', this.progresoInicial);
       },
       error: (err) => {
-        console.error('Error al cargar progreso inicial:', err);
       }
     });
   }
@@ -501,16 +480,8 @@ export class MenuComponent implements OnInit, OnDestroy {
             insignias: progresoNuevo.insignias.length,
             insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
           };
-
-          console.log('🎮 Recompensa detectada:', {
-            accion,
-            puntosGanados,
-            subisteDeNivel,
-            insigniasDesbloqueadas: insigniasDesbloqueadas.length
-          });
         },
         error: (err) => {
-          console.error('Error al detectar cambios de progreso:', err);
         }
       });
     }, 800);
@@ -1278,12 +1249,10 @@ export class MenuComponent implements OnInit, OnDestroy {
 
     private centerMapOnUserLocation(): void {
     if (!this.map) {
-      console.warn('[MENU] El mapa aún no está inicializado.');
       return;
     }
 
     if (!('geolocation' in navigator)) {
-      console.warn('[MENU] El navegador no soporta geolocalización.');
       return;
     }
 
@@ -1304,11 +1273,8 @@ export class MenuComponent implements OnInit, OnDestroy {
             .setLngLat(userLngLat)
             .addTo(this.map!);
         }
-
-        console.log('[MENU] Mapa centrado en la ubicación del usuario', userLngLat);
       },
       (error) => {
-        console.warn('[MENU] Error al obtener geolocalización:', error);
       },
       {
         enableHighAccuracy: true,
@@ -1689,7 +1655,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.quitar(friend._id!);
 
     } catch (err) {
-      console.error("Error al quitar amigo:", err);
     } finally {
       this.removingFriend.set(false);
       this.closeConfirmRemoveFriend();
@@ -1740,7 +1705,6 @@ export class MenuComponent implements OnInit, OnDestroy {
             this.loadingSearch    = false;
           },
           error: (err) => {
-            console.error('Error al cargar eventos futuros (getUpcomingEventos):', err);
             this.errorMessage = 'Error al cargar eventos futuros';
             this.loadingSearch = false;
           }
@@ -1760,7 +1724,6 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.loadingSearch    = false;
         },
         error: (err) => {
-          console.error('Error en búsqueda de eventos:', err);
           this.errorMessage = 'Error al buscar eventos';
           this.loadingSearch = false;
         }
@@ -1898,7 +1861,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('Error al unirse al evento:', err);
         this.errorMessage = err?.error?.message || 'Error al unirse al evento';
       }
     });
@@ -1917,7 +1879,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('Error al salir del evento:', err);
         this.errorMessage = 'Error al salir del evento';
       }
     });
@@ -1947,7 +1908,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('Error al unirse al evento:', err);
         this.errorMessage = err?.error?.message || 'Error al unirse al evento';
       }
     });
@@ -1970,7 +1930,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('Error al salir del evento:', err);
         this.errorMessage = 'Error al salir del evento';
       }
     });
@@ -2053,7 +2012,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.invitacionesPendientes.set(response.count || 0);
       },
       error: (err) => {
-        console.error('Error cargando invitaciones pendientes:', err);
       }
     });
   }
@@ -2162,7 +2120,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.blockedLoading.set(false);
       },
       error: (err) => {
-        console.error('Error al cargar usuarios bloqueados:', err);
         this.blockedError.set('Error al cargar usuarios bloqueados');
         this.blockedLoading.set(false);
       }
@@ -2185,14 +2142,11 @@ export class MenuComponent implements OnInit, OnDestroy {
     const blockUser = this.userToBlock();
     
     if (!userId || !blockUser?._id) {
-      console.error('No se puede bloquear: falta userId o blockUser._id');
       return;
     }
 
     this.userService.blockUser(userId, blockUser._id).subscribe({
       next: (response) => {
-        console.log('Usuario bloqueado:', response);
-        
         this.removeFriendFromLocal(blockUser._id!);
         this.removeUserFromExploreLocal(blockUser._id!);
         this.loadBlockedUsers();
@@ -2208,7 +2162,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('Error al bloquear usuario:', err);
         alert('Error al bloquear usuario');
         this.showBlockConfirm.set(false);
       }
@@ -2230,19 +2183,16 @@ export class MenuComponent implements OnInit, OnDestroy {
     const unblockUser = this.userToUnblock();
     
     if (!userId || !unblockUser?._id) {
-      console.error('No se puede desbloquear: falta userId o unblockUser._id');
       return;
     }
 
     this.userService.unblockUser(userId, unblockUser._id).subscribe({
       next: (response) => {
-        console.log('Usuario desbloqueado:', response);
         this.loadBlockedUsers();
         this.showUnblockConfirm.set(false);
         this.userToUnblock.set(null);
       },
       error: (err) => {
-        console.error('Error al desbloquear usuario:', err);
         alert('Error al desbloquear usuario');
         this.showUnblockConfirm.set(false);
       }
@@ -2282,7 +2232,6 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   loadRecommendedEventos(): void {
     if (!this.userHasInterests()) {
-      console.log('⚠️ Usuario sin intereses configurados');
       return;
     }
 
@@ -2298,13 +2247,8 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.recommendedTotalItems = response.totalItems;
           this.recommendedTotalPages = response.totalPages;
           this.loadingRecommended = false;
-          
-          console.log(
-            `✨ ${response.data.length} eventos recomendados cargados (página ${response.page}/${response.totalPages})`
-          );
         },
         error: (err) => {
-          console.error('Error al cargar eventos recomendados:', err);
           this.loadingRecommended = false;
         }
       });

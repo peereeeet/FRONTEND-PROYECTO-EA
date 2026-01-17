@@ -117,7 +117,6 @@ export class AuthService {
          return !!userData.isActive;
         } 
       catch (error) {
-        console.log("Error en el localStorage:", error);
         return false;
       }
   }
@@ -135,7 +134,6 @@ export class AuthService {
     const decoded: any = jwtDecode(token);
     return decoded.payload?.rol || null;
   } catch (error) {
-    console.error('Error al decodificar token', error);
     return null;
   }
   }

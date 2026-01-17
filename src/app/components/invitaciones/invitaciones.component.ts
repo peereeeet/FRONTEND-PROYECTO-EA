@@ -54,7 +54,6 @@ export class InvitacionesComponent implements OnInit {
           this.error = text || 'Error al cargar las invitaciones';
         });
         this.loading = false;
-        console.error('Error cargando invitaciones:', err);
       }
     });
   }
@@ -71,7 +70,6 @@ export class InvitacionesComponent implements OnInit {
         this.procesando[eventId] = false;
       },
       error: (err) => {
-        console.error('Error aceptando invitación:', err);
         this.translate.get('INVITATIONS.ERROR_ACCEPT').subscribe((text: string) => {
           alert(text || 'Error al aceptar la invitación');
         });
@@ -92,7 +90,6 @@ export class InvitacionesComponent implements OnInit {
         this.procesando[eventId] = false;
       },
       error: (err) => {
-        console.error('Error rechazando invitación:', err);
         this.translate.get('INVITATIONS.ERROR_REJECT').subscribe((text: string) => {
           alert(text || 'Error al rechazar la invitación');
         });

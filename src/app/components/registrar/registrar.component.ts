@@ -21,7 +21,7 @@ export class RegistrarComponent {
     gmail: '',
     password: '',
     birthday: new Date(),
-    interests: [], // Añadir interests
+    interests: [],
   };
 
   private themeService = inject(ThemeService);
@@ -42,7 +42,6 @@ export class RegistrarComponent {
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
-  // Control para mostrar/ocultar selector de intereses
   showInterestsModal: boolean = false
   selectedInterests: string[] = [];
 
@@ -192,7 +191,6 @@ export class RegistrarComponent {
   onInterestsChange(interests: string[]): void {
     this.selectedInterests = interests;
     this.nuevoUsuario.interests = interests;
-    console.log('Intereses seleccionados:', interests);
   }
 
   onSubmit(form: any) {

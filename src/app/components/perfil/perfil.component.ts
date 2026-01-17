@@ -113,7 +113,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
   showEditConfirmPassword = false;
   confirmPassword = signal('');
 
-  // PROPIEDADES PARA INTERESES
   showInterestsModal = signal<boolean>(false);
   selectedInterests = signal<string[]>([]);
   savingInterests = signal<boolean>(false);
@@ -221,7 +220,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
           this.loadingProgreso.set(false);
         },
         error: (err) => {
-          console.error('Error al cargar progreso:', err);
           this.loadingProgreso.set(false);
         }
       });
@@ -795,13 +793,10 @@ export class PerfilComponent implements OnInit, OnDestroy {
         localStorage.setItem('currentUser', JSON.stringify(updatedUser));
         
         this.closeInterestsModal();
-        
-        console.log('✅ Intereses actualizados correctamente');
       },
       error: (err) => {
         this.savingInterests.set(false);
         this.interestsError.set(err?.error?.message || 'Error al guardar intereses');
-        console.error('Error al guardar intereses:', err);
       }
     });
   }

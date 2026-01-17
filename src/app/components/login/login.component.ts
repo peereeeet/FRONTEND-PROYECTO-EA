@@ -214,7 +214,6 @@ export class LoginComponent {
         }
       },
       error: (error) => {
-        console.error('Error al verificar usuario:', error);
         this.errorMessage = 'Error al verificar la cuenta de Google';
       }
     });
@@ -285,12 +284,6 @@ export class LoginComponent {
     this.isLoading = true;
     this.googleRegisterError = '';
 
-    console.log('🔍 DEBUG - Registrando con Google:');
-    console.log('  - Username:', username);
-    console.log('  - Birthday:', birthday);
-    console.log('  - Interests seleccionados:', this.selectedInterests);
-    console.log('  - Credential:', this.googleCredentialPending ? 'presente' : 'ausente');
-
     this.authService.loginWithGoogle(
       this.googleCredentialPending, 
       birthday, 
@@ -300,9 +293,6 @@ export class LoginComponent {
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
         next: (response) => {
-          console.log('✅ Registro exitoso con Google. Usuario:', response.user);
-          console.log('   - Interests guardados:', response.user.interests);
-
           this.googleRegisterOpen = false;
           this.googleCredentialPending = null;
           this.selectedInterests = [];
@@ -371,7 +361,6 @@ export class LoginComponent {
           this.handleLoginSuccess(response);
         },
         error: (error) => {
-          console.error('Error en login con Google:', error);
           this.googleBirthdayError =
             error.error?.message ||
             this.translate.instant('LOGIN.ERROR_GOOGLE') ||
@@ -565,6 +554,5 @@ export class LoginComponent {
 
   onInterestsChange(interests: string[]): void {
     this.selectedInterests = interests;
-    console.log('🎯 Intereses actualizados en login:', interests);
   }
 }

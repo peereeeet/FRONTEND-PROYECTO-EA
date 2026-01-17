@@ -12,16 +12,13 @@ export class SocketService {
 
   connect(userId: string): void {
     if (this.socket && this.socket.connected && this.connectedUserId === userId) {
-      console.log('✅ Socket ya conectado para usuario:', userId);
       return;
     }
 
     if (this.socket && this.connectedUserId && this.connectedUserId !== userId) {
-      console.warn('⚠️ Desconectando socket de usuario anterior:', this.connectedUserId);
       this.disconnect();
     }
 
-    console.log('🔌 Conectando socket para usuario:', userId);
     this.socket = io.connect(this.url, {
       transports: ['websocket', 'polling'],
       reconnection: true,
@@ -30,7 +27,6 @@ export class SocketService {
     } as any);
 
     this.socket.on('connect', () => {
-      console.log('✅ Socket conectado');
       if (this.socket) {
         this.socket.emit('user:online', userId);
         this.connectedUserId = userId;
@@ -38,27 +34,23 @@ export class SocketService {
     });
 
     this.socket.on('disconnect', (reason: string) => {
-      console.warn('⚠️ Socket desconectado. Razón:', reason);
       if (reason === 'io server disconnect') {
         this.socket.connect();
       }
     });
 
     this.socket.on('reconnect', (attemptNumber: number) => {
-      console.log(`✅ Socket reconectado después de ${attemptNumber} intentos`);
       if (this.connectedUserId) {
         this.socket.emit('user:online', this.connectedUserId);
       }
     });
 
     this.socket.on('reconnect_error', (error: any) => {
-      console.error('❌ Error al reconectar socket:', error);
     });
   }
 
   disconnect(): void {
     if (!this.socket) return;
-    console.log('🔌 Desconectando socket para usuario:', this.connectedUserId);
     this.socket.disconnect();
     this.socket = null;
     this.connectedUserId = null;
@@ -75,7 +67,6 @@ export class SocketService {
   on(eventName: string): Observable<any> {
     return new Observable((subscriber) => {
       if (!this.socket) {
-        console.warn(`⚠️ Socket no conectado al intentar escuchar evento: ${eventName}`);
         return;
       }
 
@@ -95,7 +86,6 @@ export class SocketService {
 
   emit(eventName: string, data?: any): void {
     if (!this.socket) {
-      console.warn(`⚠️ Socket no conectado al intentar emitir evento: ${eventName}`);
       return;
     }
     this.socket.emit(eventName, data);
