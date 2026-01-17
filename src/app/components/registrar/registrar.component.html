@@ -305,36 +305,42 @@
           {{ 'REGISTER.VERIFY_SUBTITLE' | translate: { email: registeredEmail } }}
         </p>
         
-        <form (ngSubmit)="verifyCode()">
+        <form (ngSubmit)="onVerify()">
           <div class="form-group">
             <label class="form-label">{{ 'REGISTER.CODE_LABEL' | translate }}</label>
              <input
                 type="text"
                 class="form-input code-input"
-                [(ngModel)]="verificationCode"
-                name="verificationCode"
-                required
+                [formControl]="otpControl"
                 maxlength="6"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                (input)="sanitizeOtp()"
                 [placeholder]="'REGISTER.CODE_PLACEHOLDER' | translate" />
+             
+             <!-- Error del OTP -->
+             <div *ngIf="otpControl.invalid && (otpControl.touched || isSubmitting)" class="error-message">
+                <span *ngIf="otpControl.errors?.['required']">{{ 'REGISTER.CODE_REQUIRED' | translate }}</span>
+                <span *ngIf="otpControl.errors?.['pattern']">{{ 'REGISTER.CODE_INVALID_PATTERN' | translate }}</span>
+             </div>
           </div>
 
           <div class="buttons-column">
-             <button type="submit" class="login-button" [disabled]="isSubmitting || !verificationCode || verificationCode.length < 6">
+             <button type="submit" class="login-button" [disabled]="isSubmitting || otpControl.invalid">
+                 <span *ngIf="isSubmitting" class="loading-spinner"></span>
                  {{ 'REGISTER.VERIFY_BUTTON' | translate }}
              </button>
 
-             <button type="button" class="admin-button" (click)="resendCode()" [disabled]="rateLimitSeconds > 0 || isSubmitting">
-                 <span *ngIf="rateLimitSeconds > 0">
-                    {{ 'REGISTER.WAIT_PREFIX' | translate }} {{rateLimitSeconds}} {{ 'REGISTER.WAIT_SUFFIX' | translate }}
+             <button type="button" class="admin-button" (click)="onResend()" [disabled]="resendCooldown > 0 || isSubmitting">
+                 <span *ngIf="resendCooldown > 0">
+                    {{ 'REGISTER.WAIT_PREFIX' | translate }} {{resendCooldown}} {{ 'REGISTER.WAIT_SUFFIX' | translate }}
                  </span>
-                 <span *ngIf="rateLimitSeconds <= 0">
+                 <span *ngIf="resendCooldown <= 0">
                     {{ 'REGISTER.RESEND_BUTTON' | translate }}
                  </span>
              </button>
 
-             <button type="button" class="link-button" (click)="changeEmail()">
-                 {{ 'REGISTER.CHANGE_EMAIL' | translate }}
-             </button>
+
           </div>
         </form>
       </div>

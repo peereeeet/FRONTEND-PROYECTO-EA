@@ -99,6 +99,9 @@
     "VERIFY_BUTTON": "Verificar",
     "RESEND_BUTTON": "Reenviar código",
     "CHANGE_EMAIL": "Cambiar email",
+    "BACK_TO_REGISTER": "Volver al registro",
+    "CODE_INVALID_PATTERN": "El código debe ser de 6 dígitos.",
+
     "WAIT_PREFIX": "Espera",
     "WAIT_SUFFIX": "segundos antes de reenviar",
     "VERIFIED_SUCCESS": "Cuenta verificada correctamente. Inicia sesión."

@@ -68,7 +68,7 @@ export class LoginComponent {
     });
 
     this.resetForm = this.fb.group({
-      code: ['', [Validators.required, Validators.minLength(6)]],
+      otp: ['', [Validators.required, Validators.minLength(6)]],
       newPassword: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]]
     });
@@ -251,19 +251,9 @@ export class LoginComponent {
              const errCode = error.error?.error; 
              if (errCode === 'EMAIL_NOT_VERIFIED') {
                 this.errorMessage = 'AUTH_ERRORS.EMAIL_NOT_VERIFIED';
-                // Try to guess email from username if it looks like one, or ask user?
-                // The backend usually returns the error. 
-                // But we can just use the username field if it was an email.
-                // Or we can assume we need to ask/store it.
-                // Simple logic: if username field has '@', assume it is email.
                 if (username.includes('@')) {
                     this.unverifiedEmail = username;
                 } else {
-                    // If login was by username, we might not know the email unless backend returned it in error payload
-                    // Prompt says: "si error EMAIL_NOT_VERIFIED ... Reenviar código ... authService.resendVerification(email introducido)"
-                    // If user entered username, we might fail to resend. 
-                    // Let's assume user enters email or we can use username if backend supports lookup.
-                    // For now, assume username input can be email.
                     this.unverifiedEmail = username; 
                 }
              } else {
@@ -332,10 +322,6 @@ export class LoginComponent {
         if (err.error?.error === 'RATE_LIMITED') {
            this.errorMessage = 'AUTH_ERRORS.RATE_LIMITED';
         } else {
-           // Even if user not found, strictly speaking security best practice is 200 OK or generic message.
-           // Prompt says: "si RATE_LIMITED -> mensaje y no avanzar".
-           // "Normalizar errores... USER_NOT_FOUND" might be returned?
-           // If 200 OK -> advance.
            const code = err.error?.error;
            if (code === 'USER_NOT_FOUND') {
                this.errorMessage = 'AUTH_ERRORS.USER_NOT_FOUND';
@@ -361,9 +347,10 @@ export class LoginComponent {
     this.sending = true;
     this.errorMessage = '';
     
-    const { code, newPassword } = this.resetForm.value;
+    // Updated: using otp
+    const { otp, newPassword } = this.resetForm.value;
 
-    this.authService.resetPassword(this.resetEmail, code, newPassword).subscribe({
+    this.authService.resetPassword(this.resetEmail, otp, newPassword).subscribe({
       next: () => {
         this.sending = false;
         this.loginStep = 'LOGIN';
@@ -416,4 +403,15 @@ export class LoginComponent {
   // Getters
   get username() { return this.loginForm.get('username'); }
   get password() { return this.loginForm.get('password'); }
+  
+  sanitizeResetCode() {
+    // Updated: using otp
+    const control = this.resetForm.get('otp');
+    if (control) {
+      let val = control.value || '';
+      // Keep only digits and max 6 chars
+      val = val.replace(/\D/g, '').slice(0, 6);
+      control.setValue(val, { emitEvent: false });
+    }
+  }
 }

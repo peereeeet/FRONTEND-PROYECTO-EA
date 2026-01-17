@@ -94,9 +94,9 @@ export class AuthService {
     return this.http.post(this.getAuthUrl('register'), userData);
   }
 
-  verifyEmail(email: string, code: string): Observable<any> {
+  verifyEmail(email: string, otp: string): Observable<any> {
     // POST /api/auth/verify-email
-    return this.http.post(this.getAuthUrl('verify-email'), { email, code });
+    return this.http.post(this.getAuthUrl('verify-email'), { email, otp });
   }
 
   resendVerification(email: string): Observable<any> {
@@ -109,9 +109,9 @@ export class AuthService {
     return this.http.post(this.getAuthUrl('forgot-password'), { email });
   }
 
-  resetPassword(email: string, code: string, newPassword: string): Observable<any> {
+  resetPassword(email: string, otp: string, newPassword: string): Observable<any> {
     // POST /api/auth/reset-password
-    return this.http.post(this.getAuthUrl('reset-password'), { email, code, newPassword });
+    return this.http.post(this.getAuthUrl('reset-password'), { email, otp, newPassword });
   }
 
   logout(): void {

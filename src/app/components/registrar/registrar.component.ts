@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
@@ -11,7 +11,7 @@ import { ThemeService } from '../../services/theme.service';
 @Component({
   selector: 'app-registrar',
   standalone: true,            
-  imports: [CommonModule, FormsModule, TranslateModule], 
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule], 
   templateUrl: './registrar.component.html',
   styleUrls: ['./registrar.component.css']
 })
@@ -39,10 +39,16 @@ export class RegistrarComponent {
 
   // New state variables
   registrarStep: 'FORM' | 'VERIFY' = 'FORM';
-  verificationCode: string = '';
+  
+  // Verification Control
+  otpControl = new FormControl('', [
+    Validators.required, 
+    Validators.pattern(/^\d{6}$/)
+  ]);
+
   registeredEmail: string = '';
-  rateLimitSeconds: number = 0;
-  rateLimitTimer: any;
+  resendCooldown: number = 0;
+  resendTimer: any;
 
   passwordStrength = 0;
   passwordValidations = {
@@ -189,10 +195,8 @@ export class RegistrarComponent {
   }
 
   onSubmit(form: any) {
-    if (this.registrarStep === 'VERIFY') {
-      this.verifyCode();
-      return;
-    }
+    // Legacy check removed, verification is handled by onVerify()
+    // if (this.registrarStep === 'VERIFY') { ... }
 
     this.formSubmitted = true;
     this.errorMessage = '';
@@ -229,12 +233,8 @@ export class RegistrarComponent {
        gmail: this.nuevoUsuario.gmail.trim(),
        password: this.nuevoUsuario.password?.trim(),
        birthday: new Date(this.birthdayStr),
-       // eventos: [], rol: 'usuario' etc handled by backend defaults
-     } as any; // Using any cast because User interface has _id which is server generated
+     } as any; 
 
-     // We call authService.register instead of userService.addUser
-     // because userService.addUser was likely the old endpoint.
-     // The prompt says: "submit register: authService.register(payload)"
      this.authService.register({
        username: newUser.username,
        gmail: newUser.gmail,
@@ -243,18 +243,14 @@ export class RegistrarComponent {
      }).subscribe({
        next: (response) => {
          this.isSubmitting = false;
-         // "si response.pendingVerification true -> step VERIFY"
-         if (response && response.pendingVerification) {
-           this.registrarStep = 'VERIFY';
-           this.registeredEmail = newUser.gmail;
-           this.errorMessage = ''; 
-           // Display "Te hemos enviado un código a tu correo" probably as subtitle or just implicit in UI
-         } else {
-           // Fallback if no pendingVerification returned (e.g. no verification needed?)
-           // Prompt implies mandatory: "Registro con verificación por código obligatorio"
-           // If backend returns immediate success (weird), go to login
-           this.router.navigate(['/login']);
-         }
+         
+         // Always go to verify step if success, or check response flag if backend sends one
+         // Assuming successful register -> means pending verification
+         this.registrarStep = 'VERIFY';
+         this.registeredEmail = newUser.gmail;
+         this.errorMessage = ''; 
+         // Start cooldown immediately upon entering this step
+         this.startCooldown(60);
        },
        error: (err) => {
          this.isSubmitting = false;
@@ -263,15 +259,27 @@ export class RegistrarComponent {
      });
   }
 
-  verifyCode() {
-    if (!this.verificationCode || this.verificationCode.length !== 6) {
-      this.errorMessage = 'LOGIN.CODE_REQUIRED'; // or translation key
+  sanitizeOtp() {
+    let val = this.otpControl.value || '';
+    // Keep only digits and max 6 chars
+    val = val.replace(/\D/g, '').slice(0, 6);
+    this.otpControl.setValue(val, { emitEvent: false });
+  }
+
+  onVerify() {
+    this.errorMessage = '';
+    if (this.otpControl.invalid) {
+      this.errorMessage = 'LOGIN.CODE_REQUIRED'; // Fallback or use specific OTP error
       return;
     }
+    
+    const otp = this.otpControl.value!;
+    
     this.isSubmitting = true;
-    this.authService.verifyEmail(this.registeredEmail, this.verificationCode).subscribe({
+    this.authService.verifyEmail(this.registeredEmail, otp).subscribe({
       next: () => {
         this.isSubmitting = false;
+        // Success -> Go to login with query param
         this.router.navigate(['/login'], { queryParams: { verified: 'true' } });
       },
       error: (err) => {
@@ -281,19 +289,22 @@ export class RegistrarComponent {
     });
   }
 
-  resendCode() {
-    if (this.rateLimitTimer) return;
+  onResend() {
+    if (this.resendCooldown > 0) return;
 
     this.isSubmitting = true;
+    this.errorMessage = ''; // Clear previous errors
+    
     this.authService.resendVerification(this.registeredEmail).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.startRateLimit(60);
+        this.startCooldown(60);
       },
       error: (err) => {
         this.isSubmitting = false;
         if (err.error?.error === 'RATE_LIMITED') {
-           this.startRateLimit(60);
+           // Maybe backend tells us how long to wait? Default to 60s
+           this.startCooldown(60);
         } else {
            this.handleError(err);
         }
@@ -301,33 +312,37 @@ export class RegistrarComponent {
     });
   }
 
-  startRateLimit(seconds: number) {
-     this.rateLimitSeconds = seconds;
-     this.rateLimitTimer = setInterval(() => {
-       this.rateLimitSeconds--;
-       if (this.rateLimitSeconds <= 0) {
-         clearInterval(this.rateLimitTimer);
-         this.rateLimitTimer = null;
+  startCooldown(seconds: number) {
+     if (this.resendTimer) clearInterval(this.resendTimer);
+     
+     this.resendCooldown = seconds;
+     this.resendTimer = setInterval(() => {
+       this.resendCooldown--;
+       if (this.resendCooldown <= 0) {
+         clearInterval(this.resendTimer);
+         this.resendTimer = null;
        }
      }, 1000);
   }
 
+
+
   handleError(err: any){
      const code = err.error?.error || err.error?.message;
+     
      if (code === 'INVALID_CODE') this.errorMessage = 'AUTH_ERRORS.INVALID_CODE';
      else if (code === 'EXPIRED_CODE') this.errorMessage = 'AUTH_ERRORS.EXPIRED_CODE';
      else if (code === 'TOO_MANY_ATTEMPTS') this.errorMessage = 'AUTH_ERRORS.TOO_MANY_ATTEMPTS';
      else if (code === 'RATE_LIMITED') this.errorMessage = 'AUTH_ERRORS.RATE_LIMITED';
+     
+     // Register errors
      else if (code === 'EMAIL_EXISTS' || code === 'EMAIL_ALREADY_EXISTS') this.errorMessage = 'REGISTER.EMAIL_EXISTS';
      else if (code === 'USERNAME_EXISTS' || code === 'USERNAME_ALREADY_EXISTS') this.errorMessage = 'REGISTER.USERNAME_EXISTS';
-     else this.errorMessage = code || 'COMMON.ERROR_GENERIC';
+     
+     else this.errorMessage = 'COMMON.ERROR_GENERIC';
   }
 
-  changeEmail() {
-    this.registrarStep = 'FORM';
-    this.errorMessage = '';
-    this.verificationCode = '';
-  }
+
 
   togglePassword() {
     this.showPassword = !this.showPassword;
