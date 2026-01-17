@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
+import { AuthService, RegisterData } from '../../services/auth.service';
 import { User } from '../../models/user.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
@@ -76,7 +77,7 @@ export class RegistrarComponent {
     'mailinator.com', 'throwaway.email', 'temp-mail.org'
   ];
 
-  constructor(private userService: UserService, private router: Router, private translate: TranslateService) {
+  constructor(private userService: UserService, private authService: AuthService, private router: Router, private translate: TranslateService) {
     const t = new Date();
     this.maxDate = new Date(Date.UTC(
       t.getFullYear(),
@@ -84,15 +85,10 @@ export class RegistrarComponent {
       t.getDate()
     )).toISOString().split('T')[0];
     
-    const minDateCalc = new Date();
-    minDateCalc.setFullYear(minDateCalc.getFullYear() - 13);
-    this.minDate = new Date(Date.UTC(
-      minDateCalc.getFullYear(),
-      minDateCalc.getMonth(),
-      minDateCalc.getDate()
-    )).toISOString().split('T')[0];
+    // Fecha mínima fija: 1900-01-01
+    this.minDate = '1900-01-01';
     
-    this.birthdayStr = this.minDate;
+    this.birthdayStr = '';
     
     this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en' | 'cat' | 'fr') || 'es';
@@ -228,60 +224,116 @@ export class RegistrarComponent {
       return;
     }
 
-    this.isCheckingEmail = true;
-    this.userService.checkEmailExists(this.nuevoUsuario.gmail).subscribe({
-      next: (res) => {
-        this.isCheckingEmail = false;
-        if (res.exists) {
-          this.emailExists = true;
-          this.errorMessage = 'Este correo ya está registrado.';
-          return;
-        }
-        
-        this.isCheckingUsername = true;
-        this.userService.checkUsernameExists(this.nuevoUsuario.username).subscribe({
-          next: (res) => {
-            this.isCheckingUsername = false;
-            if (res.exists) {
-              this.usernameExists = true;
-              this.errorMessage = 'Este nombre de usuario ya está en uso.';
-              return;
-            }
+    this.isSubmitting = true;
 
-            this.isSubmitting = true;
+    // Asegurar fecha correcta (UTC sin hora) para evitar "day-off" por timezone
+    const [y, m, d] = this.birthdayStr.split('-').map(x => parseInt(x, 10));
+    // Mes en Date es 0-indexed
+    const correctBirthday = new Date(Date.UTC(y, m - 1, d));
 
-            const newUser: User = {
-              username: this.nuevoUsuario.username.trim(),
-              gmail: this.nuevoUsuario.gmail.trim(),
-              password: this.nuevoUsuario.password?.trim(),
-              birthday: new Date(this.birthdayStr),
-              interests: this.selectedInterests,
-            };
+    // Payload específico para register (AuthService espera RegisterData con birthday: string)
+    const registerPayload: RegisterData = {
+      username: this.nuevoUsuario.username.trim(),
+      gmail: this.nuevoUsuario.gmail.trim(),
+      password: this.nuevoUsuario.password?.trim() || '',
+      birthday: correctBirthday.toISOString(), // Enviamos ISO string
+      interests: this.selectedInterests
+    };
 
-            this.userService.addUser(newUser).subscribe({
-              next: () => {
-                this.isSubmitting = false;
-                this.router.navigate(['/login']);
-              },
-              error: (err) => {
-                this.isSubmitting = false;
-                this.errorMessage =
-                  err?.error?.message ||
-                  'Ha ocurrido un error al registrar el usuario. Inténtalo nuevamente.';
-              }
-            });
-          },
-          error: () => {
-            this.isCheckingUsername = false;
-            this.errorMessage = 'Error al verificar el nombre de usuario.';
-          }
-        });
+    this.authService.register(registerPayload).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        // Cambio: En lugar de ir a login, pasamos al step de verificar
+        // Guardamos el email para el payload de verificación
+        this.pendingEmail = this.nuevoUsuario.gmail; 
+        this.registrarStep = 'VERIFY';
+        this.startResendTimer();
       },
-      error: () => {
-        this.isCheckingEmail = false;
-        this.errorMessage = 'Error al verificar el correo.';
+      error: (err) => {
+        this.isSubmitting = false;
+        // Manejo de error específico o genérico
+        // A veces el backend puede devolver objetos complejos en err.error
+        const msg = err?.error?.message || err?.error?.error || 'Ha ocurrido un error al registrar el usuario.';
+        this.errorMessage = msg;
       }
     });
+  }
+
+  // --- MÉTODOS OTP / VERIFY ---
+
+  pendingEmail = '';
+  
+  onVerify() {
+    if (this.otpControl.invalid) {
+      this.otpControl.markAsTouched();
+      return;
+    }
+    this.isSubmitting = true;
+    this.errorMessage = '';
+
+    const otpValue = this.otpControl.value || '';
+    
+    // IMPORTANTE: usamos pendingEmail (que viene del registro) y otp
+    this.authService.verifyEmail(this.pendingEmail, otpValue).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        // Éxito -> redirigir a Login o mostrar éxito
+        // Podríamos mostrar un alert o mensaje temporal, o ir directo
+        alert('¡Email verificado! Ahora puedes iniciar sesión.');
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        // Mapeo básico de errores si el backend devuelve strings específicos
+        const msg = err?.error?.message;
+        if (msg === 'INVALID_CODE') {
+           this.errorMessage = 'El código es incorrecto.';
+        } else if (msg === 'EXPIRED_CODE') {
+           this.errorMessage = 'El código ha expirado. Solicita uno nuevo.';
+        } else {
+           this.errorMessage = msg || 'Error al verificar el código.';
+        }
+      }
+    });
+  }
+
+  onResend() {
+    if (this.resendCooldown > 0) return;
+    
+    this.errorMessage = '';
+    this.authService.resendVerification(this.pendingEmail).subscribe({
+      next: () => {
+        this.startResendTimer();
+        alert('Código reenviado. Revisa tu correo.');
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.message || 'No se pudo reenviar el código.';
+      }
+    });
+  }
+
+  startResendTimer() {
+    this.resendCooldown = 60;
+    if (this.resendTimer) clearInterval(this.resendTimer);
+    this.resendTimer = setInterval(() => {
+      this.resendCooldown--;
+      if (this.resendCooldown <= 0) {
+        clearInterval(this.resendTimer);
+      }
+    }, 1000);
+  }
+
+  sanitizeOtp(input: any) {
+    // Permitir solo números y máx 6 chars
+    let val = input.target.value.replace(/[^0-9]/g, '');
+    if (val.length > 6) val = val.substring(0, 6);
+    this.otpControl.setValue(val);
+  }
+
+  backToRegister() {
+    this.registrarStep = 'FORM';
+    this.errorMessage = '';
+    this.otpControl.reset();
   }
 
   togglePassword() {

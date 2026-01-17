@@ -63,7 +63,7 @@
       <p class="login-subtitle">{{ 'REGISTER.SUBTITLE' | translate }}</p>
     </div>
 
-    <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" novalidate>
+    <form *ngIf="registrarStep === 'FORM'" #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" novalidate>
       <div class="form-grid">
         <div class="form-column">
           <!-- USERNAME -->
@@ -312,6 +312,58 @@
         </button>
       </div>
     </form>
+
+    <!-- STEP VERIFICACIÓN OTP -->
+    <div *ngIf="registrarStep === 'VERIFY'" class="verify-container">
+      <div class="verify-text">
+        <p>
+          {{ 'REGISTER.VERIFY_INSTRUCTIONS' | translate }}
+          <br>
+          <strong>{{ pendingEmail }}</strong>
+        </p>
+      </div>
+
+      <!-- Input OTP -->
+      <div class="form-group">
+        <label class="form-label">{{ 'REGISTER.OTP_LABEL' | translate }}</label>
+        <input 
+          class="form-input otp-input"
+          [formControl]="otpControl"
+          type="text" 
+          inputmode="numeric" 
+          maxlength="6"
+          (input)="sanitizeOtp($event)"
+          [placeholder]="'123456'" />
+        
+        <p class="input-hint">{{ 'REGISTER.OTP_HINT' | translate }}</p>
+      </div>
+
+      <!-- Error Local del paso Verify -->
+      <div *ngIf="otpControl.touched && otpControl.invalid && registrarStep === 'VERIFY'" class="error-message">
+        <span>⚠ </span>
+        <span>{{ 'REGISTER.OTP_INVALID' | translate }}</span>
+      </div>
+
+      <div class="buttons-column">
+        <button 
+          type="button" 
+          class="login-button"
+          (click)="onVerify()"
+          [disabled]="isSubmitting || otpControl.invalid">
+          <span *ngIf="isSubmitting" class="loading-spinner"></span>
+          {{ 'REGISTER.VERIFY_BUTTON' | translate }}
+        </button>
+
+        <button 
+          type="button" 
+          class="admin-button" 
+          (click)="onResend()" 
+          [disabled]="resendCooldown > 0">
+          {{ 'REGISTER.RESEND_CODE' | translate }}
+          <span *ngIf="resendCooldown > 0"> ({{ resendCooldown }}s)</span>
+        </button>
+      </div>
+    </div>
 
     <div *ngIf="errorMessage" class="form-error">
       {{ errorMessage }}

@@ -36,7 +36,7 @@ bootstrapApplication(AppComponent, {
           useFactory: HttpLoaderFactory,
           deps: [HttpClient]
         },
-        defaultLanguage: 'es'
+        fallbackLang: 'es'
       })
     ),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

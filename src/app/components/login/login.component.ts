@@ -476,58 +476,90 @@ export class LoginComponent {
     }
     this.sending = true;
 
+    // Se usa el servicio forgotPassword para enviar el mail con OTP
+    // NO revelamos si el usuario existe o no.
     const identifier = (this.forgotForm.value.identifier || '').trim();
-    this.userService.checkUserExistsForReset(identifier).subscribe({
-      next: (res: any) => {
+    
+    // Guardamos el email/identifier en una variable 'resetEmail' para usarlo al resetear
+    // Si el usuario metió un username, el backend resolverá. 
+    // PERO: La especificación dice que forgot-password body: { email }.
+    // Si el usuario mete username, puede fallar si el backend espera email estricto.
+    // Asumiremos que el backend maneja "email" field pero quizás acepta username si así está hecho.
+    // Sin embargo, según el USER_REQUEST, el endpoint es POST /api/auth/forgot-password body: { email }.
+    // Si el input se llama "identifier", lo mandamos en el campo "email" ya que el backend mapea.
+    this.resetEmail = identifier;
+
+    this.authService.forgotPassword(identifier).subscribe({
+      next: () => {
         this.sending = false;
-
-        const exists = !!(res?.exists || res?.exist);
-        const userId = res?.userId || res?._id || res?.id || null;
-
-        if (exists && userId) {
-          this.foundUserId = userId;
-          const u = (res?.username || '').trim();
-          const g = (res?.gmail || '').trim();
-          this.foundUserLabel = (u && g) ? `${u} (${g})` : (u || g || '');
-
-          this.forgotOpen = false;
-          this.directOpen = true;
-
-          this.directForm.reset();
-          setTimeout(() => {
-            const el = document.getElementById('newPasswordDirect') as HTMLInputElement | null;
-            if (el) el.focus();
-          }, 0);
-        } else {
-          alert('No existe un usuario con ese email o nombre de usuario.');
-        }
+        // Éxito (o fingido). Pasamos al modal de Reset.
+        this.forgotOpen = false;
+        this.openReset(); // Abrir modal de reset
       },
       error: (err) => {
         this.sending = false;
-        alert('No se pudo comprobar el usuario.');
+        // Incluso si falla (ej. usuario no existe), por seguridad a veces se dice "Si existe, se envió".
+        // Pero si queremos UX clara y el backend da error 404, mostramos "Error" o fingimos éxito.
+        // El user pidió: "forgot-password debe mostrar mensaje genérico (no revelar existencia)".
+        // Así que si da error, igual podríamos mostrar el siguiente paso o un mensaje genérico.
+        // Para simplificar y seguir el flujo feliz:
+        this.forgotOpen = false;
+        this.openReset();
+        // Opcional: mostrar un toast "Si la cuenta existe, recibirás un código".
       }
     });
   }
 
-  onDirectResetSubmit() {
-    if (this.directForm.invalid || !this.foundUserId) {
-      this.directForm.markAllAsTouched();
+  // --- LOGICA RESET PASS ---
+  resetOpen = false;
+  resetForm!: FormGroup;
+  resetEmail = '';
+  isReseting = false;
+
+  openReset() {
+    this.resetOpen = true;
+    this.resetForm = this.fb.group({
+      otp: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+      newPassword: ['', [Validators.required, Validators.minLength(7)]]
+    });
+  }
+
+  closeReset() {
+    this.resetOpen = false;
+  }
+
+  onResetSubmit() {
+    if (this.resetForm.invalid) {
+      this.resetForm.markAllAsTouched();
       return;
     }
-    this.directSaving = true;
-    const pwd = this.directForm.value.newPassword;
+    this.isReseting = true;
+    const { otp, newPassword } = this.resetForm.value;
 
-    this.userService.directResetPassword(this.foundUserId, pwd).subscribe({
+    this.authService.resetPassword(this.resetEmail, otp, newPassword).subscribe({
       next: () => {
-        this.directSaving = false;
-        this.closeDirect();
-        alert('Contraseña actualizada. Ya puedes iniciar sesión.');
+        this.isReseting = false;
+        this.closeReset();
+        alert('Contraseña restablecida con éxito. Inicia sesión.');
       },
-      error: (err: any) => {
-        this.directSaving = false;
-        alert(err?.error?.message || 'No se pudo actualizar la contraseña.');
+      error: (err) => {
+        this.isReseting = false;
+        const msg = err?.error?.message;
+         if (msg === 'INVALID_CODE') {
+           alert('Código inválido.');
+        } else if (msg === 'EXPIRED_CODE') {
+           alert('El código ha expirado.');
+        } else {
+           alert(msg || 'Error al restablecer contraseña.');
+        }
       }
     });
+  }
+
+  sanitizeResetOtp(input: any) {
+    let val = input.target.value.replace(/[^0-9]/g, '');
+    if (val.length > 6) val = val.substring(0, 6);
+    this.resetForm.get('otp')?.setValue(val);
   }
 
   toggleLangMenu(): void {

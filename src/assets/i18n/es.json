@@ -48,7 +48,12 @@
     "GOOGLE_REGISTER_INTERESTS": "¿Qué te interesa? (Opcional)",
     "GOOGLE_INTERESTS_SHOW": "Añadir mis intereses",
     "GOOGLE_INTERESTS_HIDE": "Ocultar intereses",
-    "GOOGLE_INTERESTS_SELECT": "Seleccionar mis intereses"
+    "GOOGLE_INTERESTS_SELECT": "Seleccionar mis intereses",
+    "RESET_TITLE": "Restablecer contraseña",
+    "RESET_INSTRUCTIONS": "Ingresa el código que hemos enviado a tu correo y tu nueva contraseña.",
+    "OTP_LABEL": "Código de verificación (6 dígitos)",
+    "NEW_PASSWORD_LABEL": "Nueva contraseña",
+    "RESET_PASSWORD_BUTTON": "Cambiar contraseña"
   },
 
   "REGISTER": {
@@ -71,7 +76,7 @@
     "CONFIRM_PASSWORD_LABEL": "Confirmar contraseña",
     "CONFIRM_PASSWORD_PLACEHOLDER": "Repite la contraseña",
     "CONFIRM_PASSWORD_MISMATCH": "Las contraseñas no coinciden.",
-    "BIRTHDAY_LABEL": "Aniversario",
+    "BIRTHDAY_LABEL": "Fecha de nacimiento",
     "BIRTHDAY_REQUIRED": "La fecha es obligatoria.",
     "BIRTHDAY_FUTURE": "Debe ser anterior a hoy.",
     "BUTTON": "Registrar",
@@ -93,7 +98,15 @@
     "PASSWORD_REQ_NUMBER": "Un número",
     "PASSWORD_REQ_SPECIAL": "Un carácter especial (!@#$...)",
     "PASSWORDS_MATCH": "Las contraseñas coinciden",
-    "SELECT": "Escoge tus intereses"
+    "SELECT": "Escoge tus intereses",
+    "VERIFY_INSTRUCTIONS": "Hemos enviado un código de verificación a tu correo:",
+    "OTP_LABEL": "Código de verificación",
+    "OTP_HINT": "Introduce el código de 6 dígitos",
+    "OTP_INVALID": "El código debe tener 6 dígitos numéricos",
+    "VERIFY_BUTTON": "Verificar Cuenta",
+    "RESEND_CODE": "Reenviar código",
+    "RESEND_IN": "Reenviar en",
+    "BACK": "Volver"
   },
 
   "INTERESTS": {
@@ -272,7 +285,7 @@
     "STATUS_OFFLINE": "Desconectado",
     "FIELD_USERNAME": "Nombre de usuario",
     "FIELD_EMAIL": "Correo",
-    "FIELD_BIRTHDAY": "Cumpleaños",
+    "FIELD_BIRTHDAY": "Fecha de nacimiento",
     "FIELD_PASSWORD": "Contraseña",
     "FIELD_PHOTO": "Foto de Perfil",
     "EVENTS_TITLE": "Eventos en los que participo",
@@ -284,7 +297,7 @@
     "EDIT_EMAIL_LABEL": "Correo",
     "EDIT_EMAIL_CHECKING": "Comprobando correo…",
     "EDIT_EMAIL_TAKEN": "⚠ Este correo ya está registrado.",
-    "EDIT_BIRTHDAY_LABEL": "Cumpleaños",
+    "EDIT_BIRTHDAY_LABEL": "Fecha de nacimiento",
     "EDIT_NEW_PASSWORD_LABEL": "Nueva contraseña",
     "EDIT_NEW_PASSWORD_PLACEHOLDER": "Déjalo vacío para no cambiarla",
     "EDIT_ERROR_GENERIC": "Error al guardar los cambios.",

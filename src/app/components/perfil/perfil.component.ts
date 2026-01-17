@@ -129,21 +129,13 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
     const t = new Date();
     
-    const maxDateCalc = new Date();
-    maxDateCalc.setFullYear(maxDateCalc.getFullYear() - 13);
     this.maxDate = new Date(Date.UTC(
-      maxDateCalc.getFullYear(),
-      maxDateCalc.getMonth(),
-      maxDateCalc.getDate()
+      t.getFullYear(),
+      t.getMonth(),
+      t.getDate()
     )).toISOString().split('T')[0];
     
-    const minDateCalc = new Date();
-    minDateCalc.setFullYear(minDateCalc.getFullYear() - 120);
-    this.minDate = new Date(Date.UTC(
-      minDateCalc.getFullYear(),
-      minDateCalc.getMonth(),
-      minDateCalc.getDate()
-    )).toISOString().split('T')[0];
+    this.minDate = '1900-01-01';
   }
 
   private isValidEmail(v: string): boolean {

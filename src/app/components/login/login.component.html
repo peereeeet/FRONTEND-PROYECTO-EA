@@ -198,44 +198,66 @@
     </div>
   </div>
 
-  <!-- Modal Direct Reset -->
-  <div class="modal-overlay" *ngIf="directOpen" (click)="closeDirect()">
+  <!-- Modal Reset Password (OTP) -->
+  <div class="modal-overlay" *ngIf="resetOpen" (click)="closeReset()">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>{{ 'LOGIN.DIRECT_TITLE' | translate }}</h3>
-        <button class="btn-close" (click)="closeDirect()">×</button>
+        <h3>{{ 'LOGIN.RESET_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeReset()">×</button>
       </div>
 
-      <div *ngIf="foundUserLabel" class="modal-text found-user">
-        {{ 'LOGIN.DIRECT_USER_PREFIX' | translate }}
-        <strong>{{ foundUserLabel }}</strong>
-      </div>
+      <p class="modal-text">
+        {{ 'LOGIN.RESET_INSTRUCTIONS' | translate }}
+      </p>
 
-      <form [formGroup]="directForm" (ngSubmit)="onDirectResetSubmit()">
+      <form [formGroup]="resetForm" (ngSubmit)="onResetSubmit()">
+        <!-- OTP Input -->
         <div class="form-group">
-          <label class="form-label" for="newPasswordDirect">
-            {{ 'LOGIN.DIRECT_NEW_PASSWORD_LABEL' | translate }}
+          <label class="form-label">
+            {{ 'LOGIN.OTP_LABEL' | translate }}
           </label>
           <input
-            id="newPasswordDirect"
+            type="text"
+            class="form-input"
+            formControlName="otp"
+            inputmode="numeric" 
+            maxlength="6"
+            (input)="sanitizeResetOtp($event)"
+            [placeholder]="'123456'" />
+            
+          <div *ngIf="resetForm.get('otp')?.touched && resetForm.get('otp')?.invalid" class="error-message">
+             <span>⚠ </span><span>{{ 'REGISTER.OTP_INVALID' | translate }}</span>
+          </div>
+        </div>
+
+        <!-- New Password -->
+        <div class="form-group">
+          <label class="form-label">
+            {{ 'LOGIN.NEW_PASSWORD_LABEL' | translate }}
+          </label>
+          <input
             type="password"
             class="form-input"
             formControlName="newPassword"
             [placeholder]="'LOGIN.DIRECT_NEW_PASSWORD_PLACEHOLDER' | translate" />
+            
+          <div *ngIf="resetForm.get('newPassword')?.touched && resetForm.get('newPassword')?.invalid" class="error-message">
+             <span>⚠ </span><span>{{ 'LOGIN.PASSWORD_MIN' | translate }}</span>
+          </div>
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="btn cancel" (click)="closeDirect()">
+          <button type="button" class="btn cancel" (click)="closeReset()">
             {{ 'LOGIN.DIRECT_CANCEL' | translate }}
           </button>
           <button
             type="submit"
             class="btn success"
-            [disabled]="directSaving || directForm.invalid">
+            [disabled]="isReseting || resetForm.invalid">
             {{
-              directSaving
+              isReseting
                 ? ('LOGIN.DIRECT_SAVING' | translate)
-                : ('LOGIN.DIRECT_CONFIRM' | translate)
+                : ('LOGIN.RESET_PASSWORD_BUTTON' | translate)
             }}
           </button>
         </div>

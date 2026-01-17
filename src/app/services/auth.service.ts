@@ -81,7 +81,7 @@ export class AuthService {
   }
 
   register(userData: RegisterData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/user/auth/register`, userData);
+    return this.http.post(this.getAuthUrl('register'), userData);
   }
 
   private getAuthUrl(endpoint: string): string {
