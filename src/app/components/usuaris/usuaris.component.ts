@@ -157,7 +157,6 @@ export class UsuarisComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('Error cargando eventos', err);
       }
     });
   }

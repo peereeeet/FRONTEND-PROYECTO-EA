@@ -6,6 +6,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { EventoService } from '../../services/evento.service';
 import { AuthService } from '../../services/auth.service';
 import { Evento } from '../../models/evento.model';
+import { EventoPhoto } from '../../models/evento-photo.model';
 import { ValoracionService } from '../../services/valoracion.service';
 import { Valoracion } from '../../models/valoracion.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -95,6 +96,29 @@ export class MisEventosComponent implements OnInit {
   eventChatText = signal('');
   eventChatLoading = signal(false);
   eventChatError = signal('');
+  eventChatSelectedImage = signal<File | null>(null);
+  eventChatImagePreview = signal<string | null>(null);
+  eventChatUploadingImage = signal<boolean>(false);
+  
+  showDeleteMessageModal = signal<boolean>(false);
+  messageToDelete = signal<EventChatMessage | null>(null);
+  deletingMessage = signal<boolean>(false);
+
+
+  showAlbumModal = signal<boolean>(false);
+  albumEvento = signal<Evento | null>(null);
+  albumPhotos = signal<EventoPhoto[]>([]);
+  albumLoading = signal<boolean>(false);
+  albumError = signal<string>('');
+  uploadingPhoto = signal<boolean>(false);
+  selectedPhotoFile = signal<File | null>(null);
+  photoPreviewUrl = signal<string | null>(null);
+  showPhotoViewer = signal<boolean>(false);
+  viewerPhoto = signal<EventoPhoto | null>(null);
+  showDeletePhotoModal = signal<boolean>(false);
+  photoToDelete = signal<EventoPhoto | null>(null);
+  deletingPhoto = signal<boolean>(false);
+  @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
 
   shareModalOpen = false;
   shareEvento: Evento | null = null;
@@ -157,7 +181,6 @@ export class MisEventosComponent implements OnInit {
       this.socketService.connect(this.currentUserId);
       this.userService.heartbeat(this.currentUserId).subscribe({
         next: () => {},
-        error: (err) => console.error('Error en heartbeat desde mis-eventos', err)
       });
       
       this.cargarProgresoInicial();
@@ -179,6 +202,18 @@ export class MisEventosComponent implements OnInit {
         this.scrollEventChatToBottom();
       });
 
+    this.socketService
+      .onEventChatMessageDeleted()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ messageId, eventId }) => {
+        const ev = this.eventChatEvento();
+        if (!ev || ev._id !== eventId) return;
+
+        this.eventChatMessages.update(list =>
+          list.filter(m => m._id !== messageId)
+        );
+      });
+
     this.loadMisEventos();
   }
 
@@ -186,10 +221,7 @@ export class MisEventosComponent implements OnInit {
     this.destroy$.next();
     this.destroy$.complete();
     if (this.currentUserId) {
-    this.userService.heartbeat(this.currentUserId).subscribe({
-      next: () => console.log('Heartbeat enviado al salir de mis-eventos'),
-      error: (err) => console.error('Error en heartbeat al salir', err)
-    });
+    this.userService.heartbeat(this.currentUserId).subscribe;
   }
   }
 
@@ -700,7 +732,111 @@ hasLocation(evento: any): boolean {
     this.eventChatText.set(value);
   }
 
-  sendEventChat(): void {
+
+  onEventChatImageSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    
+    if (!validTypes.includes(file.type)) {
+      this.eventChatError.set('Solo se permiten imágenes (JPG, PNG, GIF, WEBP)');
+      return;
+    }
+
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.eventChatError.set('La imagen es demasiado grande. Máximo 10MB');
+      return;
+    }
+
+    this.eventChatSelectedImage.set(file);
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.eventChatImagePreview.set(e.target.result);
+    };
+    reader.readAsDataURL(file);
+    this.eventChatError.set('');
+  }
+
+  cancelEventChatImage(): void {
+    this.eventChatSelectedImage.set(null);
+    this.eventChatImagePreview.set(null);
+    this.eventChatError.set('');
+  }
+
+  async uploadEventChatImage(): Promise<string | null> {
+    const file = this.eventChatSelectedImage();
+    const evento = this.eventChatEvento();
+    
+    if (!file || !evento?._id) {
+      return null;
+    }
+
+    this.eventChatUploadingImage.set(true);
+    this.eventChatError.set('');
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`http://localhost:3000/api/event/${evento._id}/chat-image`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.authService.getToken()}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al subir imagen');
+      }
+
+      const data = await response.json();
+      return data.imageUrl;
+    } catch (error: any) {
+      this.eventChatError.set(error.message || 'Error al subir la imagen');
+      return null;
+    } finally {
+      this.eventChatUploadingImage.set(false);
+    }
+  }
+
+  async sendEventChatWithImage(): Promise<void> {
+    const imageUrl = await this.uploadEventChatImage();
+    
+    if (imageUrl) {
+      const text = (this.eventChatText() || '').trim();
+      const evento = this.eventChatEvento();
+      
+      if (!evento?._id || !this.currentUserId) return;
+
+      const user = this.authService.getCurrentUser();
+      const username = user?.username || 'Yo';
+
+      this.eventChatText.set('');
+      this.cancelEventChatImage();
+      
+      this.socketService.sendEventChatMessage(
+        evento._id,
+        this.currentUserId,
+        username,
+        text,
+        imageUrl
+      );
+    }
+  }
+
+  async sendEventChat(): Promise<void> {
+    if (this.eventChatSelectedImage()) {
+      await this.sendEventChatWithImage();
+      return;
+    }
+
     const text = (this.eventChatText() || '').trim();
     const evento = this.eventChatEvento();
     if (!text || !evento?._id || !this.currentUserId) return;
@@ -717,12 +853,64 @@ hasLocation(evento: any): boolean {
     );
   }
 
+  getEventChatImageUrl(imageUrl: string): string {
+    const token = this.authService.getToken();
+    return `http://localhost:3000${imageUrl}?token=${token}`;
+  }
+
   private scrollEventChatToBottom(): void {
     setTimeout(() => {
       const el = this.eventChatMessagesContainer?.nativeElement;
       if (!el) return;
       el.scrollTop = el.scrollHeight;
     }, 0);
+  }
+
+  confirmDeleteMessage(message: EventChatMessage): void {
+    this.messageToDelete.set(message);
+    this.showDeleteMessageModal.set(true);
+  }
+
+  closeDeleteMessageModal(): void {
+    this.showDeleteMessageModal.set(false);
+    this.messageToDelete.set(null);
+  }
+
+  async deleteEventChatMessage(): Promise<void> {
+    const message = this.messageToDelete();
+    if (!message?._id) return;
+
+    this.deletingMessage.set(true);
+    this.eventChatError.set('');
+
+    try {
+      const token = this.authService.getToken();
+      const response = await fetch(
+        `http://localhost:3000/api/user/events/chat/${message._id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al eliminar el mensaje');
+      }
+
+      this.closeDeleteMessageModal();
+    } catch (error: any) {
+      this.eventChatError.set(error.message || 'Error al eliminar el mensaje');
+    } finally {
+      this.deletingMessage.set(false);
+    }
+  }
+
+  canDeleteMessage(message: EventChatMessage): boolean {
+    return message.userId === this.currentUserId;
   }
 
   openShareModal(evento: Evento): void {
@@ -800,10 +988,8 @@ hasLocation(evento: any): boolean {
           insignias: progreso.insignias.length,
           insigniasIds: progreso.insignias.map((i: any) => i._id)
         };
-        console.log('📊 Progreso inicial cargado:', this.progresoInicial);
       },
       error: (err) => {
-        console.error('Error al cargar progreso inicial:', err);
       }
     });
   }
@@ -844,18 +1030,218 @@ hasLocation(evento: any): boolean {
             insignias: progresoNuevo.insignias.length,
             insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
           };
-
-          console.log('🎮 Recompensa detectada:', {
-            accion: 'dejarValoracion',
-            puntosGanados,
-            subisteDeNivel,
-            insigniasDesbloqueadas: insigniasDesbloqueadas.length
-          });
         },
         error: (err) => {
-          console.error('Error al detectar cambios de progreso:', err);
         }
       });
     }, 800);
+  }
+
+  openAlbum(evento: Evento): void {
+    this.albumEvento.set(evento);
+    this.showAlbumModal.set(true);
+    this.loadAlbumPhotos(evento._id!);
+  }
+
+  closeAlbum(): void {
+    this.showAlbumModal.set(false);
+    this.albumEvento.set(null);
+    this.albumPhotos.set([]);
+    this.albumError.set('');
+    this.selectedPhotoFile.set(null);
+    this.photoPreviewUrl.set(null);
+  }
+
+  loadAlbumPhotos(eventId: string): void {
+    this.albumLoading.set(true);
+    this.albumError.set('');
+
+    this.eventoService.getEventoPhotos(eventId).subscribe({
+      next: (photos) => {
+        this.albumPhotos.set(photos);
+        this.albumLoading.set(false);
+      },
+      error: (err) => {
+        this.albumError.set('Error al cargar las fotos del álbum');
+        this.albumLoading.set(false);
+      }
+    });
+  }
+
+  triggerFileInput(): void {
+    this.fileInput?.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm'];
+    if (!validTypes.includes(file.type)) {
+      this.albumError.set('Formato no válido. Solo se permiten imágenes (JPG, PNG, GIF, WEBP) y vídeos (MP4, WEBM)');
+      return;
+    }
+
+    const maxSize = 50 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.albumError.set('El archivo es demasiado grande. Máximo 50MB');
+      return;
+    }
+
+    this.selectedPhotoFile.set(file);
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.photoPreviewUrl.set(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  cancelUpload(): void {
+    this.selectedPhotoFile.set(null);
+    this.photoPreviewUrl.set(null);
+    this.albumError.set('');
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+  }
+
+  uploadPhoto(): void {
+    const file = this.selectedPhotoFile();
+    const evento = this.albumEvento();
+
+    if (!file || !evento?._id) {
+      return;
+    }
+
+    this.uploadingPhoto.set(true);
+    this.albumError.set('');
+
+    this.eventoService.uploadEventoPhoto(evento._id, file).subscribe({
+      next: (photo) => {
+        const currentPhotos = this.albumPhotos();
+        this.albumPhotos.set([photo, ...currentPhotos]);
+        
+        this.cancelUpload();
+        this.uploadingPhoto.set(false);
+      },
+      error: (err) => {
+        this.albumError.set(err?.error?.message || 'Error al subir el archivo');
+        this.uploadingPhoto.set(false);
+      }
+    });
+  }
+
+  openPhotoViewer(photo: EventoPhoto): void {
+    this.viewerPhoto.set(photo);
+    this.showPhotoViewer.set(true);
+  }
+
+  closePhotoViewer(): void {
+    this.showPhotoViewer.set(false);
+    this.viewerPhoto.set(null);
+  }
+
+  isPhotoOwner(photo: EventoPhoto): boolean {
+    return photo.userId === this.currentUserId;
+  }
+
+
+  openDeletePhotoModal(photo: EventoPhoto): void {
+    this.photoToDelete.set(photo);
+    this.showDeletePhotoModal.set(true);
+  }
+
+  closeDeletePhotoModal(): void {
+    this.showDeletePhotoModal.set(false);
+    this.photoToDelete.set(null);
+  }
+
+  confirmDeletePhoto(): void {
+    const photo = this.photoToDelete();
+    if (!photo) return;
+
+    const evento = this.albumEvento();
+    if (!evento?._id) return;
+
+    this.deletingPhoto.set(true);
+    this.albumError.set('');
+
+    this.eventoService.deleteEventoPhoto(evento._id, photo._id).subscribe({
+      next: () => {
+        const currentPhotos = this.albumPhotos();
+        const updatedPhotos = currentPhotos.filter(p => p._id !== photo._id);
+        this.albumPhotos.set(updatedPhotos);
+        
+        if (this.viewerPhoto()?._id === photo._id) {
+          this.closePhotoViewer();
+        }
+        
+        this.deletingPhoto.set(false);
+        this.closeDeletePhotoModal();
+      },
+      error: (err) => {
+        this.albumError.set(err?.error?.message || 'Error al eliminar la foto');
+        this.deletingPhoto.set(false);
+      }
+    });
+  }
+
+  deletePhoto(photo: EventoPhoto): void {
+    this.openDeletePhotoModal(photo);
+  }
+
+  downloadPhoto(photo: EventoPhoto): void {
+    const token = this.authService.getToken();
+    if (!token) {
+      this.albumError.set('No estás autenticado');
+      return;
+    }
+
+    fetch(`http://localhost:3000${photo.url}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => response.blob())
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${photo.username}_${new Date(photo.createdAt).getTime()}.${photo.type === 'video' ? 'mp4' : 'jpg'}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(err => {
+      this.albumError.set('Error al descargar el archivo');
+    });
+  }
+
+  getPhotoUrl(photo: EventoPhoto): string {
+    const token = this.authService.getToken();
+    return `http://localhost:3000${photo.url}?token=${token}`;
+  }
+
+  isVideo(photo: EventoPhoto): boolean {
+    return photo.type === 'video';
+  }
+
+  isVideoFile(file: File): boolean {
+    return file.type.startsWith('video/');
+  }
+
+  formatPhotoDate(date: Date | string): string {
+    const d = new Date(date);
+    return d.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 }

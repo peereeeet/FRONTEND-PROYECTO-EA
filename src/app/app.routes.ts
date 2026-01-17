@@ -13,6 +13,7 @@ import { CrearEventosComponent } from './components/crear-eventos/crear-eventos.
 import { InvitacionesComponent } from './components/invitaciones/invitaciones.component';
 import { CalendarioComponent } from './components/calendario/calendario.component';
 import { NotificacionesComponent } from './components/notificaciones/notificaciones.component';
+import { InterestSelectorComponent } from './components/interest-selector/interest-selector.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -48,6 +49,10 @@ export const routes: Routes = [
   },
   { path: 'notificaciones', 
     component: NotificacionesComponent, 
+    canActivate: [authGuard] 
+  },
+  { path: 'interest-selector', 
+    component: InterestSelectorComponent, 
     canActivate: [authGuard] 
   },
   { path: 'perfil', 

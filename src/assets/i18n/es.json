@@ -28,6 +28,14 @@
     "DIRECT_NEW_PASSWORD_PLACEHOLDER": "Mínimo 7 caracteres",
     "DIRECT_CANCEL": "Cancelar",
     "DIRECT_CONFIRM": "Confirmar",
+    "GOOGLE_REGISTER_TITLE": "Completa tu registro",
+    "GOOGLE_REGISTER_TEXT": "Para completar tu registro con Google, elige un nombre de usuario y confirma tu fecha de nacimiento:",
+    "GOOGLE_USERNAME_LABEL": "Nombre de usuario",
+    "GOOGLE_USERNAME_PLACEHOLDER": "Elige tu nombre de usuario",
+    "GOOGLE_REGISTER_CANCEL": "Cancelar",
+    "GOOGLE_REGISTER_CONFIRM": "Registrarse",
+    "USERNAME_EXISTS": "Este nombre de usuario ya está en uso",
+    "BIRTHDAY_REQUIRED": "La fecha de nacimiento es obligatoria",
     "DIRECT_SAVING": "Guardando…",
     "ERROR_GENERIC": "Error al iniciar sesión. Verifica tus credenciales.",
     "OR": "o continúa con",
@@ -47,6 +55,10 @@
     "EMAIL_NOT_VERIFIED_TITLE": "Correo no verificado",
     "RESEND_VERIFICATION": "Reenviar código de verificación",
     "GO_TO_VERIFY": "Ir a verificar código"
+    "GOOGLE_REGISTER_INTERESTS": "¿Qué te interesa? (Opcional)",
+    "GOOGLE_INTERESTS_SHOW": "Añadir mis intereses",
+    "GOOGLE_INTERESTS_HIDE": "Ocultar intereses",
+    "GOOGLE_INTERESTS_SELECT": "Seleccionar mis intereses"
   },
 
   "REGISTER": {
@@ -114,6 +126,33 @@
     "TOO_MANY_ATTEMPTS": "Demasiados intentos. Inténtalo más tarde.",
     "RATE_LIMITED": "Has superado el límite de envíos. Espera un momento.",
     "USER_NOT_FOUND": "Usuario no encontrado."
+    "INTERESTS_OPTIONAL": "(Opcional) Tus intereses"
+  },
+
+  "INTERESTS": {
+    "TITLE": "¿Qué te interesa?",
+    "SUBTITLE": "Selecciona tus intereses para recibir recomendaciones personalizadas",
+    "SELECTED": "Intereses seleccionados",
+    "SHOW": "Añadir mis intereses",
+    "HIDE": "Ocultar intereses",
+    "HINT": "Opcional: Esto nos ayudará a recomendarte eventos que te gusten",
+    "CONFIRM": "Confirmar",
+    "CANCEL": "Cancelar",
+    "CATEGORIES": {
+      "SPORTS": "Deportes",
+      "MUSIC": "Música",
+      "CULTURE": "Cultura",
+      "FOOD": "Gastronomía",
+      "SOCIAL": "Social",
+      "LEARNING": "Aprendizaje",
+      "TECH": "Tecnología",
+      "WELLNESS": "Bienestar",
+      "VOLUNTEER": "Voluntariado",
+      "NATURE": "Naturaleza",
+      "GAMES": "Juegos",
+      "FAMILY": "Familia",
+      "OTHER": "Otros"
+    }
   },
 
   "LANG": {
@@ -229,7 +268,22 @@
     "SEARCH_CLEAR_BUTTON": "Limpiar",
     "SEARCH_LOADING": "Buscando eventos...",
     "SEARCH_EMPTY_TITLE": "No se encontraron eventos",
-    "SEARCH_EMPTY_TEXT": "Intenta ajustar tus filtros de búsqueda"
+    "SEARCH_EMPTY_TEXT": "Intenta ajustar tus filtros de búsqueda",
+    "TAB_RECOMMENDED": "Recomendados",
+    "RECOMMENDED_TITLE": "Eventos Recomendados para Ti",
+    "RECOMMENDED_SUBTITLE": "Basados en tus intereses",
+    "RECOMMENDED_EMPTY_TITLE": "No hay eventos recomendados",
+    "RECOMMENDED_EMPTY_TEXT": "No encontramos eventos que coincidan con tus intereses en este momento. Intenta más tarde o explora otros eventos.",
+    "RECOMMENDED_NO_INTERESTS_TITLE": "Añade tus intereses",
+    "RECOMMENDED_NO_INTERESTS_TEXT": "Para recibir recomendaciones personalizadas, añade tus intereses en tu perfil.",
+    "RECOMMENDED_ADD_INTERESTS": "Ir a mi perfil",
+    "RECOMMENDED_LOADING": "Cargando recomendaciones...",
+    "CHAT_ADD_IMAGE": "Adjuntar imagen",
+    "CHAT_DELETE_MESSAGE": "Eliminar mensaje",
+    "CHAT_DELETE_MESSAGE_TITLE": "Eliminar mensaje",
+    "CHAT_DELETE_MESSAGE_CONFIRM": "¿Estás seguro de que deseas eliminar este mensaje? Esta acción no se puede deshacer.",
+    "CHAT_DELETE_MESSAGE_BTN": "Eliminar",
+    "CHAT_DELETING_MESSAGE": "Eliminando..."
   },
 
   "FRIENDS": {
@@ -288,7 +342,34 @@
     "DELETE_PASSWORD_PLACEHOLDER": "Tu contraseña",
     "DELETE_CANCEL": "Cancelar",
     "DELETE_CONFIRM": "Eliminar definitivamente",
-    "DELETE_DELETING": "Eliminando…"
+    "DELETE_DELETING": "Eliminando…",
+    "EDIT_CONFIRM_PASSWORD_LABEL": "Confirmar nueva contraseña",
+    "EDIT_CONFIRM_PASSWORD_PLACEHOLDER": "Repetir contraseña",
+    "USERNAME_MIN_LENGTH": "El nombre debe tener al menos 3 caracteres",
+    "USERNAME_MAX_LENGTH": "El nombre no puede exceder 30 caracteres",
+    "USERNAME_START_LETTER": "Debe empezar con una letra",
+    "USERNAME_VALID_CHARS": "Solo letras, números y guiones bajos",
+    "USERNAME_NOT_RESERVED": "Nombre de usuario válido",
+    "EMAIL_FORMAT_VALID": "Formato válido de email",
+    "EMAIL_NOT_TEMPORARY": "No es un email temporal",
+    "BIRTHDAY_NOT_FUTURE": "La fecha no puede ser futura",
+    "BIRTHDAY_MIN_AGE": "Debes tener al menos 13 años",
+    "PASSWORD_REQ_LENGTH": "Mínimo 8 caracteres",
+    "PASSWORD_REQ_UPPERCASE": "Una letra mayúscula",
+    "PASSWORD_REQ_LOWERCASE": "Una letra minúscula",
+    "PASSWORD_REQ_NUMBER": "Un número",
+    "PASSWORD_REQ_SPECIAL": "Un carácter especial (!@#$...)",
+    "PASSWORD_STRENGTH_WEAK": "Débil",
+    "PASSWORD_STRENGTH_MEDIUM": "Media",
+    "PASSWORD_STRENGTH_STRONG": "Fuerte",
+    "PASSWORDS_MATCH": "Las contraseñas coinciden",
+    "PASSWORDS_MISMATCH": "Las contraseñas no coinciden",
+    "INTERESTS_TITLE": "Mis intereses",
+    "INTERESTS_EDIT_BUTTON": "Editar intereses",
+    "INTERESTS_ADD_BUTTON": "Añadir intereses",
+    "INTERESTS_EMPTY": "No has añadido intereses aún. Añade tus intereses para recibir recomendaciones personalizadas.",
+    "INTERESTS_MODAL_TITLE": "Editar mis intereses",
+    "INTERESTS_MODAL_DESCRIPTION": "Selecciona los temas que te interesan para recibir recomendaciones de eventos personalizadas."
   },
 
   "EVENTS": {
@@ -312,32 +393,30 @@
     "BACK_TO_MENU": "Volver al menú",
     "GO_TO_CREATE": "Crear evento nuevo",
     "GO_TO_MY_EVENTS": "Mis eventos",
-
     "LOADING_EVENTS": "Cargando eventos...",
     "MAP_TITLE": "Mapa de eventos",
     "MAP_HINT": "Desplázate y haz zoom en el mapa para ver los eventos de esa zona. Pulsa un pin para ver los detalles.",
-
     "EMPTY_TITLE": "No hay eventos disponibles en esta zona",
     "EMPTY_TEXT": "Mueve el mapa o cambia el zoom para buscar en otras zonas.",
-
     "CARD_BADGE_CREATOR": "Tú eres el creador",
     "CARD_BADGE_ADMIN": "Admin",
     "CARD_BADGE_JOINED": "Inscrito",
-
     "PAGINATION_PREV": "« Anterior",
     "PAGINATION_NEXT": "Siguiente »",
     "PAGINATION_INFO_PREFIX": "Página",
     "PAGINATION_INFO_OF": "de",
-
     "MODAL_TITLE": "Detalles del evento",
     "MODAL_ADDRESS_FALLBACK": "No especificada",
     "MODAL_CREATOR_NOTE": "Como creador, no puedes salir del evento.",
     "MODAL_BUTTON_JOIN": "Unirme al evento",
     "MODAL_BUTTON_LEAVE": "Salir del evento",
     "MODAL_BUTTON_CLOSE": "Cerrar",
-
     "BUTTON_LEAVE_WAITLIST": "Salir de lista de espera",
-    "WAITLIST_MESSAGE": "Estás en la lista de espera de este evento"
+    "WAITLIST_MESSAGE": "Estás en la lista de espera de este evento",
+    "CARD_ACTION_JOIN": "Unirse",
+    "CARD_ACTION_LEAVE": "Salir",
+    "CARD_ACTION_DETAILS": "Ver detalles",
+    "PARTICIPANTS": "participantes"
   },
 
   "CREATE_EVENT": {
@@ -393,64 +472,83 @@
     "GO_TO_EXPLORE": "Explorar eventos (mapa)",
     "LOADING": "Cargando eventos.",
     "ERROR_MESSAGE_PREFIX": "Error:",
-
     "CREATED_TITLE": "📝 Eventos que he creado ({{count}})",
     "CREATED_EMPTY_TEXT": "Aún no has creado ningún evento",
     "BADGE_CREATOR": "Creador",
-
     "FIELD_ADDRESS": "Dirección:",
     "BUTTON_VIEW_MAP": "🗺 Mapa",
     "FIELD_SCHEDULE": "Horario:",
     "FIELD_PARTICIPANTS": "Participantes:",
-
     "RATINGS_LABEL": "Valoraciones:",
     "RATINGS_NONE": "Sin valoraciones",
     "BUTTON_VIEW_RATINGS": "Valoraciones",
     "BUTTON_EDIT": "✏️ Modificar",
     "BUTTON_DELETE": "🗑️ Eliminar",
-
     "JOINED_TITLE": "🎯 Eventos en los que estoy inscrito ({{count}})",
     "JOINED_EMPTY_TEXT": "Aún no estás inscrito en ningún evento",
     "JOINED_BUTTON_EXPLORE": "Explorar eventos",
-
     "BADGE_JOINED": "Inscrito",
-
     "BUTTON_LEAVE": "👋 Abandonar",
-
     "DELETE_MODAL_TITLE": "Eliminar evento",
     "DELETE_MODAL_TEXT": "¿Seguro que quieres eliminar <strong>{{name}}</strong>?",
     "DELETE_MODAL_CANCEL": "Cancelar",
     "DELETE_MODAL_CONFIRM": "🗑️ Eliminar",
-
     "LEAVE_MODAL_TITLE": "Salir del evento",
     "LEAVE_MODAL_TEXT": "¿Seguro que quieres salir de <strong>{{name}}</strong>?",
     "LEAVE_MODAL_CANCEL": "Cancelar",
     "LEAVE_MODAL_CONFIRM": "Salir",
-
     "BUTTON_SHARE_EVENT": "Enviar evento",
     "SHARE_EVENT_TITLE": "Compartir evento",
     "SHARE_EVENT_LOADING": "Cargando amigos...",
     "SHARE_EVENT_NO_FRIENDS": "No tienes amigos para enviar este evento.",
     "SHARE_EVENT_SEND": "Enviar",
-
     "BUTTON_EVENT_CHAT": "Chat",
     "EVENT_CHAT_TITLE": "Chat del evento",
     "EVENT_CHAT_LOADING": "Cargando mensajes del evento...",
     "EVENT_CHAT_EMPTY": "Todavía no hay mensajes en este evento.",
     "EVENT_CHAT_PLACEHOLDER": "Escribe un mensaje para este evento...",
-
     "TAB_JOINED": "Eventos Inscrito",
     "TAB_CREATED": "Eventos Creados",
     "STATS_RATING": "Valoración",
-
     "CREATOR_CANNOT_LEAVE": "No puedes abandonar siendo el creador",
     "SECTION_UPCOMING": "Próximos Eventos",
     "SECTION_PAST": "Eventos Pasados",
     "BADGE_FINISHED": "Finalizado",
-
     "FILTER_ALL": "Todos",
     "FILTER_PUBLIC": "Públicos",
-    "FILTER_PRIVATE": "Privados"
+    "FILTER_PRIVATE": "Privados",
+    "BUTTON_ALBUM": "Álbum",
+    "EVENT_CHAT_ADD_IMAGE": "Adjuntar imagen",
+    "EVENT_CHAT_UPLOADING_IMAGE": "Subiendo imagen...",
+    "EVENT_CHAT_IMAGE_ERROR": "Error al subir la imagen",
+    "DELETE_MESSAGE": "Eliminar mensaje",
+    "DELETE_MESSAGE_TITLE": "Eliminar mensaje",
+    "DELETE_MESSAGE_CONFIRM": "¿Estás seguro de que deseas eliminar este mensaje? Esta acción no se puede deshacer.",
+    "DELETE_MESSAGE_BTN": "Eliminar",
+    "DELETING_MESSAGE": "Eliminando...",
+    "MESSAGE_DELETED_SUCCESS": "Mensaje eliminado correctamente",
+    "MESSAGE_DELETE_ERROR": "Error al eliminar el mensaje"
+  },
+
+  "ALBUM": {
+    "TITLE": "Álbum Compartido",
+    "UPLOAD_TITLE": "Subir foto o vídeo",
+    "UPLOAD_HINT": "Comparte tus mejores momentos del evento con los demás participantes",
+    "UPLOAD_CLICK": "Haz clic para seleccionar un archivo",
+    "UPLOAD_FORMATS": "Imágenes (JPG, PNG, GIF, WEBP) o vídeos (MP4, WEBM) - Máx. 50MB",
+    "UPLOADING": "Subiendo...",
+    "UPLOAD_BUTTON": "Subir",
+    "GALLERY_TITLE": "Galería del evento",
+    "LOADING": "Cargando fotos...",
+    "EMPTY": "Aún no hay fotos ni vídeos en este evento. ¡Sé el primero en subir uno!",
+    "DOWNLOAD": "Descargar",
+    "DELETE": "Eliminar",
+    "CONFIRM_DELETE": "¿Estás seguro de que quieres eliminar esta foto/vídeo?",
+    "CONFIRM_DELETE_TITLE": "Confirmar eliminación",
+    "UPLOADED_BY": "Subido por",
+    "UPLOADED_ON": "Fecha",
+    "DELETING": "Eliminando...",
+    "CANCEL": "Cancelar"
   },
 
   "RATINGS": {

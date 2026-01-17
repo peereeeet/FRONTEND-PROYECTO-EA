@@ -12,13 +12,14 @@ import { ThemeService } from '../../services/theme.service';
 import { GamificacionService } from '../../services/gamificacion.service';
 import { UsuarioProgreso, calcularProgresoNivel, getNivelInfo } from '../../models/gamificacion.model';
 import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
+import { InterestSelectorComponent } from '../interest-selector/interest-selector.component';
 
 type EditDTO = { username: string; gmail: string; birthday: string; password?: string; };
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, NotificacionesComponent],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, NotificacionesComponent, InterestSelectorComponent],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.css']
 })
@@ -79,6 +80,50 @@ export class PerfilComponent implements OnInit, OnDestroy {
   saving   = signal(false);
   saveError = signal('');
   edit = signal<EditDTO>({ username: '', gmail: '', birthday: '' });
+
+  private temporaryDomains = [
+    'tempmail.com', '10minutemail.com', 'guerrillamail.com', 
+    'mailinator.com', 'throwaway.email', 'temp-mail.org',
+    'maildrop.cc', 'getnada.com', 'trashmail.com', 'sharklasers.com'
+  ];
+
+  emailValidations = signal({
+    format: true,
+    notTemporary: true
+  });
+
+  usernameValidations = signal({
+    length: true,
+    startsWithLetter: true,
+    validChars: true,
+    notReserved: true
+  });
+
+  passwordValidations = signal({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false
+  });
+
+  birthdayValidations = signal({
+    notFuture: true,
+    minimumAge: true
+  });
+
+  passwordStrength = signal(0);
+  showEditPassword = false;
+  showEditConfirmPassword = false;
+  confirmPassword = signal('');
+
+  showInterestsModal = signal<boolean>(false);
+  selectedInterests = signal<string[]>([]);
+  savingInterests = signal<boolean>(false);
+  interestsError = signal<string>('');
+
+  maxDate: string;
+  minDate: string;
   
   constructor() {
     this.translate.use(this.currentLang);
@@ -86,10 +131,23 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.currentLang = savedLang;
     this.translate.use(savedLang);
 
-    const today = new Date();
-    const maxDateObj = new Date();
-    maxDateObj.setFullYear(today.getFullYear() - 13);
-    this.maxDate = maxDateObj.toISOString().split('T')[0];
+    const t = new Date();
+    
+    const maxDateCalc = new Date();
+    maxDateCalc.setFullYear(maxDateCalc.getFullYear() - 13);
+    this.maxDate = new Date(Date.UTC(
+      maxDateCalc.getFullYear(),
+      maxDateCalc.getMonth(),
+      maxDateCalc.getDate()
+    )).toISOString().split('T')[0];
+    
+    const minDateCalc = new Date();
+    minDateCalc.setFullYear(minDateCalc.getFullYear() - 120);
+    this.minDate = new Date(Date.UTC(
+      minDateCalc.getFullYear(),
+      minDateCalc.getMonth(),
+      minDateCalc.getDate()
+    )).toISOString().split('T')[0];
   }
 
   private isValidEmail(v: string): boolean {
@@ -123,6 +181,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
           merged.isOnline = (merged.online ?? merged.isOnline ?? false);
           this.me.set(merged);
           this.profilePhotoUrl.set(merged.profilePhoto || '');
+          
+          this.selectedInterests.set(merged.interests || []);
+          
           this.edit.set({
             username: merged.username ?? '',
             gmail: merged.gmail ?? '',
@@ -163,7 +224,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
           this.loadingProgreso.set(false);
         },
         error: (err) => {
-          console.error('Error al cargar progreso:', err);
           this.loadingProgreso.set(false);
         }
       });
@@ -284,15 +344,14 @@ export class PerfilComponent implements OnInit, OnDestroy {
           this.me.set(updated);
           this.profilePhotoUrl.set(response.profilePhoto);
         }
-
-        this.selectedPhotoFile.set(null);
-        const oldPreview = this.photoPreviewUrl();
-        if (oldPreview) {
-          URL.revokeObjectURL(oldPreview);
-        }
-        this.photoPreviewUrl.set(null);
         
         this.uploadingPhoto.set(false);
+        this.selectedPhotoFile.set(null);
+        const previewUrl = this.photoPreviewUrl();
+        if (previewUrl) {
+          URL.revokeObjectURL(previewUrl);
+        }
+        this.photoPreviewUrl.set(null);
       },
       error: (err) => {
         this.uploadingPhoto.set(false);
@@ -364,6 +423,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
     }
 
     this.edit.set({ username, gmail, birthday });
+    this.confirmPassword.set('');
     this.usernameTaken.set(false);
     this.emailTaken.set(false);
     this.checkingUsername.set(false);
@@ -372,6 +432,19 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.uploadPhotoError.set('');
     this.selectedPhotoFile.set(null);
     this.photoPreviewUrl.set(null);
+    
+    this.validateUsername();
+    this.validateEmail();
+    this.validateBirthday();
+    this.passwordValidations.set({
+      length: false,
+      uppercase: false,
+      lowercase: false,
+      number: false,
+      special: false
+    });
+    this.passwordStrength.set(0);
+    
     this.editOpen.set(true);
   }
   
@@ -380,23 +453,134 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.cancelPhotoSelection();
   }
 
+  validateUsername(): void {
+    const e = this.edit();
+    const username = (e.username || '').trim();
+    
+    const validations = {
+      length: username.length >= 3 && username.length <= 30,
+      startsWithLetter: /^[a-zA-Z]/.test(username),
+      validChars: /^[a-zA-Z][a-zA-Z0-9_]*$/.test(username),
+      notReserved: !['admin', 'root', 'system', 'null', 'undefined'].includes(username.toLowerCase())
+    };
+    
+    this.usernameValidations.set(validations);
+  }
+
+  validateEmail(): void {
+    const e = this.edit();
+    const email = (e.gmail || '').trim();
+    
+    const emailRegex = /^[a-zA-Z0-9]([a-zA-Z0-9._-]*[a-zA-Z0-9])?@[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?\.[a-zA-Z]{2,}$/;
+    const formatValid = emailRegex.test(email);
+    
+    let notTemporary = true;
+    if (email) {
+      const domain = email.split('@')[1]?.toLowerCase();
+      notTemporary = !this.temporaryDomains.includes(domain);
+    }
+    
+    this.emailValidations.set({
+      format: formatValid,
+      notTemporary: notTemporary
+    });
+  }
+
+  validatePassword(): void {
+    const e = this.edit();
+    const pwd = e.password || '';
+    
+    const validations = {
+      length: pwd.length >= 8,
+      uppercase: /[A-Z]/.test(pwd),
+      lowercase: /[a-z]/.test(pwd),
+      number: /[0-9]/.test(pwd),
+      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)
+    };
+    
+    this.passwordValidations.set(validations);
+    
+    const strength = Object.values(validations).filter(v => v).length;
+    this.passwordStrength.set(strength);
+  }
+
+  validateBirthday(): void {
+    const e = this.edit();
+    if (!e.birthday) {
+      this.birthdayValidations.set({
+        notFuture: true,
+        minimumAge: true
+      });
+      return;
+    }
+
+    const birthday = new Date(e.birthday);
+    const today = new Date();
+    
+    const notFuture = birthday <= today;
+    
+    const age = today.getFullYear() - birthday.getFullYear();
+    const monthDiff = today.getMonth() - birthday.getMonth();
+    const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate()) 
+      ? age - 1 
+      : age;
+    const minimumAge = actualAge >= 13;
+    
+    this.birthdayValidations.set({
+      notFuture: notFuture,
+      minimumAge: minimumAge
+    });
+  }
+
+  getPasswordStrengthClass(): string {
+    const strength = this.passwordStrength();
+    if (strength <= 1) return 'strength-weak';
+    if (strength <= 3) return 'strength-medium';
+    return 'strength-strong';
+  }
+
+  getPasswordStrengthText(): string {
+    const strength = this.passwordStrength();
+    if (strength === 0) return '';
+    if (strength <= 2) return 'WEAK';
+    if (strength <= 4) return 'MEDIUM';
+    return 'STRONG';
+  }
+
+  passwordsMatch(): boolean {
+    const e = this.edit();
+    if (!e.password || e.password === '') return true;
+    return e.password === this.confirmPassword();
+  }
+
+  isFormValid(): boolean {
+    const e = this.edit();
+    const usernameValid = Object.values(this.usernameValidations()).every(v => v);
+    const emailValid = Object.values(this.emailValidations()).every(v => v);
+    const birthdayValid = Object.values(this.birthdayValidations()).every(v => v);
+    
+    let passwordValid = true;
+    if (e.password && e.password.trim() !== '') {
+      passwordValid = this.passwordStrength() === 5 && this.passwordsMatch();
+    }
+    
+    return usernameValid && 
+           emailValid && 
+           birthdayValid && 
+           passwordValid &&
+           !this.usernameTaken() && 
+           !this.emailTaken() &&
+           !this.checkingUsername() &&
+           !this.checkingEmail();
+  }
+
   saveEdit(): void {
     const u = this.me();
     const e = this.edit();
     if (!u || !e) return;
 
-    const uname = (e.username || '').trim();
-    const mail  = (e.gmail || '').trim();
-
-    if (uname.length < 3) {
-      this.saveError.set('El nombre de usuario debe tener al menos 3 caracteres.');
-      return;
-    }
-    if (!this.isValidEmail(mail)) {
-      this.saveError.set('El correo no tiene un formato válido.');
-      return;
-    }
-    if (this.usernameTaken() || this.emailTaken() || this.checkingUsername() || this.checkingEmail()) {
+    if (!this.isFormValid()) {
+      this.saveError.set('Por favor, corrige los errores del formulario.');
       return;
     }
 
@@ -404,10 +588,11 @@ export class PerfilComponent implements OnInit, OnDestroy {
     if (!id) return;
 
     const patch: Partial<User & { password?: string }> = {
-      username: uname || u.username,
-      gmail:    mail  || u.gmail,
+      username: e.username.trim() || u.username,
+      gmail:    e.gmail.trim()  || u.gmail,
       birthday: (e.birthday as any) ?? (u.birthday as any),
     };
+    
     if (e.password && e.password.trim() !== '') {
       patch.password = e.password.trim();
     }
@@ -440,6 +625,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
   onBirthInput(val: string): void {
     const safe = this.clampToTodayYYYYMMDD(val || '');
     this.edit.update(e => ({ ...e, birthday: safe }));
+    this.validateBirthday();
   }
 
   todayISO(): string {
@@ -569,5 +755,57 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+
+  toggleEditPassword(): void {
+    this.showEditPassword = !this.showEditPassword;
+  }
+
+  toggleEditConfirmPassword(): void {
+    this.showEditConfirmPassword = !this.showEditConfirmPassword;
+  }
+
+  openInterestsModal(): void {
+    this.showInterestsModal.set(true);
+  }
+
+  closeInterestsModal(): void {
+    this.showInterestsModal.set(false);
+  }
+
+  onInterestsChange(interests: string[]): void {
+    this.selectedInterests.set(interests);
+  }
+
+  saveInterests(): void {
+    const userId = this.me()?._id;
+    if (!userId) {
+      this.interestsError.set('Error: usuario no identificado');
+      return;
+    }
+
+    this.savingInterests.set(true);
+    this.interestsError.set('');
+
+    const updateData = {
+      interests: this.selectedInterests()
+    };
+
+    this.userService.updateMe(userId, updateData).subscribe({
+      next: (response) => {
+        this.savingInterests.set(false);
+        
+        const updatedUser = { ...this.me()!, interests: this.selectedInterests() };
+        this.me.set(updatedUser);
+        
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        
+        this.closeInterestsModal();
+      },
+      error: (err) => {
+        this.savingInterests.set(false);
+        this.interestsError.set(err?.error?.message || 'Error al guardar intereses');
+      }
+    });
   }
 }

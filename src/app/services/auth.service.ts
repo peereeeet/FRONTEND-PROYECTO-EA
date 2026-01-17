@@ -12,6 +12,7 @@ export interface User {
   birthday: Date;
   eventos: string[];
   rol: 'admin' | 'usuario';
+  interests?: string[];
 }
 
 export interface LoginResponse {
@@ -26,6 +27,7 @@ export interface RegisterData {
   gmail: string;
   birthday?: string;
   password: string;
+  interests?: string[];
 }
 
 @Injectable({
@@ -68,15 +70,14 @@ export class AuthService {
     );
   }
 
-  loginWithGoogle(credential: string, birthday?: string): Observable<LoginResponse> {
-     // This one might be different, keeping previous logic or adapting? 
-     // The prompt didn't specify changing google login path, but general instruction was "Centraliza llamadas...". 
-     // I'll assume standard google login remains or uses /api/auth/google if available? 
-     // Existing was /user/auth/google. 
-     // User request: "el backend expone endpoints bajo /api/auth".
-     // I will migrate google to /api/auth/google as well to be consistent.
+  loginWithGoogle(credential: string, birthday?: string, username?: string, interests?: string[]): Observable<LoginResponse> {
     return this.http
-      .post<LoginResponse>(this.getAuthUrl('google'), { credential, birthday })
+      .post<LoginResponse>(`${this.apiUrl}/user/auth/google`, { 
+        credential, 
+        birthday,
+        username,
+        interests
+      })
       .pipe(
         tap(response => {
           if (response.user) {
@@ -147,7 +148,6 @@ export class AuthService {
          return !!userData.isActive;
         } 
       catch (error) {
-        console.log("Error en el localStorage:", error);
         return false;
       }
   }
@@ -165,7 +165,6 @@ export class AuthService {
     const decoded: any = jwtDecode(token);
     return decoded.payload?.rol || null;
   } catch (error) {
-    console.error('Error al decodificar token', error);
     return null;
   }
   }
@@ -190,5 +189,15 @@ export class AuthService {
     // Actually the previous code was `${this.apiUrl}/user/refresh`. 
     // I will optimize to /api/auth/refresh for now.
     return this.http.post(this.getAuthUrl('refresh'), { refreshToken, userId: user._id });
+  }
+
+  checkGoogleUser(credential: string): Observable<{
+    exists: boolean;
+    needsData: boolean;
+    suggestedUsername?: string;
+    hasUsername?: boolean;
+    hasBirthday?: boolean;
+  }> {
+    return this.http.post<any>(`${this.apiUrl}/user/auth/google/check`, { credential });
   }
 }

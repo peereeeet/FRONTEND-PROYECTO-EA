@@ -8,11 +8,12 @@ import { UserService } from '../../services/user.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
 import { environment } from '../../environments/environment';
+import { InterestSelectorComponent } from '../interest-selector/interest-selector.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, InterestSelectorComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -46,10 +47,18 @@ export class LoginComponent {
   showLangMenu = false;
 
   googleBirthdayOpen = false;
+  googleRegisterOpen = false;
   private googleCredentialPending: string | null = null;
   googleBirthdayForm: FormGroup;
+  googleRegisterForm: FormGroup;
   googleBirthdayError = '';
+  googleRegisterError = '';
+  suggestedUsername = '';
   todayISO: string;
+  minBirthdayISO: string;
+
+  selectedInterests: string[] = [];
+  googleInterestsModalOpen: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -74,7 +83,17 @@ export class LoginComponent {
     });
 
     this.googleBirthdayForm = this.fb.group({
-      birthday: ['']
+      birthday: ['', [Validators.required]]
+    });
+
+    this.googleRegisterForm = this.fb.group({
+      username: ['', [
+        Validators.required, 
+        Validators.minLength(3),
+        Validators.maxLength(30),
+        Validators.pattern(/^[a-zA-Z][a-zA-Z0-9_]*$/)
+      ]],
+      birthday: ['', [Validators.required]]
     });
 
     const t = new Date();
@@ -84,13 +103,21 @@ export class LoginComponent {
       t.getDate()
     )).toISOString().slice(0, 10);
 
+    const minDate = new Date();
+    minDate.setFullYear(minDate.getFullYear() - 13);
+    this.minBirthdayISO = new Date(Date.UTC(
+      minDate.getFullYear(),
+      minDate.getMonth(),
+      minDate.getDate()
+    )).toISOString().slice(0, 10);
+
     this.translate.use(this.currentLang);
-    this.translate.addLangs(['es', 'en']);
+    this.translate.addLangs(['es', 'en', 'cat', 'fr']);
     this.translate.setDefaultLang('es');
 
-    const stored = (localStorage.getItem('lang') as 'es' | 'en' | null);
+    const stored = (localStorage.getItem('lang') as 'es' | 'en' | 'cat' | 'fr' | null);
     const browserLang = this.translate.getBrowserLang();
-    const langToUse: 'es' | 'en' =
+    const langToUse: 'es' | 'en' | 'cat' | 'fr' =
       stored || (browserLang === 'en' ? 'en' : 'es');
 
     this.currentLang = langToUse;
@@ -165,6 +192,130 @@ export class LoginComponent {
     setTimeout(() => {
         this.googleBirthdayForm.setValue({ birthday: this.todayISO });
     }, 0);
+    const credential = res?.credential;
+    if (!credential) return;
+
+    this.googleCredentialPending = credential;
+
+    this.authService.checkGoogleUser(credential).subscribe({
+      next: (result) => {
+        if (result.exists && !result.needsData) {
+          this.isLoading = true;
+          this.authService.loginWithGoogle(credential)
+            .pipe(finalize(() => (this.isLoading = false)))
+            .subscribe({
+              next: (response) => this.handleLoginSuccess(response),
+              error: (error) => {
+                this.errorMessage = error.error?.message || 'Error al iniciar sesión';
+              }
+            });
+        } else if (!result.exists) {
+          this.suggestedUsername = result.suggestedUsername || '';
+          this.googleRegisterOpen = true;
+          this.googleRegisterForm.patchValue({
+            username: this.suggestedUsername,
+            birthday: this.minBirthdayISO
+          });
+        } else if (result.needsData && !result.hasBirthday) {
+          this.googleBirthdayOpen = true;
+          this.googleBirthdayForm.setValue({ birthday: this.minBirthdayISO });
+        }
+      },
+      error: (error) => {
+        this.errorMessage = 'Error al verificar la cuenta de Google';
+      }
+    });
+  }
+
+  private validateUsernameFormat(username: string): boolean {
+    if (username.length < 3 || username.length > 30) return false;
+    const usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]*$/;
+    if (!usernameRegex.test(username)) return false;
+    const reserved = ['admin', 'root', 'system', 'null', 'undefined'];
+    if (reserved.includes(username.toLowerCase())) return false;
+    return true;
+  }
+
+  private isTooYoung(birthdayStr: string): boolean {
+    if (!birthdayStr) return false;
+    const birthday = new Date(birthdayStr);
+    const today = new Date();
+    const age = today.getFullYear() - birthday.getFullYear();
+    const monthDiff = today.getMonth() - birthday.getMonth();
+    const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate()) 
+      ? age - 1 
+      : age;
+    return actualAge < 13;
+  }
+
+  private isFutureDate(birthdayStr: string): boolean {
+    if (!birthdayStr) return false;
+    const selected = new Date(birthdayStr);
+    const today = new Date();
+    return selected > today;
+  }
+
+  closeGoogleRegisterModal(): void {
+    this.googleRegisterOpen = false;
+    this.googleRegisterError = '';
+    this.googleCredentialPending = null;
+    this.selectedInterests = [];
+    this.googleInterestsModalOpen = false;
+  }
+
+  onGoogleRegisterSubmit(): void {
+    if (this.googleRegisterForm.invalid || !this.googleCredentialPending) {
+      this.googleRegisterForm.markAllAsTouched();
+      return;
+    }
+
+    const { username, birthday } = this.googleRegisterForm.value;
+    
+    if (!this.validateUsernameFormat(username)) {
+      this.googleRegisterError = this.translate.instant('REGISTER.USERNAME_VALID_CHARS') || 
+        'El nombre de usuario debe empezar con una letra y solo contener letras, números y guiones bajos';
+      return;
+    }
+
+    if (this.isTooYoung(birthday)) {
+      this.googleRegisterError = this.translate.instant('REGISTER.BIRTHDAY_MIN_AGE') || 
+        'Debes tener al menos 13 años para registrarte';
+      return;
+    }
+
+    if (this.isFutureDate(birthday)) {
+      this.googleRegisterError = this.translate.instant('REGISTER.BIRTHDAY_FUTURE') || 
+        'La fecha de nacimiento no puede ser futura';
+      return;
+    }
+    
+    this.isLoading = true;
+    this.googleRegisterError = '';
+
+    this.authService.loginWithGoogle(
+      this.googleCredentialPending, 
+      birthday, 
+      username, 
+      this.selectedInterests
+    )
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: (response) => {
+          this.googleRegisterOpen = false;
+          this.googleCredentialPending = null;
+          this.selectedInterests = [];
+          this.googleInterestsModalOpen  = false;
+          this.handleLoginSuccess(response);
+        },
+        error: (error) => {
+          if (error.error?.message === 'USERNAME_EXISTS') {
+            this.googleRegisterError = this.translate.instant('LOGIN.USERNAME_EXISTS') || 
+              'Este nombre de usuario ya está en uso';
+          } else {
+            this.googleRegisterError = error.error?.message || 'Error al registrar';
+          }
+        }
+      });
   }
 
   closeGoogleBirthdayModal(): void {
@@ -181,15 +332,28 @@ export class LoginComponent {
     }
     const raw = this.googleBirthdayForm.value.birthday as string | null;
     if (!raw) {
-      this.googleBirthdayError = 'Por favor, indica tu fecha de nacimiento.';
+      this.googleBirthdayError = this.translate.instant('LOGIN.BIRTHDAY_REQUIRED');
       return;
     }
     const birth = new Date(raw);
     const now = new Date();
     const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
 
-    if (birth > today) {
-      this.googleBirthdayError = 'La fecha de nacimiento no puede ser futura.';
+    if (this.isTooYoung(raw)) {
+      this.googleBirthdayError = this.translate.instant('REGISTER.BIRTHDAY_MIN_AGE') || 
+        'Debes tener al menos 13 años';
+      return;
+    }
+
+    if (this.isFutureDate(raw)) {
+      this.googleBirthdayError = this.translate.instant('REGISTER.BIRTHDAY_FUTURE') || 
+        'La fecha de nacimiento no puede ser futura';
+      return;
+    }
+
+    const birth = new Date(raw);
+    if (Number.isNaN(birth.getTime())) {
+      this.googleBirthdayError = 'La fecha de nacimiento no es válida.';
       return;
     }
 
@@ -204,7 +368,6 @@ export class LoginComponent {
           this.handleLoginSuccess(response);
         },
         error: (error) => {
-          console.error('Error en login con Google:', error);
           this.googleBirthdayError =
             error.error?.message ||
             this.translate.instant('LOGIN.ERROR_GOOGLE');
@@ -225,7 +388,7 @@ export class LoginComponent {
     this.themeService.toggleTheme();
   }
 
-  changeLanguage(lang: 'es' | 'en') {
+  changeLanguage(lang: 'es' | 'en' | 'cat' | 'fr') {
     if (this.currentLang === lang) return;
     this.currentLang = lang;
     this.translate.use(lang);
@@ -385,24 +548,6 @@ export class LoginComponent {
       this.initGoogleSignIn();
     }, 0);
   }
-
-  goToRegister() {
-    this.router.navigate(['/registrar']);
-  }
-
-  createAdmin(): void {
-    this.authService.createAdminUser().subscribe({
-      next: () => {
-        alert('Admin created: admin/admin');
-        this.loginForm.patchValue({ username: 'admin', password: 'admin' });
-      },
-      error: () => this.errorMessage = 'Error creating admin'
-    });
-  }
-
-  // Getters
-  get username() { return this.loginForm.get('username'); }
-  get password() { return this.loginForm.get('password'); }
   
   sanitizeResetCode() {
     // Updated: using otp
@@ -413,5 +558,17 @@ export class LoginComponent {
       val = val.replace(/\D/g, '').slice(0, 6);
       control.setValue(val, { emitEvent: false });
     }
+  }
+
+  openInterestsModalInGoogle(): void {
+    this.googleInterestsModalOpen = true;
+  }
+
+  closeGoogleInterestsModal(): void {
+    this.googleInterestsModalOpen = false;
+  }
+
+  onInterestsChange(interests: string[]): void {
+    this.selectedInterests = interests;
   }
 }

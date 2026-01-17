@@ -325,11 +325,33 @@
              </div>
           </div>
 
-          <div class="buttons-column">
-             <button type="submit" class="login-button" [disabled]="isSubmitting || otpControl.invalid">
-                 <span *ngIf="isSubmitting" class="loading-spinner"></span>
-                 {{ 'REGISTER.VERIFY_BUTTON' | translate }}
-             </button>
+      <!-- BOTÓN PARA MOSTRAR/OCULTAR SELECTOR DE INTERESES -->
+      <div class="interests-toggle-container">
+        <button 
+          type="button" 
+          class="interests-toggle-btn"
+          (click)="openInterestsModal()">
+          <span class="toggle-icon">✨</span>
+          <span>{{ 'INTERESTS.SELECT' | translate }}</span>
+          <span class="selected-count" *ngIf="selectedInterests.length > 0">
+            ({{ selectedInterests.length }})
+          </span>
+        </button>
+        <p class="interests-hint">{{ 'INTERESTS.HINT' | translate }}</p>
+      </div>
+
+      <div class="buttons-row">
+        <button
+          type="submit"
+          class="login-button"
+          [disabled]="isSubmitting || !isFormValid()">
+          <span *ngIf="isSubmitting" class="loading-spinner"></span>
+          {{
+            isSubmitting
+              ? ('REGISTER.BUTTON_LOADING' | translate)
+              : ('REGISTER.BUTTON' | translate)
+          }}
+        </button>
 
              <button type="button" class="admin-button" (click)="onResend()" [disabled]="resendCooldown > 0 || isSubmitting">
                  <span *ngIf="resendCooldown > 0">
@@ -348,6 +370,28 @@
 
     <div *ngIf="errorMessage" class="form-error">
       {{ errorMessage }}
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showInterestsModal" (click)="closeInterestsModal()">
+    <div class="modal modal--interests" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'INTERESTS.TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeInterestsModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <app-interest-selector
+          [selectedInterests]="selectedInterests"
+          (selectedInterestsChange)="onInterestsChange($event)">
+        </app-interest-selector>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn primary" (click)="closeInterestsModal()">
+          {{ 'INTERESTS.CONFIRM' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </div>

@@ -192,7 +192,6 @@ export class CrearEventosComponent implements OnInit {
         this.showAddressSuggestions = results.length > 0;
       },
       error: (error) => {
-        console.error('Error buscando direcciones:', error);
         this.searchingAddress = false;
         this.addressSuggestions = [];
       }
@@ -209,10 +208,8 @@ export class CrearEventosComponent implements OnInit {
           insignias: progreso.insignias.length,
           insigniasIds: progreso.insignias.map((i: any) => i._id)
         };
-        console.log('📊 Progreso inicial cargado:', this.progresoInicial);
       },
       error: (err) => {
-        console.error('Error al cargar progreso inicial:', err);
       }
     });
   }
@@ -255,16 +252,9 @@ export class CrearEventosComponent implements OnInit {
             insignias: progresoNuevo.insignias.length,
             insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
           };
-
-          console.log('🎮 Recompensa detectada:', {
-            accion: 'crearEvento',
-            puntosGanados,
-            subisteDeNivel,
-            insigniasDesbloqueadas: insigniasDesbloqueadas.length
-          });
         },
         error: (err) => {
-          console.error('Error al detectar cambios de progreso:', err);
+          return;
         }
       });
     }, 800);
@@ -572,12 +562,10 @@ export class CrearEventosComponent implements OnInit {
                     this.amigos.push(amigo);
                   }
                 },
-                error: (err) => console.error('Error cargando amigo:', err)
               });
             });
           }
         },
-        error: (err) => console.error('Error cargando usuario:', err)
       });
     }
 
@@ -702,7 +690,6 @@ export class CrearEventosComponent implements OnInit {
         }
       },
       error: (error: any) => {
-        console.error('Error validando dirección:', error);
         this.validatingAddress = false;
         this.addressValidation = {
           isValid: false,

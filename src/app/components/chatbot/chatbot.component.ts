@@ -41,7 +41,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   isChatOpen: boolean = false;
   userId: string | null = null;
 
-  // Nueva propiedad para controlar la visibilidad del chatbot
   shouldShowChatbot: boolean = true;
 
   selectedEvent: Evento | null = null;
@@ -61,17 +60,14 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     const user = this.authService.getCurrentUser();
     this.userId = user?._id || null;
 
-    // Verificar la ruta actual al inicializar
     this.checkCurrentRoute(this.router.url);
 
-    // Suscribirse a cambios de ruta
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
       takeUntil(this.destroy$)
     ).subscribe((event: any) => {
       this.checkCurrentRoute(event.urlAfterRedirects || event.url);
       
-      // Cerrar el chat al cambiar de ruta
       if (this.isChatOpen) {
         this.isChatOpen = false;
         this.chatbotStateService.closeChat();
@@ -106,14 +102,8 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /**
-   * Verifica la ruta actual y determina si el chatbot debe mostrarse
-   */
   private checkCurrentRoute(url: string): void {
-    // Lista de rutas donde NO se debe mostrar el chatbot
     const hiddenRoutes = ['/login', '/registrar'];
-    
-    // Verificar si la URL actual coincide con alguna ruta oculta
     this.shouldShowChatbot = !hiddenRoutes.some(route => url.startsWith(route));
   }
 
@@ -188,7 +178,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         setTimeout(() => this.scrollToBottom(), 100);
       },
       error: (error) => {
-        console.error('Error al consultar IA:', error);
         this.translateService.get('CHATBOT.ERROR_MESSAGE').subscribe(text => {
           const errorMessage: ChatMessage = {
             text: text,
@@ -218,7 +207,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         this.isLoadingEvent = false;
       },
       error: (err) => {
-        console.error('Error cargando evento:', err);
         this.isLoadingEvent = false;
         this.showEventModal = false;
       }
@@ -287,7 +275,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         this.isLoadingEvent = false;
       },
       error: (err) => {
-        console.error('Error uniéndose al evento:', err);
         this.isLoadingEvent = false;
         this.translateService.get('CHATBOT.MODAL.JOIN_ERROR').subscribe(msg => {
           alert(msg);
@@ -345,7 +332,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
               this.isLoadingEvent = false;
             },
             error: (err) => {
-              console.error('Error abandonando evento:', err);
               this.isLoadingEvent = false;
               this.translateService.get('CHATBOT.MODAL.LEAVE_ERROR').subscribe(msg => {
                 alert(msg);
@@ -380,7 +366,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
               this.isLoadingEvent = false;
             },
             error: (err) => {
-              console.error('Error saliendo de lista de espera:', err);
               this.isLoadingEvent = false;
               this.translateService.get('CHATBOT.MODAL.LEAVE_WAITLIST_ERROR').subscribe(msg => {
                 alert(msg);
@@ -409,7 +394,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
           this.messageContainer.nativeElement.scrollHeight;
       }
     } catch (err) {
-      console.error('Error al hacer scroll:', err);
+      return;
     }
   }
 

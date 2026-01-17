@@ -84,6 +84,14 @@ export class MenuComponent implements OnInit, OnDestroy {
   newFriendRequests = signal(0);
   invitacionesPendientes = signal(0);
 
+  chatSelectedImage = signal<File | null>(null);
+  chatImagePreview = signal<string | null>(null);
+  chatUploadingImage = signal<boolean>(false);
+  
+  showDeleteChatMessageModal = signal<boolean>(false);
+  chatMessageToDelete = signal<ChatMessage | null>(null);
+  deletingChatMessage = signal<boolean>(false);
+
   private progresoInicial: any = null;
 
   fPage: number = 1;
@@ -133,7 +141,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   selectedEvent: Evento | null = null;
   showEventModal = false;
 
-  activeEventTab: 'map' | 'search' = 'map';
+  activeEventTab: 'map' | 'search' | 'recommended' = 'map';
   searchTerm = signal('');
   searchDateFrom = signal('');
   searchDateTo = signal('');
@@ -148,6 +156,14 @@ export class MenuComponent implements OnInit, OnDestroy {
   searchTotalPages = 1;
   loadingSearch = false;
   categoriasDisponibles = CATEGORIAS_EVENTO;
+
+  recommendedEventos: Evento[] = [];
+  recommendedPage = 1;
+  recommendedPageSize = 6;
+  recommendedTotalItems = 0;
+  recommendedTotalPages = 1;
+  loadingRecommended = false;
+  userHasInterests = signal(false);
 
   showConfirmRemove = signal(false);
   friendToRemove = signal<any | null>(null);
@@ -205,13 +221,25 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.refreshSentRequests();
         this.cargarProgresoInicial();
         this.loadBlockedUsers();
+        this.checkUserInterests();
+
+        const me = this.me();
+        if (me?._id) {
+          this.userService.getFriendRequests(me._id).subscribe({
+            next: (list) => {
+              const count = (list || []).length;
+              this.newFriendRequests.set(count);
+            },
+            error: (err) => {
+            }
+          });
+        }
 
         this.userService.setOnline(myId).subscribe({
           next: (res) => {
             this.me.update(m => m ? ({ ...(m as any), isOnline: res.online }) : m);
           },
           error: (err) => {
-            console.error('Error marcando usuario online al entrar en menú', err);
           }
         });
 
@@ -221,6 +249,49 @@ export class MenuComponent implements OnInit, OnDestroy {
             this.me.set({ ...(fresh as any), isOnline: isOnlineFresh });
           },
           error: () => {
+          }
+        });
+
+        this.socketService.onFriendRequestReceived()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (payload) => {
+            
+            const currentCount = this.newFriendRequests();
+            this.newFriendRequests.set(currentCount + 1);
+            
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('Nueva solicitud de amistad', {
+                body: `${payload.fromUsername} te ha enviado una solicitud de amistad`,
+                icon: 'assets/images/logo.png'
+              });
+            }
+            
+            try {
+              const audio = new Audio('assets/sounds/notification.mp3');
+              audio.volume = 0.3;
+              audio.play().catch(() => {});
+            } catch (e) {
+            }
+          },
+          error: (err) => {
+          }
+        });
+
+      this.socketService.onFriendRequestUpdated()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (payload) => {
+            const currentCount = this.newFriendRequests();
+            if (currentCount > 0) {
+              this.newFriendRequests.set(currentCount - 1);
+            }
+            
+            if (this.showRequestsModal()) {
+              this.openRequestsModal();
+            }
+          },
+          error: (err) => {
           }
         });
 
@@ -240,7 +311,6 @@ export class MenuComponent implements OnInit, OnDestroy {
                 this.me.update(m => m ? ({ ...(m as any), isOnline: res.online }) : m);
               },
               error: (err) => {
-                console.error('Error en heartbeat (visibility)', err);
               }
             });
             this.cargarAmigos(myId);
@@ -256,7 +326,6 @@ export class MenuComponent implements OnInit, OnDestroy {
                 this.me.update(m => m ? ({ ...(m as any), isOnline: res.online }) : m);
               },
               error: (err) => {
-                console.error('Error en heartbeat (focus)', err);
               }
             });
             this.cargarAmigos(myId);
@@ -267,33 +336,12 @@ export class MenuComponent implements OnInit, OnDestroy {
           .onFriendRequestReceived()
           .pipe(takeUntil(this.destroy$))
           .subscribe((payload) => {
-            console.log('Nueva solicitud de amistad recibida vía WS', payload);
             this.newFriendRequests.update(v => v + 1);
             this.requestsLoading.set(true);
 
             if (this.showRequestsModal()) {
               this.refreshRequests();
             }
-          });
-
-        this.friendsPollSub = interval(2000)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(() => {
-            const m = this.me();
-            const myId = m ? this.getId(m as any) : '';
-            if (!myId) return;
-
-            this.userService.getFriendRequests(myId).subscribe({
-              next: (list) => {
-                const count = (list || []).length;
-                if (this.newFriendRequests() !== count) {
-                  this.newFriendRequests.set(count);
-                }
-              },
-              error: (err) => {
-                console.error('Error refrescando solicitudes (polling)', err);
-              }
-            });
           });
       });
 
@@ -326,12 +374,10 @@ export class MenuComponent implements OnInit, OnDestroy {
       .subscribe(params => {
         if (params['openChat']) {
           const friendId = params['openChat'];
-          console.log('📱 Query param detectado: openChat =', friendId);
           
           setTimeout(() => {
             const friend = this.friends().find(f => this.getId(f) === friendId);
             if (friend) {
-              console.log('✅ Amigo encontrado, abriendo chat:', friend);
               this.openChat(friend);
               
               this.router.navigate([], {
@@ -340,11 +386,9 @@ export class MenuComponent implements OnInit, OnDestroy {
                 replaceUrl: true
               });
             } else {
-              console.warn('⚠️ Amigo no encontrado en la lista:', friendId);
               
               this.userService.getUserById(friendId).subscribe({
                 next: (user) => {
-                  console.log('✅ Usuario obtenido por ID, abriendo chat:', user);
                   this.openChat(user);
                   
                   this.router.navigate([], {
@@ -354,7 +398,6 @@ export class MenuComponent implements OnInit, OnDestroy {
                   });
                 },
                 error: (err) => {
-                  console.error('❌ Error obteniendo usuario:', err);
                 }
               });
             }
@@ -362,10 +405,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
 
         if (params['openRequests'] === 'true') {
-          console.log('👋 Query param detectado: openRequests = true');
-          
           setTimeout(() => {
-            console.log('✅ Abriendo modal de solicitudes de amistad');
             this.openRequestsModal();
             
             this.router.navigate([], {
@@ -404,10 +444,8 @@ export class MenuComponent implements OnInit, OnDestroy {
           insignias: progreso.insignias.length,
           insigniasIds: progreso.insignias.map((i: any) => i._id)
         };
-        console.log('📊 Progreso inicial cargado:', this.progresoInicial);
       },
       error: (err) => {
-        console.error('Error al cargar progreso inicial:', err);
       }
     });
   }
@@ -450,16 +488,8 @@ export class MenuComponent implements OnInit, OnDestroy {
             insignias: progresoNuevo.insignias.length,
             insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
           };
-
-          console.log('🎮 Recompensa detectada:', {
-            accion,
-            puntosGanados,
-            subisteDeNivel,
-            insigniasDesbloqueadas: insigniasDesbloqueadas.length
-          });
         },
         error: (err) => {
-          console.error('Error al detectar cambios de progreso:', err);
         }
       });
     }, 800);
@@ -960,6 +990,21 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.scrollChatToBottom();
         }
       });
+    this.socketService
+      .onChatMessageDeleted()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ messageId, from, to }) => {
+        const me = this.me();
+        const friend = this.chatFriend();
+        if (!me || !friend) return;
+
+        const pair = [me._id, friend._id];
+        if (pair.includes(from) && pair.includes(to)) {
+          this.chatMessages.update(list =>
+            list.filter(m => m._id !== messageId)
+          );
+        }
+      });
   }
 
   openChat(friend: any): void {
@@ -992,6 +1037,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.chatFriend.set(null);
     this.chatMessages.set([]);
     this.chatText.set('');
+    this.chatSelectedImage.set(null);
+    this.chatImagePreview.set(null);
+    this.chatUploadingImage.set(false);
   }
 
   onChatInput(event: Event): void {
@@ -999,7 +1047,11 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.chatText.set(value);
   }
 
-  sendChat(): void {
+  async sendChat(): Promise<void> {
+    if (this.chatSelectedImage()) {
+      await this.sendChatWithImage();
+      return;
+    }
     const text = this.chatText().trim();
     if (!text) return;
 
@@ -1010,6 +1062,151 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.chatText.set('');
 
     this.socketService.sendChatMessage(me._id, friend._id, text);
+  }
+
+  getChatImageUrl(imageUrl: string): string {
+    const token = this.auth.getToken();
+    return `http://localhost:3000${imageUrl}?token=${token}`;
+  }
+
+  onChatImageSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    
+    if (!validTypes.includes(file.type)) {
+      this.chatError.set('Solo se permiten imágenes (JPG, PNG, GIF, WEBP)');
+      return;
+    }
+
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      this.chatError.set('La imagen es demasiado grande. Máximo 10MB');
+      return;
+    }
+
+    this.chatSelectedImage.set(file);
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.chatImagePreview.set(e.target.result);
+    };
+    reader.readAsDataURL(file);
+    this.chatError.set('');
+  }
+
+  cancelChatImage(): void {
+    this.chatSelectedImage.set(null);
+    this.chatImagePreview.set(null);
+    this.chatError.set('');
+  }
+
+  async uploadChatImage(): Promise<string | null> {
+    const file = this.chatSelectedImage();
+    const friend = this.chatFriend();
+    const me = this.me();
+    
+    if (!file || !friend?._id || !me?._id) {
+      return null;
+    }
+
+    this.chatUploadingImage.set(true);
+    this.chatError.set('');
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`http://localhost:3000/api/user/${me._id}/chat/${friend._id}/image`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.auth.getToken()}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al subir imagen');
+      }
+
+      const data = await response.json();
+      return data.imageUrl;
+    } catch (error: any) {
+      this.chatError.set(error.message || 'Error al subir la imagen');
+      return null;
+    } finally {
+      this.chatUploadingImage.set(false);
+    }
+  }
+
+  async sendChatWithImage(): Promise<void> {
+    const imageUrl = await this.uploadChatImage();
+    
+    if (imageUrl) {
+      const text = (this.chatText() || '').trim();
+      const me = this.me();
+      const friend = this.chatFriend();
+      
+      if (!me?._id || !friend?._id) return;
+
+      this.chatText.set('');
+      this.cancelChatImage();
+      
+      this.socketService.sendChatMessage(me._id, friend._id, text, imageUrl);
+    }
+  }
+
+  canDeleteChatMessage(msg: ChatMessage): boolean {
+    const me = this.me();
+    if (!me?._id) return false;
+    return msg.from === me._id;
+  }
+
+  confirmDeleteChatMessage(message: ChatMessage): void {
+    this.chatMessageToDelete.set(message);
+    this.showDeleteChatMessageModal.set(true);
+  }
+
+  closeDeleteChatMessageModal(): void {
+    this.showDeleteChatMessageModal.set(false);
+    this.chatMessageToDelete.set(null);
+  }
+
+  async deleteChatMessage(): Promise<void> {
+    const message = this.chatMessageToDelete();
+    if (!message?._id) return;
+
+    this.deletingChatMessage.set(true);
+    this.chatError.set('');
+
+    try {
+      const token = this.auth.getToken();
+      const response = await fetch(
+        `http://localhost:3000/api/user/chat/${message._id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al eliminar el mensaje');
+      }
+
+      this.closeDeleteChatMessageModal();
+    } catch (error: any) {
+      this.chatError.set(error.message || 'Error al eliminar el mensaje');
+    } finally {
+      this.deletingChatMessage.set(false);
+    }
   }
 
   isEventInvite(msg: ChatMessage): boolean {
@@ -1227,12 +1424,10 @@ export class MenuComponent implements OnInit, OnDestroy {
 
     private centerMapOnUserLocation(): void {
     if (!this.map) {
-      console.warn('[MENU] El mapa aún no está inicializado.');
       return;
     }
 
     if (!('geolocation' in navigator)) {
-      console.warn('[MENU] El navegador no soporta geolocalización.');
       return;
     }
 
@@ -1253,11 +1448,8 @@ export class MenuComponent implements OnInit, OnDestroy {
             .setLngLat(userLngLat)
             .addTo(this.map!);
         }
-
-        console.log('[MENU] Mapa centrado en la ubicación del usuario', userLngLat);
       },
       (error) => {
-        console.warn('[MENU] Error al obtener geolocalización:', error);
       },
       {
         enableHighAccuracy: true,
@@ -1638,14 +1830,13 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.quitar(friend._id!);
 
     } catch (err) {
-      console.error("Error al quitar amigo:", err);
     } finally {
       this.removingFriend.set(false);
       this.closeConfirmRemoveFriend();
     }
   }
 
-  switchEventTab(tab: 'map' | 'search'): void {
+  switchEventTab(tab: 'map' | 'search' | 'recommended'): void {
     this.activeEventTab = tab;
 
     if (tab === 'map') {
@@ -1660,6 +1851,10 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (tab === 'search') {
       this.searchPage = 1;
       this.performSearch();
+    }
+
+    if (tab === 'recommended' && this.recommendedEventos.length === 0) {
+      this.loadRecommendedEventos();
     }
   }
 
@@ -1685,7 +1880,6 @@ export class MenuComponent implements OnInit, OnDestroy {
             this.loadingSearch    = false;
           },
           error: (err) => {
-            console.error('Error al cargar eventos futuros (getUpcomingEventos):', err);
             this.errorMessage = 'Error al cargar eventos futuros';
             this.loadingSearch = false;
           }
@@ -1705,7 +1899,6 @@ export class MenuComponent implements OnInit, OnDestroy {
           this.loadingSearch    = false;
         },
         error: (err) => {
-          console.error('Error en búsqueda de eventos:', err);
           this.errorMessage = 'Error al buscar eventos';
           this.loadingSearch = false;
         }
@@ -1843,7 +2036,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('Error al unirse al evento:', err);
         this.errorMessage = err?.error?.message || 'Error al unirse al evento';
       }
     });
@@ -1862,8 +2054,76 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('Error al salir del evento:', err);
         this.errorMessage = 'Error al salir del evento';
+      }
+    });
+  }
+
+  joinRecommendedEvento(evento: Evento): void {
+    if (!evento._id) return;
+
+    this.eventoService.joinEvento(evento._id as string).subscribe({
+      next: (response: any) => {
+        const idx = this.recommendedEventos.findIndex(e => e._id === evento._id);
+        if (idx !== -1) {
+          this.recommendedEventos[idx] = response.evento || response;
+        }
+        
+        if (response.enListaEspera) {
+          this.errorMessage = response.message || 'Has sido añadido a la lista de espera';
+        } else {
+          this.errorMessage = response.message || 'Te has unido al evento';
+          this.detectarCambiosProgreso('unirseEvento');
+        }
+        
+        const m = this.me();
+        if (m) {
+          const myId = this.getId(m);
+          if (myId) this.cargarEstadisticasEventos(myId);
+        }
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.message || 'Error al unirse al evento';
+      }
+    });
+  }
+
+  leaveRecommendedEvento(evento: Evento): void {
+    if (!evento._id) return;
+
+    this.eventoService.leaveEvento(evento._id as string).subscribe({
+      next: (response: any) => {
+        const idx = this.recommendedEventos.findIndex(e => e._id === evento._id);
+        if (idx !== -1) {
+          this.recommendedEventos[idx] = response.evento || response;
+        }
+        
+        const m = this.me();
+        if (m) {
+          const myId = this.getId(m);
+          if (myId) this.cargarEstadisticasEventos(myId);
+        }
+      },
+      error: (err) => {
+        this.errorMessage = 'Error al salir del evento';
+      }
+    });
+  }
+
+  leaveWaitlistRecommended(evento: Evento): void {
+    if (!evento._id) return;
+
+    this.eventoService.leaveWaitlist(evento._id).subscribe({
+      next: (response: any) => {
+        const idx = this.recommendedEventos.findIndex(e => e._id === evento._id);
+        if (idx !== -1) {
+          this.recommendedEventos[idx] = response.evento || response;
+        }
+        
+        this.errorMessage = 'Has salido de la lista de espera';
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.message || 'Error al salir de lista de espera.';
       }
     });
   }
@@ -1927,7 +2187,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.invitacionesPendientes.set(response.count || 0);
       },
       error: (err) => {
-        console.error('Error cargando invitaciones pendientes:', err);
       }
     });
   }
@@ -2036,7 +2295,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.blockedLoading.set(false);
       },
       error: (err) => {
-        console.error('Error al cargar usuarios bloqueados:', err);
         this.blockedError.set('Error al cargar usuarios bloqueados');
         this.blockedLoading.set(false);
       }
@@ -2059,14 +2317,11 @@ export class MenuComponent implements OnInit, OnDestroy {
     const blockUser = this.userToBlock();
     
     if (!userId || !blockUser?._id) {
-      console.error('No se puede bloquear: falta userId o blockUser._id');
       return;
     }
 
     this.userService.blockUser(userId, blockUser._id).subscribe({
       next: (response) => {
-        console.log('Usuario bloqueado:', response);
-        
         this.removeFriendFromLocal(blockUser._id!);
         this.removeUserFromExploreLocal(blockUser._id!);
         this.loadBlockedUsers();
@@ -2082,7 +2337,6 @@ export class MenuComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('Error al bloquear usuario:', err);
         alert('Error al bloquear usuario');
         this.showBlockConfirm.set(false);
       }
@@ -2104,19 +2358,16 @@ export class MenuComponent implements OnInit, OnDestroy {
     const unblockUser = this.userToUnblock();
     
     if (!userId || !unblockUser?._id) {
-      console.error('No se puede desbloquear: falta userId o unblockUser._id');
       return;
     }
 
     this.userService.unblockUser(userId, unblockUser._id).subscribe({
       next: (response) => {
-        console.log('Usuario desbloqueado:', response);
         this.loadBlockedUsers();
         this.showUnblockConfirm.set(false);
         this.userToUnblock.set(null);
       },
       error: (err) => {
-        console.error('Error al desbloquear usuario:', err);
         alert('Error al desbloquear usuario');
         this.showUnblockConfirm.set(false);
       }
@@ -2147,5 +2398,60 @@ export class MenuComponent implements OnInit, OnDestroy {
   private filterBlockedUsers(users: User[]): User[] {
     const blockedIds = this.blockedUsers().map(u => u._id);
     return users.filter(u => !blockedIds.includes(u._id));
+  }
+
+  private checkUserInterests(): void {
+    const interests = this.me()?.interests || [];
+    this.userHasInterests.set(interests.length > 0);
+  }
+
+  loadRecommendedEventos(): void {
+    if (!this.userHasInterests()) {
+      return;
+    }
+
+    this.loadingRecommended = true;
+    
+    this.eventoService
+      .getRecommendedEventos(this.recommendedPage, this.recommendedPageSize)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.recommendedEventos = response.data;
+          this.recommendedPage = response.page;
+          this.recommendedTotalItems = response.totalItems;
+          this.recommendedTotalPages = response.totalPages;
+          this.loadingRecommended = false;
+        },
+        error: (err) => {
+          this.loadingRecommended = false;
+        }
+      });
+  }
+
+  recommendedPrevPage(): void {
+    if (this.recommendedPage > 1) {
+      this.recommendedPage--;
+      this.loadRecommendedEventos();
+    }
+  }
+
+  recommendedNextPage(): void {
+    if (this.recommendedPage < this.recommendedTotalPages) {
+      this.recommendedPage++;
+      this.loadRecommendedEventos();
+    }
+  }
+
+  goToProfileToAddInterests(): void {
+    this.router.navigate(['/perfil']);
+  }
+
+  getScheduleAsString(schedule: string | string[]): string {
+    return Array.isArray(schedule) ? schedule[0] : schedule;
+  }
+
+  isEventoFull(evento: Evento): boolean {
+    return this.isEventoLleno(evento);
   }
 }

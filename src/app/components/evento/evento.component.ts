@@ -64,7 +64,6 @@ export class EventoComponent implements OnInit {
   editSelectedPage = 1;
   editSelectedPageSize = 5;
 
-  // Modal de valoraciones
   showRatingsModal = false;
   ratingsEventoId: string | null = null;
   ratingsEventoName = '';
@@ -105,7 +104,6 @@ export class EventoComponent implements OnInit {
         this.users = res.data ?? [];
         this.updateAvailableLists();
       },
-      error: (err) => console.error('Error cargando usuarios', err)
     });
   }
 
@@ -131,7 +129,6 @@ export class EventoComponent implements OnInit {
         this.totalPagesBackend = res.totalPages ?? 1;
         this.totalEventos = res.totalItems ?? this.eventos.length;
       },
-      error: (err) => console.error('Error cargando eventos', err)
     });
   }
 
@@ -244,7 +241,6 @@ export class EventoComponent implements OnInit {
         this.loadEvents();
       },
       error: (err) => {
-        console.error('Error guardando evento', err);
         this.errorMessage = 'Error al guardar el evento. Inténtalo de nuevo.';
         this.saving = false;
       }
@@ -273,7 +269,6 @@ export class EventoComponent implements OnInit {
         this.closeDeleteModal();
       },
       error: (err) => {
-        console.error('Error eliminando evento', err);
         alert('Error al eliminar el evento');
         this.closeDeleteModal();
       }
@@ -425,7 +420,6 @@ export class EventoComponent implements OnInit {
         this.closeEditModal();
       },
       error: (err) => {
-        console.error('Error actualizando evento', err);
         alert('Error al actualizar el evento');
       }
     });
@@ -475,7 +469,6 @@ export class EventoComponent implements OnInit {
     this.location.back();
   }
 
-  // Funciones para el modal de valoraciones
   openRatingsModal(evento: Evento): void {
     if (!evento._id) {
       alert('Este evento no tiene ID válido.');

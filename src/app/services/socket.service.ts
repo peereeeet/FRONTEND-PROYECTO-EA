@@ -12,16 +12,13 @@ export class SocketService {
 
   connect(userId: string): void {
     if (this.socket && this.socket.connected && this.connectedUserId === userId) {
-      console.log('✅ Socket ya conectado para usuario:', userId);
       return;
     }
 
     if (this.socket && this.connectedUserId && this.connectedUserId !== userId) {
-      console.warn('⚠️ Desconectando socket de usuario anterior:', this.connectedUserId);
       this.disconnect();
     }
 
-    console.log('🔌 Conectando socket para usuario:', userId);
     this.socket = io.connect(this.url, {
       transports: ['websocket', 'polling'],
       reconnection: true,
@@ -30,7 +27,6 @@ export class SocketService {
     } as any);
 
     this.socket.on('connect', () => {
-      console.log('✅ Socket conectado');
       if (this.socket) {
         this.socket.emit('user:online', userId);
         this.connectedUserId = userId;
@@ -38,27 +34,23 @@ export class SocketService {
     });
 
     this.socket.on('disconnect', (reason: string) => {
-      console.warn('⚠️ Socket desconectado. Razón:', reason);
       if (reason === 'io server disconnect') {
         this.socket.connect();
       }
     });
 
     this.socket.on('reconnect', (attemptNumber: number) => {
-      console.log(`✅ Socket reconectado después de ${attemptNumber} intentos`);
       if (this.connectedUserId) {
         this.socket.emit('user:online', this.connectedUserId);
       }
     });
 
     this.socket.on('reconnect_error', (error: any) => {
-      console.error('❌ Error al reconectar socket:', error);
     });
   }
 
   disconnect(): void {
     if (!this.socket) return;
-    console.log('🔌 Desconectando socket para usuario:', this.connectedUserId);
     this.socket.disconnect();
     this.socket = null;
     this.connectedUserId = null;
@@ -75,7 +67,6 @@ export class SocketService {
   on(eventName: string): Observable<any> {
     return new Observable((subscriber) => {
       if (!this.socket) {
-        console.warn(`⚠️ Socket no conectado al intentar escuchar evento: ${eventName}`);
         return;
       }
 
@@ -95,7 +86,6 @@ export class SocketService {
 
   emit(eventName: string, data?: any): void {
     if (!this.socket) {
-      console.warn(`⚠️ Socket no conectado al intentar emitir evento: ${eventName}`);
       return;
     }
     this.socket.emit(eventName, data);
@@ -139,12 +129,12 @@ export class SocketService {
     this.socket.emit('chat:join', { userId, friendId });
   }
 
-  sendChatMessage(from: string, to: string, text: string): void {
+  sendChatMessage(from: string, to: string, text: string, imageUrl?: string): void {
     if (!this.socket) return;
-    this.socket.emit('chat:message', { from, to, text });
+    this.socket.emit('chat:message', { from, to, text, imageUrl });
   }
 
-  onChatMessage(): Observable<{ _id?: string; from: string; to: string; text: string; createdAt: string }> {
+  onChatMessage(): Observable<{ _id?: string; from: string; to: string; text: string; imageUrl?: string; createdAt: string }> {
     return new Observable((sub) => {
       if (!this.socket) return;
 
@@ -164,9 +154,10 @@ export class SocketService {
     this.socket.emit('eventChat:join', { eventId });
   }
 
-  sendEventChatMessage(eventId: string, userId: string, username: string, text: string): void {
+
+  sendEventChatMessage(eventId: string, userId: string, username: string, text: string, imageUrl?: string): void {
     if (!this.socket) return;
-    this.socket.emit('eventChat:message', { eventId, userId, username, text });
+    this.socket.emit('eventChat:message', { eventId, userId, username, text, imageUrl });
   }
 
   onEventChatMessage(): Observable<{
@@ -175,6 +166,7 @@ export class SocketService {
     userId: string;
     username: string;
     text: string;
+    imageUrl?: string;
     createdAt: string;
   }> {
     return new Observable(sub => {
@@ -224,6 +216,61 @@ export class SocketService {
       return () => {
         if (this.socket) {
           this.socket.off('evento:plazaDisponible', handler);
+        }
+      };
+    });
+  }
+
+  onFriendRequestUpdated(): Observable<{
+    type: 'accepted' | 'rejected';
+    userId: string;
+  }> {
+    return new Observable(sub => {
+      if (!this.socket) return;
+
+      const handler = (payload: any) => sub.next(payload);
+      this.socket.on('friendRequest:updated', handler);
+
+      return () => {
+        if (this.socket) {
+          this.socket.off('friendRequest:updated', handler);
+        }
+      };
+    });
+  }
+
+  onEventChatMessageDeleted(): Observable<{
+    messageId: string;
+    eventId: string;
+  }> {
+    return new Observable(sub => {
+      if (!this.socket) return;
+
+      const handler = (payload: any) => sub.next(payload);
+      this.socket.on('eventChat:messageDeleted', handler);
+
+      return () => {
+        if (this.socket) {
+          this.socket.off('eventChat:messageDeleted', handler);
+        }
+      };
+    });
+  }
+
+  onChatMessageDeleted(): Observable<{
+    messageId: string;
+    from: string;
+    to: string;
+  }> {
+    return new Observable(sub => {
+      if (!this.socket) return;
+
+      const handler = (payload: any) => sub.next(payload);
+      this.socket.on('chat:messageDeleted', handler);
+
+      return () => {
+        if (this.socket) {
+          this.socket.off('chat:messageDeleted', handler);
         }
       };
     });

@@ -7,11 +7,12 @@ import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/user.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
+import { InterestSelectorComponent } from '../interest-selector/interest-selector.component';
 
 @Component({
   selector: 'app-registrar',
-  standalone: true,            
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule], 
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, InterestSelectorComponent], 
   templateUrl: './registrar.component.html',
   styleUrls: ['./registrar.component.css']
 })
@@ -21,6 +22,7 @@ export class RegistrarComponent {
     gmail: '',
     password: '',
     birthday: new Date(),
+    interests: [],
   };
 
   private themeService = inject(ThemeService);
@@ -49,6 +51,8 @@ export class RegistrarComponent {
   registeredEmail: string = '';
   resendCooldown: number = 0;
   resendTimer: any;
+  showInterestsModal: boolean = false
+  selectedInterests: string[] = [];
 
   passwordStrength = 0;
   passwordValidations = {
@@ -72,24 +76,26 @@ export class RegistrarComponent {
     'mailinator.com', 'throwaway.email', 'temp-mail.org'
   ];
 
-  constructor(
-    private userService: UserService, 
-    private authService: AuthService,
-    private router: Router, 
-    private translate: TranslateService,
-    private route: ActivatedRoute
-  ) {
-    const today = new Date();
-    // maxDate = hoy - 13 años (para que el calendario NO deje seleccionar menores)
-    const maxDateObj = new Date();
-    maxDateObj.setFullYear(today.getFullYear() - 13);
-    this.maxDate = maxDateObj.toISOString().split('T')[0];
+  constructor(private userService: UserService, private authService: AuthService, private router: Router, private translate: TranslateService, private route: ActivatedRoute) {
+    const t = new Date();
+    this.maxDate = new Date(Date.UTC(
+      t.getFullYear(),
+      t.getMonth(),
+      t.getDate()
+    )).toISOString().split('T')[0];
     
-    // minDate = 1900-01-01 (para permitir gente mayor)
-    this.minDate = '1900-01-01';
+    const minDateCalc = new Date();
+    minDateCalc.setFullYear(minDateCalc.getFullYear() - 13);
+    this.minDate = new Date(Date.UTC(
+      minDateCalc.getFullYear(),
+      minDateCalc.getMonth(),
+      minDateCalc.getDate()
+    )).toISOString().split('T')[0];
+    
+    this.birthdayStr = this.minDate;
     
     this.translate.use(this.currentLang);
-    const savedLang = (localStorage.getItem('lang') as 'es' | 'en') || 'es';
+    const savedLang = (localStorage.getItem('lang') as 'es' | 'en' | 'cat' | 'fr') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
   }
@@ -192,6 +198,19 @@ export class RegistrarComponent {
       !this.isFutureDate() &&
       this.birthdayStr !== ''
     );
+  }
+
+  openInterestsModal(): void {
+    this.showInterestsModal = true;
+  }
+
+  closeInterestsModal(): void {
+    this.showInterestsModal = false;
+  }
+
+  onInterestsChange(interests: string[]): void {
+    this.selectedInterests = interests;
+    this.nuevoUsuario.interests = interests;
   }
 
   onSubmit(form: any) {

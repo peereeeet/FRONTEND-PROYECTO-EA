@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Evento } from '../models/evento.model';
+import { EventoPhoto } from '../models/evento-photo.model';
 
 @Injectable({ providedIn: 'root' })
 export class EventoService {
@@ -299,5 +300,50 @@ export class EventoService {
       .set('dateTo', dateTo);
 
     return this.http.get<Evento[]>(`${this.apiUrl}/calendar`, { params });
+  }
+
+  getRecommendedEventos(
+    page: number = 1,
+    limit: number = 10
+  ): Observable<{
+    data: Evento[];
+    page: number;
+    totalPages: number;
+    totalItems: number;
+  }> {
+    const params = new HttpParams()
+      .set('page', String(page))
+      .set('limit', String(limit));
+
+    return this.http.get<{
+      data: Evento[];
+      page: number;
+      totalPages: number;
+      totalItems: number;
+    }>(`${this.apiUrl}/recommended`, { params });
+  }
+
+  uploadEventoPhoto(eventId: string, file: File): Observable<EventoPhoto> {
+    const formData = new FormData();
+    formData.append('photo', file);
+    
+    return this.http.post<EventoPhoto>(
+      `${this.apiUrl}/${eventId}/photos`,
+      formData
+    );
+  }
+
+  getEventoPhotos(eventId: string): Observable<EventoPhoto[]> {
+    return this.http.get<EventoPhoto[]>(`${this.apiUrl}/${eventId}/photos`);
+  }
+
+  deleteEventoPhoto(eventId: string, photoId: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(
+      `${this.apiUrl}/${eventId}/photos/${photoId}`
+    );
+  }
+
+  getSecurePhotoUrl(eventId: string, filename: string): string {
+    return `${this.apiUrl}/${eventId}/photo/${filename}`;
   }
 }

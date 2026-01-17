@@ -77,12 +77,33 @@
       </p>
     </div>
 
-    <!-- STEP: LOGIN -->
-    <div *ngIf="loginStep === 'LOGIN'">
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <label class="form-label" for="username">
-            {{ 'LOGIN.USERNAME_LABEL' | translate }}
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label class="form-label" for="username">
+          {{ 'LOGIN.USERNAME_LABEL' | translate }}
+        </label>
+        <input
+          id="username"
+          type="text"
+          class="form-input"
+          [class.error]="username?.invalid && username?.touched"
+          formControlName="username"
+          [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate" />
+        <div *ngIf="username?.invalid && username?.touched" class="error-message">
+          <span>⚠ </span>
+          <span *ngIf="username?.errors?.['required']">
+            {{ 'LOGIN.USERNAME_REQUIRED' | translate }}
+          </span>
+          <span *ngIf="username?.errors?.['minlength']">
+            {{ 'LOGIN.USERNAME_MIN' | translate }}
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="row-between">
+          <label class="form-label" for="password">
+            {{ 'LOGIN.PASSWORD_LABEL' | translate }}
           </label>
           <input
             id="username"
@@ -142,6 +163,16 @@
           <span>⚠</span>
           <span>{{ errorMessage | translate }}</span>
         </div>
+        
+        <div *ngIf="password?.invalid && password?.touched" class="error-message">
+          <span>⚠ </span>
+          <span *ngIf="password?.errors?.['required']">
+            {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
+          </span>
+          <span *ngIf="password?.errors?.['minlength']">
+            {{ 'LOGIN.PASSWORD_MIN' | translate }}
+          </span>
+        </div>
 
         <!-- Botones extra para email no verificado -->
         <div *ngIf="unverifiedEmail" class="unverified-actions">
@@ -152,6 +183,11 @@
              {{ 'LOGIN.GO_TO_VERIFY' | translate }}
            </button>
         </div>
+        
+      <div *ngIf="errorMessage" class="error-message global-error">
+        <span>⚠ </span>
+        <span>{{ errorMessage }}</span>
+      </div>
 
         <button
           type="submit"
@@ -317,7 +353,7 @@
         </div>
 
         <div *ngIf="googleBirthdayError" class="error-message">
-          <span>⚠</span>
+          <span>⚠ </span>
           <span>{{ googleBirthdayError }}</span>
         </div>
 
@@ -330,6 +366,106 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal Registro Completo con Google (Username + Birthday + Interests) -->
+  <div class="modal-overlay" *ngIf="googleRegisterOpen" (click)="closeGoogleRegisterModal()">
+    <div class="modal modal--register modal--google-register" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'LOGIN.GOOGLE_REGISTER_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeGoogleRegisterModal()">×</button>
+      </div>
+
+      <form [formGroup]="googleRegisterForm" (ngSubmit)="onGoogleRegisterSubmit()">
+        <p class="modal-text">
+          {{ 'LOGIN.GOOGLE_REGISTER_TEXT' | translate }}
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="googleUsername">
+            {{ 'LOGIN.GOOGLE_USERNAME_LABEL' | translate }}
+          </label>
+          <input
+            id="googleUsername"
+            type="text"
+            class="form-input"
+            formControlName="username"
+            [placeholder]="'LOGIN.GOOGLE_USERNAME_PLACEHOLDER' | translate" />
+          <div *ngIf="googleRegisterForm.get('username')?.invalid && googleRegisterForm.get('username')?.touched" 
+               class="error-message">
+            <span>⚠ </span>
+            <span>{{ 'LOGIN.USERNAME_REQUIRED' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="googleRegisterBirthday">
+            {{ 'LOGIN.GOOGLE_BIRTHDAY_LABEL' | translate }}
+          </label>
+          <input
+            id="googleRegisterBirthday"
+            type="date"
+            class="form-input"
+            formControlName="birthday"
+            [attr.max]="todayISO" />
+          <div *ngIf="googleRegisterForm.get('birthday')?.invalid && googleRegisterForm.get('birthday')?.touched" 
+               class="error-message">
+            <span>⚠ </span>
+            <span>{{ 'LOGIN.BIRTHDAY_REQUIRED' | translate }}</span>
+          </div>
+        </div>
+
+        <!-- BOTÓN PARA MOSTRAR/OCULTAR SELECTOR DE INTERESES EN MODAL -->
+        <div class="interests-toggle-container-modal">
+          <button 
+            type="button" 
+            class="interests-toggle-btn-modal"
+            (click)="openInterestsModalInGoogle()">
+            <span class="toggle-icon">✨</span>
+            <span>{{ 'LOGIN.GOOGLE_INTERESTS_SELECT' | translate }}</span>
+            <span class="selected-count" *ngIf="selectedInterests.length > 0">
+              ({{ selectedInterests.length }})
+            </span>
+          </button>
+        </div>
+
+        <div *ngIf="googleRegisterError" class="error-message">
+          <span>⚠ </span>
+          <span>{{ googleRegisterError }}</span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn cancel" (click)="closeGoogleRegisterModal()">
+            {{ 'LOGIN.GOOGLE_REGISTER_CANCEL' | translate }}
+          </button>
+          <button type="submit" class="btn primary" [disabled]="isLoading">
+            {{ isLoading ? ('LOGIN.BUTTON_LOADING' | translate) : ('LOGIN.GOOGLE_REGISTER_CONFIRM' | translate) }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="googleInterestsModalOpen" (click)="closeGoogleInterestsModal()">
+    <div class="modal modal--interests" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'INTERESTS.TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeGoogleInterestsModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <app-interest-selector
+          [selectedInterests]="selectedInterests"
+          (selectedInterestsChange)="onInterestsChange($event)">
+        </app-interest-selector>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn primary" (click)="closeGoogleInterestsModal()">
+          {{ 'INTERESTS.CONFIRM' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </div>

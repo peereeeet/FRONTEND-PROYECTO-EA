@@ -28,6 +28,14 @@
     "DIRECT_NEW_PASSWORD_PLACEHOLDER": "Mínim 7 caràcters",
     "DIRECT_CANCEL": "Cancel·lar",
     "DIRECT_CONFIRM": "Confirmar",
+    "GOOGLE_REGISTER_TITLE": "Completa el teu registre",
+    "GOOGLE_REGISTER_TEXT": "Per completar el teu registre amb Google, tria un nom d'usuari i confirma la teva data de naixement:",
+    "GOOGLE_USERNAME_LABEL": "Nom d'usuari",
+    "GOOGLE_USERNAME_PLACEHOLDER": "Tria el teu nom d'usuari",
+    "GOOGLE_REGISTER_CANCEL": "Cancel·lar",
+    "GOOGLE_REGISTER_CONFIRM": "Registrar-se",
+    "USERNAME_EXISTS": "Aquest nom d'usuari ja està en ús",
+    "BIRTHDAY_REQUIRED": "La data de naixement és obligatòria",
     "DIRECT_SAVING": "Desant…",
     "ERROR_GENERIC": "Error en iniciar sessió. Verifica les credencials.",
     "OR": "o continua amb",
@@ -36,7 +44,11 @@
     "GOOGLE_BIRTHDAY_TEXT": "Abans d’acabar el registre amb Google, necessitem la teva data de naixement per completar el teu perfil.",
     "GOOGLE_BIRTHDAY_LABEL": "Data de naixement",
     "GOOGLE_BIRTHDAY_CANCEL": "Cancel·lar",
-    "GOOGLE_BIRTHDAY_CONFIRM": "Continuar"
+    "GOOGLE_BIRTHDAY_CONFIRM": "Continuar",
+    "GOOGLE_REGISTER_INTERESTS": "Què t'interessa? (Opcional)",
+    "GOOGLE_INTERESTS_SHOW": "Afegir els meus interessos",
+    "GOOGLE_INTERESTS_HIDE": "Amagar interessos",
+    "GOOGLE_INTERESTS_SELECT": "Seleccionar els meus interessos"
   },
 
   "REGISTER": {
@@ -80,7 +92,34 @@
     "PASSWORD_REQ_LOWERCASE": "Una lletra minúscula",
     "PASSWORD_REQ_NUMBER": "Un número",
     "PASSWORD_REQ_SPECIAL": "Un caràcter especial (!@#$...)",
-    "PASSWORDS_MATCH": "Les contrasenyes coincideixen"
+    "PASSWORDS_MATCH": "Les contrasenyes coincideixen",
+    "INTERESTS_OPTIONAL": "(Opcional) Els teus interessos"
+  },
+
+  "INTERESTS": {
+    "TITLE": "Què t'interessa?",
+    "SUBTITLE": "Selecciona els teus interessos per rebre recomanacions personalitzades",
+    "SELECTED": "Interessos seleccionats",
+    "SHOW": "Afegir els meus interessos",
+    "HIDE": "Amagar interessos",
+    "HINT": "Opcional: Això ens ajudarà a recomanar-te esdeveniments que t'agradin",
+    "CONFIRM": "Confirmar",
+    "CANCEL": "Cancel·lar",
+    "CATEGORIES": {
+      "SPORTS": "Esports",
+      "MUSIC": "Música",
+      "CULTURE": "Cultura",
+      "FOOD": "Gastronomia",
+      "SOCIAL": "Social",
+      "LEARNING": "Aprenentatge",
+      "TECH": "Tecnologia",
+      "WELLNESS": "Benestar",
+      "VOLUNTEER": "Voluntariat",
+      "NATURE": "Natura",
+      "GAMES": "Jocs",
+      "FAMILY": "Família",
+      "OTHER": "Altres"
+    }
   },
 
   "LANG": {
@@ -196,7 +235,22 @@
     "SEARCH_CLEAR_BUTTON": "Netejar",
     "SEARCH_LOADING": "Cercant esdeveniments...",
     "SEARCH_EMPTY_TITLE": "No s'han trobat esdeveniments",
-    "SEARCH_EMPTY_TEXT": "Prova d'ajustar els teus filtres de cerca"
+    "SEARCH_EMPTY_TEXT": "Prova d'ajustar els teus filtres de cerca",
+    "TAB_RECOMMENDED": "Recomanats",
+    "RECOMMENDED_TITLE": "Esdeveniments Recomanats per a Tu",
+    "RECOMMENDED_SUBTITLE": "Basats en els teus interessos",
+    "RECOMMENDED_EMPTY_TITLE": "No hi ha esdeveniments recomanats",
+    "RECOMMENDED_EMPTY_TEXT": "No hem trobat esdeveniments que coincideixin amb els teus interessos en aquest moment. Prova més tard o explora altres esdeveniments.",
+    "RECOMMENDED_NO_INTERESTS_TITLE": "Afegeix els teus interessos",
+    "RECOMMENDED_NO_INTERESTS_TEXT": "Per rebre recomanacions personalitzades, afegeix els teus interessos al teu perfil.",
+    "RECOMMENDED_ADD_INTERESTS": "Anar al meu perfil",
+    "RECOMMENDED_LOADING": "Carregant recomanacions...",
+    "CHAT_ADD_IMAGE": "Adjuntar imatge",
+    "CHAT_DELETE_MESSAGE": "Eliminar missatge",
+    "CHAT_DELETE_MESSAGE_TITLE": "Eliminar Missatge",
+    "CHAT_DELETE_MESSAGE_CONFIRM": "Estàs segur que vols eliminar aquest missatge? Aquesta acció no es pot desfer.",
+    "CHAT_DELETE_MESSAGE_BTN": "Eliminar",
+    "CHAT_DELETING_MESSAGE": "Eliminant..."
   },
 
   "FRIENDS": {
@@ -255,7 +309,34 @@
     "DELETE_PASSWORD_PLACEHOLDER": "La teva contrasenya",
     "DELETE_CANCEL": "Cancel·lar",
     "DELETE_CONFIRM": "Eliminar definitivament",
-    "DELETE_DELETING": "Eliminant…"
+    "DELETE_DELETING": "Eliminant…",
+    "EDIT_CONFIRM_PASSWORD_LABEL": "Confirmar nova contrasenya",
+    "EDIT_CONFIRM_PASSWORD_PLACEHOLDER": "Repetir contrasenya",
+    "USERNAME_MIN_LENGTH": "El nom ha de tenir almenys 3 caràcters",
+    "USERNAME_MAX_LENGTH": "El nom no pot superar 30 caràcters",
+    "USERNAME_START_LETTER": "Ha de començar amb una lletra",
+    "USERNAME_VALID_CHARS": "Només lletres, números i guions baixos",
+    "USERNAME_NOT_RESERVED": "Nom d'usuari vàlid",
+    "EMAIL_FORMAT_VALID": "Format vàlid de correu",
+    "EMAIL_NOT_TEMPORARY": "No és un correu temporal",
+    "BIRTHDAY_NOT_FUTURE": "La data no pot ser futura",
+    "BIRTHDAY_MIN_AGE": "Has de tenir almenys 13 anys",
+    "PASSWORD_REQ_LENGTH": "Mínim 8 caràcters",
+    "PASSWORD_REQ_UPPERCASE": "Una lletra majúscula",
+    "PASSWORD_REQ_LOWERCASE": "Una lletra minúscula",
+    "PASSWORD_REQ_NUMBER": "Un número",
+    "PASSWORD_REQ_SPECIAL": "Un caràcter especial (!@#$...)",
+    "PASSWORD_STRENGTH_WEAK": "Feble",
+    "PASSWORD_STRENGTH_MEDIUM": "Mitjana",
+    "PASSWORD_STRENGTH_STRONG": "Forta",
+    "PASSWORDS_MATCH": "Les contrasenyes coincideixen",
+    "PASSWORDS_MISMATCH": "Les contrasenyes no coincideixen",
+    "INTERESTS_TITLE": "Els meus interessos",
+    "INTERESTS_EDIT_BUTTON": "Editar interessos",
+    "INTERESTS_ADD_BUTTON": "Afegir interessos",
+    "INTERESTS_EMPTY": "Encara no has afegit cap interès. Afegeix els teus interessos per rebre recomanacions personalitzades.",
+    "INTERESTS_MODAL_TITLE": "Editar els meus interessos",
+    "INTERESTS_MODAL_DESCRIPTION": "Selecciona els temes que t'interessen per rebre recomanacions d'esdeveniments personalitzades."
   },
 
   "EVENTS": {
@@ -279,32 +360,30 @@
     "BACK_TO_MENU": "Tornar al menú",
     "GO_TO_CREATE": "Crear esdeveniment nou",
     "GO_TO_MY_EVENTS": "Els meus esdeveniments",
-
     "LOADING_EVENTS": "Carregant esdeveniments...",
     "MAP_TITLE": "Mapa d'esdeveniments",
     "MAP_HINT": "Mou-te i fes zoom al mapa per veure els esdeveniments de la zona. Toca un punt per veure'n els detalls.",
-
     "EMPTY_TITLE": "No hi ha esdeveniments disponibles en aquesta zona",
     "EMPTY_TEXT": "Mou el mapa o canvia el zoom per cercar en altres zones.",
-
     "CARD_BADGE_CREATOR": "Tu ets el creador",
     "CARD_BADGE_ADMIN": "Admin",
     "CARD_BADGE_JOINED": "Inscrit",
-
     "PAGINATION_PREV": "« Anterior",
     "PAGINATION_NEXT": "Següent »",
     "PAGINATION_INFO_PREFIX": "Pàgina",
     "PAGINATION_INFO_OF": "de",
-
     "MODAL_TITLE": "Detalls de l'esdeveniment",
     "MODAL_ADDRESS_FALLBACK": "No especificada",
     "MODAL_CREATOR_NOTE": "Com a creador no pots sortir de l'esdeveniment.",
     "MODAL_BUTTON_JOIN": "Unir-me a l'esdeveniment",
     "MODAL_BUTTON_LEAVE": "Sortir de l'esdeveniment",
     "MODAL_BUTTON_CLOSE": "Tancar",
-
     "BUTTON_LEAVE_WAITLIST": "Sortir de llista d'espera",
-      "WAITLIST_MESSAGE": "Estàs a la llista d'espera d'aquest esdeveniment"
+    "WAITLIST_MESSAGE": "Estàs a la llista d'espera d'aquest esdeveniment",
+    "CARD_ACTION_JOIN": "Unir-se",
+    "CARD_ACTION_LEAVE": "Sortir",
+    "CARD_ACTION_DETAILS": "Veure detalls",
+    "PARTICIPANTS": "participants"
   },
 
   "CREATE_EVENT": {
@@ -360,64 +439,82 @@
     "GO_TO_EXPLORE": "Explorar esdeveniments (mapa)",
     "LOADING": "Carregant esdeveniments.",
     "ERROR_MESSAGE_PREFIX": "Error:",
-
     "CREATED_TITLE": "📝 Esdeveniments que he creat ({{count}})",
     "CREATED_EMPTY_TEXT": "Encara no has creat cap esdeveniment",
     "BADGE_CREATOR": "Creador",
-
     "FIELD_ADDRESS": "Adreça:",
     "BUTTON_VIEW_MAP": "🗺 Mapa",
     "FIELD_SCHEDULE": "Horari:",
     "FIELD_PARTICIPANTS": "Participants:",
-
     "RATINGS_LABEL": "Valoracions:",
     "RATINGS_NONE": "Sense valoracions",
     "BUTTON_VIEW_RATINGS": "Valoracions",
     "BUTTON_EDIT": "✏️ Modificar",
     "BUTTON_DELETE": "🗑️ Eliminar",
-
     "JOINED_TITLE": "🎯 Esdeveniments als quals estic inscrit ({{count}})",
     "JOINED_EMPTY_TEXT": "Encara no estàs inscrit en cap esdeveniment",
     "JOINED_BUTTON_EXPLORE": "Explorar esdeveniments",
-
     "BADGE_JOINED": "Inscrit",
-
     "BUTTON_LEAVE": "👋 Sortir",
-
     "DELETE_MODAL_TITLE": "Eliminar esdeveniment",
     "DELETE_MODAL_TEXT": "Segur que vols eliminar <strong>{{name}}</strong>?",
     "DELETE_MODAL_CANCEL": "Cancel·lar",
     "DELETE_MODAL_CONFIRM": "🗑️ Eliminar",
-
     "LEAVE_MODAL_TITLE": "Sortir de l'esdeveniment",
     "LEAVE_MODAL_TEXT": "Segur que vols sortir de <strong>{{name}}</strong>?",
     "LEAVE_MODAL_CANCEL": "Cancel·lar",
     "LEAVE_MODAL_CONFIRM": "Sortir",
-
     "BUTTON_SHARE_EVENT": "Enviar esdeveniment",
     "SHARE_EVENT_TITLE": "Compartir esdeveniment",
     "SHARE_EVENT_LOADING": "Carregant amics...",
     "SHARE_EVENT_NO_FRIENDS": "No tens amics per enviar aquest esdeveniment.",
     "SHARE_EVENT_SEND": "Enviar",
-
     "BUTTON_EVENT_CHAT": "Xat",
     "EVENT_CHAT_TITLE": "Xat de l'esdeveniment",
     "EVENT_CHAT_LOADING": "Carregant els missatges de l'esdeveniment...",
     "EVENT_CHAT_EMPTY": "Encara no hi ha missatges en aquest esdeveniment.",
     "EVENT_CHAT_PLACEHOLDER": "Escriu un missatge per a aquest esdeveniment...",
-
     "TAB_JOINED": "Esdeveniments Inscrit",
     "TAB_CREATED": "Esdeveniments Creats",
     "STATS_RATING": "Valoració",
-
     "CREATOR_CANNOT_LEAVE": "No pots abandonar essent el creador",
     "SECTION_UPCOMING": "Propers Esdeveniments",
     "SECTION_PAST": "Esdeveniments Passats",
     "BADGE_FINISHED": "Finalitzat",
-
     "FILTER_ALL": "Tots",
     "FILTER_PUBLIC": "Públics",
-    "FILTER_PRIVATE": "Privats"
+    "FILTER_PRIVATE": "Privats",
+    "BUTTON_ALBUM": "Àlbum",
+    "EVENT_CHAT_ADD_IMAGE": "Adjuntar imatge",
+    "EVENT_CHAT_UPLOADING_IMAGE": "Pujant imatge...",
+    "EVENT_CHAT_IMAGE_ERROR": "Error en pujar la imatge",
+    "DELETE_MESSAGE": "Eliminar missatge",
+    "DELETE_MESSAGE_TITLE": "Eliminar Missatge",
+    "DELETE_MESSAGE_CONFIRM": "Estàs segur que vols eliminar aquest missatge? Aquesta acció no es pot desfer.",
+    "DELETE_MESSAGE_BTN": "Eliminar",
+    "DELETING_MESSAGE": "Eliminant...",
+    "MESSAGE_DELETED_SUCCESS": "Missatge eliminat correctament",
+    "MESSAGE_DELETE_ERROR": "Error en eliminar el missatge"
+  },
+  "ALBUM": {
+    "TITLE": "Àlbum Compartit",
+    "UPLOAD_TITLE": "Pujar foto o vídeo",
+    "UPLOAD_HINT": "Comparteix els teus millors moments de l'esdeveniment amb els altres participants",
+    "UPLOAD_CLICK": "Fes clic per seleccionar un fitxer",
+    "UPLOAD_FORMATS": "Imatges (JPG, PNG, GIF, WEBP) o vídeos (MP4, WEBM) - Màx. 50MB",
+    "UPLOADING": "Pujant...",
+    "UPLOAD_BUTTON": "Pujar",
+    "GALLERY_TITLE": "Galeria de l'esdeveniment",
+    "LOADING": "Carregant fotos...",
+    "EMPTY": "Encara no hi ha fotos ni vídeos en aquest esdeveniment. Sigues el primer a pujar-ne un!",
+    "DOWNLOAD": "Descarregar",
+    "DELETE": "Eliminar",
+    "CONFIRM_DELETE": "Estàs segur que vols eliminar aquesta foto/vídeo?",
+    "CONFIRM_DELETE_TITLE": "Confirmar eliminació",
+    "UPLOADED_BY": "Pujat per",
+    "UPLOADED_ON": "Data",
+    "DELETING": "Eliminant...",
+    "CANCEL": "Cancel·lar"
   },
 
   "RATINGS": {

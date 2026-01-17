@@ -55,7 +55,6 @@ export class RewardNotificationService {
     const translation = this.translate.instant(key);
     
     if (translation === key) {
-      console.warn(`Translation not found for key: ${key}`);
       const fallbacks = {
         crearEvento: '¡Evento creado con éxito!',
         unirseEvento: '¡Te uniste al evento!',
