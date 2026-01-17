@@ -3463,3 +3463,134 @@ app-notificaciones .notification-panel {
     flex-wrap: wrap;
   }
 }
+
+.recommended-section {
+  padding: 2rem;
+}
+
+.recommended-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.recommended-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.recommended-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Estado sin intereses */
+.no-interests-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--surface-elev);
+  border-radius: 16px;
+  border: 2px dashed var(--border);
+}
+
+.no-interests-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.no-interests-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.no-interests-text {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0 0 1.5rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Badge de recomendado */
+.badge-recommended {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #78350f;
+  font-weight: 700;
+  border: none;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .recommended-title {
+  background: linear-gradient(135deg, #fbbf24, #fcd34d);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+[data-theme="dark"] .no-interests-state {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+[data-theme="dark"] .badge-recommended {
+  background: linear-gradient(135deg, #fbbf24, #fcd34d);
+  color: #422006;
+}
+
+/* Estados de carga y vacío (reutilizar estilos existentes) */
+.loading-state {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.loading-state .spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .recommended-section {
+    padding: 1rem;
+  }
+
+  .recommended-title {
+    font-size: 1.4rem;
+  }
+
+  .no-interests-icon {
+    font-size: 3rem;
+  }
+
+  .no-interests-title {
+    font-size: 1.2rem;
+  }
+}

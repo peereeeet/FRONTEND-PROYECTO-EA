@@ -235,7 +235,16 @@
     "SEARCH_CLEAR_BUTTON": "Clear",
     "SEARCH_LOADING": "Searching events...",
     "SEARCH_EMPTY_TITLE": "No events found",
-    "SEARCH_EMPTY_TEXT": "Try adjusting your search filters"
+    "SEARCH_EMPTY_TEXT": "Try adjusting your search filters",
+    "TAB_RECOMMENDED": "Recommended",
+    "RECOMMENDED_TITLE": "Recommended Events for You",
+    "RECOMMENDED_SUBTITLE": "Based on your interests",
+    "RECOMMENDED_EMPTY_TITLE": "No recommended events",
+    "RECOMMENDED_EMPTY_TEXT": "We couldn't find events matching your interests right now. Try again later or explore other events.",
+    "RECOMMENDED_NO_INTERESTS_TITLE": "Add your interests",
+    "RECOMMENDED_NO_INTERESTS_TEXT": "To receive personalized recommendations, add your interests in your profile.",
+    "RECOMMENDED_ADD_INTERESTS": "Go to my profile",
+    "RECOMMENDED_LOADING": "Loading recommendations..."
   },
 
   "FRIENDS": {
@@ -304,7 +313,13 @@
     "PASSWORD_STRENGTH_MEDIUM": "Medium",
     "PASSWORD_STRENGTH_STRONG": "Strong",
     "PASSWORDS_MATCH": "Passwords match",
-    "PASSWORDS_MISMATCH": "Passwords do not match"
+    "PASSWORDS_MISMATCH": "Passwords do not match",
+    "INTERESTS_TITLE": "My interests",
+    "INTERESTS_EDIT_BUTTON": "Edit interests",
+    "INTERESTS_ADD_BUTTON": "Add interests",
+    "INTERESTS_EMPTY": "You haven't added any interests yet. Add your interests to receive personalized recommendations.",
+    "INTERESTS_MODAL_TITLE": "Edit my interests",
+    "INTERESTS_MODAL_DESCRIPTION": "Select the topics that interest you to receive personalized event recommendations."
   },
 
   "EVENTS": {
@@ -328,32 +343,30 @@
     "BACK_TO_MENU": "Back to menu",
     "GO_TO_CREATE": "Create new event",
     "GO_TO_MY_EVENTS": "My events",
-
     "LOADING_EVENTS": "Loading events...",
     "MAP_TITLE": "Events map",
     "MAP_HINT": "Move and zoom the map to see events in that area. Tap a pin to see its details.",
-
     "EMPTY_TITLE": "There are no events available in this area",
     "EMPTY_TEXT": "Move the map or change the zoom to search in other areas.",
-
     "CARD_BADGE_CREATOR": "You are the creator",
     "CARD_BADGE_ADMIN": "Admin",
     "CARD_BADGE_JOINED": "Joined",
-
     "PAGINATION_PREV": "« Previous",
     "PAGINATION_NEXT": "Next »",
     "PAGINATION_INFO_PREFIX": "Page",
     "PAGINATION_INFO_OF": "of",
-
     "MODAL_TITLE": "Event details",
     "MODAL_ADDRESS_FALLBACK": "Not specified",
     "MODAL_CREATOR_NOTE": "As the creator, you can't leave the event.",
     "MODAL_BUTTON_JOIN": "Join event",
     "MODAL_BUTTON_LEAVE": "Leave event",
     "MODAL_BUTTON_CLOSE": "Close",
-
     "BUTTON_LEAVE_WAITLIST": "Leave waitlist",
-      "WAITLIST_MESSAGE": "You are on the waitlist for this event"
+    "WAITLIST_MESSAGE": "You are on the waitlist for this event",
+    "CARD_ACTION_JOIN": "Join",
+    "CARD_ACTION_LEAVE": "Leave",
+    "CARD_ACTION_DETAILS": "View details",
+    "PARTICIPANTS": "participants"
   },
 
   "CREATE_EVENT": {

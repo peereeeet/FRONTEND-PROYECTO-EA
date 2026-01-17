@@ -235,7 +235,16 @@
     "SEARCH_CLEAR_BUTTON": "Limpiar",
     "SEARCH_LOADING": "Buscando eventos...",
     "SEARCH_EMPTY_TITLE": "No se encontraron eventos",
-    "SEARCH_EMPTY_TEXT": "Intenta ajustar tus filtros de búsqueda"
+    "SEARCH_EMPTY_TEXT": "Intenta ajustar tus filtros de búsqueda",
+    "TAB_RECOMMENDED": "Recomendados",
+    "RECOMMENDED_TITLE": "Eventos Recomendados para Ti",
+    "RECOMMENDED_SUBTITLE": "Basados en tus intereses",
+    "RECOMMENDED_EMPTY_TITLE": "No hay eventos recomendados",
+    "RECOMMENDED_EMPTY_TEXT": "No encontramos eventos que coincidan con tus intereses en este momento. Intenta más tarde o explora otros eventos.",
+    "RECOMMENDED_NO_INTERESTS_TITLE": "Añade tus intereses",
+    "RECOMMENDED_NO_INTERESTS_TEXT": "Para recibir recomendaciones personalizadas, añade tus intereses en tu perfil.",
+    "RECOMMENDED_ADD_INTERESTS": "Ir a mi perfil",
+    "RECOMMENDED_LOADING": "Cargando recomendaciones..."
   },
 
   "FRIENDS": {
@@ -315,7 +324,13 @@
     "PASSWORD_STRENGTH_MEDIUM": "Media",
     "PASSWORD_STRENGTH_STRONG": "Fuerte",
     "PASSWORDS_MATCH": "Las contraseñas coinciden",
-    "PASSWORDS_MISMATCH": "Las contraseñas no coinciden"
+    "PASSWORDS_MISMATCH": "Las contraseñas no coinciden",
+    "INTERESTS_TITLE": "Mis intereses",
+    "INTERESTS_EDIT_BUTTON": "Editar intereses",
+    "INTERESTS_ADD_BUTTON": "Añadir intereses",
+    "INTERESTS_EMPTY": "No has añadido intereses aún. Añade tus intereses para recibir recomendaciones personalizadas.",
+    "INTERESTS_MODAL_TITLE": "Editar mis intereses",
+    "INTERESTS_MODAL_DESCRIPTION": "Selecciona los temas que te interesan para recibir recomendaciones de eventos personalizadas."
   },
 
   "EVENTS": {
@@ -339,32 +354,30 @@
     "BACK_TO_MENU": "Volver al menú",
     "GO_TO_CREATE": "Crear evento nuevo",
     "GO_TO_MY_EVENTS": "Mis eventos",
-
     "LOADING_EVENTS": "Cargando eventos...",
     "MAP_TITLE": "Mapa de eventos",
     "MAP_HINT": "Desplázate y haz zoom en el mapa para ver los eventos de esa zona. Pulsa un pin para ver los detalles.",
-
     "EMPTY_TITLE": "No hay eventos disponibles en esta zona",
     "EMPTY_TEXT": "Mueve el mapa o cambia el zoom para buscar en otras zonas.",
-
     "CARD_BADGE_CREATOR": "Tú eres el creador",
     "CARD_BADGE_ADMIN": "Admin",
     "CARD_BADGE_JOINED": "Inscrito",
-
     "PAGINATION_PREV": "« Anterior",
     "PAGINATION_NEXT": "Siguiente »",
     "PAGINATION_INFO_PREFIX": "Página",
     "PAGINATION_INFO_OF": "de",
-
     "MODAL_TITLE": "Detalles del evento",
     "MODAL_ADDRESS_FALLBACK": "No especificada",
     "MODAL_CREATOR_NOTE": "Como creador, no puedes salir del evento.",
     "MODAL_BUTTON_JOIN": "Unirme al evento",
     "MODAL_BUTTON_LEAVE": "Salir del evento",
     "MODAL_BUTTON_CLOSE": "Cerrar",
-
     "BUTTON_LEAVE_WAITLIST": "Salir de lista de espera",
-    "WAITLIST_MESSAGE": "Estás en la lista de espera de este evento"
+    "WAITLIST_MESSAGE": "Estás en la lista de espera de este evento",
+    "CARD_ACTION_JOIN": "Unirse",
+    "CARD_ACTION_LEAVE": "Salir",
+    "CARD_ACTION_DETAILS": "Ver detalles",
+    "PARTICIPANTS": "participantes"
   },
 
   "CREATE_EVENT": {

@@ -12,13 +12,14 @@ import { ThemeService } from '../../services/theme.service';
 import { GamificacionService } from '../../services/gamificacion.service';
 import { UsuarioProgreso, calcularProgresoNivel, getNivelInfo } from '../../models/gamificacion.model';
 import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
+import { InterestSelectorComponent } from '../interest-selector/interest-selector.component';
 
 type EditDTO = { username: string; gmail: string; birthday: string; password?: string; };
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, NotificacionesComponent],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, NotificacionesComponent, InterestSelectorComponent],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.css']
 })
@@ -112,6 +113,12 @@ export class PerfilComponent implements OnInit, OnDestroy {
   showEditConfirmPassword = false;
   confirmPassword = signal('');
 
+  // PROPIEDADES PARA INTERESES
+  showInterestsModal = signal<boolean>(false);
+  selectedInterests = signal<string[]>([]);
+  savingInterests = signal<boolean>(false);
+  interestsError = signal<string>('');
+
   maxDate: string;
   minDate: string;
   
@@ -171,6 +178,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
           merged.isOnline = (merged.online ?? merged.isOnline ?? false);
           this.me.set(merged);
           this.profilePhotoUrl.set(merged.profilePhoto || '');
+          
+          this.selectedInterests.set(merged.interests || []);
+          
           this.edit.set({
             username: merged.username ?? '',
             gmail: merged.gmail ?? '',
@@ -747,5 +757,52 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   toggleEditConfirmPassword(): void {
     this.showEditConfirmPassword = !this.showEditConfirmPassword;
+  }
+
+  openInterestsModal(): void {
+    this.showInterestsModal.set(true);
+  }
+
+  closeInterestsModal(): void {
+    this.showInterestsModal.set(false);
+  }
+
+  onInterestsChange(interests: string[]): void {
+    this.selectedInterests.set(interests);
+  }
+
+  saveInterests(): void {
+    const userId = this.me()?._id;
+    if (!userId) {
+      this.interestsError.set('Error: usuario no identificado');
+      return;
+    }
+
+    this.savingInterests.set(true);
+    this.interestsError.set('');
+
+    const updateData = {
+      interests: this.selectedInterests()
+    };
+
+    this.userService.updateMe(userId, updateData).subscribe({
+      next: (response) => {
+        this.savingInterests.set(false);
+        
+        const updatedUser = { ...this.me()!, interests: this.selectedInterests() };
+        this.me.set(updatedUser);
+        
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        
+        this.closeInterestsModal();
+        
+        console.log('✅ Intereses actualizados correctamente');
+      },
+      error: (err) => {
+        this.savingInterests.set(false);
+        this.interestsError.set(err?.error?.message || 'Error al guardar intereses');
+        console.error('Error al guardar intereses:', err);
+      }
+    });
   }
 }
