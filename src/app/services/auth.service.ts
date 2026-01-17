@@ -11,6 +11,7 @@ export interface User {
   birthday: Date;
   eventos: string[];
   rol: 'admin' | 'usuario';
+  interests?: string[];
 }
 
 export interface LoginResponse {
@@ -25,6 +26,7 @@ export interface RegisterData {
   gmail: string;
   birthday?: string;
   password: string;
+  interests?: string[];
 }
 
 @Injectable({
@@ -58,12 +60,13 @@ export class AuthService {
     );
   }
 
-  loginWithGoogle(credential: string, birthday?: string, username?: string): Observable<LoginResponse> {
+  loginWithGoogle(credential: string, birthday?: string, username?: string, interests?: string[]): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>(`${this.apiUrl}/user/auth/google`, { 
         credential, 
         birthday,
-        username
+        username,
+        interests
       })
       .pipe(
         tap(response => {

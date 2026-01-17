@@ -112,6 +112,34 @@
           </div>
         </div>
 
+        <!-- ===== CARD INTERESES ===== -->
+        <div class="card interests-card" *ngIf="!loading()">
+          <div class="card-header">
+            <h3 class="card-title">
+              <span class="title-emoji">✨</span>
+              {{ 'PROFILE.INTERESTS_TITLE' | translate }}
+            </h3>
+            <button class="btn btn--primary btn--sm" (click)="openInterestsModal()">
+              <span class="btn-icon">✏️</span>
+              {{ 'PROFILE.INTERESTS_EDIT_BUTTON' | translate }}
+            </button>
+          </div>
+
+          <div class="interests-display" *ngIf="selectedInterests().length > 0">
+            <div class="interest-tag" *ngFor="let interest of selectedInterests()">
+              {{ interest }}
+            </div>
+          </div>
+
+          <div class="interests-empty" *ngIf="selectedInterests().length === 0">
+            <p class="empty-icon">🎯</p>
+            <p class="empty-text">{{ 'PROFILE.INTERESTS_EMPTY' | translate }}</p>
+            <button class="btn btn--secondary btn--sm" (click)="openInterestsModal()">
+              {{ 'PROFILE.INTERESTS_ADD_BUTTON' | translate }}
+            </button>
+          </div>
+        </div>
+
         <!-- ===== CARD GAMIFICACIÓN ===== -->
         <div class="card gamification-card" *ngIf="!loadingProgreso() && progreso()">
           <div class="gamif-header">
@@ -526,6 +554,38 @@
         <button class="btn btn--ghost" (click)="closeDelete()">{{ 'PROFILE.DELETE_CANCEL' | translate }}</button>
         <button class="btn btn--danger" [disabled]="deleting()" (click)="confirmDelete()">
           {{ deleting() ? ('PROFILE.DELETE_DELETING' | translate) : ('PROFILE.DELETE_CONFIRM' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE INTERESES -->
+  <div class="modal-overlay" *ngIf="showInterestsModal()" (click)="closeInterestsModal()">
+    <div class="modal modal--interests" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'PROFILE.INTERESTS_MODAL_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeInterestsModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <p class="modal-description">{{ 'PROFILE.INTERESTS_MODAL_DESCRIPTION' | translate }}</p>
+        
+        <app-interest-selector
+          [selectedInterests]="selectedInterests()"
+          (selectedInterestsChange)="onInterestsChange($event)">
+        </app-interest-selector>
+
+        <div *ngIf="interestsError()" class="msg msg--error">
+          {{ interestsError() }}
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn--ghost" (click)="closeInterestsModal()" [disabled]="savingInterests()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button type="button" class="btn btn--primary" (click)="saveInterests()" [disabled]="savingInterests()">
+          {{ savingInterests() ? ('COMMON.SAVING' | translate) : ('COMMON.SAVE' | translate) }}
         </button>
       </div>
     </div>

@@ -6,11 +6,12 @@ import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
+import { InterestSelectorComponent } from '../interest-selector/interest-selector.component';
 
 @Component({
   selector: 'app-registrar',
   standalone: true,            
-  imports: [CommonModule, FormsModule, TranslateModule], 
+  imports: [CommonModule, FormsModule, TranslateModule, InterestSelectorComponent], 
   templateUrl: './registrar.component.html',
   styleUrls: ['./registrar.component.css']
 })
@@ -20,6 +21,7 @@ export class RegistrarComponent {
     gmail: '',
     password: '',
     birthday: new Date(),
+    interests: [], // Añadir interests
   };
 
   private themeService = inject(ThemeService);
@@ -39,6 +41,10 @@ export class RegistrarComponent {
 
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
+
+  // Control para mostrar/ocultar selector de intereses
+  showInterestsModal: boolean = false
+  selectedInterests: string[] = [];
 
   passwordStrength = 0;
   passwordValidations = {
@@ -175,6 +181,20 @@ export class RegistrarComponent {
     );
   }
 
+  openInterestsModal(): void {
+    this.showInterestsModal = true;
+  }
+
+  closeInterestsModal(): void {
+    this.showInterestsModal = false;
+  }
+
+  onInterestsChange(interests: string[]): void {
+    this.selectedInterests = interests;
+    this.nuevoUsuario.interests = interests;
+    console.log('Intereses seleccionados:', interests);
+  }
+
   onSubmit(form: any) {
     this.formSubmitted = true;
     this.errorMessage = '';
@@ -228,6 +248,7 @@ export class RegistrarComponent {
               gmail: this.nuevoUsuario.gmail.trim(),
               password: this.nuevoUsuario.password?.trim(),
               birthday: new Date(this.birthdayStr),
+              interests: this.selectedInterests,
             };
 
             this.userService.addUser(newUser).subscribe({

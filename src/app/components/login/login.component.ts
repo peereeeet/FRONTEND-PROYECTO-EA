@@ -8,11 +8,12 @@ import { UserService } from '../../services/user.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
 import { environment } from '../../environments/environment';
+import { InterestSelectorComponent } from '../interest-selector/interest-selector.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, InterestSelectorComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -50,6 +51,9 @@ export class LoginComponent {
   suggestedUsername = '';
   todayISO: string;
   minBirthdayISO: string;
+
+  selectedInterests: string[] = [];
+  googleInterestsModalOpen: boolean = false;
 
   get forgotTouchedInvalid() {
     const c = this.forgotForm?.get('identifier');
@@ -248,6 +252,8 @@ export class LoginComponent {
     this.googleRegisterOpen = false;
     this.googleRegisterError = '';
     this.googleCredentialPending = null;
+    this.selectedInterests = [];
+    this.googleInterestsModalOpen = false;
   }
 
   onGoogleRegisterSubmit(): void {
@@ -279,12 +285,28 @@ export class LoginComponent {
     this.isLoading = true;
     this.googleRegisterError = '';
 
-    this.authService.loginWithGoogle(this.googleCredentialPending, birthday, username)
+    console.log('🔍 DEBUG - Registrando con Google:');
+    console.log('  - Username:', username);
+    console.log('  - Birthday:', birthday);
+    console.log('  - Interests seleccionados:', this.selectedInterests);
+    console.log('  - Credential:', this.googleCredentialPending ? 'presente' : 'ausente');
+
+    this.authService.loginWithGoogle(
+      this.googleCredentialPending, 
+      birthday, 
+      username, 
+      this.selectedInterests
+    )
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
         next: (response) => {
+          console.log('✅ Registro exitoso con Google. Usuario:', response.user);
+          console.log('   - Interests guardados:', response.user.interests);
+
           this.googleRegisterOpen = false;
           this.googleCredentialPending = null;
+          this.selectedInterests = [];
+          this.googleInterestsModalOpen  = false;
           this.handleLoginSuccess(response);
         },
         error: (error) => {
@@ -531,5 +553,18 @@ export class LoginComponent {
     setTimeout(() => {
       this.initGoogleSignIn();
     }, 0);
+  }
+
+  openInterestsModalInGoogle(): void {
+    this.googleInterestsModalOpen = true;
+  }
+
+  closeGoogleInterestsModal(): void {
+    this.googleInterestsModalOpen = false;
+  }
+
+  onInterestsChange(interests: string[]): void {
+    this.selectedInterests = interests;
+    console.log('🎯 Intereses actualizados en login:', interests);
   }
 }

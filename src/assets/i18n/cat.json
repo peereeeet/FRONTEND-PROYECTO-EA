@@ -44,7 +44,11 @@
     "GOOGLE_BIRTHDAY_TEXT": "Abans d’acabar el registre amb Google, necessitem la teva data de naixement per completar el teu perfil.",
     "GOOGLE_BIRTHDAY_LABEL": "Data de naixement",
     "GOOGLE_BIRTHDAY_CANCEL": "Cancel·lar",
-    "GOOGLE_BIRTHDAY_CONFIRM": "Continuar"
+    "GOOGLE_BIRTHDAY_CONFIRM": "Continuar",
+    "GOOGLE_REGISTER_INTERESTS": "Què t'interessa? (Opcional)",
+    "GOOGLE_INTERESTS_SHOW": "Afegir els meus interessos",
+    "GOOGLE_INTERESTS_HIDE": "Amagar interessos",
+    "GOOGLE_INTERESTS_SELECT": "Seleccionar els meus interessos"
   },
 
   "REGISTER": {
@@ -88,7 +92,34 @@
     "PASSWORD_REQ_LOWERCASE": "Una lletra minúscula",
     "PASSWORD_REQ_NUMBER": "Un número",
     "PASSWORD_REQ_SPECIAL": "Un caràcter especial (!@#$...)",
-    "PASSWORDS_MATCH": "Les contrasenyes coincideixen"
+    "PASSWORDS_MATCH": "Les contrasenyes coincideixen",
+    "INTERESTS_OPTIONAL": "(Opcional) Els teus interessos"
+  },
+
+  "INTERESTS": {
+    "TITLE": "Què t'interessa?",
+    "SUBTITLE": "Selecciona els teus interessos per rebre recomanacions personalitzades",
+    "SELECTED": "Interessos seleccionats",
+    "SHOW": "Afegir els meus interessos",
+    "HIDE": "Amagar interessos",
+    "HINT": "Opcional: Això ens ajudarà a recomanar-te esdeveniments que t'agradin",
+    "CONFIRM": "Confirmar",
+    "CANCEL": "Cancel·lar",
+    "CATEGORIES": {
+      "SPORTS": "Esports",
+      "MUSIC": "Música",
+      "CULTURE": "Cultura",
+      "FOOD": "Gastronomia",
+      "SOCIAL": "Social",
+      "LEARNING": "Aprenentatge",
+      "TECH": "Tecnologia",
+      "WELLNESS": "Benestar",
+      "VOLUNTEER": "Voluntariat",
+      "NATURE": "Natura",
+      "GAMES": "Jocs",
+      "FAMILY": "Família",
+      "OTHER": "Altres"
+    }
   },
 
   "LANG": {
@@ -204,7 +235,16 @@
     "SEARCH_CLEAR_BUTTON": "Netejar",
     "SEARCH_LOADING": "Cercant esdeveniments...",
     "SEARCH_EMPTY_TITLE": "No s'han trobat esdeveniments",
-    "SEARCH_EMPTY_TEXT": "Prova d'ajustar els teus filtres de cerca"
+    "SEARCH_EMPTY_TEXT": "Prova d'ajustar els teus filtres de cerca",
+    "TAB_RECOMMENDED": "Recomanats",
+    "RECOMMENDED_TITLE": "Esdeveniments Recomanats per a Tu",
+    "RECOMMENDED_SUBTITLE": "Basats en els teus interessos",
+    "RECOMMENDED_EMPTY_TITLE": "No hi ha esdeveniments recomanats",
+    "RECOMMENDED_EMPTY_TEXT": "No hem trobat esdeveniments que coincideixin amb els teus interessos en aquest moment. Prova més tard o explora altres esdeveniments.",
+    "RECOMMENDED_NO_INTERESTS_TITLE": "Afegeix els teus interessos",
+    "RECOMMENDED_NO_INTERESTS_TEXT": "Per rebre recomanacions personalitzades, afegeix els teus interessos al teu perfil.",
+    "RECOMMENDED_ADD_INTERESTS": "Anar al meu perfil",
+    "RECOMMENDED_LOADING": "Carregant recomanacions..."
   },
 
   "FRIENDS": {
@@ -284,7 +324,13 @@
     "PASSWORD_STRENGTH_MEDIUM": "Mitjana",
     "PASSWORD_STRENGTH_STRONG": "Forta",
     "PASSWORDS_MATCH": "Les contrasenyes coincideixen",
-    "PASSWORDS_MISMATCH": "Les contrasenyes no coincideixen"
+    "PASSWORDS_MISMATCH": "Les contrasenyes no coincideixen",
+    "INTERESTS_TITLE": "Els meus interessos",
+    "INTERESTS_EDIT_BUTTON": "Editar interessos",
+    "INTERESTS_ADD_BUTTON": "Afegir interessos",
+    "INTERESTS_EMPTY": "Encara no has afegit cap interès. Afegeix els teus interessos per rebre recomanacions personalitzades.",
+    "INTERESTS_MODAL_TITLE": "Editar els meus interessos",
+    "INTERESTS_MODAL_DESCRIPTION": "Selecciona els temes que t'interessen per rebre recomanacions d'esdeveniments personalitzades."
   },
 
   "EVENTS": {
@@ -308,32 +354,30 @@
     "BACK_TO_MENU": "Tornar al menú",
     "GO_TO_CREATE": "Crear esdeveniment nou",
     "GO_TO_MY_EVENTS": "Els meus esdeveniments",
-
     "LOADING_EVENTS": "Carregant esdeveniments...",
     "MAP_TITLE": "Mapa d'esdeveniments",
     "MAP_HINT": "Mou-te i fes zoom al mapa per veure els esdeveniments de la zona. Toca un punt per veure'n els detalls.",
-
     "EMPTY_TITLE": "No hi ha esdeveniments disponibles en aquesta zona",
     "EMPTY_TEXT": "Mou el mapa o canvia el zoom per cercar en altres zones.",
-
     "CARD_BADGE_CREATOR": "Tu ets el creador",
     "CARD_BADGE_ADMIN": "Admin",
     "CARD_BADGE_JOINED": "Inscrit",
-
     "PAGINATION_PREV": "« Anterior",
     "PAGINATION_NEXT": "Següent »",
     "PAGINATION_INFO_PREFIX": "Pàgina",
     "PAGINATION_INFO_OF": "de",
-
     "MODAL_TITLE": "Detalls de l'esdeveniment",
     "MODAL_ADDRESS_FALLBACK": "No especificada",
     "MODAL_CREATOR_NOTE": "Com a creador no pots sortir de l'esdeveniment.",
     "MODAL_BUTTON_JOIN": "Unir-me a l'esdeveniment",
     "MODAL_BUTTON_LEAVE": "Sortir de l'esdeveniment",
     "MODAL_BUTTON_CLOSE": "Tancar",
-
     "BUTTON_LEAVE_WAITLIST": "Sortir de llista d'espera",
-      "WAITLIST_MESSAGE": "Estàs a la llista d'espera d'aquest esdeveniment"
+    "WAITLIST_MESSAGE": "Estàs a la llista d'espera d'aquest esdeveniment",
+    "CARD_ACTION_JOIN": "Unir-se",
+    "CARD_ACTION_LEAVE": "Sortir",
+    "CARD_ACTION_DETAILS": "Veure detalls",
+    "PARTICIPANTS": "participants"
   },
 
   "CREATE_EVENT": {

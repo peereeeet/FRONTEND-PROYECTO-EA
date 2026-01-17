@@ -300,4 +300,25 @@ export class EventoService {
 
     return this.http.get<Evento[]>(`${this.apiUrl}/calendar`, { params });
   }
+
+  getRecommendedEventos(
+    page: number = 1,
+    limit: number = 10
+  ): Observable<{
+    data: Evento[];
+    page: number;
+    totalPages: number;
+    totalItems: number;
+  }> {
+    const params = new HttpParams()
+      .set('page', String(page))
+      .set('limit', String(limit));
+
+    return this.http.get<{
+      data: Evento[];
+      page: number;
+      totalPages: number;
+      totalItems: number;
+    }>(`${this.apiUrl}/recommended`, { params });
+  }
 }

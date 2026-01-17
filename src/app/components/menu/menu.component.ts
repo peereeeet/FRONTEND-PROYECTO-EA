@@ -133,7 +133,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   selectedEvent: Evento | null = null;
   showEventModal = false;
 
-  activeEventTab: 'map' | 'search' = 'map';
+  activeEventTab: 'map' | 'search' | 'recommended' = 'map';
   searchTerm = signal('');
   searchDateFrom = signal('');
   searchDateTo = signal('');
@@ -148,6 +148,14 @@ export class MenuComponent implements OnInit, OnDestroy {
   searchTotalPages = 1;
   loadingSearch = false;
   categoriasDisponibles = CATEGORIAS_EVENTO;
+
+  recommendedEventos: Evento[] = [];
+  recommendedPage = 1;
+  recommendedPageSize = 6;
+  recommendedTotalItems = 0;
+  recommendedTotalPages = 1;
+  loadingRecommended = false;
+  userHasInterests = signal(false);
 
   showConfirmRemove = signal(false);
   friendToRemove = signal<any | null>(null);
@@ -205,6 +213,7 @@ export class MenuComponent implements OnInit, OnDestroy {
         this.refreshSentRequests();
         this.cargarProgresoInicial();
         this.loadBlockedUsers();
+        this.checkUserInterests();
 
         const me = this.me();
         if (me?._id) {
@@ -1687,7 +1696,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
 
-  switchEventTab(tab: 'map' | 'search'): void {
+  switchEventTab(tab: 'map' | 'search' | 'recommended'): void {
     this.activeEventTab = tab;
 
     if (tab === 'map') {
@@ -1702,6 +1711,10 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (tab === 'search') {
       this.searchPage = 1;
       this.performSearch();
+    }
+
+    if (tab === 'recommended' && this.recommendedEventos.length === 0) {
+      this.loadRecommendedEventos();
     }
   }
 
@@ -1906,6 +1919,77 @@ export class MenuComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Error al salir del evento:', err);
         this.errorMessage = 'Error al salir del evento';
+      }
+    });
+  }
+
+  joinRecommendedEvento(evento: Evento): void {
+    if (!evento._id) return;
+
+    this.eventoService.joinEvento(evento._id as string).subscribe({
+      next: (response: any) => {
+        const idx = this.recommendedEventos.findIndex(e => e._id === evento._id);
+        if (idx !== -1) {
+          this.recommendedEventos[idx] = response.evento || response;
+        }
+        
+        if (response.enListaEspera) {
+          this.errorMessage = response.message || 'Has sido añadido a la lista de espera';
+        } else {
+          this.errorMessage = response.message || 'Te has unido al evento';
+          this.detectarCambiosProgreso('unirseEvento');
+        }
+        
+        const m = this.me();
+        if (m) {
+          const myId = this.getId(m);
+          if (myId) this.cargarEstadisticasEventos(myId);
+        }
+      },
+      error: (err) => {
+        console.error('Error al unirse al evento:', err);
+        this.errorMessage = err?.error?.message || 'Error al unirse al evento';
+      }
+    });
+  }
+
+  leaveRecommendedEvento(evento: Evento): void {
+    if (!evento._id) return;
+
+    this.eventoService.leaveEvento(evento._id as string).subscribe({
+      next: (response: any) => {
+        const idx = this.recommendedEventos.findIndex(e => e._id === evento._id);
+        if (idx !== -1) {
+          this.recommendedEventos[idx] = response.evento || response;
+        }
+        
+        const m = this.me();
+        if (m) {
+          const myId = this.getId(m);
+          if (myId) this.cargarEstadisticasEventos(myId);
+        }
+      },
+      error: (err) => {
+        console.error('Error al salir del evento:', err);
+        this.errorMessage = 'Error al salir del evento';
+      }
+    });
+  }
+
+  leaveWaitlistRecommended(evento: Evento): void {
+    if (!evento._id) return;
+
+    this.eventoService.leaveWaitlist(evento._id).subscribe({
+      next: (response: any) => {
+        const idx = this.recommendedEventos.findIndex(e => e._id === evento._id);
+        if (idx !== -1) {
+          this.recommendedEventos[idx] = response.evento || response;
+        }
+        
+        this.errorMessage = 'Has salido de la lista de espera';
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.message || 'Error al salir de lista de espera.';
       }
     });
   }
@@ -2189,5 +2273,66 @@ export class MenuComponent implements OnInit, OnDestroy {
   private filterBlockedUsers(users: User[]): User[] {
     const blockedIds = this.blockedUsers().map(u => u._id);
     return users.filter(u => !blockedIds.includes(u._id));
+  }
+
+  private checkUserInterests(): void {
+    const interests = this.me()?.interests || [];
+    this.userHasInterests.set(interests.length > 0);
+  }
+
+  loadRecommendedEventos(): void {
+    if (!this.userHasInterests()) {
+      console.log('⚠️ Usuario sin intereses configurados');
+      return;
+    }
+
+    this.loadingRecommended = true;
+    
+    this.eventoService
+      .getRecommendedEventos(this.recommendedPage, this.recommendedPageSize)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.recommendedEventos = response.data;
+          this.recommendedPage = response.page;
+          this.recommendedTotalItems = response.totalItems;
+          this.recommendedTotalPages = response.totalPages;
+          this.loadingRecommended = false;
+          
+          console.log(
+            `✨ ${response.data.length} eventos recomendados cargados (página ${response.page}/${response.totalPages})`
+          );
+        },
+        error: (err) => {
+          console.error('Error al cargar eventos recomendados:', err);
+          this.loadingRecommended = false;
+        }
+      });
+  }
+
+  recommendedPrevPage(): void {
+    if (this.recommendedPage > 1) {
+      this.recommendedPage--;
+      this.loadRecommendedEventos();
+    }
+  }
+
+  recommendedNextPage(): void {
+    if (this.recommendedPage < this.recommendedTotalPages) {
+      this.recommendedPage++;
+      this.loadRecommendedEventos();
+    }
+  }
+
+  goToProfileToAddInterests(): void {
+    this.router.navigate(['/perfil']);
+  }
+
+  getScheduleAsString(schedule: string | string[]): string {
+    return Array.isArray(schedule) ? schedule[0] : schedule;
+  }
+
+  isEventoFull(evento: Evento): boolean {
+    return this.isEventoLleno(evento);
   }
 }

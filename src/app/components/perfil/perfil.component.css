@@ -1901,3 +1901,171 @@ app-notificaciones .notification-panel {
 .toggle-pass-profile:hover {
   opacity: 1;
 }
+/* ===== ESTILOS PARA CARD DE INTERESES ===== */
+.interests-card {
+  margin-top: 24px;
+}
+
+.interests-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border, #e2e8f0);
+}
+
+.interests-card .card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.interests-card .title-emoji {
+  font-size: 1.6rem;
+}
+
+.btn--sm {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+.btn-icon {
+  margin-right: 6px;
+}
+
+/* Display de intereses */
+.interests-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.interest-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  border-radius: 999px;
+  color: var(--text-primary, #1e40af);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.interest-tag:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Estado vacío */
+.interests-empty {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--surface-elev, #f8fafc);
+  border: 2px dashed var(--border, #cbd5e1);
+  border-radius: 16px;
+}
+
+.interests-empty .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.interests-empty .empty-text {
+  color: var(--text-secondary, #64748b);
+  font-size: 1rem;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+/* Modal de intereses */
+.modal--interests {
+  max-width: 90%;
+  width: 900px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal--interests .modal-body {
+  padding: 20px;
+  max-height: calc(85vh - 180px);
+  overflow-y: auto;
+}
+
+.modal--interests .modal-description {
+  color: var(--text-secondary, #64748b);
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .interests-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .modal--interests {
+    max-width: 95%;
+    max-height: 90vh;
+    width: calc(100vw - 20px);
+  }
+
+  .modal--interests .modal-body {
+    max-height: calc(90vh - 160px);
+    padding: 15px;
+  }
+
+  .interest-tag {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .interests-card .card-title {
+  color: var(--text-primary, #f1f5f9);
+}
+
+[data-theme="dark"] .interest-tag {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.1));
+  border-color: rgba(59, 130, 246, 0.4);
+  color: var(--text-primary, #93c5fd);
+}
+
+[data-theme="dark"] .interest-tag:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.15));
+  border-color: rgba(59, 130, 246, 0.6);
+}
+
+[data-theme="dark"] .interests-empty {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+[data-theme="dark"] .interests-empty .empty-text {
+  color: var(--text-secondary, #94a3b8);
+}
+
+[data-theme="dark"] .modal--interests {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+[data-theme="dark"] .modal--interests .modal-body {
+  background: rgba(30, 41, 59, 0.6);
+}
+
+[data-theme="dark"] .modal--interests .modal-description {
+  color: var(--text-secondary, #94a3b8);
+}
