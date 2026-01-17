@@ -59,9 +59,22 @@
       </button>
     </div>
 
+    <!-- HEADER (Changes based on step) -->
     <div class="login-header">
-      <h1 class="login-title">{{ 'LOGIN.TITLE' | translate }}</h1>
-      <p class="login-subtitle">{{ 'LOGIN.SUBTITLE' | translate }}</p>
+      <h1 class="login-title">
+        {{ 
+          loginStep === 'LOGIN' ? ('LOGIN.TITLE' | translate) : 
+          loginStep === 'FORGOT' ? ('LOGIN.FORGOT_TITLE' | translate) : 
+          ('LOGIN.RESET_TITLE' | translate)
+        }}
+      </h1>
+      <p class="login-subtitle">
+        {{ 
+           loginStep === 'LOGIN' ? ('LOGIN.SUBTITLE' | translate) :
+           loginStep === 'FORGOT' ? ('LOGIN.FORGOT_TEXT' | translate) :
+           ('LOGIN.RESET_SUBTITLE' | translate)
+        }}
+      </p>
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
@@ -92,26 +105,65 @@
           <label class="form-label" for="password">
             {{ 'LOGIN.PASSWORD_LABEL' | translate }}
           </label>
-          <button
-            type="button"
-            class="link-forgot"
-            (click)="openForgot()">
-            {{ 'LOGIN.FORGOT' | translate }}
-          </button>
-        </div>
-        <div class="password-wrapper">
           <input
-            id="password"
-            [type]="showPassword ? 'text' : 'password'"
+            id="username"
+            type="text"
             class="form-input"
-            [class.error]="password?.invalid && password?.touched"
-            formControlName="password"
-            [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate" />
-
-          <button type="button" class="toggle-pass" (click)="togglePassword()">
-            {{ showPassword ? '🙈' : '👁️' }}
-          </button>
+            [class.error]="username?.invalid && username?.touched"
+            formControlName="username"
+            [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate" />
+          <div *ngIf="username?.invalid && username?.touched" class="error-message">
+            <span>⚠</span>
+            <span *ngIf="username?.errors?.['required']">
+              {{ 'LOGIN.USERNAME_REQUIRED' | translate }}
+            </span>
+            <span *ngIf="username?.errors?.['minlength']">
+              {{ 'LOGIN.USERNAME_MIN' | translate }}
+            </span>
+          </div>
         </div>
+
+        <div class="form-group">
+          <div class="row-between">
+            <label class="form-label" for="password">
+              {{ 'LOGIN.PASSWORD_LABEL' | translate }}
+            </label>
+            <button
+              type="button"
+              class="link-forgot"
+              (click)="openForgot()">
+              {{ 'LOGIN.FORGOT' | translate }}
+            </button>
+          </div>
+          <div class="password-wrapper">
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              class="form-input"
+              [class.error]="password?.invalid && password?.touched"
+              formControlName="password"
+              [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate" />
+
+            <button type="button" class="toggle-pass" (click)="togglePassword()">
+              {{ showPassword ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          <div *ngIf="password?.invalid && password?.touched" class="error-message">
+            <span>⚠</span>
+            <span *ngIf="password?.errors?.['required']">
+              {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
+            </span>
+            <span *ngIf="password?.errors?.['minlength']">
+              {{ 'LOGIN.PASSWORD_MIN' | translate }}
+            </span>
+          </div>
+        </div>
+
+        <div *ngIf="errorMessage" class="error-message global-error">
+          <span>⚠</span>
+          <span>{{ errorMessage | translate }}</span>
+        </div>
+        
         <div *ngIf="password?.invalid && password?.touched" class="error-message">
           <span>⚠ </span>
           <span *ngIf="password?.errors?.['required']">
@@ -121,127 +173,159 @@
             {{ 'LOGIN.PASSWORD_MIN' | translate }}
           </span>
         </div>
-      </div>
 
+        <!-- Botones extra para email no verificado -->
+        <div *ngIf="unverifiedEmail" class="unverified-actions">
+           <button type="button" class="btn-secondary" (click)="resendVerificationFromLogin()">
+             {{ 'LOGIN.RESEND_VERIFICATION' | translate }}
+           </button>
+           <button type="button" class="btn-secondary" (click)="goToVerifyFromLogin()">
+             {{ 'LOGIN.GO_TO_VERIFY' | translate }}
+           </button>
+        </div>
+        
       <div *ngIf="errorMessage" class="error-message global-error">
         <span>⚠ </span>
         <span>{{ errorMessage }}</span>
       </div>
 
-      <button
-        type="submit"
-        class="login-button"
-        [disabled]="isLoading || loginForm.invalid">
-        <span *ngIf="isLoading" class="loading-spinner"></span>
-        {{
-          isLoading
-            ? ('LOGIN.BUTTON_LOADING' | translate)
-            : ('LOGIN.BUTTON' | translate)
-        }}
-      </button>
-    </form>
+        <button
+          type="submit"
+          class="login-button"
+          [disabled]="isLoading || loginForm.invalid">
+          <span *ngIf="isLoading" class="loading-spinner"></span>
+          {{
+            isLoading
+              ? ('LOGIN.BUTTON_LOADING' | translate)
+              : ('LOGIN.BUTTON' | translate)
+          }}
+        </button>
+      </form>
 
-    <div class="divider">
-      <span>{{ 'LOGIN.OR' | translate }}</span>
-    </div>
-
-    <div id="googleSignInDiv" class="google-btn-container"></div>
-
-    <div class="admin-section">
-      <p class="admin-text">
-        {{ 'LOGIN.NO_ACCOUNT' | translate }}
-      </p>
-      <button type="button" class="admin-button" (click)="goToRegister()">
-        {{ 'LOGIN.CREATE_USER' | translate }}
-      </button>
-    </div>
-  </div>
-
-  <!-- Modal Forgot Password -->
-  <div class="modal-overlay" *ngIf="forgotOpen" (click)="closeForgot()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>{{ 'LOGIN.FORGOT_TITLE' | translate }}</h3>
-        <button class="btn-close" (click)="closeForgot()">×</button>
+      <div class="divider">
+        <span>{{ 'LOGIN.OR' | translate }}</span>
       </div>
-      <form [formGroup]="forgotForm" (ngSubmit)="onForgotSubmit()">
-        <p class="modal-text" [innerHTML]="'LOGIN.FORGOT_TEXT' | translate"></p>
 
+      <div id="googleSignInDiv" class="google-btn-container"></div>
+
+      <div class="admin-section">
+        <p class="admin-text">
+          {{ 'LOGIN.NO_ACCOUNT' | translate }}
+        </p>
+        <button type="button" class="admin-button" (click)="goToRegister()">
+          {{ 'LOGIN.CREATE_USER' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP: FORGOT PASSWORD -->
+    <div *ngIf="loginStep === 'FORGOT'">
+      <form [formGroup]="forgotForm" (ngSubmit)="onForgotSubmit()">
         <div class="form-group">
-          <label class="form-label" for="identifier">
-            {{ 'LOGIN.FORGOT_IDENTIFIER_LABEL' | translate }}
+          <label class="form-label" for="forgotEmail">
+            {{ 'REGISTER.EMAIL_LABEL' | translate }}
           </label>
           <input
-            id="identifier"
-            type="text"
+            id="forgotEmail"
+            type="email"
             class="form-input"
-            formControlName="identifier"
-            [placeholder]="'LOGIN.FORGOT_IDENTIFIER_PLACEHOLDER' | translate" />
-          <div *ngIf="forgotTouchedInvalid" class="error-message">
-            <span>⚠ </span>
-            <span>{{ 'LOGIN.FORGOT_REQUIRED' | translate }}</span>
+            formControlName="email"
+            [placeholder]="'REGISTER.EMAIL_PLACEHOLDER' | translate" />
+          
+          <div *ngIf="forgotForm.get('email')?.invalid && forgotForm.get('email')?.touched" class="error-message">
+             <span>⚠</span>
+             <span>{{ 'REGISTER.EMAIL_INVALID' | translate }}</span>
           </div>
         </div>
 
-        <div class="modal-actions">
-          <button type="button" class="btn cancel" (click)="closeForgot()">
-            {{ 'LOGIN.FORGOT_CANCEL' | translate }}
-          </button>
+        <div *ngIf="errorMessage" class="error-message global-error">
+          <span>⚠</span>
+          <span>{{ errorMessage | translate }}</span>
+        </div>
+
+        <div class="buttons-column">
           <button
             type="submit"
-            class="btn primary"
+            class="login-button"
             [disabled]="sending || forgotForm.invalid">
+            <span *ngIf="sending" class="loading-spinner"></span>
             {{ 'LOGIN.FORGOT_SUBMIT' | translate }}
           </button>
+          
+          <button type="button" class="admin-button" (click)="closeForgot()">
+            {{ 'LOGIN.FORGOT_CANCEL' | translate }}
+          </button>
         </div>
       </form>
     </div>
-  </div>
 
-  <!-- Modal Direct Reset -->
-  <div class="modal-overlay" *ngIf="directOpen" (click)="closeDirect()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>{{ 'LOGIN.DIRECT_TITLE' | translate }}</h3>
-        <button class="btn-close" (click)="closeDirect()">×</button>
-      </div>
-
-      <div *ngIf="foundUserLabel" class="modal-text found-user">
-        {{ 'LOGIN.DIRECT_USER_PREFIX' | translate }}
-        <strong>{{ foundUserLabel }}</strong>
-      </div>
-
-      <form [formGroup]="directForm" (ngSubmit)="onDirectResetSubmit()">
+    <!-- STEP: RESET PASSWORD -->
+    <div *ngIf="loginStep === 'RESET'">
+      <form [formGroup]="resetForm" (ngSubmit)="onResetSubmit()">
+        
         <div class="form-group">
-          <label class="form-label" for="newPasswordDirect">
-            {{ 'LOGIN.DIRECT_NEW_PASSWORD_LABEL' | translate }}
-          </label>
+          <label class="form-label">{{ 'LOGIN.CODE_LABEL' | translate }}</label>
           <input
-            id="newPasswordDirect"
-            type="password"
-            class="form-input"
-            formControlName="newPassword"
-            [placeholder]="'LOGIN.DIRECT_NEW_PASSWORD_PLACEHOLDER' | translate" />
+            type="text"
+            class="form-input code-input"
+            formControlName="otp"
+            maxlength="6"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            (input)="sanitizeResetCode()"
+            [placeholder]="'REGISTER.CODE_PLACEHOLDER' | translate" />
         </div>
 
-        <div class="modal-actions">
-          <button type="button" class="btn cancel" (click)="closeDirect()">
-            {{ 'LOGIN.DIRECT_CANCEL' | translate }}
-          </button>
+        <div class="form-group">
+          <label class="form-label">{{ 'LOGIN.NEW_PASSWORD_LABEL' | translate }}</label>
+          <div class="password-wrapper">
+             <input
+               [type]="showNewPassword ? 'text' : 'password'"
+               class="form-input"
+               formControlName="newPassword"
+               [placeholder]="'REGISTER.PASSWORD_PLACEHOLDER' | translate" />
+               <button type="button" class="toggle-pass" (click)="toggleNewPassword()">
+                 {{ showNewPassword ? '🙈' : '👁️' }}
+               </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ 'LOGIN.CONFIRM_PASSWORD_LABEL' | translate }}</label>
+           <div class="password-wrapper">
+             <input
+               [type]="showConfirmPassword ? 'text' : 'password'"
+               class="form-input"
+               formControlName="confirmPassword"
+               [placeholder]="'REGISTER.CONFIRM_PASSWORD_PLACEHOLDER' | translate" />
+             <button type="button" class="toggle-pass" (click)="toggleConfirmPassword()">
+                 {{ showConfirmPassword ? '🙈' : '👁️' }}
+             </button>
+           </div>
+        </div>
+
+        <div *ngIf="errorMessage" class="error-message global-error">
+          <span>⚠</span>
+          <span>{{ errorMessage | translate }}</span>
+        </div>
+
+        <div class="buttons-column">
           <button
             type="submit"
-            class="btn success"
-            [disabled]="directSaving || directForm.invalid">
-            {{
-              directSaving
-                ? ('LOGIN.DIRECT_SAVING' | translate)
-                : ('LOGIN.DIRECT_CONFIRM' | translate)
-            }}
+            class="login-button"
+            [disabled]="sending || resetForm.invalid">
+            <span *ngIf="sending" class="loading-spinner"></span>
+            {{ 'LOGIN.RESET_BUTTON' | translate }}
+          </button>
+          
+          <button type="button" class="admin-button" (click)="closeForgot()">
+             {{ 'COMMON.CANCEL' | translate }}
           </button>
         </div>
       </form>
     </div>
-  </div>
+
+  </div> <!-- End Card -->
 
   <!-- Modal Cumpleaños para registro con Google -->
   <div class="modal-overlay" *ngIf="googleBirthdayOpen" (click)="closeGoogleBirthdayModal()">
