@@ -132,6 +132,7 @@
   },
 
   "INTERESTS": {
+    "SELECT": "Select your interests",
     "TITLE": "What are you interested in?",
     "SUBTITLE": "Select your interests to receive personalized recommendations",
     "SELECTED": "Selected interests",

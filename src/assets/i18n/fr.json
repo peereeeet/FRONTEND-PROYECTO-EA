@@ -97,6 +97,7 @@
   },
 
   "INTERESTS": {
+    "SELECT": "Sélectionnez vos intérêts",
     "TITLE": "Qu'est-ce qui vous intéresse ?",
     "SUBTITLE": "Sélectionnez vos intérêts pour recevoir des recommandations personnalisées",
     "SELECTED": "Intérêts sélectionnés",

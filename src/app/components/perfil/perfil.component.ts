@@ -29,7 +29,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private themeService = inject(ThemeService);
   private gamificacionService = inject(GamificacionService);
-  private translate = inject(TranslateService);
   
   theme = this.themeService.theme;
 
@@ -37,9 +36,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
   eventos = signal<any[]>([]);
   loading = signal(true);
   error = signal('');
-  
-  maxDate: string;
-  minDate: string = '1900-01-01';
 
   progreso = signal<UsuarioProgreso | null>(null);
   loadingProgreso = signal(true);
@@ -125,7 +121,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
   maxDate: string;
   minDate: string;
   
-  constructor() {
+  constructor(private translate: TranslateService) {
     this.translate.use(this.currentLang);
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en' | 'cat' | 'fr') || 'es';
     this.currentLang = savedLang;
@@ -639,13 +635,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
   private clampToTodayYYYYMMDD(v: string): string {
     if (!v) return '';
     const sel = new Date(v);
-    const max = new Date(this.maxDate);
-    const min = new Date(this.minDate);
+    const today = new Date(this.todayISO());
     if (isNaN(+sel)) return '';
-    
-    if (sel > max) return this.maxDate;
-    if (sel < min) return this.minDate;
-    return v;
+    return sel > today ? this.todayISO() : v;
   }
 
   checkUsername(): void {

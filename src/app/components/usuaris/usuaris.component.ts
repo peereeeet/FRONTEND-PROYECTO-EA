@@ -46,9 +46,6 @@ export class UsuarisComponent implements OnInit {
   isCheckingUsername = false;
   usernameExists = false;
 
-  minDate: string = '1900-01-01';
-  maxDate: string = '';
-
   showDeleteModal = false;
   private pendingDeleteIndex: number | null = null;
 
@@ -71,16 +68,8 @@ export class UsuarisComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.calculateMaxDate();
     this.loadEventos();
     this.loadUsers();
-  }
-
-  private calculateMaxDate(): void {
-    const today = new Date();
-    const maxDateObj = new Date();
-    maxDateObj.setFullYear(today.getFullYear() - 13);
-    this.maxDate = maxDateObj.toISOString().split('T')[0];
   }
 
   toggleTheme(): void {
@@ -403,11 +392,7 @@ export class UsuarisComponent implements OnInit {
 
   isFutureBirthday(ymd: string): boolean {
     if (!ymd) return false;
-    const selected = this.parseAsUTCDate(ymd);
-    // Age check (13 years)
-    const max = this.parseAsUTCDate(this.maxDate);
-    const min = this.parseAsUTCDate(this.minDate);
-    return selected > max || selected < min;
+    return this.parseAsUTCDate(ymd) > this.todayUTC();
   }
 
   isEvento(e: string | Evento): e is Evento {

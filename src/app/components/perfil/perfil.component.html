@@ -6,44 +6,27 @@
     <aside class="sidebar">
       <div class="sidebar__brand">
         <div class="brand-logo brand-logo--image">
-          <img
-            src="assets/images/logo.png"
-            alt="Eventer Logo"
-            class="brand-logo-img"
-          />
+          <img src="assets/images/logo.png" alt="Eventer Logo" class="brand-logo-img">
         </div>
         <div class="brand-text">
           <span class="brand-name">Eventer</span>
-          <span class="brand-sub">{{ "PROFILE.TITLE" | translate }}</span>
+          <span class="brand-sub">{{ 'PROFILE.TITLE' | translate }}</span>
         </div>
       </div>
 
       <div class="sidebar__user">
         <div class="avatar avatar--lg">
-          <img
-            *ngIf="profilePhotoUrl()"
-            [src]="'http://localhost:3000' + profilePhotoUrl()"
-            alt="Profile"
-            class="avatar-img"
-          />
+          <img *ngIf="profilePhotoUrl()" [src]="'http://localhost:3000' + profilePhotoUrl()" alt="Profile" class="avatar-img" />
           <span *ngIf="!profilePhotoUrl()">👤</span>
         </div>
         <div class="user-meta">
           <h2 class="user-name">
-            {{ me()?.username || ("PROFILE.USER_FALLBACK" | translate) }}
+            {{ me()?.username || ('PROFILE.USER_FALLBACK' | translate) }}
           </h2>
           <div class="user-status">
-            <span
-              class="dot"
-              [class.online]="me()?.isOnline"
-              [class.offline]="!me()?.isOnline"
-            ></span>
+            <span class="dot" [class.online]="me()?.isOnline" [class.offline]="!me()?.isOnline"></span>
             <span class="state-text">
-              {{
-                me()?.isOnline
-                  ? ("PROFILE.STATUS_ONLINE" | translate)
-                  : ("PROFILE.STATUS_OFFLINE" | translate)
-              }}
+              {{ me()?.isOnline ? ('PROFILE.STATUS_ONLINE' | translate) : ('PROFILE.STATUS_OFFLINE' | translate) }}
             </span>
           </div>
         </div>
@@ -52,19 +35,17 @@
       <nav class="sidebar__nav">
         <button class="nav-item" routerLink="/menu">
           <span class="nav-icon">🏠</span>
-          <span class="nav-text">{{ "PROFILE.BACK_TO_MENU" | translate }}</span>
+          <span class="nav-text">{{ 'PROFILE.BACK_TO_MENU' | translate }}</span>
         </button>
 
         <button class="nav-item" (click)="openEdit()">
           <span class="nav-icon">✏️</span>
-          <span class="nav-text">{{ "PROFILE.EDIT_BUTTON" | translate }}</span>
+          <span class="nav-text">{{ 'PROFILE.EDIT_BUTTON' | translate }}</span>
         </button>
 
         <button class="nav-item nav-item--danger" (click)="openDelete()">
           <span class="nav-icon">🗑️</span>
-          <span class="nav-text">{{
-            "PROFILE.DELETE_BUTTON" | translate
-          }}</span>
+          <span class="nav-text">{{ 'PROFILE.DELETE_BUTTON' | translate }}</span>
         </button>
       </nav>
     </aside>
@@ -73,46 +54,38 @@
     <main class="main-panel">
       <header class="top-bar">
         <div class="top-bar__left">
-          <h1 class="top-title">{{ "PROFILE.TITLE" | translate }}</h1>
+          <h1 class="top-title">{{ 'PROFILE.TITLE' | translate }}</h1>
         </div>
 
         <div class="top-bar__right">
           <app-notificaciones></app-notificaciones>
-
+          
           <div class="lang-switcher-menu">
             <button class="lang-toggle" (click)="toggleLangMenu()">
               🌐
               <span class="lang-current">
                 {{
-                  currentLang === "es"
-                    ? ("LANG.ES" | translate)
-                    : currentLang === "en"
-                    ? ("LANG.EN" | translate)
-                    : currentLang === "cat"
-                    ? ("LANG.CAT" | translate)
-                    : ("LANG.FR" | translate)
+                  currentLang === 'es'
+                    ? ('LANG.ES' | translate)
+                    : currentLang === 'en'
+                    ? ('LANG.EN' | translate)
+                    : currentLang === 'cat'
+                    ? ('LANG.CAT' | translate)
+                    : ('LANG.FR' | translate)
                 }}
               </span>
               ▾
             </button>
 
             <div class="lang-dropdown" *ngIf="showLangMenu">
-              <button class="lang-option" (click)="selectLanguage('es')">
-                {{ "LANG.ES" | translate }}
-              </button>
-              <button class="lang-option" (click)="selectLanguage('en')">
-                {{ "LANG.EN" | translate }}
-              </button>
-              <button class="lang-option" (click)="selectLanguage('cat')">
-                {{ "LANG.CAT" | translate }}
-              </button>
-              <button class="lang-option" (click)="selectLanguage('fr')">
-                {{ "LANG.FR" | translate }}
-              </button>
+              <button class="lang-option" (click)="selectLanguage('es')">{{ 'LANG.ES' | translate }}</button>
+              <button class="lang-option" (click)="selectLanguage('en')">{{ 'LANG.EN' | translate }}</button>
+              <button class="lang-option" (click)="selectLanguage('cat')">{{ 'LANG.CAT' | translate }}</button>
+              <button class="lang-option" (click)="selectLanguage('fr')">{{ 'LANG.FR' | translate }}</button>
             </div>
 
             <button class="theme-toggle-btn" (click)="toggleTheme()">
-              {{ theme() === "dark" ? "☀️" : "🌙" }}
+              {{ theme() === 'dark' ? '☀️' : '🌙' }}
             </button>
           </div>
         </div>
@@ -123,21 +96,17 @@
         <div class="card profile-card" *ngIf="!loading() && me()">
           <div class="profile-grid">
             <div class="field">
-              <div class="label">
-                {{ "PROFILE.FIELD_USERNAME" | translate }}
-              </div>
+              <div class="label">{{ 'PROFILE.FIELD_USERNAME' | translate }}</div>
               <div class="value">{{ me()?.username }}</div>
             </div>
 
             <div class="field">
-              <div class="label">{{ "PROFILE.FIELD_EMAIL" | translate }}</div>
+              <div class="label">{{ 'PROFILE.FIELD_EMAIL' | translate }}</div>
               <div class="value">{{ me()?.gmail }}</div>
             </div>
 
             <div class="field">
-              <div class="label">
-                {{ "PROFILE.FIELD_BIRTHDAY" | translate }}
-              </div>
+              <div class="label">{{ 'PROFILE.FIELD_BIRTHDAY' | translate }}</div>
               <div class="value">{{ formatDate(me()?.birthday) }}</div>
             </div>
           </div>
@@ -172,14 +141,11 @@
         </div>
 
         <!-- ===== CARD GAMIFICACIÓN ===== -->
-        <div
-          class="card gamification-card"
-          *ngIf="!loadingProgreso() && progreso()"
-        >
+        <div class="card gamification-card" *ngIf="!loadingProgreso() && progreso()">
           <div class="gamif-header">
             <h3 class="card-title">
               <span class="title-emoji">{{ getNivelEmoji() }}</span>
-              {{ "GAMIFICATION.SECTION_TITLE" | translate }}
+              {{ 'GAMIFICATION.SECTION_TITLE' | translate }}
             </h3>
             <div class="nivel-badge" [style.--nivel-color]="getNivelColor()">
               {{ progreso()?.nivel }}
@@ -190,154 +156,97 @@
             <div class="progress-header">
               <div class="puntos-display">
                 <span class="puntos-value">{{ progreso()?.puntos }}</span>
-                <span class="puntos-label">{{
-                  "GAMIFICATION.POINTS_LABEL" | translate
-                }}</span>
+                <span class="puntos-label">{{ 'GAMIFICATION.POINTS_LABEL' | translate }}</span>
               </div>
-              <div
-                class="next-level"
-                *ngIf="getProgresoNivel()?.siguienteNivel"
-              >
-                <span class="next-label">{{
-                  "GAMIFICATION.NEXT_LEVEL_LABEL" | translate
-                }}</span>
-                <span class="next-name">{{
-                  getProgresoNivel()?.siguienteNivel?.nombre
-                }}</span>
-                <span class="next-points"
-                  >({{ getProgresoNivel()?.puntosRestantes }}
-                  {{ "GAMIFICATION.NEXT_LEVEL_POINTS" | translate }})</span
-                >
+              <div class="next-level" *ngIf="getProgresoNivel()?.siguienteNivel">
+                <span class="next-label">{{ 'GAMIFICATION.NEXT_LEVEL_LABEL' | translate }}</span>
+                <span class="next-name">{{ getProgresoNivel()?.siguienteNivel?.nombre }}</span>
+                <span class="next-points">({{ getProgresoNivel()?.puntosRestantes }} {{ 'GAMIFICATION.NEXT_LEVEL_POINTS' | translate }})</span>
               </div>
-              <div
-                class="max-level"
-                *ngIf="!getProgresoNivel()?.siguienteNivel"
-              >
-                <span class="max-badge">{{
-                  "GAMIFICATION.MAX_LEVEL_BADGE" | translate
-                }}</span>
+              <div class="max-level" *ngIf="!getProgresoNivel()?.siguienteNivel">
+                <span class="max-badge">{{ 'GAMIFICATION.MAX_LEVEL_BADGE' | translate }}</span>
               </div>
             </div>
 
             <div class="progress-bar-container">
               <div class="progress-bar-bg">
-                <div
-                  class="progress-bar-fill"
+                <div 
+                  class="progress-bar-fill" 
                   [style.width.%]="getProgresoNivel()?.progreso"
-                  [style.background]="getNivelColor()"
-                ></div>
+                  [style.background]="getNivelColor()">
+                </div>
               </div>
-              <div class="progress-percentage">
-                {{ getProgresoNivel()?.progreso }}%
-              </div>
+              <div class="progress-percentage">{{ getProgresoNivel()?.progreso }}%</div>
             </div>
           </div>
 
           <div class="stats-grid">
             <div class="stat-item">
               <div class="stat-icon">🎯</div>
-              <div class="stat-value">
-                {{ progreso()?.estadisticas?.eventosCreadosTotal }}
-              </div>
-              <div class="stat-label">
-                {{ "GAMIFICATION.STATS_EVENTS_CREATED" | translate }}
-              </div>
+              <div class="stat-value">{{ progreso()?.estadisticas?.eventosCreadosTotal }}</div>
+              <div class="stat-label">{{ 'GAMIFICATION.STATS_EVENTS_CREATED' | translate }}</div>
             </div>
 
             <div class="stat-item">
               <div class="stat-icon">🤝</div>
-              <div class="stat-value">
-                {{ progreso()?.estadisticas?.eventosUnidosTotal }}
-              </div>
-              <div class="stat-label">
-                {{ "GAMIFICATION.STATS_EVENTS_JOINED" | translate }}
-              </div>
+              <div class="stat-value">{{ progreso()?.estadisticas?.eventosUnidosTotal }}</div>
+              <div class="stat-label">{{ 'GAMIFICATION.STATS_EVENTS_JOINED' | translate }}</div>
             </div>
 
             <div class="stat-item">
               <div class="stat-icon">⭐</div>
-              <div class="stat-value">
-                {{ progreso()?.estadisticas?.valoracionesTotal }}
-              </div>
-              <div class="stat-label">
-                {{ "GAMIFICATION.STATS_RATINGS" | translate }}
-              </div>
+              <div class="stat-value">{{ progreso()?.estadisticas?.valoracionesTotal }}</div>
+              <div class="stat-label">{{ 'GAMIFICATION.STATS_RATINGS' | translate }}</div>
             </div>
 
             <div class="stat-item">
               <div class="stat-icon">👥</div>
-              <div class="stat-value">
-                {{ progreso()?.estadisticas?.amigosTotal }}
-              </div>
-              <div class="stat-label">
-                {{ "GAMIFICATION.STATS_FRIENDS" | translate }}
-              </div>
+              <div class="stat-value">{{ progreso()?.estadisticas?.amigosTotal }}</div>
+              <div class="stat-label">{{ 'GAMIFICATION.STATS_FRIENDS' | translate }}</div>
             </div>
           </div>
 
-          <div
-            class="badges-section"
-            *ngIf="progreso()?.insignias && progreso()!.insignias.length > 0"
-          >
+          <div class="badges-section" *ngIf="progreso()?.insignias && progreso()!.insignias.length > 0">
             <div class="badges-header">
-              <h4 class="badges-title">
-                {{ "GAMIFICATION.BADGES_TITLE" | translate }}
-              </h4>
-              <span class="badges-count">{{
-                progreso()?.insignias?.length
-              }}</span>
+              <h4 class="badges-title">{{ 'GAMIFICATION.BADGES_TITLE' | translate }}</h4>
+              <span class="badges-count">{{ progreso()?.insignias?.length }}</span>
             </div>
 
             <div class="badges-grid">
-              <div
-                class="badge-item"
+              <div 
+                class="badge-item" 
                 *ngFor="let insignia of progreso()?.insignias"
-                [title]="
-                  insignia.descripcion + ' (+' + insignia.puntos + ' pts)'
-                "
-              >
-                <div class="badge-icon">{{ insignia.icono || "🏆" }}</div>
+                [title]="insignia.descripcion + ' (+' + insignia.puntos + ' pts)'">
+                <div class="badge-icon">{{ insignia.icono || '🏆' }}</div>
                 <div class="badge-name">{{ insignia.nombre }}</div>
                 <div class="badge-points">+{{ insignia.puntos }}</div>
               </div>
             </div>
           </div>
 
-          <div
-            class="no-badges"
-            *ngIf="!progreso()?.insignias || progreso()!.insignias.length === 0"
-          >
-            <div class="no-badges-icon">
-              {{ "GAMIFICATION.NO_BADGES_ICON" | translate }}
-            </div>
-            <div class="no-badges-text">
-              {{ "GAMIFICATION.NO_BADGES_TEXT" | translate }}
-            </div>
-            <div class="no-badges-hint">
-              {{ "GAMIFICATION.NO_BADGES_HINT" | translate }}
-            </div>
+          <div class="no-badges" *ngIf="!progreso()?.insignias || progreso()!.insignias.length === 0">
+            <div class="no-badges-icon">{{ 'GAMIFICATION.NO_BADGES_ICON' | translate }}</div>
+            <div class="no-badges-text">{{ 'GAMIFICATION.NO_BADGES_TEXT' | translate }}</div>
+            <div class="no-badges-hint">{{ 'GAMIFICATION.NO_BADGES_HINT' | translate }}</div>
           </div>
         </div>
 
-        <div
-          class="card gamification-card loading-card"
-          *ngIf="loadingProgreso()"
-        >
+        <div class="card gamification-card loading-card" *ngIf="loadingProgreso()">
           <div class="loading-spinner">
             <div class="spinner"></div>
-            <p>{{ "GAMIFICATION.LOADING" | translate }}</p>
+            <p>{{ 'GAMIFICATION.LOADING' | translate }}</p>
           </div>
         </div>
 
         <!-- ===== CARD EVENTOS ===== -->
         <div class="card events-card">
           <div class="events-header">
-            <h3 class="card-title">{{ "PROFILE.EVENTS_TITLE" | translate }}</h3>
+            <h3 class="card-title">{{ 'PROFILE.EVENTS_TITLE' | translate }}</h3>
             <span class="count-pill">{{ eventos().length }}</span>
           </div>
 
           <div *ngIf="!eventos().length" class="empty-events">
-            {{ "PROFILE.EVENTS_EMPTY" | translate }}
+            {{ 'PROFILE.EVENTS_EMPTY' | translate }}
           </div>
 
           <ul class="event-list" *ngIf="eventos().length">
@@ -345,7 +254,7 @@
               <div class="ev-body">
                 <div class="ev-title">{{ ev.title }}</div>
                 <div class="ev-sub">
-                  {{ ev.date ? formatDate(ev.date) : "" }}
+                  {{ ev.date ? formatDate(ev.date) : '' }}
                   <span *ngIf="ev.location"> · {{ ev.location }}</span>
                 </div>
               </div>
@@ -362,34 +271,21 @@
   <div class="modal-overlay" *ngIf="editOpen()" (click)="closeEdit()">
     <div class="modal modal--wide" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>{{ "PROFILE.EDIT_MODAL_TITLE" | translate }}</h3>
+        <h3>{{ 'PROFILE.EDIT_MODAL_TITLE' | translate }}</h3>
         <button class="btn-close" (click)="closeEdit()">×</button>
       </div>
 
       <div class="modal-body">
         <!-- Sección de foto de perfil -->
         <div class="form-section photo-section">
-          <h4 class="section-title">
-            {{ "PROFILE.PHOTO_SECTION_TITLE" | translate }}
-          </h4>
-
+          <h4 class="section-title">{{ 'PROFILE.PHOTO_SECTION_TITLE' | translate }}</h4>
+          
           <div class="photo-upload-area">
             <!-- Vista previa de la foto actual -->
-            <div
-              class="current-photo"
-              *ngIf="profilePhotoUrl() && !photoPreviewUrl()"
-            >
-              <img
-                [src]="'http://localhost:3000' + profilePhotoUrl()"
-                alt="Foto actual"
-              />
-              <button
-                type="button"
-                class="btn-remove-photo"
-                (click)="openDeletePhotoModal()"
-                [disabled]="uploadingPhoto()"
-              >
-                🗑️ {{ "PROFILE.PHOTO_DELETE_BUTTON" | translate }}
+            <div class="current-photo" *ngIf="profilePhotoUrl() && !photoPreviewUrl()">
+              <img [src]="'http://localhost:3000' + profilePhotoUrl()" alt="Foto actual" />
+              <button type="button" class="btn-remove-photo" (click)="openDeletePhotoModal()" [disabled]="uploadingPhoto()">
+                🗑️ {{ 'PROFILE.PHOTO_DELETE_BUTTON' | translate }}
               </button>
             </div>
 
@@ -397,34 +293,20 @@
             <div class="photo-preview" *ngIf="photoPreviewUrl()">
               <img [src]="photoPreviewUrl()!" alt="Vista previa" />
               <div class="preview-actions">
-                <button
-                  type="button"
-                  class="btn btn--primary"
-                  (click)="uploadPhoto()"
-                  [disabled]="uploadingPhoto()"
-                >
-                  {{
-                    uploadingPhoto()
-                      ? ("PROFILE.PHOTO_UPLOADING" | translate)
-                      : ("PROFILE.PHOTO_UPLOAD_BUTTON" | translate)
-                  }}
+                <button type="button" class="btn btn--primary" (click)="uploadPhoto()" [disabled]="uploadingPhoto()">
+                  {{ uploadingPhoto() ? ('PROFILE.PHOTO_UPLOADING' | translate) : ('PROFILE.PHOTO_UPLOAD_BUTTON' | translate) }}
                 </button>
-                <button
-                  type="button"
-                  class="btn btn--ghost"
-                  (click)="cancelPhotoSelection()"
-                  [disabled]="uploadingPhoto()"
-                >
-                  {{ "PROFILE.PHOTO_CANCEL" | translate }}
+                <button type="button" class="btn btn--ghost" (click)="cancelPhotoSelection()" [disabled]="uploadingPhoto()">
+                  {{ 'PROFILE.PHOTO_CANCEL' | translate }}
                 </button>
               </div>
             </div>
 
             <!-- Input para seleccionar archivo -->
             <div class="file-input-wrapper" *ngIf="!photoPreviewUrl()">
-              <input
-                type="file"
-                id="photoInput"
+              <input 
+                type="file" 
+                id="photoInput" 
                 accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                 (change)="onPhotoSelected($event)"
                 [disabled]="uploadingPhoto()"
@@ -432,15 +314,9 @@
               <label for="photoInput" class="file-input-label">
                 <span class="upload-icon">📷</span>
                 <span class="upload-text">
-                  {{
-                    profilePhotoUrl()
-                      ? ("PROFILE.PHOTO_CHANGE" | translate)
-                      : ("PROFILE.PHOTO_SELECT" | translate)
-                  }}
+                  {{ profilePhotoUrl() ? ('PROFILE.PHOTO_CHANGE' | translate) : ('PROFILE.PHOTO_SELECT' | translate) }}
                 </span>
-                <span class="upload-hint">{{
-                  "PROFILE.PHOTO_HINT" | translate
-                }}</span>
+                <span class="upload-hint">{{ 'PROFILE.PHOTO_HINT' | translate }}</span>
               </label>
             </div>
 
@@ -480,12 +356,8 @@
           </div>
           
           <div class="hint-row">
-            <span *ngIf="checkingUsername()" class="hint info">{{
-              "PROFILE.EDIT_USERNAME_CHECKING" | translate
-            }}</span>
-            <span *ngIf="usernameTaken()" class="hint error">{{
-              "PROFILE.EDIT_USERNAME_TAKEN" | translate
-            }}</span>
+            <span *ngIf="checkingUsername()" class="hint info">{{ 'PROFILE.EDIT_USERNAME_CHECKING' | translate }}</span>
+            <span *ngIf="usernameTaken()" class="hint error">{{ 'PROFILE.EDIT_USERNAME_TAKEN' | translate }}</span>
           </div>
         </div>
 
@@ -512,12 +384,8 @@
           </div>
           
           <div class="hint-row">
-            <span *ngIf="checkingEmail()" class="hint info">{{
-              "PROFILE.EDIT_EMAIL_CHECKING" | translate
-            }}</span>
-            <span *ngIf="emailTaken()" class="hint error">{{
-              "PROFILE.EDIT_EMAIL_TAKEN" | translate
-            }}</span>
+            <span *ngIf="checkingEmail()" class="hint info">{{ 'PROFILE.EDIT_EMAIL_CHECKING' | translate }}</span>
+            <span *ngIf="emailTaken()" class="hint error">{{ 'PROFILE.EDIT_EMAIL_TAKEN' | translate }}</span>
           </div>
         </div>
 
@@ -634,47 +502,28 @@
   </div>
 
   <!-- ============ NUEVO: MODAL CONFIRMAR ELIMINAR FOTO ============ -->
-  <div
-    class="modal-overlay"
-    *ngIf="deletePhotoModalOpen()"
-    (click)="closeDeletePhotoModal()"
-  >
+  <div class="modal-overlay" *ngIf="deletePhotoModalOpen()" (click)="closeDeletePhotoModal()">
     <div class="modal modal--warning" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>{{ "PROFILE.DELETE_PHOTO_MODAL_TITLE" | translate }}</h3>
+        <h3>{{ 'PROFILE.DELETE_PHOTO_MODAL_TITLE' | translate }}</h3>
         <button class="btn-close" (click)="closeDeletePhotoModal()">×</button>
       </div>
 
       <div class="modal-body">
-        <div class="modal-icon modal-icon--warning">🖼️</div>
-        <p
-          class="modal-message"
-          [innerHTML]="'PROFILE.DELETE_PHOTO_MODAL_TEXT' | translate"
-        ></p>
-
-        <div *ngIf="uploadPhotoError()" class="msg msg--error">
-          {{ uploadPhotoError() }}
+        <div class="modal-icon modal-icon--warning">
+          🖼️
         </div>
+        <p class="modal-message" [innerHTML]="'PROFILE.DELETE_PHOTO_MODAL_TEXT' | translate"></p>
+        
+        <div *ngIf="uploadPhotoError()" class="msg msg--error">{{ uploadPhotoError() }}</div>
       </div>
 
       <div class="modal-actions">
-        <button
-          class="btn btn--ghost"
-          (click)="closeDeletePhotoModal()"
-          [disabled]="deletingPhoto()"
-        >
-          {{ "PROFILE.DELETE_PHOTO_CANCEL" | translate }}
+        <button class="btn btn--ghost" (click)="closeDeletePhotoModal()" [disabled]="deletingPhoto()">
+          {{ 'PROFILE.DELETE_PHOTO_CANCEL' | translate }}
         </button>
-        <button
-          class="btn btn--warning"
-          [disabled]="deletingPhoto()"
-          (click)="confirmDeletePhoto()"
-        >
-          {{
-            deletingPhoto()
-              ? ("PROFILE.DELETE_PHOTO_DELETING" | translate)
-              : ("PROFILE.DELETE_PHOTO_CONFIRM" | translate)
-          }}
+        <button class="btn btn--warning" [disabled]="deletingPhoto()" (click)="confirmDeletePhoto()">
+          {{ deletingPhoto() ? ('PROFILE.DELETE_PHOTO_DELETING' | translate) : ('PROFILE.DELETE_PHOTO_CONFIRM' | translate) }}
         </button>
       </div>
     </div>
@@ -684,47 +533,27 @@
   <div class="modal-overlay" *ngIf="deleteOpen()" (click)="closeDelete()">
     <div class="modal modal--danger" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>{{ "PROFILE.DELETE_MODAL_TITLE" | translate }}</h3>
+        <h3>{{ 'PROFILE.DELETE_MODAL_TITLE' | translate }}</h3>
         <button class="btn-close" (click)="closeDelete()">×</button>
       </div>
 
       <div class="modal-body">
-        <div class="modal-icon modal-icon--danger">⚠️</div>
-        <p
-          class="modal-message"
-          [innerHTML]="'PROFILE.DELETE_MODAL_TEXT' | translate"
-        ></p>
-
+        <div class="modal-icon modal-icon--danger">
+          ⚠️
+        </div>
+        <p class="modal-message" [innerHTML]="'PROFILE.DELETE_MODAL_TEXT' | translate"></p>
+        
         <div class="form-row" *ngIf="!me()?.isGoogleUser">
-          <input
-            type="password"
-            [(ngModel)]="deletePassword"
-            minlength="7"
-            placeholder="{{
-              'PROFILE.DELETE_PASSWORD_PLACEHOLDER' | translate
-            }}"
-          />
+          <input type="password" [(ngModel)]="deletePassword" minlength="7" placeholder="{{ 'PROFILE.DELETE_PASSWORD_PLACEHOLDER' | translate }}" />
         </div>
 
-        <div *ngIf="deleteError()" class="msg msg--error">
-          {{ deleteError() }}
-        </div>
+        <div *ngIf="deleteError()" class="msg msg--error">{{ deleteError() }}</div>
       </div>
 
       <div class="modal-actions">
-        <button class="btn btn--ghost" (click)="closeDelete()">
-          {{ "PROFILE.DELETE_CANCEL" | translate }}
-        </button>
-        <button
-          class="btn btn--danger"
-          [disabled]="deleting()"
-          (click)="confirmDelete()"
-        >
-          {{
-            deleting()
-              ? ("PROFILE.DELETE_DELETING" | translate)
-              : ("PROFILE.DELETE_CONFIRM" | translate)
-          }}
+        <button class="btn btn--ghost" (click)="closeDelete()">{{ 'PROFILE.DELETE_CANCEL' | translate }}</button>
+        <button class="btn btn--danger" [disabled]="deleting()" (click)="confirmDelete()">
+          {{ deleting() ? ('PROFILE.DELETE_DELETING' | translate) : ('PROFILE.DELETE_CONFIRM' | translate) }}
         </button>
       </div>
     </div>

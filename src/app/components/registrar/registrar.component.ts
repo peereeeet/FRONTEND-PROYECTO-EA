@@ -1,9 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
-import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/user.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
@@ -11,8 +10,8 @@ import { InterestSelectorComponent } from '../interest-selector/interest-selecto
 
 @Component({
   selector: 'app-registrar',
-  standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, InterestSelectorComponent], 
+  standalone: true,            
+  imports: [CommonModule, FormsModule, TranslateModule, ReactiveFormsModule, InterestSelectorComponent], 
   templateUrl: './registrar.component.html',
   styleUrls: ['./registrar.component.css']
 })
@@ -35,22 +34,23 @@ export class RegistrarComponent {
   formSubmitted = false;
   errorMessage = '';
   isSubmitting = false;
+  emailExists: boolean = false;
+  isCheckingEmail: boolean = false;
+  isCheckingUsername = false;
+  usernameExists = false;
 
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
-  // New state variables
   registrarStep: 'FORM' | 'VERIFY' = 'FORM';
-  
-  // Verification Control
   otpControl = new FormControl('', [
     Validators.required, 
     Validators.pattern(/^\d{6}$/)
   ]);
 
-  registeredEmail: string = '';
   resendCooldown: number = 0;
   resendTimer: any;
+
   showInterestsModal: boolean = false
   selectedInterests: string[] = [];
 
@@ -76,7 +76,7 @@ export class RegistrarComponent {
     'mailinator.com', 'throwaway.email', 'temp-mail.org'
   ];
 
-  constructor(private userService: UserService, private authService: AuthService, private router: Router, private translate: TranslateService, private route: ActivatedRoute) {
+  constructor(private userService: UserService, private router: Router, private translate: TranslateService) {
     const t = new Date();
     this.maxDate = new Date(Date.UTC(
       t.getFullYear(),
@@ -98,17 +98,6 @@ export class RegistrarComponent {
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en' | 'cat' | 'fr') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
-  }
-
-  ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      const step = params['step'];
-      const email = params['email'];
-      if (step === 'verify' && email) {
-        this.registrarStep = 'VERIFY';
-        this.registeredEmail = email;
-      }
-    });
   }
 
   isTooYoung(): boolean {
@@ -133,8 +122,7 @@ export class RegistrarComponent {
   validateEmail(): void {
     const email = this.nuevoUsuario.gmail.trim();
     
-    // Simple regex
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    const emailRegex = /^[a-zA-Z0-9]([a-zA-Z0-9._-]*[a-zA-Z0-9])?@[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?\.[a-zA-Z]{2,}$/;
     this.emailValidations.format = emailRegex.test(email);
     
     if (email) {
@@ -193,10 +181,11 @@ export class RegistrarComponent {
       this.emailValidations.notTemporary &&
       this.passwordStrength === 5 &&
       this.passwordsMatch() &&
-
       !this.isTooYoung() &&
       !this.isFutureDate() &&
-      this.birthdayStr !== ''
+      this.birthdayStr !== '' &&
+      !this.usernameExists &&
+      !this.emailExists
     );
   }
 
@@ -214,15 +203,12 @@ export class RegistrarComponent {
   }
 
   onSubmit(form: any) {
-    // Legacy check removed, verification is handled by onVerify()
-    // if (this.registrarStep === 'VERIFY') { ... }
-
     this.formSubmitted = true;
     this.errorMessage = '';
+    this.emailExists = false;
 
     if (!this.isFormValid()) {
-        // Detailed validation error messages
-       if (!this.validateUsername()) {
+      if (!this.validateUsername()) {
         this.errorMessage = 'El nombre de usuario no es válido.';
       } else if (!this.emailValidations.format) {
         this.errorMessage = 'El formato del correo electrónico no es válido.';
@@ -242,126 +228,61 @@ export class RegistrarComponent {
       return;
     }
 
-    this.performRegister();
-  }
-
-  performRegister() {
-     this.isSubmitting = true;
-     const newUser: User = {
-       username: this.nuevoUsuario.username.trim(),
-       gmail: this.nuevoUsuario.gmail.trim(),
-       password: this.nuevoUsuario.password?.trim(),
-       birthday: new Date(this.birthdayStr),
-     } as any; 
-
-     this.authService.register({
-       username: newUser.username,
-       gmail: newUser.gmail,
-       birthday: this.birthdayStr,
-       password: newUser.password!
-     }).subscribe({
-       next: (response) => {
-         this.isSubmitting = false;
-         
-         // Always go to verify step if success, or check response flag if backend sends one
-         // Assuming successful register -> means pending verification
-         this.registrarStep = 'VERIFY';
-         this.registeredEmail = newUser.gmail;
-         this.errorMessage = ''; 
-         // Start cooldown immediately upon entering this step
-         this.startCooldown(60);
-       },
-       error: (err) => {
-         this.isSubmitting = false;
-         this.handleError(err);
-       }
-     });
-  }
-
-  sanitizeOtp() {
-    let val = this.otpControl.value || '';
-    // Keep only digits and max 6 chars
-    val = val.replace(/\D/g, '').slice(0, 6);
-    this.otpControl.setValue(val, { emitEvent: false });
-  }
-
-  onVerify() {
-    this.errorMessage = '';
-    if (this.otpControl.invalid) {
-      this.errorMessage = 'LOGIN.CODE_REQUIRED'; // Fallback or use specific OTP error
-      return;
-    }
-    
-    const otp = this.otpControl.value!;
-    
-    this.isSubmitting = true;
-    this.authService.verifyEmail(this.registeredEmail, otp).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        // Success -> Go to login with query param
-        this.router.navigate(['/login'], { queryParams: { verified: 'true' } });
-      },
-      error: (err) => {
-        this.isSubmitting = false;
-        this.handleError(err);
-      }
-    });
-  }
-
-  onResend() {
-    if (this.resendCooldown > 0) return;
-
-    this.isSubmitting = true;
-    this.errorMessage = ''; // Clear previous errors
-    
-    this.authService.resendVerification(this.registeredEmail).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.startCooldown(60);
-      },
-      error: (err) => {
-        this.isSubmitting = false;
-        if (err.error?.error === 'RATE_LIMITED') {
-           // Maybe backend tells us how long to wait? Default to 60s
-           this.startCooldown(60);
-        } else {
-           this.handleError(err);
+    this.isCheckingEmail = true;
+    this.userService.checkEmailExists(this.nuevoUsuario.gmail).subscribe({
+      next: (res) => {
+        this.isCheckingEmail = false;
+        if (res.exists) {
+          this.emailExists = true;
+          this.errorMessage = 'Este correo ya está registrado.';
+          return;
         }
+        
+        this.isCheckingUsername = true;
+        this.userService.checkUsernameExists(this.nuevoUsuario.username).subscribe({
+          next: (res) => {
+            this.isCheckingUsername = false;
+            if (res.exists) {
+              this.usernameExists = true;
+              this.errorMessage = 'Este nombre de usuario ya está en uso.';
+              return;
+            }
+
+            this.isSubmitting = true;
+
+            const newUser: User = {
+              username: this.nuevoUsuario.username.trim(),
+              gmail: this.nuevoUsuario.gmail.trim(),
+              password: this.nuevoUsuario.password?.trim(),
+              birthday: new Date(this.birthdayStr),
+              interests: this.selectedInterests,
+            };
+
+            this.userService.addUser(newUser).subscribe({
+              next: () => {
+                this.isSubmitting = false;
+                this.router.navigate(['/login']);
+              },
+              error: (err) => {
+                this.isSubmitting = false;
+                this.errorMessage =
+                  err?.error?.message ||
+                  'Ha ocurrido un error al registrar el usuario. Inténtalo nuevamente.';
+              }
+            });
+          },
+          error: () => {
+            this.isCheckingUsername = false;
+            this.errorMessage = 'Error al verificar el nombre de usuario.';
+          }
+        });
+      },
+      error: () => {
+        this.isCheckingEmail = false;
+        this.errorMessage = 'Error al verificar el correo.';
       }
     });
   }
-
-  startCooldown(seconds: number) {
-     if (this.resendTimer) clearInterval(this.resendTimer);
-     
-     this.resendCooldown = seconds;
-     this.resendTimer = setInterval(() => {
-       this.resendCooldown--;
-       if (this.resendCooldown <= 0) {
-         clearInterval(this.resendTimer);
-         this.resendTimer = null;
-       }
-     }, 1000);
-  }
-
-
-
-  handleError(err: any){
-     const code = err.error?.error || err.error?.message;
-     
-     if (code === 'INVALID_CODE') this.errorMessage = 'AUTH_ERRORS.INVALID_CODE';
-     else if (code === 'EXPIRED_CODE') this.errorMessage = 'AUTH_ERRORS.EXPIRED_CODE';
-     else if (code === 'TOO_MANY_ATTEMPTS') this.errorMessage = 'AUTH_ERRORS.TOO_MANY_ATTEMPTS';
-     else if (code === 'RATE_LIMITED') this.errorMessage = 'AUTH_ERRORS.RATE_LIMITED';
-     
-     // Register errors
-     else if (code === 'EMAIL_EXISTS' || code === 'EMAIL_ALREADY_EXISTS') this.errorMessage = 'REGISTER.EMAIL_EXISTS';
-     else if (code === 'USERNAME_EXISTS' || code === 'USERNAME_ALREADY_EXISTS') this.errorMessage = 'REGISTER.USERNAME_EXISTS';
-     
-     else this.errorMessage = 'COMMON.ERROR_GENERIC';
-  }
-
-
 
   togglePassword() {
     this.showPassword = !this.showPassword;
