@@ -16,9 +16,9 @@
     "NO_ACCOUNT": "Pas de compte ? Inscrivez-vous ici.",
     "CREATE_USER": "Créer un utilisateur",
     "FORGOT_TITLE": "Réinitialiser le mot de passe",
-    "FORGOT_TEXT": "Entrez votre <strong>email</strong> ou <strong>utilisateur</strong>. Si le compte existe, nous vous enverrons des instructions.",
-    "FORGOT_IDENTIFIER_LABEL": "Email ou utilisateur",
-    "FORGOT_IDENTIFIER_PLACEHOLDER": "ex: jean@mail.com ou jean23",
+    "FORGOT_TEXT": "Entrez votre <strong>email</strong>. Si le compte existe, nous vous enverrons des instructions.",
+    "FORGOT_IDENTIFIER_LABEL": "Email",
+    "FORGOT_IDENTIFIER_PLACEHOLDER": "ex: jean@mail.com",
     "FORGOT_REQUIRED": "Ce champ est obligatoire",
     "FORGOT_CANCEL": "Annuler",
     "FORGOT_SUBMIT": "Recevoir les instructions",
@@ -28,6 +28,14 @@
     "DIRECT_NEW_PASSWORD_PLACEHOLDER": "Minimum 7 caractères",
     "DIRECT_CANCEL": "Annuler",
     "DIRECT_CONFIRM": "Confirmer",
+    "GOOGLE_REGISTER_TITLE": "Complétez votre inscription",
+    "GOOGLE_REGISTER_TEXT": "Pour compléter votre inscription avec Google, choisissez un nom d'utilisateur et confirmez votre date de naissance:",
+    "GOOGLE_USERNAME_LABEL": "Nom d'utilisateur",
+    "GOOGLE_USERNAME_PLACEHOLDER": "Choisissez votre nom d'utilisateur",
+    "GOOGLE_REGISTER_CANCEL": "Annuler",
+    "GOOGLE_REGISTER_CONFIRM": "S'inscrire",
+    "USERNAME_EXISTS": "Ce nom d'utilisateur est déjà pris",
+    "BIRTHDAY_REQUIRED": "La date de naissance est obligatoire",
     "DIRECT_SAVING": "Enregistrement…",
     "ERROR_GENERIC": "Erreur lors de la connexion. Vérifiez vos informations.",
     "OR": "ou continuer avec",
@@ -36,7 +44,30 @@
     "GOOGLE_BIRTHDAY_TEXT": "Avant de finaliser l'inscription avec Google, nous avons besoin de votre date de naissance pour compléter votre profil.",
     "GOOGLE_BIRTHDAY_LABEL": "Date de naissance",
     "GOOGLE_BIRTHDAY_CANCEL": "Annuler",
+<<<<<<< HEAD
     "GOOGLE_BIRTHDAY_CONFIRM": "Continuer"
+=======
+    "GOOGLE_BIRTHDAY_CONFIRM": "Continuer",
+    "GOOGLE_REGISTER_INTERESTS": "Qu'est-ce qui vous intéresse ? (Optionnel)",
+    "GOOGLE_INTERESTS_SHOW": "Ajouter mes intérêts",
+    "GOOGLE_INTERESTS_HIDE": "Masquer les intérêts",
+    "GOOGLE_INTERESTS_SELECT": "Sélectionner mes intérêts",
+    "GOOGLE_REGISTER_SAVING": "Enregistrement…",
+    "RESET_SUCCESS_MESSAGE": "Mot de passe réinitialisé avec succès. Connectez-vous.",
+    "RESET_ERROR_INVALID_OTP": "Le code OTP est invalide.",
+    "RESET_ERROR_EXPIRED_OTP": "Le code OTP a expiré.",
+    "RESET_TITLE": "Réinitialiser le mot de passe",
+    "RESET_TEXT": "Entrez le code de vérification envoyé à votre email, ainsi que votre nouveau mot de passe.",
+    "RESET_OTP_LABEL": "Code de vérification",
+    "RESET_OTP_PLACEHOLDER": "Entrez le code à 6 chiffres",
+    "RESET_NEW_PASSWORD_LABEL": "Nouveau mot de passe",
+    "RESET_NEW_PASSWORD_PLACEHOLDER": "Minimum 7 caractères",
+    "RESET_CANCEL": "Annuler",
+    "RESET_CONFIRM": "Réinitialiser le mot de passe",
+    "RESET_SAVING": "Réinitialisation…",
+    "RESEND_CODE": "Renvoyer le code",
+    "RESEND_IN": "Renvoyer dans"
+>>>>>>> origin/develop
   },
 
   "REGISTER": {
@@ -75,12 +106,61 @@
     "PASSWORD_STRENGTH_WEAK": "Faible",
     "PASSWORD_STRENGTH_MEDIUM": "Moyenne",
     "PASSWORD_STRENGTH_STRONG": "Forte",
+<<<<<<< HEAD
+=======
+    "PASSWORD_STRENGTH_": "",
+>>>>>>> origin/develop
     "PASSWORD_REQ_LENGTH": "Minimum 8 caractères",
     "PASSWORD_REQ_UPPERCASE": "Une lettre majuscule",
     "PASSWORD_REQ_LOWERCASE": "Une lettre minuscule",
     "PASSWORD_REQ_NUMBER": "Un chiffre",
     "PASSWORD_REQ_SPECIAL": "Un caractère spécial (!@#$...)",
+<<<<<<< HEAD
     "PASSWORDS_MATCH": "Les mots de passe correspondent"
+=======
+    "PASSWORDS_MATCH": "Les mots de passe correspondent",
+    "INTERESTS_OPTIONAL": "(Optionnel) Vos intérêts",
+    "VERIFY_TITLE": "Vérifiez votre email",
+    "VERIFY_INSTRUCTIONS": "Nous avons envoyé un code de vérification à 6 chiffres à :",
+    "OTP_LABEL": "Code de vérification",
+    "OTP_HINT": "Entrez le code à 6 chiffres que vous avez reçu",
+    "OTP_INVALID": "Le code doit contenir 6 chiffres numériques",
+    "VERIFY_BUTTON": "Vérifier le compte",
+    "RESEND_CODE": "Renvoyer le code",
+    "RESEND_IN": "Renvoyer dans",
+    "BACK_TO_FORM": "Retour au formulaire",
+    "BACK": "Retour",
+    "VERIFY_SUCCESS": "Email vérifié avec succès !",
+    "VERIFY_ERROR_INVALID": "Le code est incorrect",
+    "VERIFY_ERROR_EXPIRED": "Le code a expiré. Demandez-en un nouveau"
+  },
+
+  "INTERESTS": {
+    "SELECT": "Sélectionnez vos intérêts",
+    "TITLE": "Qu'est-ce qui vous intéresse ?",
+    "SUBTITLE": "Sélectionnez vos intérêts pour recevoir des recommandations personnalisées",
+    "SELECTED": "Intérêts sélectionnés",
+    "SHOW": "Ajouter mes intérêts",
+    "HIDE": "Masquer les intérêts",
+    "HINT": "Optionnel : Cela nous aidera à vous recommander des événements que vous aimerez",
+    "CONFIRM": "Confirmer",
+    "CANCEL": "Annuler",
+    "CATEGORIES": {
+      "SPORTS": "Sports",
+      "MUSIC": "Musique",
+      "CULTURE": "Culture",
+      "FOOD": "Gastronomie",
+      "SOCIAL": "Social",
+      "LEARNING": "Apprentissage",
+      "TECH": "Technologie",
+      "WELLNESS": "Bien-être",
+      "VOLUNTEER": "Bénévolat",
+      "NATURE": "Nature",
+      "GAMES": "Jeux",
+      "FAMILY": "Famille",
+      "OTHER": "Autres"
+    }
+>>>>>>> origin/develop
   },
 
   "LANG": {
@@ -123,7 +203,6 @@
     "USER_FALLBACK": "Utilisateur",
     "PROFILE_BUTTON": "Mon profil",
     "LOGOUT_BUTTON": "Déconnexion",
-
     "EVENTS_TITLE": "Événements",
     "EVENTS_CREATE": "Créer un nouvel événement",
     "EVENTS_EXPLORE_MAP": "Explorer les événements (carte)",
@@ -131,16 +210,18 @@
     "INVITATIONS": "Invitations",
     "CALENDAR": "Calendrier",
     "LOADING": "Chargement…",
-
     "FRIENDS_TITLE": "Amis",
     "FRIENDS_BUTTON_EXPLORE_USERS": "Explorer les utilisateurs",
     "FRIENDS_BUTTON_REQUESTS": "Demandes reçues",
+    "FRIENDS_BUTTON_BLOCKED": "Utilisateurs bloqués",
     "FRIENDS_ONLINE": "En ligne",
     "FRIENDS_OFFLINE": "Hors ligne",
     "FRIENDS_REMOVE": "Supprimer",
     "FRIENDS_EMPTY": "Vous n'avez pas encore d'amis à afficher.",
     "FRIENDS_SEARCH_ADD": "Rechercher et ajouter des amis",
-
+    "FRIENDS_BLOCK": "Bloquer",
+    "FRIENDS_UNBLOCK": "Débloquer",
+    "FRIENDS_BLOCKED_USER": "Utilisateur bloqué",
     "MODAL_EXPLORE_TITLE": "Explorer les utilisateurs",
     "MODAL_SEARCH_PLACEHOLDER": "Rechercher par utilisateur ou email",
     "MODAL_SEARCH_BUTTON": "Rechercher",
@@ -152,28 +233,38 @@
     "MODAL_ADD_BUTTON": "Ajouter",
     "MODAL_NO_USERS": "Aucun utilisateur à afficher (ou déjà ami).",
     "MODAL_CLOSE": "Fermer",
-
+    "MODAL_BLOCK_BUTTON": "Bloquer",
+    "MODAL_BLOCKED_BADGE": "Bloqué",
     "REQUESTS_TITLE": "Demandes d'amitié",
     "REQUESTS_LOADING": "Chargement des demandes...",
     "REQUESTS_EMPTY": "Aucune demande en attente 😄",
     "REQUESTS_ACCEPT": "Accepter",
     "REQUESTS_REJECT": "Refuser",
-
     "CHAT_TITLE_PREFIX": "Discussion avec",
     "CHAT_LOADING": "Chargement de la conversation...",
     "CHAT_EMPTY": "Pas encore de messages. Écrivez le premier !",
     "CHAT_PLACEHOLDER": "Écrivez un message...",
-
     "CHAT_EVENT_INVITE_TITLE": "Invitation à un événement",
     "CHAT_EVENT_INVITE_JOIN": "Rejoindre",
     "CHAT_EVENT_INVITE_ALREADY_IN": "Tu es déjà dedans",
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/develop
     "CONFIRM_REMOVE_TITLE": "Supprimer ami",
     "CONFIRM_REMOVE_TEXT": "Êtes-vous sûr de vouloir supprimer",
     "CONFIRM_REMOVE_WARNING": "Cette action est permanente et ne peut pas être annulée.",
     "CONFIRM_REMOVE_CANCEL": "Annuler",
     "CONFIRM_REMOVE_CONFIRM": "Supprimer",
+<<<<<<< HEAD
 
+=======
+    "CONFIRM_BLOCK_TITLE": "Bloquer l'utilisateur",
+    "CONFIRM_BLOCK_TEXT": "Êtes-vous sûr de vouloir bloquer",
+    "CONFIRM_BLOCK_WARNING": "Cet utilisateur ne pourra plus vous envoyer de messages ou de demandes d'ami. Si vous êtes déjà amis, l'amitié sera supprimée.",
+    "CONFIRM_BLOCK_CANCEL": "Annuler",
+    "CONFIRM_BLOCK_CONFIRM": "Bloquer",
+>>>>>>> origin/develop
     "TAB_MAP": "Carte",
     "TAB_SEARCH": "Recherche",
     "SEARCH_TITLE": "Rechercher des Événements",
@@ -185,7 +276,26 @@
     "SEARCH_CLEAR_BUTTON": "Effacer",
     "SEARCH_LOADING": "Recherche d'événements...",
     "SEARCH_EMPTY_TITLE": "Aucun événement trouvé",
+<<<<<<< HEAD
     "SEARCH_EMPTY_TEXT": "Essayez d'ajuster vos filtres de recherche"
+=======
+    "SEARCH_EMPTY_TEXT": "Essayez d'ajuster vos filtres de recherche",
+    "TAB_RECOMMENDED": "Recommandés",
+    "RECOMMENDED_TITLE": "Événements Recommandés pour Vous",
+    "RECOMMENDED_SUBTITLE": "Basés sur vos intérêts",
+    "RECOMMENDED_EMPTY_TITLE": "Aucun événement recommandé",
+    "RECOMMENDED_EMPTY_TEXT": "Nous n'avons pas trouvé d'événements correspondant à vos intérêts pour le moment. Réessayez plus tard ou explorez d'autres événements.",
+    "RECOMMENDED_NO_INTERESTS_TITLE": "Ajoutez vos intérêts",
+    "RECOMMENDED_NO_INTERESTS_TEXT": "Pour recevoir des recommandations personnalisées, ajoutez vos intérêts dans votre profil.",
+    "RECOMMENDED_ADD_INTERESTS": "Aller à mon profil",
+    "RECOMMENDED_LOADING": "Chargement des recommandations...",
+    "CHAT_ADD_IMAGE": "Joindre une image",
+    "CHAT_DELETE_MESSAGE": "Supprimer le message",
+    "CHAT_DELETE_MESSAGE_TITLE": "Supprimer le Message",
+    "CHAT_DELETE_MESSAGE_CONFIRM": "Êtes-vous sûr de vouloir supprimer ce message? Cette action ne peut pas être annulée.",
+    "CHAT_DELETE_MESSAGE_BTN": "Supprimer",
+    "CHAT_DELETING_MESSAGE": "Suppression..."
+>>>>>>> origin/develop
   },
 
   "FRIENDS": {
@@ -197,45 +307,81 @@
 
   "PROFILE": {
     "TITLE": "Mon profil",
+    "USER_FALLBACK": "Utilisateur",
     "LOADING": "Chargement…",
-
     "BACK_TO_MENU": "Retour au menu",
     "EDIT_BUTTON": "Modifier les données",
     "DELETE_BUTTON": "Supprimer le compte",
-
     "STATUS_ONLINE": "En ligne",
-    "STATUS_OFFLINE": "Hors ligne",
-
+    "STATUS_OFFLINE": "Déconnecté",
     "FIELD_USERNAME": "Nom d'utilisateur",
     "FIELD_EMAIL": "Email",
-    "FIELD_BIRTHDAY": "Date de naissance",
+    "FIELD_BIRTHDAY": "Anniversaire",
     "FIELD_PASSWORD": "Mot de passe",
-
+    "FIELD_PHOTO": "Photo de Profil",
     "EVENTS_TITLE": "Événements auxquels je participe",
     "EVENTS_EMPTY": "Vous ne participez à aucun événement.",
-
     "EDIT_MODAL_TITLE": "Modifier les données",
     "EDIT_USERNAME_LABEL": "Nom d'utilisateur",
     "EDIT_USERNAME_CHECKING": "Vérification du nom…",
-    "EDIT_USERNAME_TAKEN": "⚠ Ce nom est déjà utilisé.",
+    "EDIT_USERNAME_TAKEN": "⚠ Ce nom d'utilisateur est déjà utilisé.",
     "EDIT_EMAIL_LABEL": "Email",
     "EDIT_EMAIL_CHECKING": "Vérification de l'email…",
     "EDIT_EMAIL_TAKEN": "⚠ Cet email est déjà enregistré.",
-    "EDIT_BIRTHDAY_LABEL": "Date de naissance",
+    "EDIT_BIRTHDAY_LABEL": "Anniversaire",
     "EDIT_NEW_PASSWORD_LABEL": "Nouveau mot de passe",
-    "EDIT_NEW_PASSWORD_PLACEHOLDER": "Laisser vide pour ne pas changer",
-    "EDIT_ERROR_GENERIC": "Erreur lors de l'enregistrement.",
+    "EDIT_NEW_PASSWORD_PLACEHOLDER": "Laissez vide pour ne pas changer",
+    "EDIT_ERROR_GENERIC": "Erreur lors de l'enregistrement des modifications.",
     "EDIT_CANCEL": "Annuler",
     "EDIT_SAVE": "Enregistrer",
     "EDIT_SAVING": "Enregistrement…",
-
+    "PHOTO_SECTION_TITLE": "Photo de profil",
+    "PHOTO_SELECT": "Sélectionner une photo",
+    "PHOTO_CHANGE": "Changer la photo",
+    "PHOTO_DELETE_BUTTON": "Supprimer la photo",
+    "PHOTO_UPLOAD_BUTTON": "✓ Télécharger la photo",
+    "PHOTO_UPLOADING": "Téléchargement...",
+    "PHOTO_CANCEL": "× Annuler",
+    "PHOTO_HINT": "JPEG, PNG, GIF ou WEBP (max. 5Mo)",
+    "DELETE_PHOTO_MODAL_TITLE": "Supprimer la photo de profil",
+    "DELETE_PHOTO_MODAL_TEXT": "Êtes-vous sûr de vouloir supprimer votre <strong>photo de profil</strong>?<br>Cette action ne peut pas être annulée.",
+    "DELETE_PHOTO_CANCEL": "Annuler",
+    "DELETE_PHOTO_CONFIRM": "Oui, supprimer la photo",
+    "DELETE_PHOTO_DELETING": "Suppression...",
     "DELETE_MODAL_TITLE": "Supprimer le compte",
     "DELETE_MODAL_TEXT": "Cette action est <strong>permanente</strong>. Entrez votre mot de passe pour confirmer.",
     "DELETE_PASSWORD_LABEL": "Mot de passe",
     "DELETE_PASSWORD_PLACEHOLDER": "Votre mot de passe",
     "DELETE_CANCEL": "Annuler",
     "DELETE_CONFIRM": "Supprimer définitivement",
-    "DELETE_DELETING": "Suppression…"
+    "DELETE_DELETING": "Suppression…",
+    "EDIT_CONFIRM_PASSWORD_LABEL": "Confirmer le nouveau mot de passe",
+    "EDIT_CONFIRM_PASSWORD_PLACEHOLDER": "Répéter le mot de passe",
+    "USERNAME_MIN_LENGTH": "Le nom doit contenir au moins 3 caractères",
+    "USERNAME_MAX_LENGTH": "Le nom ne peut pas dépasser 30 caractères",
+    "USERNAME_START_LETTER": "Doit commencer par une lettre",
+    "USERNAME_VALID_CHARS": "Seulement des lettres, chiffres et underscores",
+    "USERNAME_NOT_RESERVED": "Nom d'utilisateur valide",
+    "EMAIL_FORMAT_VALID": "Format d'e-mail valide",
+    "EMAIL_NOT_TEMPORARY": "Pas un e-mail temporaire",
+    "BIRTHDAY_NOT_FUTURE": "La date ne peut pas être future",
+    "BIRTHDAY_MIN_AGE": "Vous devez avoir au moins 13 ans",
+    "PASSWORD_REQ_LENGTH": "Minimum 8 caractères",
+    "PASSWORD_REQ_UPPERCASE": "Une lettre majuscule",
+    "PASSWORD_REQ_LOWERCASE": "Une lettre minuscule",
+    "PASSWORD_REQ_NUMBER": "Un chiffre",
+    "PASSWORD_REQ_SPECIAL": "Un caractère spécial (!@#$...)",
+    "PASSWORD_STRENGTH_WEAK": "Faible",
+    "PASSWORD_STRENGTH_MEDIUM": "Moyen",
+    "PASSWORD_STRENGTH_STRONG": "Fort",
+    "PASSWORDS_MATCH": "Les mots de passe correspondent",
+    "PASSWORDS_MISMATCH": "Les mots de passe ne correspondent pas",
+    "INTERESTS_TITLE": "Mes intérêts",
+    "INTERESTS_EDIT_BUTTON": "Modifier les intérêts",
+    "INTERESTS_ADD_BUTTON": "Ajouter des intérêts",
+    "INTERESTS_EMPTY": "Vous n'avez pas encore ajouté d'intérêts. Ajoutez vos intérêts pour recevoir des recommandations personnalisées.",
+    "INTERESTS_MODAL_TITLE": "Modifier mes intérêts",
+    "INTERESTS_MODAL_DESCRIPTION": "Sélectionnez les sujets qui vous intéressent pour recevoir des recommandations d'événements personnalisées."
   },
 
   "EVENTS": {
@@ -259,32 +405,40 @@
     "BACK_TO_MENU": "Retour au menu",
     "GO_TO_CREATE": "Créer un nouvel événement",
     "GO_TO_MY_EVENTS": "Mes événements",
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/develop
     "LOADING_EVENTS": "Chargement des événements...",
     "MAP_TITLE": "Carte des événements",
     "MAP_HINT": "Déplacez-vous et zoomez sur la carte pour voir les événements de la zone. Cliquez sur un point pour les détails.",
-
     "EMPTY_TITLE": "Aucun événement disponible dans cette zone",
     "EMPTY_TEXT": "Déplacez la carte ou changez le zoom pour chercher dans d’autres zones.",
-
     "CARD_BADGE_CREATOR": "Vous êtes le créateur",
     "CARD_BADGE_ADMIN": "Admin",
     "CARD_BADGE_JOINED": "Inscrit",
-
     "PAGINATION_PREV": "« Précédent",
     "PAGINATION_NEXT": "Suivant »",
     "PAGINATION_INFO_PREFIX": "Page",
     "PAGINATION_INFO_OF": "de",
-
     "MODAL_TITLE": "Détails de l'événement",
     "MODAL_ADDRESS_FALLBACK": "Non spécifiée",
     "MODAL_CREATOR_NOTE": "En tant que créateur, vous ne pouvez pas quitter l'événement.",
     "MODAL_BUTTON_JOIN": "Rejoindre",
     "MODAL_BUTTON_LEAVE": "Quitter",
     "MODAL_BUTTON_CLOSE": "Fermer",
+<<<<<<< HEAD
 
     "BUTTON_LEAVE_WAITLIST": "Quitter la liste d'attente",
       "WAITLIST_MESSAGE": "Vous êtes sur la liste d'attente pour cet événement"
+=======
+    "BUTTON_LEAVE_WAITLIST": "Quitter la liste d'attente",
+    "WAITLIST_MESSAGE": "Vous êtes sur la liste d'attente pour cet événement",
+    "CARD_ACTION_JOIN": "Rejoindre",
+    "CARD_ACTION_LEAVE": "Quitter",
+    "CARD_ACTION_DETAILS": "Voir les détails",
+    "PARTICIPANTS": "participants"
+>>>>>>> origin/develop
   },
 
   "CREATE_EVENT": {
@@ -331,6 +485,15 @@
     "FIELD_ADDRESS_ERROR_MIN": "⚠ L'adresse est obligatoire (minimum 5 caractères).",
     "FIELD_CATEGORY_ERROR_REQUIRED": "⚠ La catégorie est obligatoire.",
     "SUBMIT_LOADING": "Création..."
+<<<<<<< HEAD
+=======
+  },
+  "CREATE_EVENTS": {
+    "PRIVATE_NO_INVITES_ERROR": "Un événement privé doit avoir au moins un invité",
+    "MAX_PARTICIPANTS_TOO_LOW": "La limite de participants doit être supérieure ou égale au nombre d'invités plus le créateur",
+    "MAX_PARTICIPANTS_WARNING": "⚠️ La limite est inférieure au nombre d'invités + créateur",
+    "PRIVATE_NEEDS_INVITES_INFO": "ℹ️ N'oubliez pas d'inviter au moins un ami pour l'événement privé"
+>>>>>>> origin/develop
   },
 
   "MY_EVENTS": {
@@ -340,64 +503,121 @@
     "GO_TO_EXPLORE": "Explorer les événements (carte)",
     "LOADING": "Chargement des événements.",
     "ERROR_MESSAGE_PREFIX": "Erreur:",
-
     "CREATED_TITLE": "📝 Événements que j'ai créés ({{count}})",
     "CREATED_EMPTY_TEXT": "Vous n'avez encore créé aucun événement",
     "BADGE_CREATOR": "Créateur",
-
     "FIELD_ADDRESS": "Adresse:",
+<<<<<<< HEAD
     "BUTTON_VIEW_MAP": "🗺 Carte",
+=======
+    "BUTTON_VIEW_MAP": "Carte",
+>>>>>>> origin/develop
     "FIELD_SCHEDULE": "Horaire:",
     "FIELD_PARTICIPANTS": "Participants:",
-
     "RATINGS_LABEL": "Avis:",
     "RATINGS_NONE": "Aucun avis",
     "BUTTON_VIEW_RATINGS": "Avis",
+<<<<<<< HEAD
     "BUTTON_EDIT": "✏️ Modifier",
+=======
+    "BUTTON_EDIT": "Modifier",
+>>>>>>> origin/develop
     "BUTTON_DELETE": "🗑️ Supprimer",
-
     "JOINED_TITLE": "🎯 Événements auxquels je suis inscrit ({{count}})",
     "JOINED_EMPTY_TEXT": "Vous n'êtes inscrit à aucun événement",
     "JOINED_BUTTON_EXPLORE": "Explorer les événements",
-
     "BADGE_JOINED": "Inscrit",
+<<<<<<< HEAD
 
     "BUTTON_LEAVE": "👋 Quitter",
 
+=======
+    "BUTTON_LEAVE": "👋 Quitter",
+>>>>>>> origin/develop
     "DELETE_MODAL_TITLE": "Supprimer l'événement",
     "DELETE_MODAL_TEXT": "Êtes-vous sûr de vouloir supprimer <strong>{{name}}</strong> ?",
     "DELETE_MODAL_CANCEL": "Annuler",
     "DELETE_MODAL_CONFIRM": "🗑️ Supprimer",
-
     "LEAVE_MODAL_TITLE": "Quitter l'événement",
     "LEAVE_MODAL_TEXT": "Êtes-vous sûr de vouloir quitter <strong>{{name}}</strong> ?",
     "LEAVE_MODAL_CANCEL": "Annuler",
     "LEAVE_MODAL_CONFIRM": "Quitter",
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/develop
     "BUTTON_SHARE_EVENT": "Envoyer événement",
     "SHARE_EVENT_TITLE": "Partager l'événement",
     "SHARE_EVENT_LOADING": "Chargement des amis...",
     "SHARE_EVENT_NO_FRIENDS": "Vous n'avez aucun ami à qui envoyer cet événement.",
     "SHARE_EVENT_SEND": "Envoyer",
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/develop
     "BUTTON_EVENT_CHAT": "Chat",
     "EVENT_CHAT_TITLE": "Chat de l'événement",
     "EVENT_CHAT_LOADING": "Chargement des messages de l'événement...",
     "EVENT_CHAT_EMPTY": "Il n'y a pas encore de messages pour cet événement.",
     "EVENT_CHAT_PLACEHOLDER": "Écrivez un message pour cet événement...",
+<<<<<<< HEAD
 
     "TAB_JOINED": "Événements Inscrit",
     "TAB_CREATED": "Événements Créés",
     "STATS_RATING": "Évaluation",
 
+=======
+    "TAB_JOINED": "Événements Inscrit",
+    "TAB_CREATED": "Événements Créés",
+    "STATS_RATING": "Évaluation",
+>>>>>>> origin/develop
     "CREATOR_CANNOT_LEAVE": "Vous ne pouvez pas partir en tant que créateur",
     "SECTION_UPCOMING": "Événements à Venir",
     "SECTION_PAST": "Événements Passés",
     "BADGE_FINISHED": "Terminé",
+<<<<<<< HEAD
 
     "FILTER_ALL": "Tous",
     "FILTER_PUBLIC": "Publics",
     "FILTER_PRIVATE": "Privés"
+=======
+    "FILTER_ALL": "Tous",
+    "FILTER_PUBLIC": "Publics",
+    "FILTER_PRIVATE": "Privés",
+    "BUTTON_ALBUM": "Album",
+    "EVENT_CHAT_ADD_IMAGE": "Joindre une image",
+    "EVENT_CHAT_UPLOADING_IMAGE": "Téléchargement de l'image...",
+    "EVENT_CHAT_IMAGE_ERROR": "Erreur lors du téléchargement de l'image",
+    "DELETE_MESSAGE": "Supprimer le message",
+    "DELETE_MESSAGE_TITLE": "Supprimer le Message",
+    "DELETE_MESSAGE_CONFIRM": "Êtes-vous sûr de vouloir supprimer ce message? Cette action ne peut pas être annulée.",
+    "DELETE_MESSAGE_BTN": "Supprimer",
+    "DELETING_MESSAGE": "Suppression...",
+    "MESSAGE_DELETED_SUCCESS": "Message supprimé avec succès",
+    "MESSAGE_DELETE_ERROR": "Erreur lors de la suppression du message",
+    "PARTICIPANTS_LIMITED": "{{current}} de {{max}}",
+    "PARTICIPANTS_UNLIMITED": "{{count}} (illimitées)"
+  },
+  "ALBUM": {
+    "TITLE": "Album Partagé",
+    "UPLOAD_TITLE": "Télécharger photo ou vidéo",
+    "UPLOAD_HINT": "Partagez vos meilleurs moments de l'événement avec les autres participants",
+    "UPLOAD_CLICK": "Cliquez pour sélectionner un fichier",
+    "UPLOAD_FORMATS": "Images (JPG, PNG, GIF, WEBP) ou vidéos (MP4, WEBM) - Max. 50MB",
+    "UPLOADING": "Téléchargement...",
+    "UPLOAD_BUTTON": "Télécharger",
+    "GALLERY_TITLE": "Galerie de l'événement",
+    "LOADING": "Chargement des photos...",
+    "EMPTY": "Il n'y a pas encore de photos ou de vidéos dans cet événement. Soyez le premier à en télécharger une!",
+    "DOWNLOAD": "Télécharger",
+    "DELETE": "Supprimer",
+    "CONFIRM_DELETE": "Êtes-vous sûr de vouloir supprimer cette photo/vidéo?",
+    "CONFIRM_DELETE_TITLE": "Confirmer la suppression",
+    "UPLOADED_BY": "Téléchargé par",
+    "UPLOADED_ON": "Date",
+    "DELETING": "Suppression...",
+    "CANCEL": "Annuler"
+>>>>>>> origin/develop
   },
 
   "RATINGS": {
@@ -648,5 +868,178 @@
         "CONFIRM": "Confirmer",
         "CANCEL": "Annuler"
       }
+<<<<<<< HEAD
     }
+=======
+    },
+
+    "NOTIFICATIONS": {
+    "TITLE": "Notifications",
+    "MARK_ALL_READ": "Tout marquer comme lu",
+    "DELETE_ALL": "Tout supprimer",
+    "DELETE_ALL_CONFIRM": "Êtes-vous sûr de vouloir supprimer toutes les notifications?",
+    "CLOSE": "Fermer",
+    "LOADING": "Chargement des notifications...",
+    "EMPTY_TITLE": "Aucune notification",
+    "EMPTY_SUBTITLE": "Nous vous préviendrons lorsqu'il y aura du nouveau",
+    "VIEW_ALL": "Voir toutes les notifications",
+    "DELETE": "Supprimer",
+    "NOW": "Maintenant",
+    "MINUTES_AGO": "Il y a {{minutes}}m",
+    "HOURS_AGO": "Il y a {{hours}}h",
+    "DAYS_AGO": "Il y a {{days}}j",
+    "TYPES": {
+      "friend_request": "Nouvelle demande d'ami",
+      "friend_accepted": "Demande acceptée",
+      "event_join": "Un ami a rejoint votre événement",
+      "event_reminder": "Rappel d'événement",
+      "new_message": "Nouveau message",
+      "event_spot_available": "Place disponible",
+      "event_invitation": "Invitation à un événement"
+    },
+    "MESSAGES": {
+      "friend_request": "{{username}} vous a envoyé une demande d'ami",
+      "friend_accepted": "{{username}} a accepté votre demande d'ami",
+      "event_join": "{{username}} a rejoint votre événement \"{{eventName}}\"",
+      "event_reminder": "Votre événement \"{{eventName}}\" commence bientôt",
+      "new_message": "{{username}} vous a envoyé un message",
+      "event_spot_available": "Une place est disponible dans \"{{eventName}}\". Vous êtes maintenant inscrit !",
+      "event_invitation": "{{username}} vous a invité à l'événement \"{{eventName}}\""
+    }
+  },
+  "BACKOFFICE": {
+    "COMMON": {
+      "BACK_HOME": "← Retour à l'accueil",
+      "WELCOME": "Bienvenue 👋",
+      "LOGOUT": "Se déconnecter",
+      "THEME_TOGGLE_LIGHT": "Passer au mode clair",
+      "THEME_TOGGLE_DARK": "Passer au mode sombre"
+    },
+    "DASHBOARD": {
+      "TITLE": "BACKOFFICE",
+      "HERO_TITLE": "Bienvenue dans le système",
+      "HERO_SUBTITLE": "Gérez les utilisateurs et les événements avec une interface moderne, intuitive et efficace. Tout ce dont vous avez besoin en un seul endroit.",
+      "STATS_USERS": "👥 Utilisateurs créés",
+      "STATS_EVENTS": "📅 Événements programmés",
+      "NAV_TITLE": "Navigation",
+      "NAV_SUBTITLE": "Accédez rapidement aux sections principales",
+      "GOTO_USERS_TITLE": "Gestion des utilisateurs",
+      "GOTO_USERS_DESC": "Gérer les utilisateurs, les permissions et les profils système",
+      "GOTO_EVENTS_TITLE": "Gestion des événements",
+      "GOTO_EVENTS_DESC": "Créer et gérer les événements, les horaires et les participants",
+      "QUICK_NEW_USER": "➕ Nouvel utilisateur",
+      "QUICK_NEW_EVENT": "🎯 Nouvel événement"
+    },
+    "USERS": {
+      "TITLE": "GESTION DES UTILISATEURS",
+      "ADD_NEW": "Ajouter un nouvel utilisateur",
+      "EDIT_USER": "Modifier l'utilisateur",
+      "LBL_NAME": "Nom :",
+      "PH_NAME": "Nom de l'utilisateur",
+      "ERR_NAME_REQ": "⚠️ Le nom est obligatoire.",
+      "ERR_NAME_EXISTS": "⚠ Ce nom d'utilisateur est déjà utilisé.",
+      "ERR_USER_LENGTH": "⚠️ Le nom d'utilisateur doit compter entre 3 et 30 caractères.",
+      "ERR_USER_FORMAT": "⚠️ Lettres, chiffres et traits de soulignement uniquement (commençant par une lettre).",
+      "ERR_USER_RESTRICTED": "⚠️ Ce nom d'utilisateur n'est pas autorisé.",
+      "LBL_EMAIL": "E-mail :",
+      "PH_EMAIL": "E-mail",
+      "ERR_EMAIL_REQ": "⚠️ L'e-mail est obligatoire.",
+      "ERR_EMAIL_INVALID": "⚠️ Format d'e-mail invalide.",
+      "ERR_EMAIL_EXISTS": "⚠️ Cet e-mail est déjà enregistré.",
+      "ERR_EMAIL_TOOLONG": "⚠️ L'adresse e-mail est trop longue.",
+      "ERR_EMAIL_TEMP": "⚠️ Les e-mails temporaires ne sont pas autorisés.",
+      "ERR_EMAIL_DOTS": "⚠️ L'e-mail ne peut pas avoir de points consécutifs ni commencer/finir par un point.",
+      "LBL_PASS": "Mot de passe :",
+      "PH_PASS": "Mot de passe",
+      "ERR_PASS_REQ": "⚠️ Le mot de passe est obligatoire.",
+      "ERR_PASS_MIN": "⚠️ Le mot de passe doit compter entre 8 et 128 caractères.",
+      "ERR_PASS_CASE": "⚠️ Doit inclure des majuscules et des minuscules.",
+      "ERR_PASS_NUMBER": "⚠️ Doit inclure au moins un chiffre.",
+      "ERR_PASS_SPECIAL": "⚠️ Doit inclure un caractère spécial.",
+      "ERR_PASS_COMMON": "⚠️ Le mot de passe est trop commun ou contient des séquences évidentes.",
+      "ERR_PASS_REPEAT": "⚠️ Pas plus de 2 caractères identiques consécutifs.",
+      "LBL_CONFIRM_PASS": "Confirmer le mot de passe :",
+      "PH_CONFIRM_PASS": "Confirmer le mot de passe",
+      "ERR_CONFIRM_REQ": "⚠️ La confirmation du mot de passe est obligatoire.",
+      "ERR_CONFIRM_MISMATCH": "⚠️ Les mots de passe ne correspondent pas.",
+      "LBL_BIRTHDAY": "Anniversaire :",
+      "ERR_BIRTHDAY_REQ": "⚠️ L'anniversaire est obligatoire.",
+      "ERR_BIRTHDAY_FUTURE": "⚠️ La date ne peut pas être postérieure à aujourd'hui.",
+      "ERR_BIRTHDAY_AGE": "⚠️ Vous devez avoir entre 13 et 120 ans.",
+      "LBL_INTERESTS": "Intérêts :",
+      "PH_INTERESTS": "Ajouter un intérêt et appuyer sur Entrée",
+      "BTN_ADD_INTEREST": "Ajouter",
+      "DETAILS_INTERESTS": "Intérêts :",
+      "LBL_ROLE": "Rôle :",
+      "ROLE_USER": "Utilisateur",
+      "ROLE_ADMIN": "Administrateur",
+      "ERR_ROLE_REQ": "⚠️ Le rôle est obligatoire.",
+      "BTN_UPDATE": "Mettre à jour",
+      "BTN_ADD": "Ajouter",
+      "BTN_CANCEL_EDIT": "Annuler l'édition",
+      "LIST_TITLE": "Liste des utilisateurs",
+      "PAGING_PAGE": "Page",
+      "BTN_DETAILS_SHOW": "👁️ Afficher",
+      "BTN_DETAILS_HIDE": "👁️ Masquer",
+      "BTN_MODIFY": "✏️ Modifier",
+      "BTN_DISABLE": "🚫 Désactiver",
+      "BTN_ENABLE": "✅ Activer",
+      "DETAILS_EMAIL": "E-mail :",
+      "DETAILS_PASS": "Mot de passe :",
+      "DETAILS_BIRTHDAY": "Anniversaire :",
+      "DETAILS_ROLE": "Rôle :",
+      "EVENTS_USER": "Événements de l'utilisateur :",
+      "OTHER_EVENTS": "🎯 Autres événements disponibles",
+      "BTN_ADD_EVENT": "➕ Ajouter",
+      "ALL_EVENTS_JOINED": "✅ L'utilisateur participe à tous les événements disponibles",
+      "EMPTY_STATE": "Aucun utilisateur enregistré",
+      "EMPTY_STATE_SUB": "Commencez par ajouter le premier utilisateur au système",
+      "BTN_CREATE_FIRST": "Créer le premier utilisateur",
+      "MODAL_DISABLE_TITLE": "Désactiver l'utilisateur ?",
+      "MODAL_ENABLE_TITLE": "Activer l'utilisateur ?",
+      "MODAL_DISABLE_TEXT": "L'utilisateur sera temporairement désactivé, mais ses données seront conservées.",
+      "MODAL_ENABLE_TEXT": "L'utilisateur sera de nouveau activé dans le système et pourra se reconnecter.",
+      "MODAL_CONFIRM_UPDATE_TITLE": "Confirmer la mise à jour ?",
+      "MODAL_CONFIRM_UPDATE_TEXT": "Les modifications seront enregistrées dans le système."
+    },
+    "EVENTS": {
+      "TITLE": "GESTION DES ÉVÉNEMENTS",
+      "ADD_NEW": "Créer un nouvel événement",
+      "EDIT_EVENT": "Modifier l'événement",
+      "LBL_CREATOR": "Créateur :",
+      "PH_CREATOR": "Sélectionner le créateur",
+      "ERR_CREATOR_REQ": "⚠️ Le créateur est obligatoire.",
+      "LBL_NAME": "Nom :",
+      "PH_NAME": "Nom de l'événement",
+      "ERR_NAME_REQ": "⚠️ Le nom est trop court (min 3 car.).",
+      "LBL_ADDRESS": "Emplacement :",
+      "PH_ADDRESS": "Adresse de l'événement",
+      "ERR_ADDRESS_MIN": "⚠️ L'emplacement est trop court.",
+      "LBL_DATE": "Date et Heure :",
+      "ERR_DATE_REQ": "⚠️ L'horaire est obligatoire.",
+      "BTN_ADD": "Créer",
+      "BTN_UPDATE": "Mettre à jour",
+      "BTN_DELETE": "Supprimer",
+      "LIST_TITLE": "Liste des Événements",
+      "EMPTY_STATE": "Aucun événement prévu",
+      "EMPTY_STATE_SUB": "Commencez par créer le premier événement dans le système",
+      "DETAILS_ADDRESS": "Adresse :",
+      "DETAILS_DATE": "Date :",
+      "DETAILS_PARTICIPANTS": "Participants :",
+      "DETAILS_RATING": "Évaluation",
+      "DETAILS_AVG_RATING": "{{avg}} ({{count}} évaluations)",
+      "DETAILS_NO_RATINGS": "Pas encore d'évaluations",
+      "BTN_DETAILS_SHOW": "Détails",
+      "BTN_DETAILS_HIDE": "Masquer",
+      "BTN_MODIFY": "Modifier",
+      "MODAL_DELETE_TITLE": "Supprimer l'événement ?",
+      "MODAL_DELETE_TEXT": "Cette action est permanente et ne peut pas être annulée.",
+      "LBL_IS_PRIVATE": "Est privé ?",
+      "LBL_MAX_PARTICIPANTS": "Nb Max Participants :",
+      "PH_LIMIT": "Limite (optionnel)",
+      "ERR_MAX_PARTICIPANTS": "⚠️ Entrez un nombre valide de participants.",
+      "ERR_MAX_PARTICIPANTS_MIN": "⚠️ Ne peut pas être inférieur au nombre de participants actuels."
+    }
+  }
+>>>>>>> origin/develop
 }

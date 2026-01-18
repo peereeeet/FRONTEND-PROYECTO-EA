@@ -6,7 +6,13 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar__brand">
+<<<<<<< HEAD
         <div class="brand-logo">E</div>
+=======
+        <div class="brand-logo brand-logo--image">
+          <img src="assets/images/logo.png" alt="Eventer Logo" class="brand-logo-img">
+        </div>
+>>>>>>> origin/develop
         <div class="brand-text">
           <span class="brand-name">Eventer</span>
           <span class="brand-sub">{{ 'MY_EVENTS.TITLE' | translate }}</span>
@@ -67,6 +73,11 @@
         </div>
 
         <div class="top-bar__right">
+<<<<<<< HEAD
+=======
+          <app-notificaciones></app-notificaciones>
+          
+>>>>>>> origin/develop
           <div class="lang-switcher-menu">
             <button type="button" class="lang-toggle" (click)="toggleLangMenu()">
               <span class="lang-icon">🌐</span>
@@ -146,7 +157,11 @@
                 <p>{{ 'MY_EVENTS.JOINED_EMPTY_TEXT' | translate }}</p>
               </div>
 
+<<<<<<< HEAD
               <!-- EVENTOS FUTUROS -->
+=======
+              <!-- EVENTOS FUTUROS INSCRITOS -->
+>>>>>>> origin/develop
               <div *ngIf="eventosInscritosFuturos.length > 0" class="events-section">
                 <div class="section-header">
                   <h2 class="section-title">
@@ -189,7 +204,11 @@
                         </span>
                       </div>
                       <div class="info-item">
+<<<<<<< HEAD
                         <span class="info-icon">🕒</span>
+=======
+                        <span class="info-icon">🕐</span>
+>>>>>>> origin/develop
                         <span class="info-content">
                           <strong>{{ 'MY_EVENTS.FIELD_SCHEDULE' | translate }}</strong>
                           {{ getScheduleText(evento) }}
@@ -199,7 +218,16 @@
                         <span class="info-icon">👥</span>
                         <span class="info-content">
                           <strong>{{ 'MY_EVENTS.FIELD_PARTICIPANTS' | translate }}</strong>
+<<<<<<< HEAD
                           {{ evento.participantes?.length || 0 }}
+=======
+                          <ng-container *ngIf="evento.maxParticipantes; else unlimited">
+                            {{ 'MY_EVENTS.PARTICIPANTS_LIMITED' | translate:{current: evento.participantes?.length || 0, max: evento.maxParticipantes} }}
+                          </ng-container>
+                          <ng-template #unlimited>
+                            {{ 'MY_EVENTS.PARTICIPANTS_UNLIMITED' | translate:{count: evento.participantes?.length || 0} }}
+                          </ng-template>
+>>>>>>> origin/develop
                         </span>
                       </div>
                     </div>
@@ -221,7 +249,11 @@
                         <button 
                           class="btn btn--share" 
                           (click)="openShareModal(evento)">
+<<<<<<< HEAD
                           📤 {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
+=======
+                          ✉️ {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
+>>>>>>> origin/develop
                         </button>
                       </div>
                     </div>
@@ -231,11 +263,16 @@
                         class="btn btn--map" 
                         (click)="openMap(evento)" 
                         [disabled]="!hasLocation(evento)">
+<<<<<<< HEAD
                        {{ 'MY_EVENTS.BUTTON_VIEW_MAP' | translate }}
+=======
+                         {{ 'MY_EVENTS.BUTTON_VIEW_MAP' | translate }}
+>>>>>>> origin/develop
                       </button>
                       <button 
                         class="btn btn--chat" 
                         (click)="openEventChat(evento)">
+<<<<<<< HEAD
                         💬 {{ 'MY_EVENTS.BUTTON_EVENT_CHAT' | translate }}
                       </button>
                       <button 
@@ -249,6 +286,113 @@
                         class="creator-notice">
                         ℹ️ {{ 'MY_EVENTS.CREATOR_CANNOT_LEAVE' | translate }}
                       </div>
+=======
+                         {{ 'MY_EVENTS.BUTTON_EVENT_CHAT' | translate }}
+                      </button>
+                      <button 
+                        class="btn btn--album" 
+                        (click)="openAlbum(evento)">
+                        📸 {{ 'MY_EVENTS.BUTTON_ALBUM' | translate }}
+                      </button>
+                    </div>
+
+                    <!-- Mensaje de creador o botón de abandonar -->
+                    <div class="evento-footer">
+                      <div *ngIf="isUserCreator(evento)" class="creator-notice">
+                        ℹ️ {{ 'MY_EVENTS.CREATOR_CANNOT_LEAVE' | translate }}
+                      </div>
+                      <button 
+                        *ngIf="!isUserCreator(evento)" 
+                        class="btn btn--leave-event" 
+                        (click)="openLeaveModal(evento)">
+                         {{ 'MY_EVENTS.BUTTON_LEAVE' | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- EVENTOS PASADOS INSCRITOS -->
+              <div *ngIf="eventosInscritosPasados.length > 0" class="events-section events-section--past">
+                <div class="section-header">
+                  <h2 class="section-title">
+                    <span class="section-icon">📜</span>
+                    {{ 'MY_EVENTS.SECTION_PAST' | translate }}
+                    <span class="section-count">{{ eventosInscritosPasados.length }}</span>
+                  </h2>
+                </div>
+
+                <div class="events-grid">
+                  <div *ngFor="let evento of eventosInscritosPasados" class="evento-card evento-card--past">
+                    <div class="evento-title-row">
+                      <div class="evento-title-line">
+                        <h3 class="evento-title">{{ evento.name }}</h3>
+
+                        <span *ngIf="evento.categoria" class="badge-category">
+                          {{ evento.categoria }}
+                        </span>
+                        
+                        <span class="badge-finished">
+                          ✓ {{ 'MY_EVENTS.BADGE_FINISHED' | translate }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="evento-info">
+                      <div class="info-item">
+                        <span class="info-icon">👤</span>
+                        <span class="info-content">
+                          <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
+                          {{ getCreadorName(evento) }}
+                        </span>
+                      </div>
+                      <div class="info-item">
+                        <span class="info-icon">📍</span>
+                        <span class="info-content">
+                          <strong>{{ 'MY_EVENTS.FIELD_ADDRESS' | translate }}</strong>
+                          {{ evento.address || '-' }}
+                        </span>
+                      </div>
+                      <div class="info-item">
+                        <span class="info-icon">🕐</span>
+                        <span class="info-content">
+                          <strong>{{ 'MY_EVENTS.FIELD_SCHEDULE' | translate }}</strong>
+                          {{ getScheduleText(evento) }}
+                        </span>
+                      </div>
+                      <div class="info-item">
+                        <span class="info-icon">👥</span>
+                        <span class="info-content">
+                          <strong>{{ 'MY_EVENTS.FIELD_PARTICIPANTS' | translate }}</strong>
+                          <ng-container *ngIf="evento.maxParticipantes; else unlimitedPast">
+                            {{ 'MY_EVENTS.PARTICIPANTS_LIMITED' | translate:{current: evento.participantes?.length || 0, max: evento.maxParticipantes} }}
+                          </ng-container>
+                          <ng-template #unlimitedPast>
+                            {{ 'MY_EVENTS.PARTICIPANTS_UNLIMITED' | translate:{count: evento.participantes?.length || 0} }}
+                          </ng-template>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="evento-stats">
+                      <div class="stat">
+                        <span class="stat-label">{{ 'MY_EVENTS.STATS_RATING' | translate }}</span>
+                        <span class="stat-value">
+                          <ng-container *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRating2">
+                            ⭐ {{ evento.avgRating | number: '1.1-2' }}
+                          </ng-container>
+                          <ng-template #noRating2>—</ng-template>
+                        </span>
+                      </div>
+                      <div class="stat-actions">
+                        <button class="btn btn--rate" (click)="openRatingsModal(evento)">
+                          ⭐ {{ 'MY_EVENTS.BUTTON_VIEW_RATINGS' | translate }}
+                        </button>
+                        <button class="btn btn--album" (click)="openAlbum(evento)">
+                          📸 {{ 'MY_EVENTS.BUTTON_ALBUM' | translate }}
+                        </button>
+                      </div>
+>>>>>>> origin/develop
                     </div>
                   </div>
                 </div>
@@ -325,6 +469,12 @@
                         <button class="btn btn--rate" (click)="openRatingsModal(evento)">
                           ⭐ {{ 'MY_EVENTS.BUTTON_VIEW_RATINGS' | translate }}
                         </button>
+<<<<<<< HEAD
+=======
+                        <button class="btn btn--album" (click)="openAlbum(evento)">
+                          📸 {{ 'MY_EVENTS.BUTTON_ALBUM' | translate }}
+                        </button>
+>>>>>>> origin/develop
                       </div>
                     </div>
                   </div>
@@ -410,7 +560,11 @@
                         <button 
                           class="btn btn--share" 
                           (click)="openShareModal(evento)">
+<<<<<<< HEAD
                           📤 {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
+=======
+                           {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
+>>>>>>> origin/develop
                         </button>
                       </div>
                     </div>
@@ -422,6 +576,14 @@
                        {{ 'MY_EVENTS.BUTTON_EDIT' | translate }}
                       </button>
                       <button 
+<<<<<<< HEAD
+=======
+                        class="btn btn--album" 
+                        (click)="openAlbum(evento)">
+                        📸 {{ 'MY_EVENTS.BUTTON_ALBUM' | translate }}
+                      </button>
+                      <button 
+>>>>>>> origin/develop
                         class="btn btn--danger-outline" 
                         (click)="openDeleteModal(evento)">
                        {{ 'MY_EVENTS.BUTTON_DELETE' | translate }}
@@ -495,6 +657,12 @@
                         <button class="btn btn--rate" (click)="openRatingsModal(evento)">
                           ⭐ {{ 'MY_EVENTS.BUTTON_VIEW_RATINGS' | translate }}
                         </button>
+<<<<<<< HEAD
+=======
+                        <button class="btn btn--album" (click)="openAlbum(evento)">
+                          📸 {{ 'MY_EVENTS.BUTTON_ALBUM' | translate }}
+                        </button>
+>>>>>>> origin/develop
                       </div>
                     </div>
                   </div>
@@ -526,11 +694,37 @@
           {{ eventChatError() }}
         </div>
 
+<<<<<<< HEAD
         <div class="chat-messages" #eventChatMessagesContainer *ngIf="!eventChatLoading()">
           <div *ngFor="let m of eventChatMessages()" class="chat-message" [class.from-me]="m.userId === currentUserId">
             <div class="bubble">
               <div class="sender">{{ m.username }}</div>
               <div class="text">{{ m.text }}</div>
+=======
+
+        <div class="chat-messages" #eventChatMessagesContainer *ngIf="!eventChatLoading()">
+          <div *ngFor="let m of eventChatMessages()" class="chat-message" [class.from-me]="m.userId === currentUserId">
+            <div class="bubble">
+              <div class="message-header">
+                <div class="sender">{{ m.username }}</div>
+                <button *ngIf="canDeleteMessage(m)" 
+                        type="button" 
+                        class="btn-delete-message" 
+                        (click)="confirmDeleteMessage(m)"
+                        [title]="'MY_EVENTS.DELETE_MESSAGE' | translate">
+                  🗑️
+                </button>
+              </div>
+              
+              <!-- Mostrar imagen si existe -->
+              <div class="message-image" *ngIf="m.imageUrl">
+                <img [src]="getEventChatImageUrl(m.imageUrl)" [alt]="m.username" />
+              </div>
+              
+              <!-- Mostrar texto si existe -->
+              <div class="text" *ngIf="m.text">{{ m.text }}</div>
+              
+>>>>>>> origin/develop
               <div class="time">{{ m.createdAt | date: 'dd/MM/yyyy HH:mm' }}</div>
             </div>
           </div>
@@ -541,14 +735,49 @@
         </div>
       </div>
 
+<<<<<<< HEAD
       <div class="chat-input-row">
         <input type="text" class="chat-input" [value]="eventChatText()" (input)="onEventChatInput($event)"
           (keyup.enter)="sendEventChat()" [placeholder]="'MY_EVENTS.EVENT_CHAT_PLACEHOLDER' | translate" />
         <button type="button" class="btn send-btn" (click)="sendEventChat()">➤</button>
+=======
+      <!-- Vista previa de imagen seleccionada -->
+      <div class="chat-image-preview" *ngIf="eventChatImagePreview()">
+        <div class="preview-container">
+          <img [src]="eventChatImagePreview()!" alt="Vista previa" />
+          <button type="button" class="btn-cancel-image" (click)="cancelEventChatImage()" 
+                  [disabled]="eventChatUploadingImage()">
+            ×
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-input-row">
+        <input type="file" #chatImageInput accept="image/*" (change)="onEventChatImageSelect($event)" style="display: none;">
+        
+        <button type="button" class="btn btn-image" (click)="chatImageInput.click()" 
+                [disabled]="eventChatUploadingImage()" 
+                [title]="'MY_EVENTS.EVENT_CHAT_ADD_IMAGE' | translate">
+          📷
+        </button>
+        
+        <input type="text" class="chat-input" [value]="eventChatText()" (input)="onEventChatInput($event)"
+          (keyup.enter)="sendEventChat()" [placeholder]="'MY_EVENTS.EVENT_CHAT_PLACEHOLDER' | translate"
+          [disabled]="eventChatUploadingImage()" />
+        
+        <button type="button" class="btn send-btn" (click)="sendEventChat()" [disabled]="eventChatUploadingImage()">
+          <span *ngIf="!eventChatUploadingImage()">➤</span>
+          <span *ngIf="eventChatUploadingImage()">⏳</span>
+        </button>
+>>>>>>> origin/develop
       </div>
     </div>
   </div>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/develop
   <!--  Modal compartir evento -->
   <div class="modal-overlay" *ngIf="shareModalOpen">
     <div class="modal modal--medium share-modal">
@@ -715,6 +944,7 @@
 
         <div *ngIf="ratingsLoading" class="loading-ratings">
           <div class="spinner-small"></div>
+<<<<<<< HEAD
           <p>Cargando valoraciones...</p>
         </div>
 
@@ -779,6 +1009,72 @@
         </ng-container>
       </div>
 
+=======
+          <p>{{ 'COMMON.LOADING' | translate }}</p>
+        </div>
+
+        <ng-container *ngIf="!ratingsLoading">
+          <!-- Info de página -->
+          <div class="list-info" *ngIf="ratingsList && ratingsList.length > 0">
+            <span class="counter">
+              {{ 'COMMON.PAGE' | translate }} {{ ((page-1)*pageSize) + 1 }} - {{ Math.min(page*pageSize, ratingsList.length) }} {{ 'COMMON.OF' | translate }} {{ ratingsList.length }}
+            </span>
+            <span class="total">
+              {{ 'COMMON.PAGE' | translate }} {{ page }} {{ 'COMMON.OF' | translate }} {{ Math.ceil(ratingsList.length / pageSize) }}
+            </span>
+          </div>
+
+          <!-- Lista de valoraciones -->
+          <ul class="ratings-list" *ngIf="ratingsList && ratingsList.length > 0">
+            <li *ngFor="let r of (ratingsList | slice: ((page-1)*pageSize) : (page*pageSize))">
+              <div class="rating-content">
+                <div class="rating-header-row">
+                  <div class="rating-user-badge">
+                    <span class="user-avatar">👤</span>
+                    <div class="user-details">
+                      <strong class="username">{{ r.usuario.username || 'Usuario' }}</strong>
+                      <span class="rating-date">{{ r.createdAt | date:'short' }}</span>
+                    </div>
+                  </div>
+                  <div class="rating-score-badge">
+                    <span class="stars-inline">
+                      <span *ngFor="let s of stars" [class.star-active]="s <= r.puntuacion">★</span>
+                    </span>
+                    <strong>{{ r.puntuacion }}/5</strong>
+                  </div>
+                </div>
+                
+                <div class="rating-comment-box" *ngIf="r.comentario">
+                  <p>{{ r.comentario }}</p>
+                </div>
+                <div class="rating-no-comment" *ngIf="!r.comentario">
+                  <span class="muted">{{ 'RATINGS.LIST_NO_COMMENT' | translate }}</span>
+                </div>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Paginador -->
+          <div class="pager" *ngIf="ratingsList && ratingsList.length > pageSize">
+            <button type="button" class="pager-btn" (click)="prevRatingsPage()" [disabled]="page <= 1">
+              {{ 'RATINGS.PAGER_PREV' | translate }}
+            </button>
+            <span class="pager-info">
+              {{ 'COMMON.PAGE' | translate }} {{ page }} {{ 'COMMON.OF' | translate }} {{ Math.ceil(ratingsList.length / pageSize) }}
+            </span>
+            <button type="button" class="pager-btn" (click)="nextRatingsPage()" [disabled]="page >= Math.ceil(ratingsList.length / pageSize)">
+              {{ 'RATINGS.PAGER_NEXT' | translate }}
+            </button>
+          </div>
+
+          <!-- Mensaje vacío -->
+          <div class="empty" *ngIf="!ratingsList || ratingsList.length === 0">
+            {{ 'RATINGS.LIST_NO_RATINGS' | translate }}
+          </div>
+        </ng-container>
+      </div>
+
+>>>>>>> origin/develop
       <div class="modal-actions">
         <button class="btn btn--ghost" (click)="closeRatingsModal()">
           {{ 'RATINGS.CLOSE_BUTTON' | translate }}
@@ -791,7 +1087,11 @@
   <div class="modal-overlay" *ngIf="showEditModal">
     <div class="modal modal--medium">
       <div class="modal-header">
+<<<<<<< HEAD
         <h3>✏️ Modificar evento</h3>
+=======
+        <h3>✏️ {{ 'MY_EVENTS.BUTTON_EDIT' | translate }}</h3>
+>>>>>>> origin/develop
         <button class="btn-close" (click)="closeEditModal()">×</button>
       </div>
 
@@ -828,6 +1128,7 @@
         </div>
       </form>
     </div>
+<<<<<<< HEAD
   </div>
 
   <!--  Modal mapa -->
@@ -854,6 +1155,283 @@
           {{ 'MAP.CLOSE' | translate }}
         </button>
       </div>
+=======
+  </div>
+
+  <!--  Modal mapa -->
+  <div class="modal-overlay" *ngIf="showMapModal">
+    <div class="modal modal--large map-modal">
+      <div class="modal-header">
+        <h3>🗺️ {{ 'MAP.MODAL_TITLE_PREFIX' | translate }} {{ mapEventoName }}</h3>
+        <button class="btn-close" (click)="closeMapModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="mapSafeUrl; else noMap" class="map-container">
+          <iframe class="map-frame" [src]="mapSafeUrl" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <a *ngIf="mapLinkUrl" class="map-link" [href]="mapLinkUrl" target="_blank" rel="noopener noreferrer">
+            {{ 'MAP.OPEN_LARGE' | translate }}
+          </a>
+        </div>
+        <ng-template #noMap>
+          <p class="no-map-text">{{ 'MAP.NO_MAP' | translate }}</p>
+        </ng-template>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn--ghost" (click)="closeMapModal()">
+          {{ 'MAP.CLOSE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ÁLBUM -->
+  <div class="modal-overlay" *ngIf="showAlbumModal()" (click)="closeAlbum()">
+    <div class="modal modal--album" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          📸 {{ 'ALBUM.TITLE' | translate }}: {{ albumEvento()?.name }}
+        </h3>
+        <button class="btn-close" (click)="closeAlbum()">×</button>
+      </div>
+      
+      <div class="modal-body modal-body--album">
+        <div class="upload-section">
+          <div class="upload-header">
+            <h4>{{ 'ALBUM.UPLOAD_TITLE' | translate }}</h4>
+            <p class="upload-hint">{{ 'ALBUM.UPLOAD_HINT' | translate }}</p>
+          </div>
+
+          <div *ngIf="!selectedPhotoFile()" class="upload-zone" (click)="triggerFileInput()">
+            <input 
+              #fileInput 
+              type="file" 
+              accept="image/*,video/*" 
+              (change)="onFileSelected($event)" 
+              style="display: none;">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">
+              <span class="upload-main">{{ 'ALBUM.UPLOAD_CLICK' | translate }}</span>
+              <span class="upload-sub">{{ 'ALBUM.UPLOAD_FORMATS' | translate }}</span>
+            </div>
+          </div>
+
+          <div *ngIf="selectedPhotoFile()" class="upload-preview">
+            <div class="preview-container">
+              <img 
+                *ngIf="!isVideoFile(selectedPhotoFile()!)" 
+                [src]="photoPreviewUrl()!" 
+                alt="Preview" 
+                class="preview-image">
+              <video 
+                *ngIf="isVideoFile(selectedPhotoFile()!)" 
+                [src]="photoPreviewUrl()!" 
+                controls 
+                class="preview-video">
+              </video>
+            </div>
+            <div class="preview-actions">
+              <button 
+                class="btn btn--ghost btn--sm" 
+                (click)="cancelUpload()" 
+                [disabled]="uploadingPhoto()">
+                {{ 'COMMON.CANCEL' | translate }}
+              </button>
+              <button 
+                class="btn btn--primary btn--sm" 
+                (click)="uploadPhoto()" 
+                [disabled]="uploadingPhoto()">
+                {{ uploadingPhoto() ? ('ALBUM.UPLOADING' | translate) : ('ALBUM.UPLOAD_BUTTON' | translate) }}
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="albumError()" class="msg msg--error">
+            {{ albumError() }}
+          </div>
+        </div>
+
+        <!-- GALERÍA -->
+        <div class="album-gallery">
+          <div class="gallery-header">
+            <h4>
+              {{ 'ALBUM.GALLERY_TITLE' | translate }}
+              <span class="gallery-count" *ngIf="albumPhotos().length > 0">({{ albumPhotos().length }})</span>
+            </h4>
+          </div>
+
+          <div *ngIf="albumLoading()" class="loading-state">
+            <div class="spinner"></div>
+            <p>{{ 'ALBUM.LOADING' | translate }}</p>
+          </div>
+
+          <div *ngIf="!albumLoading() && albumPhotos().length === 0" class="empty-state">
+            <span class="empty-icon">📭</span>
+            <p>{{ 'ALBUM.EMPTY' | translate }}</p>
+          </div>
+
+          <div *ngIf="!albumLoading() && albumPhotos().length > 0" class="photo-grid">
+            <div *ngFor="let photo of albumPhotos()" class="photo-item" (click)="openPhotoViewer(photo)">
+              <div class="photo-thumbnail">
+                <img 
+                  *ngIf="!isVideo(photo)" 
+                  [src]="getPhotoUrl(photo)" 
+                  [alt]="photo.username" 
+                  class="photo-img">
+                <video 
+                  *ngIf="isVideo(photo)" 
+                  [src]="getPhotoUrl(photo)" 
+                  class="photo-video">
+                </video>
+                <div class="photo-overlay">
+                  <span class="photo-type-icon">{{ isVideo(photo) ? '🎥' : '📷' }}</span>
+                </div>
+              </div>
+              <div class="photo-info">
+                <span class="photo-user">{{ photo.username }}</span>
+                <span class="photo-date">{{ formatPhotoDate(photo.createdAt) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VISOR DE FOTO/VIDEO -->
+  <div class="modal-overlay modal-overlay--viewer" *ngIf="showPhotoViewer()" (click)="closePhotoViewer()">
+    <div class="modal modal--viewer" (click)="$event.stopPropagation()">
+      <div class="viewer-header">
+        <div class="viewer-info">
+          <span class="viewer-user">👤 {{ viewerPhoto()?.username }}</span>
+          <span class="viewer-date">{{ formatPhotoDate(viewerPhoto()?.createdAt!) }}</span>
+        </div>
+        <button class="btn-close btn-close--viewer" (click)="closePhotoViewer()">×</button>
+      </div>
+      
+      <div class="viewer-content">
+        <img 
+          *ngIf="viewerPhoto() && !isVideo(viewerPhoto()!)" 
+          [src]="getPhotoUrl(viewerPhoto()!)" 
+          [alt]="viewerPhoto()?.username" 
+          class="viewer-media">
+        <video 
+          *ngIf="viewerPhoto() && isVideo(viewerPhoto()!)" 
+          [src]="getPhotoUrl(viewerPhoto()!)" 
+          controls 
+          autoplay 
+          class="viewer-media">
+        </video>
+      </div>
+
+      <div class="viewer-actions">
+        <button 
+          *ngIf="viewerPhoto() && isPhotoOwner(viewerPhoto()!)" 
+          class="btn btn--danger" 
+          (click)="openDeletePhotoModal(viewerPhoto()!)">
+          🗑️ {{ 'ALBUM.DELETE' | translate }}
+        </button>
+        <button class="btn btn--primary" (click)="downloadPhoto(viewerPhoto()!)">
+          💾 {{ 'ALBUM.DOWNLOAD' | translate }}
+        </button>
+        <button class="btn btn--ghost" (click)="closePhotoViewer()">
+          {{ 'COMMON.CLOSE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMACIÓN ELIMINAR FOTO/VIDEO -->
+  <div class="modal-overlay" *ngIf="showDeletePhotoModal()" (click)="closeDeletePhotoModal()">
+    <div class="modal modal--confirm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <span class="modal-icon">⚠️</span>
+          {{ 'ALBUM.CONFIRM_DELETE_TITLE' | translate }}
+        </h3>
+        <button class="btn-close" (click)="closeDeletePhotoModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="confirm-text">{{ 'ALBUM.CONFIRM_DELETE' | translate }}</p>
+        
+        <div class="preview-container" *ngIf="photoToDelete()">
+          <img 
+            *ngIf="!isVideo(photoToDelete()!)" 
+            [src]="getPhotoUrl(photoToDelete()!)" 
+            [alt]="photoToDelete()?.username" 
+            class="preview-img">
+          <video 
+            *ngIf="isVideo(photoToDelete()!)" 
+            [src]="getPhotoUrl(photoToDelete()!)" 
+            class="preview-video">
+          </video>
+        </div>
+
+        <div class="photo-details" *ngIf="photoToDelete()">
+          <p><strong>{{ 'ALBUM.UPLOADED_BY' | translate }}:</strong> {{ photoToDelete()?.username }}</p>
+          <p><strong>{{ 'ALBUM.UPLOADED_ON' | translate }}:</strong> {{ formatPhotoDate(photoToDelete()?.createdAt!) }}</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button 
+          class="btn btn--ghost" 
+          (click)="closeDeletePhotoModal()"
+          [disabled]="deletingPhoto()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button 
+          class="btn btn--danger" 
+          (click)="confirmDeletePhoto()"
+          [disabled]="deletingPhoto()">
+          <span *ngIf="!deletingPhoto()">🗑️ {{ 'ALBUM.DELETE' | translate }}</span>
+          <span *ngIf="deletingPhoto()">{{ 'ALBUM.DELETING' | translate }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal de confirmación para eliminar mensaje -->
+<div class="modal-overlay" *ngIf="showDeleteMessageModal()" (click)="closeDeleteMessageModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ 'MY_EVENTS.DELETE_MESSAGE_TITLE' | translate }}</h2>
+      <button class="btn-close" (click)="closeDeleteMessageModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <p>{{ 'MY_EVENTS.DELETE_MESSAGE_CONFIRM' | translate }}</p>
+      
+      <div class="message-preview" *ngIf="messageToDelete()">
+        <div class="bubble-preview">
+          <div class="message-image" *ngIf="messageToDelete()?.imageUrl">
+            <img [src]="getEventChatImageUrl(messageToDelete()!.imageUrl!)" alt="Preview" />
+          </div>
+          <div class="text" *ngIf="messageToDelete()?.text">{{ messageToDelete()?.text }}</div>
+        </div>
+      </div>
+
+      <div *ngIf="eventChatError()" class="alert alert-danger">
+        {{ eventChatError() }}
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button 
+        class="btn btn--ghost" 
+        (click)="closeDeleteMessageModal()"
+        [disabled]="deletingMessage()">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+      <button 
+        class="btn btn--danger" 
+        (click)="deleteEventChatMessage()"
+        [disabled]="deletingMessage()">
+        <span *ngIf="!deletingMessage()">🗑️ {{ 'MY_EVENTS.DELETE_MESSAGE_BTN' | translate }}</span>
+        <span *ngIf="deletingMessage()">{{ 'MY_EVENTS.DELETING_MESSAGE' | translate }}</span>
+      </button>
+>>>>>>> origin/develop
     </div>
   </div>
 </div>

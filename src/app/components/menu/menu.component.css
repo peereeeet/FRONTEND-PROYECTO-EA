@@ -60,15 +60,31 @@
 }
 
 .brand-logo {
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 800;
   background: var(--gradient-primary);
   color: #f9fafb;
   font-size: 1.05rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brand-logo--image {
+  background: transparent;
+  border: none;
+  padding: 6px;
+}
+
+.brand-logo-img {
+  width: 200%;
+  height: 200%;
+  object-fit: contain;
+  display: block;
 }
 
 .brand-text {
@@ -104,6 +120,9 @@
   place-items: center;
   color: #ffffff;
   border: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .avatar--lg {
@@ -116,6 +135,42 @@
   width: 40px;
   height: 40px;
   font-size: 1.2rem;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar span {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.brand-sub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* User */
+
+.sidebar__user {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .user-meta {
@@ -2973,4 +3028,947 @@
 .dark-theme .nav-item--highlight:hover {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.25));
   border-color: rgba(99, 102, 241, 0.6);
+}
+
+/* ===== CORRECCIONES PARA MENU.COMPONENT.CSS ===== */
+/* Agrega o reemplaza estos estilos en tu archivo menu.component.css */
+
+/* 1️⃣ CORRECCIÓN: Alineación del top-bar__right */
+.top-bar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Espacio entre notificaciones, idioma y tema */
+}
+
+/* Asegurar que el componente de notificaciones se muestre correctamente */
+app-notificaciones {
+  display: flex;
+  align-items: center;
+}
+
+/* 2️⃣ CORRECCIÓN: Avatar en solicitudes de amistad */
+/* Asegurar que el avatar se muestre correctamente */
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit; /* Hereda el border-radius del contenedor .avatar */
+}
+
+/* Asegurar que el contenedor avatar tenga el tamaño correcto */
+.avatar--sm {
+  width: 36px;
+  height: 36px;
+  min-width: 36px; /* Importante: evita que se colapse */
+  min-height: 36px;
+  border-radius: 50%;
+  overflow: hidden; /* Importante: oculta cualquier parte de la imagen que sobresalga */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-hover);
+  border: 2px solid var(--border);
+}
+
+/* Si la imagen no carga, mostrar el emoji centrado */
+.avatar--sm span {
+  font-size: 1.2rem;
+}
+
+/* 3️⃣ MEJORA: Estilos para requests-left (solicitudes) */
+.request-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.request-data {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.request-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.request-mail {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* 4️⃣ EXTRA: Ajustes para el z-index del panel de notificaciones */
+/* Asegurar que el panel de notificaciones aparezca por encima de todo */
+app-notificaciones .notification-panel {
+  z-index: 9999;
+}
+
+/* ===========================
+   USUARIOS BLOQUEADOS
+   =========================== */
+
+.blocked-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.blocked-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.blocked-item:hover {
+  background: var(--surface-elev);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.blocked-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.blocked-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.blocked-email {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===========================
+   BOTONES DE ACCIÓN EN LISTAS
+   =========================== */
+
+.friend-card {
+  position: relative;
+}
+
+.friend-actions,
+.user-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.btn--icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn--danger-ghost {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+}
+
+.btn--danger-ghost:hover {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+  color: var(--danger);
+  transform: scale(1.05);
+}
+
+.btn--sm {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn--danger {
+  background: var(--gradient-danger);
+  color: white;
+  border: none;
+}
+
+.btn--danger:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-danger);
+}
+
+.btn--success {
+  background: var(--gradient-success);
+  color: white;
+  border: none;
+}
+
+.btn--success:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-success);
+}
+
+/* ===========================
+   MODALES DE CONFIRMACIÓN
+   =========================== */
+
+.modal-overlay--dark {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.confirm-modal {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 440px;
+  width: 90%;
+  box-shadow: var(--shadow-2xl);
+  text-align: center;
+  animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.confirm-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+
+.confirm-icon--danger {
+  color: var(--danger);
+}
+
+.confirm-icon--success {
+  color: var(--success);
+}
+
+.confirm-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.confirm-text {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.confirm-text strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.confirm-warning {
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  margin-bottom: 24px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border-left: 3px solid var(--warning);
+  line-height: 1.4;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.confirm-actions .btn {
+  min-width: 120px;
+}
+
+/* ===========================
+   BADGES Y ESTADOS
+   =========================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge--danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+
+.badge--info {
+  background: var(--info-bg);
+  color: var(--info);
+  border: 1px solid var(--info);
+}
+
+/* ===========================
+   ESTADOS VACÍOS Y LOADING
+   =========================== */
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  opacity: 0.5;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.empty-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.error-message {
+  padding: 12px;
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+/* ===========================
+   ANIMACIONES
+   =========================== */
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+@media (max-width: 768px) {
+  .friend-actions,
+  .user-actions {
+    gap: 4px;
+  }
+  
+  .btn--icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+  
+  .btn--sm {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+  
+  .confirm-modal {
+    padding: 24px;
+    max-width: 90%;
+  }
+  
+  .confirm-title {
+    font-size: 1.3rem;
+  }
+  
+  .confirm-text {
+    font-size: 0.95rem;
+  }
+  
+  .confirm-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .confirm-actions .btn {
+    width: 100%;
+  }
+  
+  .blocked-list {
+    max-height: 300px;
+  }
+  
+  .blocked-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .blocked-info {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .confirm-modal {
+    padding: 20px;
+  }
+  
+  .confirm-icon {
+    font-size: 2.5rem;
+  }
+  
+  .user-actions {
+    flex-wrap: wrap;
+  }
+}
+
+.recommended-section {
+  padding: 2rem;
+}
+
+.recommended-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.recommended-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.recommended-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Estado sin intereses */
+.no-interests-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--surface-elev);
+  border-radius: 16px;
+  border: 2px dashed var(--border);
+}
+
+.no-interests-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.no-interests-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.no-interests-text {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0 0 1.5rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Badge de recomendado */
+.badge-recommended {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #78350f;
+  font-weight: 700;
+  border: none;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .recommended-title {
+  background: linear-gradient(135deg, #fbbf24, #fcd34d);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+[data-theme="dark"] .no-interests-state {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+[data-theme="dark"] .badge-recommended {
+  background: linear-gradient(135deg, #fbbf24, #fcd34d);
+  color: #422006;
+}
+
+/* Estados de carga y vacío (reutilizar estilos existentes) */
+.loading-state {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.loading-state .spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .recommended-section {
+    padding: 1rem;
+  }
+
+  .recommended-title {
+    font-size: 1.4rem;
+  }
+
+  .no-interests-icon {
+    font-size: 3rem;
+  }
+
+  .no-interests-title {
+    font-size: 1.2rem;
+  }
+}
+
+/* ==========================================
+   ESTILS A AFEGIR AL FITXER menu.component.css
+   PER AL CHAT D'AMICS AMB IMATGES I ELIMINAR MISSATGES
+   ========================================== */
+
+/* ======================================
+   CHAT D'AMICS - IMATGES
+   ====================================== */
+
+/* Botó d'imatge al chat */
+.chat-input-row .btn-image {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.625rem;
+  font-size: 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 42px;
+}
+
+.chat-input-row .btn-image:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.chat-input-row .btn-image:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Vista prèvia d'imatge seleccionada */
+.chat-image-preview {
+  padding: 1rem;
+  background: var(--surface, #f9fafb);
+  border-top: 1px solid var(--border, #e5e7eb);
+}
+
+.dark-theme .chat-image-preview {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(71, 85, 105, 0.5);
+}
+
+.chat-image-preview .preview-container {
+  position: relative;
+  display: inline-block;
+  max-width: 200px;
+}
+
+.chat-image-preview img {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 8px;
+  display: block;
+}
+
+.chat-image-preview .btn-cancel-image {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.chat-image-preview .btn-cancel-image:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.chat-image-preview .btn-cancel-image:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Imatges als missatges del chat */
+.chat-message .message-image {
+  margin: 0.5rem 0;
+}
+
+.chat-message .message-image img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.chat-message .message-image img:hover {
+  transform: scale(1.02);
+}
+
+/* Ajustos per missatges amb imatge */
+.chat-message .bubble:has(.message-image) {
+  max-width: 350px;
+}
+
+.chat-message .bubble .text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Input row ajustat per al botó d'imatge */
+.chat-input-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid var(--border, #e5e7eb);
+  background: var(--surface-card, white);
+}
+
+.chat-input-row .chat-input {
+  flex: 1;
+}
+
+.chat-input-row .send-btn {
+  min-width: 42px;
+}
+
+/* ======================================
+   CHAT D'AMICS - ELIMINAR MISSATGES
+   ====================================== */
+
+/* Header del missatge amb botó d'eliminar */
+.chat-message .message-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+/* Botó d'eliminar missatge */
+.chat-message .btn-delete-message {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.chat-message .bubble:hover .btn-delete-message {
+  opacity: 0.6;
+}
+
+.chat-message .btn-delete-message:hover {
+  opacity: 1 !important;
+  transform: scale(1.1);
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.chat-message.from-me .btn-delete-message {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.chat-message.from-me .btn-delete-message:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Vista prèvia del missatge al modal d'eliminar */
+.message-preview {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background: var(--surface, #f9fafb);
+  border-radius: 12px;
+  border: 1px solid var(--border, #e5e7eb);
+}
+
+.dark-theme .message-preview {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(71, 85, 105, 0.5);
+}
+
+.bubble-preview {
+  background: linear-gradient(135deg, var(--accent, #3b82f6), var(--accent-light, #60a5fa));
+  color: white;
+  padding: 1rem 1.25rem;
+  border-radius: 16px 16px 4px 16px;
+  max-width: 100%;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.bubble-preview .message-image {
+  margin-bottom: 0.75rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bubble-preview .message-image img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  display: block;
+  object-fit: contain;
+}
+
+.bubble-preview .text {
+  word-wrap: break-word;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ======================================
+   MODAL CONFIRMAR ELIMINACIÓ
+   ====================================== */
+
+.modal--confirm {
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal--confirm .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+}
+
+.modal--confirm .modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal--confirm .modal-icon {
+  font-size: 1.5rem;
+}
+
+.modal--confirm .modal-body {
+  padding: 1.5rem;
+}
+
+.modal--confirm .confirm-text {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: var(--text-secondary, #6b7280);
+  line-height: 1.6;
+}
+
+.modal--confirm .modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border, #e5e7eb);
+}
+
+.modal--confirm .btn {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal--confirm .btn--ghost {
+  background: transparent;
+  color: var(--text-secondary, #6b7280);
+  border: 1px solid var(--border, #e5e7eb);
+}
+
+.modal--confirm .btn--ghost:hover:not(:disabled) {
+  background: var(--surface, #f9fafb);
+  color: var(--text-primary, #1f2937);
+}
+
+.modal--confirm .btn--danger {
+  background: #ef4444;
+  color: white;
+}
+
+.modal--confirm .btn--danger:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+}
+
+.modal--confirm .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Tema fosc per al modal */
+.dark-theme .modal--confirm .modal-header,
+.dark-theme .modal--confirm .modal-footer {
+  border-color: rgba(71, 85, 105, 0.5);
+}
+
+.dark-theme .modal--confirm .modal-header h3 {
+  color: #f9fafb;
+}
+
+.dark-theme .modal--confirm .confirm-text {
+  color: #d1d5db;
+}
+
+.dark-theme .modal--confirm .btn--ghost {
+  color: #d1d5db;
+  border-color: rgba(71, 85, 105, 0.5);
+}
+
+.dark-theme .modal--confirm .btn--ghost:hover:not(:disabled) {
+  background: rgba(55, 65, 81, 0.5);
+  color: #f9fafb;
+}
+
+/* ======================================
+   RESPONSIVE
+   ====================================== */
+
+@media (max-width: 768px) {
+  .chat-message .bubble:has(.message-image) {
+    max-width: 280px;
+  }
+  
+  .chat-message .message-image img {
+    max-height: 200px;
+  }
+  
+  .chat-image-preview .preview-container {
+    max-width: 150px;
+  }
+  
+  .chat-image-preview img {
+    max-height: 100px;
+  }
 }

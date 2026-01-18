@@ -12,6 +12,7 @@ export interface User {
   birthday: Date;
   eventos: string[];
   rol: 'admin' | 'usuario';
+  interests?: string[];
 }
 
 export interface LoginResponse {
@@ -26,6 +27,7 @@ export interface RegisterData {
   gmail: string;
   birthday?: string;
   password: string;
+  interests?: string[];
 }
 
 @Injectable({
@@ -59,9 +61,14 @@ export class AuthService {
     );
   }
 
-  loginWithGoogle(credential: string, birthday?: string): Observable<LoginResponse> {
+  loginWithGoogle(credential: string, birthday?: string, username?: string, interests?: string[]): Observable<LoginResponse> {
     return this.http
-      .post<LoginResponse>(`${this.apiUrl}/user/auth/google`, { credential, birthday })
+      .post<LoginResponse>(`${this.apiUrl}/user/auth/google`, { 
+        credential, 
+        birthday,
+        username,
+        interests
+      })
       .pipe(
         tap(response => {
           if (response.user) {
@@ -75,7 +82,27 @@ export class AuthService {
   }
 
   register(userData: RegisterData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/user/auth/register`, userData);
+    return this.http.post(this.getAuthUrl('register'), userData);
+  }
+
+  private getAuthUrl(endpoint: string): string {
+    return `${this.apiUrl}/auth/${endpoint}`;
+  }
+
+  verifyEmail(email: string, otp: string): Observable<any> {
+    return this.http.post(this.getAuthUrl('verify-email'), { email, otp });
+  }
+
+  resendVerification(email: string): Observable<any> {
+    return this.http.post(this.getAuthUrl('resend-verification'), { email });
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(this.getAuthUrl('forgot-password'), { email });
+  }
+
+  resetPassword(email: string, otp: string, newPassword: string): Observable<any> {
+    return this.http.post(this.getAuthUrl('reset-password'), { email, otp, newPassword });
   }
 
   logout(): void {
@@ -111,7 +138,6 @@ export class AuthService {
          return !!userData.isActive;
         } 
       catch (error) {
-        console.log("Error en el localStorage:", error);
         return false;
       }
   }
@@ -129,7 +155,6 @@ export class AuthService {
     const decoded: any = jwtDecode(token);
     return decoded.payload?.rol || null;
   } catch (error) {
-    console.error('Error al decodificar token', error);
     return null;
   }
   }
@@ -146,5 +171,15 @@ export class AuthService {
     }
     const user = JSON.parse(currentUser);
     return this.http.post(`${this.apiUrl}/user/refresh`, { refreshToken, userId: user._id });
+  }
+
+  checkGoogleUser(credential: string): Observable<{
+    exists: boolean;
+    needsData: boolean;
+    suggestedUsername?: string;
+    hasUsername?: boolean;
+    hasBirthday?: boolean;
+  }> {
+    return this.http.post<any>(`${this.apiUrl}/user/auth/google/check`, { credential });
   }
 }

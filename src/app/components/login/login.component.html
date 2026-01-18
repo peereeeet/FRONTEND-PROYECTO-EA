@@ -77,7 +77,7 @@
           formControlName="username"
           [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate" />
         <div *ngIf="username?.invalid && username?.touched" class="error-message">
-          <span>⚠</span>
+          <span>⚠ </span>
           <span *ngIf="username?.errors?.['required']">
             {{ 'LOGIN.USERNAME_REQUIRED' | translate }}
           </span>
@@ -113,7 +113,7 @@
           </button>
         </div>
         <div *ngIf="password?.invalid && password?.touched" class="error-message">
-          <span>⚠</span>
+          <span>⚠ </span>
           <span *ngIf="password?.errors?.['required']">
             {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
           </span>
@@ -124,7 +124,7 @@
       </div>
 
       <div *ngIf="errorMessage" class="error-message global-error">
-        <span>⚠</span>
+        <span>⚠ </span>
         <span>{{ errorMessage }}</span>
       </div>
 
@@ -178,7 +178,7 @@
             formControlName="identifier"
             [placeholder]="'LOGIN.FORGOT_IDENTIFIER_PLACEHOLDER' | translate" />
           <div *ngIf="forgotTouchedInvalid" class="error-message">
-            <span>⚠</span>
+            <span>⚠ </span>
             <span>{{ 'LOGIN.FORGOT_REQUIRED' | translate }}</span>
           </div>
         </div>
@@ -198,44 +198,110 @@
     </div>
   </div>
 
-  <!-- Modal Direct Reset -->
-  <div class="modal-overlay" *ngIf="directOpen" (click)="closeDirect()">
+  <!-- Modal Reset Password (OTP) -->
+  <div class="modal-overlay" *ngIf="resetOpen" (click)="closeReset()">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>{{ 'LOGIN.DIRECT_TITLE' | translate }}</h3>
-        <button class="btn-close" (click)="closeDirect()">×</button>
+        <h3>{{ 'LOGIN.RESET_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeReset()">×</button>
       </div>
 
-      <div *ngIf="foundUserLabel" class="modal-text found-user">
-        {{ 'LOGIN.DIRECT_USER_PREFIX' | translate }}
-        <strong>{{ foundUserLabel }}</strong>
-      </div>
+      <p class="modal-text">
+        {{ 'LOGIN.RESET_INSTRUCTIONS' | translate }}
+      </p>
+      <form [formGroup]="resetForm" (ngSubmit)="onResetSubmit()">
 
-      <form [formGroup]="directForm" (ngSubmit)="onDirectResetSubmit()">
         <div class="form-group">
-          <label class="form-label" for="newPasswordDirect">
-            {{ 'LOGIN.DIRECT_NEW_PASSWORD_LABEL' | translate }}
+          <label class="form-label">
+            {{ 'LOGIN.OTP_LABEL' | translate }}
+          </label>
+          <div class="otp-row" style="display: flex; gap: 10px; align-items: flex-start;">
+            <div style="flex-grow: 1;">
+              <input
+                type="text"
+                class="form-input"
+                formControlName="otp"
+                inputmode="numeric" 
+                maxlength="6"
+                (input)="sanitizeResetOtp($event)"
+                [placeholder]="'123456'" />
+            </div>
+            <button 
+              type="button" 
+              class="btn-resend"
+              (click)="resendCode()"
+              [disabled]="resendCooldown > 0 || sending"
+              style="white-space: nowrap; height: 42px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); cursor: pointer;">
+              <span *ngIf="resendCooldown > 0">
+                {{ 'REGISTER.RESEND_IN' | translate }} {{ resendCooldown }}s
+              </span>
+              <span *ngIf="resendCooldown === 0">
+                {{ 'REGISTER.RESEND_CODE' | translate }}
+              </span>
+            </button>
+          </div>
+            
+          <div *ngIf="resetForm.get('otp')?.touched && resetForm.get('otp')?.invalid" class="error-message">
+             <span>⚠ </span><span>{{ 'REGISTER.OTP_INVALID' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            {{ 'LOGIN.NEW_PASSWORD_LABEL' | translate }}
           </label>
           <input
-            id="newPasswordDirect"
             type="password"
             class="form-input"
             formControlName="newPassword"
             [placeholder]="'LOGIN.DIRECT_NEW_PASSWORD_PLACEHOLDER' | translate" />
+            
+
+            
+          <div *ngIf="resetForm.get('newPassword')?.touched && resetForm.get('newPassword')?.errors" class="password-requirements">
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['required']" class="req-item missing">
+               ⚠ {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
+             </div>
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['minlength']" class="req-item missing">
+               ⚠ {{ 'REGISTER.PASSWORD_REQ_LENGTH' | translate }}
+             </div>
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['missingUpperCase']" class="req-item missing">
+               ⚠ {{ 'REGISTER.PASSWORD_REQ_UPPERCASE' | translate }}
+             </div>
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['missingLowerCase']" class="req-item missing">
+               ⚠ {{ 'REGISTER.PASSWORD_REQ_LOWERCASE' | translate }}
+             </div>
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['missingNumber']" class="req-item missing">
+               ⚠ {{ 'REGISTER.PASSWORD_REQ_NUMBER' | translate }}
+             </div>
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['missingSpecial']" class="req-item missing">
+               ⚠ {{ 'REGISTER.PASSWORD_REQ_SPECIAL' | translate }}
+             </div>
+          </div>
+        </div>
+
+
+        
+        <div *ngIf="resetErrorMessage" class="error-message" style="margin-bottom: 1rem;">
+          <span>⚠ </span><span>{{ resetErrorMessage }}</span>
+        </div>
+
+        <div *ngIf="resetSuccessMessage" class="success-message" style="margin-bottom: 1rem; color: var(--success-color);">
+          <span>✅ </span><span>{{ resetSuccessMessage }}</span>
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="btn cancel" (click)="closeDirect()">
+          <button type="button" class="btn cancel" (click)="closeReset()">
             {{ 'LOGIN.DIRECT_CANCEL' | translate }}
           </button>
           <button
             type="submit"
             class="btn success"
-            [disabled]="directSaving || directForm.invalid">
+            [disabled]="isReseting || resetForm.invalid">
             {{
-              directSaving
+              isReseting
                 ? ('LOGIN.DIRECT_SAVING' | translate)
-                : ('LOGIN.DIRECT_CONFIRM' | translate)
+                : ('LOGIN.RESET_PASSWORD_BUTTON' | translate)
             }}
           </button>
         </div>
@@ -269,7 +335,7 @@
         </div>
 
         <div *ngIf="googleBirthdayError" class="error-message">
-          <span>⚠</span>
+          <span>⚠ </span>
           <span>{{ googleBirthdayError }}</span>
         </div>
 
@@ -282,6 +348,106 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal Registro Completo con Google (Username + Birthday + Interests) -->
+  <div class="modal-overlay" *ngIf="googleRegisterOpen" (click)="closeGoogleRegisterModal()">
+    <div class="modal modal--register modal--google-register" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'LOGIN.GOOGLE_REGISTER_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeGoogleRegisterModal()">×</button>
+      </div>
+
+      <form [formGroup]="googleRegisterForm" (ngSubmit)="onGoogleRegisterSubmit()">
+        <p class="modal-text">
+          {{ 'LOGIN.GOOGLE_REGISTER_TEXT' | translate }}
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="googleUsername">
+            {{ 'LOGIN.GOOGLE_USERNAME_LABEL' | translate }}
+          </label>
+          <input
+            id="googleUsername"
+            type="text"
+            class="form-input"
+            formControlName="username"
+            [placeholder]="'LOGIN.GOOGLE_USERNAME_PLACEHOLDER' | translate" />
+          <div *ngIf="googleRegisterForm.get('username')?.invalid && googleRegisterForm.get('username')?.touched" 
+               class="error-message">
+            <span>⚠ </span>
+            <span>{{ 'LOGIN.USERNAME_REQUIRED' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="googleRegisterBirthday">
+            {{ 'LOGIN.GOOGLE_BIRTHDAY_LABEL' | translate }}
+          </label>
+          <input
+            id="googleRegisterBirthday"
+            type="date"
+            class="form-input"
+            formControlName="birthday"
+            [attr.max]="todayISO" />
+          <div *ngIf="googleRegisterForm.get('birthday')?.invalid && googleRegisterForm.get('birthday')?.touched" 
+               class="error-message">
+            <span>⚠ </span>
+            <span>{{ 'LOGIN.BIRTHDAY_REQUIRED' | translate }}</span>
+          </div>
+        </div>
+
+        <!-- BOTÓN PARA MOSTRAR/OCULTAR SELECTOR DE INTERESES EN MODAL -->
+        <div class="interests-toggle-container-modal">
+          <button 
+            type="button" 
+            class="interests-toggle-btn-modal"
+            (click)="openInterestsModalInGoogle()">
+            <span class="toggle-icon">✨</span>
+            <span>{{ 'LOGIN.GOOGLE_INTERESTS_SELECT' | translate }}</span>
+            <span class="selected-count" *ngIf="selectedInterests.length > 0">
+              ({{ selectedInterests.length }})
+            </span>
+          </button>
+        </div>
+
+        <div *ngIf="googleRegisterError" class="error-message">
+          <span>⚠ </span>
+          <span>{{ googleRegisterError }}</span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn cancel" (click)="closeGoogleRegisterModal()">
+            {{ 'LOGIN.GOOGLE_REGISTER_CANCEL' | translate }}
+          </button>
+          <button type="submit" class="btn primary" [disabled]="isLoading">
+            {{ isLoading ? ('LOGIN.BUTTON_LOADING' | translate) : ('LOGIN.GOOGLE_REGISTER_CONFIRM' | translate) }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="googleInterestsModalOpen" (click)="closeGoogleInterestsModal()">
+    <div class="modal modal--interests" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'INTERESTS.TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeGoogleInterestsModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <app-interest-selector
+          [selectedInterests]="selectedInterests"
+          (selectedInterestsChange)="onInterestsChange($event)">
+        </app-interest-selector>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn primary" (click)="closeGoogleInterestsModal()">
+          {{ 'INTERESTS.CONFIRM' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </div>

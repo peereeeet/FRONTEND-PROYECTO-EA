@@ -29,7 +29,8 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/assets/css/global-theme.css"
+              "src/assets/css/global-theme.css",
+              "node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": []
           },

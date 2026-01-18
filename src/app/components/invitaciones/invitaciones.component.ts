@@ -5,11 +5,12 @@ import { EventoService } from '../../services/evento.service';
 import { Evento } from '../../models/evento.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
+import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
 
 @Component({
   selector: 'app-invitaciones',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, NotificacionesComponent],
   templateUrl: './invitaciones.component.html',
   styleUrls: ['./invitaciones.component.css']
 })
@@ -53,7 +54,6 @@ export class InvitacionesComponent implements OnInit {
           this.error = text || 'Error al cargar las invitaciones';
         });
         this.loading = false;
-        console.error('Error cargando invitaciones:', err);
       }
     });
   }
@@ -70,7 +70,6 @@ export class InvitacionesComponent implements OnInit {
         this.procesando[eventId] = false;
       },
       error: (err) => {
-        console.error('Error aceptando invitación:', err);
         this.translate.get('INVITATIONS.ERROR_ACCEPT').subscribe((text: string) => {
           alert(text || 'Error al aceptar la invitación');
         });
@@ -91,7 +90,6 @@ export class InvitacionesComponent implements OnInit {
         this.procesando[eventId] = false;
       },
       error: (err) => {
-        console.error('Error rechazando invitación:', err);
         this.translate.get('INVITATIONS.ERROR_REJECT').subscribe((text: string) => {
           alert(text || 'Error al rechazar la invitación');
         });

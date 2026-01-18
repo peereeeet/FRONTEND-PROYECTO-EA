@@ -11,12 +11,23 @@ export interface User {
   rol?: 'admin' | 'usuario';
   isGoogleUser?: boolean;
   isOnline?: boolean;
+  profilePhoto?: string;
+  interests?: string[];
   friends?: Array<
     string |
     { _id: string; username: string; gmail: string; isOnline?: boolean }
   >;
   friendRequest?: Array<string | { _id: string; username: string; gmail: string }>;
   sentRequests?: Array<string | { _id: string; username: string; gmail: string }>;
+  blockedUsers?: Array<string | { _id: string; username: string; gmail: string; profilePhoto?: string; isOnline?: boolean }>;
+}
+
+export interface BlockedUser {
+  _id: string;
+  username: string;
+  gmail: string;
+  profilePhoto?: string;
+  isOnline?: boolean;
 }
 
 export interface ChatMessage {
@@ -24,6 +35,7 @@ export interface ChatMessage {
   from: string;
   to: string;
   text: string;
+  imageUrl?: string;
   createdAt: string;
 }
 
@@ -33,5 +45,6 @@ export interface EventChatMessage {
   userId: string;
   username: string;
   text: string;
+  imageUrl?: string;
   createdAt: string;
 }

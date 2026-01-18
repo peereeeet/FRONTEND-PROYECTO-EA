@@ -14,6 +14,7 @@ import { RewardNotificationService } from '../../services/reward-notification.se
 import { RewardNotificationComponent } from '../reward-notification/reward-notification.component';
 import { GeocodingService, GeocodingResult, AddressValidation } from '../../services/geocoding.service';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
 
 type NewEventDTO = {
   name: string;
@@ -31,7 +32,7 @@ type NewEventDTO = {
 @Component({
   selector: 'app-crear-eventos',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, RewardNotificationComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, RewardNotificationComponent, NotificacionesComponent],
   templateUrl: './crear-eventos.component.html',
   styleUrls: ['./crear-eventos.component.css'],
 })
@@ -191,7 +192,6 @@ export class CrearEventosComponent implements OnInit {
         this.showAddressSuggestions = results.length > 0;
       },
       error: (error) => {
-        console.error('Error buscando direcciones:', error);
         this.searchingAddress = false;
         this.addressSuggestions = [];
       }
@@ -208,10 +208,8 @@ export class CrearEventosComponent implements OnInit {
           insignias: progreso.insignias.length,
           insigniasIds: progreso.insignias.map((i: any) => i._id)
         };
-        console.log('📊 Progreso inicial cargado:', this.progresoInicial);
       },
       error: (err) => {
-        console.error('Error al cargar progreso inicial:', err);
       }
     });
   }
@@ -254,16 +252,9 @@ export class CrearEventosComponent implements OnInit {
             insignias: progresoNuevo.insignias.length,
             insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
           };
-
-          console.log('🎮 Recompensa detectada:', {
-            accion: 'crearEvento',
-            puntosGanados,
-            subisteDeNivel,
-            insigniasDesbloqueadas: insigniasDesbloqueadas.length
-          });
         },
         error: (err) => {
-          console.error('Error al detectar cambios de progreso:', err);
+          return;
         }
       });
     }, 800);
@@ -434,6 +425,28 @@ export class CrearEventosComponent implements OnInit {
       return;
     }
 
+    if (this.newEvent.isPrivate && this.amigosSeleccionados.length === 0) {
+      this.translate
+        .get('CREATE_EVENTS.PRIVATE_NO_INVITES_ERROR')
+        .subscribe((msg: string) => {
+          this.errorMessage = msg || 'Un evento privado debe tener al menos un invitado.';
+        });
+      return;
+    }
+
+    if (this.newEvent.isPrivate && this.newEvent.maxParticipantes !== null) {
+      const totalInvitadosConCreador = this.amigosSeleccionados.length + 1;
+      if (this.newEvent.maxParticipantes !== undefined && this.newEvent.maxParticipantes < totalInvitadosConCreador) {
+        this.translate
+          .get('CREATE_EVENTS.MAX_PARTICIPANTS_TOO_LOW')
+          .subscribe((msg: string) => {
+            this.errorMessage = msg || 
+              `El límite de participantes (${this.newEvent.maxParticipantes}) debe ser mayor o igual al número de invitados más el creador (${totalInvitadosConCreador}).`;
+          });
+        return;
+      }
+    }
+
     if (!this.newEvent.schedule && (this.dateStr || this.timeStr)) {
       this.newEvent.schedule = this.composeISOFromDateTime(
         this.dateStr,
@@ -571,12 +584,10 @@ export class CrearEventosComponent implements OnInit {
                     this.amigos.push(amigo);
                   }
                 },
-                error: (err) => console.error('Error cargando amigo:', err)
               });
             });
           }
         },
-        error: (err) => console.error('Error cargando usuario:', err)
       });
     }
 
@@ -701,7 +712,6 @@ export class CrearEventosComponent implements OnInit {
         }
       },
       error: (error: any) => {
-        console.error('Error validando dirección:', error);
         this.validatingAddress = false;
         this.addressValidation = {
           isValid: false,
@@ -773,5 +783,28 @@ export class CrearEventosComponent implements OnInit {
 
   setUnlimitedParticipants(): void {
     this.newEvent.maxParticipantes = null;
+  }
+
+  onMaxParticipantesChange(): void {
+    if (!this.newEvent.isPrivate || this.newEvent.maxParticipantes === null) {
+      return;
+    }
+
+    const totalInvitadosConCreador = this.amigosSeleccionados.length + 1;
+    if (this.newEvent.maxParticipantes !== undefined && this.newEvent.maxParticipantes < totalInvitadosConCreador) {
+      this.translate
+        .get('CREATE_EVENTS.MAX_PARTICIPANTS_WARNING')
+        .subscribe((msg: string) => {
+        });
+    }
+  }
+
+  onPrivateChange(): void {
+    if (this.newEvent.isPrivate && this.amigosSeleccionados.length === 0) {
+      this.translate
+        .get('CREATE_EVENTS.PRIVATE_NEEDS_INVITES_INFO')
+        .subscribe((msg: string) => {
+        });
+    }
   }
 }

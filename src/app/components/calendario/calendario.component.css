@@ -56,17 +56,31 @@
 }
 
 .brand-logo {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
-  background: var(--gradient-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
   font-weight: 800;
-  font-size: 22px;
-  box-shadow: var(--shadow-sm);
+  background: var(--gradient-primary);
+  color: #f9fafb;
+  font-size: 1.05rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brand-logo--image {
+  background: transparent;
+  border: none;
+  padding: 6px;
+}
+
+.brand-logo-img {
+  width: 200%;
+  height: 200%;
+  object-fit: contain;
+  display: block;
 }
 
 .brand-text {
@@ -233,7 +247,7 @@
   box-shadow: var(--shadow-sm);
   position: sticky;
   top: 20px;
-  z-index: 10;
+  z-index: 50;  /* ✅ CORREGIDO: antes era 10, ahora 50 */
   backdrop-filter: blur(12px);
 }
 
@@ -2253,4 +2267,112 @@
   .confirm-btn-calendar {
     width: 100%;
   }
+}
+
+/* ===== CORRECCIONES PARA MENU.COMPONENT.CSS ===== */
+/* Agrega o reemplaza estos estilos en tu archivo menu.component.css */
+
+/* 1️⃣ CORRECCIÓN: Alineación del top-bar__right */
+.top-bar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Espacio entre notificaciones, idioma y tema */
+}
+
+/* Asegurar que el componente de notificaciones se muestre correctamente */
+app-notificaciones {
+  display: flex;
+  align-items: center;
+}
+
+/* 2️⃣ CORRECCIÓN: Avatar en solicitudes de amistad */
+/* Asegurar que el avatar se muestre correctamente */
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit; /* Hereda el border-radius del contenedor .avatar */
+}
+
+/* Asegurar que el contenedor avatar tenga el tamaño correcto */
+.avatar--sm {
+  width: 36px;
+  height: 36px;
+  min-width: 36px; /* Importante: evita que se colapse */
+  min-height: 36px;
+  border-radius: 50%;
+  overflow: hidden; /* Importante: oculta cualquier parte de la imagen que sobresalga */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-hover);
+  border: 2px solid var(--border);
+}
+
+/* Si la imagen no carga, mostrar el emoji centrado */
+.avatar--sm span {
+  font-size: 1.2rem;
+}
+
+/* 3️⃣ MEJORA: Estilos para requests-left (solicitudes) */
+.request-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.request-data {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.request-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.request-mail {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* 4️⃣ EXTRA: Ajustes para el z-index del panel de notificaciones */
+/* Asegurar que el panel de notificaciones aparezca por encima de todo */
+app-notificaciones .notification-panel {
+  z-index: 9999;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* CORRECCIÓN: Panel de Notificaciones en Calendario       */
+/* Agrega este código al FINAL de calendario.component.css */
+/* ═══════════════════════════════════════════════════════ */
+
+/* Asegurar contexto correcto para el componente */
+.top-bar__right app-notificaciones {
+  position: relative;
+  z-index: 1;
+}
+
+/* Panel de notificaciones con z-index muy alto */
+app-notificaciones .notification-panel {
+  z-index: 9999 !important;
+  position: fixed !important;
+}
+
+/* Overlay del panel */
+app-notificaciones .notification-overlay {
+  z-index: 9998 !important;
+  position: fixed !important;
+}
+
+/* Contenido del panel */
+app-notificaciones .notification-content {
+  z-index: 9999 !important;
+}
+
+/* Asegurar que el botón de notificaciones sea clickeable */
+app-notificaciones .notification-trigger {
+  position: relative;
+  z-index: 1;
 }

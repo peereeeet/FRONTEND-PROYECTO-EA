@@ -5,7 +5,9 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar__brand">
-        <div class="brand-logo">E</div>
+        <div class="brand-logo brand-logo--image">
+          <img src="assets/images/logo.png" alt="Eventer Logo" class="brand-logo-img">
+        </div>
         <div class="brand-text">
           <span class="brand-name">Eventer</span>
           <span class="brand-sub">{{ 'INVITATIONS.TITLE' | translate }}</span>
@@ -41,6 +43,8 @@
         </div>
 
         <div class="top-bar__right">
+          <app-notificaciones></app-notificaciones>
+          
           <div class="lang-switcher-menu">
             <button type="button" class="lang-toggle" (click)="toggleLangMenu()">
               <span class="lang-icon">🌐</span>

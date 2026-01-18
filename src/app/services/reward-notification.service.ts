@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { environment } from '../environments/environment';
 
 export interface RewardData {
   puntosGanados: number;
@@ -56,7 +55,6 @@ export class RewardNotificationService {
     const translation = this.translate.instant(key);
     
     if (translation === key) {
-      console.warn(`Translation not found for key: ${key}`);
       const fallbacks = {
         crearEvento: '¡Evento creado con éxito!',
         unirseEvento: '¡Te uniste al evento!',

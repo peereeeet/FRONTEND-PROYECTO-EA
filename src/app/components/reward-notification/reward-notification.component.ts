@@ -429,11 +429,6 @@ export class RewardNotificationComponent implements OnInit, OnDestroy {
         
         if (reward) {
           this.actionText = this.rewardService.getTextoAccion(reward.accion);
-          console.log('🎮 Reward notification shown:', {
-            action: reward.accion,
-            text: this.actionText,
-            points: reward.puntosGanados
-          });
           
           setTimeout(() => {
             if (this.currentReward === reward) {

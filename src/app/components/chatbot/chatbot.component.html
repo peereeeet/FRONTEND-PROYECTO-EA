@@ -1,14 +1,14 @@
-<!-- Botón flotante para abrir el chat -->
+<!-- Botón flotante para abrir el chat - Solo se muestra si shouldShowChatbot es true -->
 <button 
   class="chat-toggle-btn" 
   (click)="toggleChat()"
-  *ngIf="!isChatOpen"
+  *ngIf="!isChatOpen && shouldShowChatbot"
   aria-label="Open chat">
   <span class="icon">🤖</span>
 </button>
 
-<!-- Ventana del chat -->
-<div class="chat-container" [class.open]="isChatOpen" [attr.data-theme]="theme()">
+<!-- Ventana del chat - Solo se muestra si shouldShowChatbot es true -->
+<div class="chat-container" [class.open]="isChatOpen" [attr.data-theme]="theme()" *ngIf="shouldShowChatbot">
   <!-- Header del chat -->
   <div class="chat-header">
     <div class="header-content">
@@ -22,7 +22,7 @@
       <button class="clear-btn" (click)="clearChat()" [title]="'CHATBOT.CLEAR_CHAT' | translate">
         🗑️
       </button>
-      <button class="close-btn" (click)="toggleChat()" [title]="'CHATBOT.CLOSE' | translate">
+      <button class="close-btn" (click)="toggleChat()" [title]="'COMMON.CLOSE' | translate">
         ✕
       </button>
     </div>
@@ -112,12 +112,12 @@
 </div>
 
 <!-- MODAL DE EVENTO -->
-<div class="event-modal-overlay" *ngIf="showEventModal" (click)="closeEventModal()" [attr.data-theme]="theme()">
+<div class="event-modal-overlay" *ngIf="showEventModal && shouldShowChatbot" (click)="closeEventModal()" [attr.data-theme]="theme()">
   <div class="event-modal" (click)="$event.stopPropagation()">
     <!-- Loading -->
     <div class="modal-loading" *ngIf="isLoadingEvent">
       <div class="spinner-large">⟳</div>
-      <p>{{ 'CHATBOT.MODAL.LOADING' | translate }}</p>
+      <p>{{ 'COMMON.LOADING' | translate }}</p>
     </div>
 
     <!-- Contenido del evento -->
@@ -128,7 +128,7 @@
           <h2>{{ selectedEvent.name }}</h2>
           <span class="modal-category">{{ selectedEvent.categoria }}</span>
         </div>
-        <button class="modal-close-btn" (click)="closeEventModal()" [title]="'CHATBOT.MODAL.CLOSE' | translate">
+        <button class="modal-close-btn" (click)="closeEventModal()" [title]="'COMMON.CLOSE' | translate">
           ✕
         </button>
       </div>
@@ -250,14 +250,15 @@
         <button 
           class="modal-btn modal-btn-close" 
           (click)="closeEventModal()">
-          {{ 'CHATBOT.MODAL.CLOSE' | translate }}
+          {{ 'COMMON.CLOSE' | translate }}
         </button>
       </div>
     </div>
   </div>
 </div>
+
 <!-- MODAL DE CONFIRMACIÓN -->
-<div class="confirm-modal-overlay" *ngIf="showConfirmModal" (click)="closeConfirmModal()" [attr.data-theme]="theme()">
+<div class="confirm-modal-overlay" *ngIf="showConfirmModal && shouldShowChatbot" (click)="closeConfirmModal()" [attr.data-theme]="theme()">
   <div class="confirm-modal" (click)="$event.stopPropagation()">
     <div class="confirm-modal-header">
       <h3>{{ confirmModalData?.title }}</h3>

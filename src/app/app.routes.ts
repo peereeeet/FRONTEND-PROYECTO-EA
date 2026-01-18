@@ -12,6 +12,8 @@ import { MisEventosComponent } from './components/mis-eventos/mis-eventos.compon
 import { CrearEventosComponent } from './components/crear-eventos/crear-eventos.component';
 import { InvitacionesComponent } from './components/invitaciones/invitaciones.component';
 import { CalendarioComponent } from './components/calendario/calendario.component';
+import { NotificacionesComponent } from './components/notificaciones/notificaciones.component';
+import { InterestSelectorComponent } from './components/interest-selector/interest-selector.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -43,6 +45,14 @@ export const routes: Routes = [
   },
   { path: 'menu', 
     component: MenuComponent, 
+    canActivate: [authGuard] 
+  },
+  { path: 'notificaciones', 
+    component: NotificacionesComponent, 
+    canActivate: [authGuard] 
+  },
+  { path: 'interest-selector', 
+    component: InterestSelectorComponent, 
     canActivate: [authGuard] 
   },
   { path: 'perfil', 

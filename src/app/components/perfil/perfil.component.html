@@ -5,7 +5,9 @@
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar">
       <div class="sidebar__brand">
-        <div class="brand-logo">E</div>
+        <div class="brand-logo brand-logo--image">
+          <img src="assets/images/logo.png" alt="Eventer Logo" class="brand-logo-img">
+        </div>
         <div class="brand-text">
           <span class="brand-name">Eventer</span>
           <span class="brand-sub">{{ 'PROFILE.TITLE' | translate }}</span>
@@ -13,7 +15,10 @@
       </div>
 
       <div class="sidebar__user">
-        <div class="avatar avatar--lg">👤</div>
+        <div class="avatar avatar--lg">
+          <img *ngIf="profilePhotoUrl()" [src]="'http://localhost:3000' + profilePhotoUrl()" alt="Profile" class="avatar-img" />
+          <span *ngIf="!profilePhotoUrl()">👤</span>
+        </div>
         <div class="user-meta">
           <h2 class="user-name">
             {{ me()?.username || ('PROFILE.USER_FALLBACK' | translate) }}
@@ -53,6 +58,8 @@
         </div>
 
         <div class="top-bar__right">
+          <app-notificaciones></app-notificaciones>
+          
           <div class="lang-switcher-menu">
             <button class="lang-toggle" (click)="toggleLangMenu()">
               🌐
@@ -102,13 +109,34 @@
               <div class="label">{{ 'PROFILE.FIELD_BIRTHDAY' | translate }}</div>
               <div class="value">{{ formatDate(me()?.birthday) }}</div>
             </div>
+          </div>
+        </div>
 
-            <div class="field" *ngIf="!me()?.isGoogleUser">
-              <div class="label">{{ 'PROFILE.FIELD_PASSWORD' | translate }}</div>
-              <div class="value">
-                <span>{{ showPassword ? (realPassword || '—') : maskedPassword() }}</span>
-              </div>
+        <!-- ===== CARD INTERESES ===== -->
+        <div class="card interests-card" *ngIf="!loading()">
+          <div class="card-header">
+            <h3 class="card-title">
+              <span class="title-emoji">✨</span>
+              {{ 'PROFILE.INTERESTS_TITLE' | translate }}
+            </h3>
+            <button class="btn btn--primary btn--sm" (click)="openInterestsModal()">
+              <span class="btn-icon">✏️</span>
+              {{ 'PROFILE.INTERESTS_EDIT_BUTTON' | translate }}
+            </button>
+          </div>
+
+          <div class="interests-display" *ngIf="selectedInterests().length > 0">
+            <div class="interest-tag" *ngFor="let interest of selectedInterests()">
+              {{ interest }}
             </div>
+          </div>
+
+          <div class="interests-empty" *ngIf="selectedInterests().length === 0">
+            <p class="empty-icon">🎯</p>
+            <p class="empty-text">{{ 'PROFILE.INTERESTS_EMPTY' | translate }}</p>
+            <button class="btn btn--secondary btn--sm" (click)="openInterestsModal()">
+              {{ 'PROFILE.INTERESTS_ADD_BUTTON' | translate }}
+            </button>
           </div>
         </div>
 
@@ -209,70 +237,230 @@
             <p>{{ 'GAMIFICATION.LOADING' | translate }}</p>
           </div>
         </div>
-
-        <!-- ===== CARD EVENTOS ===== -->
-        <div class="card events-card">
-          <div class="events-header">
-            <h3 class="card-title">{{ 'PROFILE.EVENTS_TITLE' | translate }}</h3>
-            <span class="count-pill">{{ eventos().length }}</span>
-          </div>
-
-          <div *ngIf="!eventos().length" class="empty-events">
-            {{ 'PROFILE.EVENTS_EMPTY' | translate }}
-          </div>
-
-          <ul class="event-list" *ngIf="eventos().length">
-            <li *ngFor="let ev of eventos()">
-              <div class="ev-body">
-                <div class="ev-title">{{ ev.title }}</div>
-                <div class="ev-sub">
-                  {{ ev.date ? formatDate(ev.date) : '' }}
-                  <span *ngIf="ev.location"> · {{ ev.location }}</span>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
       </section>
     </main>
   </div>
 
   <!-- ===== MODALES ===== -->
-  <!-- EDITAR PERFIL -->
+  
+  <!-- ===== MODAL EDITAR ===== -->
   <div class="modal-overlay" *ngIf="editOpen()" (click)="closeEdit()">
-    <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal modal--wide" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>{{ 'PROFILE.EDIT_MODAL_TITLE' | translate }}</h3>
         <button class="btn-close" (click)="closeEdit()">×</button>
       </div>
 
       <div class="modal-body">
+        <!-- Sección de foto de perfil -->
+        <div class="form-section photo-section">
+          <h4 class="section-title">{{ 'PROFILE.PHOTO_SECTION_TITLE' | translate }}</h4>
+          
+          <div class="photo-upload-area">
+            <!-- Vista previa de la foto actual -->
+            <div class="current-photo" *ngIf="profilePhotoUrl() && !photoPreviewUrl()">
+              <img [src]="'http://localhost:3000' + profilePhotoUrl()" alt="Foto actual" />
+              <button type="button" class="btn-remove-photo" (click)="openDeletePhotoModal()" [disabled]="uploadingPhoto()">
+                🗑️ {{ 'PROFILE.PHOTO_DELETE_BUTTON' | translate }}
+              </button>
+            </div>
+
+            <!-- Vista previa de la nueva foto seleccionada -->
+            <div class="photo-preview" *ngIf="photoPreviewUrl()">
+              <img [src]="photoPreviewUrl()!" alt="Vista previa" />
+              <div class="preview-actions">
+                <button type="button" class="btn btn--primary" (click)="uploadPhoto()" [disabled]="uploadingPhoto()">
+                  {{ uploadingPhoto() ? ('PROFILE.PHOTO_UPLOADING' | translate) : ('PROFILE.PHOTO_UPLOAD_BUTTON' | translate) }}
+                </button>
+                <button type="button" class="btn btn--ghost" (click)="cancelPhotoSelection()" [disabled]="uploadingPhoto()">
+                  {{ 'PROFILE.PHOTO_CANCEL' | translate }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Input para seleccionar archivo -->
+            <div class="file-input-wrapper" *ngIf="!photoPreviewUrl()">
+              <input 
+                type="file" 
+                id="photoInput" 
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                (change)="onPhotoSelected($event)"
+                [disabled]="uploadingPhoto()"
+              />
+              <label for="photoInput" class="file-input-label">
+                <span class="upload-icon">📷</span>
+                <span class="upload-text">
+                  {{ profilePhotoUrl() ? ('PROFILE.PHOTO_CHANGE' | translate) : ('PROFILE.PHOTO_SELECT' | translate) }}
+                </span>
+                <span class="upload-hint">{{ 'PROFILE.PHOTO_HINT' | translate }}</span>
+              </label>
+            </div>
+
+            <div *ngIf="uploadPhotoError()" class="msg msg--error photo-error">
+              {{ uploadPhotoError() }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+        <!-- USERNAME -->
         <div class="form-row">
           <label>{{ 'PROFILE.EDIT_USERNAME_LABEL' | translate }}</label>
-          <input type="text" [(ngModel)]="edit()!.username" (blur)="checkUsername()" minlength="3" />
+          <input 
+            type="text" 
+            [(ngModel)]="edit()!.username" 
+            (input)="validateUsername()"
+            (blur)="checkUsername()" 
+            minlength="3" 
+            maxlength="30"
+          />
+          
+          <!-- Validaciones de username en tiempo real -->
+          <div *ngIf="edit()!.username" class="validation-checks">
+            <div class="validation-item" [class.valid]="usernameValidations().length" [class.invalid]="!usernameValidations().length">
+              <span class="check-icon">{{ usernameValidations().length ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.USERNAME_MIN_LENGTH' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="usernameValidations().startsWithLetter" [class.invalid]="!usernameValidations().startsWithLetter">
+              <span class="check-icon">{{ usernameValidations().startsWithLetter ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.USERNAME_START_LETTER' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="usernameValidations().validChars" [class.invalid]="!usernameValidations().validChars">
+              <span class="check-icon">{{ usernameValidations().validChars ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.USERNAME_VALID_CHARS' | translate }}</span>
+            </div>
+          </div>
+          
           <div class="hint-row">
             <span *ngIf="checkingUsername()" class="hint info">{{ 'PROFILE.EDIT_USERNAME_CHECKING' | translate }}</span>
             <span *ngIf="usernameTaken()" class="hint error">{{ 'PROFILE.EDIT_USERNAME_TAKEN' | translate }}</span>
           </div>
         </div>
 
+        <!-- EMAIL -->
         <div class="form-row">
           <label>{{ 'PROFILE.EDIT_EMAIL_LABEL' | translate }}</label>
-          <input type="email" [(ngModel)]="edit()!.gmail" (blur)="checkEmail()" />
+          <input 
+            type="email" 
+            [(ngModel)]="edit()!.gmail" 
+            (input)="validateEmail()"
+            (blur)="checkEmail()" 
+          />
+          
+          <!-- Validaciones de email en tiempo real -->
+          <div *ngIf="edit()!.gmail" class="validation-checks">
+            <div class="validation-item" [class.valid]="emailValidations().format" [class.invalid]="!emailValidations().format">
+              <span class="check-icon">{{ emailValidations().format ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.EMAIL_FORMAT_VALID' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="emailValidations().notTemporary" [class.invalid]="!emailValidations().notTemporary">
+              <span class="check-icon">{{ emailValidations().notTemporary ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.EMAIL_NOT_TEMPORARY' | translate }}</span>
+            </div>
+          </div>
+          
           <div class="hint-row">
             <span *ngIf="checkingEmail()" class="hint info">{{ 'PROFILE.EDIT_EMAIL_CHECKING' | translate }}</span>
             <span *ngIf="emailTaken()" class="hint error">{{ 'PROFILE.EDIT_EMAIL_TAKEN' | translate }}</span>
           </div>
         </div>
 
+        <!-- BIRTHDAY -->
         <div class="form-row">
           <label>{{ 'PROFILE.EDIT_BIRTHDAY_LABEL' | translate }}</label>
-          <input type="date" [ngModel]="birthForInput()" (ngModelChange)="onBirthInput($event)" [attr.max]="todayISO()" />
+          <input 
+            type="date" 
+            [ngModel]="birthForInput()" 
+            (ngModelChange)="onBirthInput($event)" 
+            [attr.max]="maxDate"
+            [attr.min]="minDate"
+          />
+          
+          <!-- Validaciones de cumpleaños en tiempo real -->
+          <div *ngIf="edit()!.birthday" class="validation-checks">
+            <div class="validation-item" [class.valid]="birthdayValidations().notFuture" [class.invalid]="!birthdayValidations().notFuture">
+              <span class="check-icon">{{ birthdayValidations().notFuture ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.BIRTHDAY_NOT_FUTURE' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="birthdayValidations().minimumAge" [class.invalid]="!birthdayValidations().minimumAge">
+              <span class="check-icon">{{ birthdayValidations().minimumAge ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.BIRTHDAY_MIN_AGE' | translate }}</span>
+            </div>
+          </div>
         </div>
 
+        <!-- PASSWORD -->
         <div class="form-row">
           <label>{{ 'PROFILE.EDIT_NEW_PASSWORD_LABEL' | translate }}</label>
-          <input type="password" [(ngModel)]="edit()!.password" />
+          <div class="password-wrapper-profile">
+            <input 
+              [type]="showEditPassword ? 'text' : 'password'" 
+              [(ngModel)]="edit()!.password"
+              (input)="validatePassword()"
+              [placeholder]="'PROFILE.EDIT_NEW_PASSWORD_PLACEHOLDER' | translate"
+            />
+            <button type="button" class="toggle-pass-profile" (click)="toggleEditPassword()">
+              {{ showEditPassword ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          
+          <!-- Barra de fortaleza de contraseña -->
+          <div *ngIf="edit()!.password" class="password-strength-bar">
+            <div class="strength-bar" [class]="getPasswordStrengthClass()" [style.width.%]="(passwordStrength() / 5) * 100"></div>
+          </div>
+          <div *ngIf="edit()!.password" class="strength-text" [class]="getPasswordStrengthClass()">
+            {{ ('PROFILE.PASSWORD_STRENGTH_' + getPasswordStrengthText()) | translate }}
+          </div>
+          
+          <!-- Requisitos de contraseña -->
+          <div *ngIf="edit()!.password" class="validation-checks">
+            <div class="validation-item" [class.valid]="passwordValidations().length" [class.invalid]="!passwordValidations().length">
+              <span class="check-icon">{{ passwordValidations().length ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.PASSWORD_REQ_LENGTH' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="passwordValidations().uppercase" [class.invalid]="!passwordValidations().uppercase">
+              <span class="check-icon">{{ passwordValidations().uppercase ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.PASSWORD_REQ_UPPERCASE' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="passwordValidations().lowercase" [class.invalid]="!passwordValidations().lowercase">
+              <span class="check-icon">{{ passwordValidations().lowercase ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.PASSWORD_REQ_LOWERCASE' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="passwordValidations().number" [class.invalid]="!passwordValidations().number">
+              <span class="check-icon">{{ passwordValidations().number ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.PASSWORD_REQ_NUMBER' | translate }}</span>
+            </div>
+            <div class="validation-item" [class.valid]="passwordValidations().special" [class.invalid]="!passwordValidations().special">
+              <span class="check-icon">{{ passwordValidations().special ? '✓' : '✗' }}</span>
+              <span>{{ 'PROFILE.PASSWORD_REQ_SPECIAL' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONFIRM PASSWORD -->
+        <div class="form-row" *ngIf="edit() && edit()!.password && edit()!.password?.trim() !== ''">
+          <label>{{ 'PROFILE.EDIT_CONFIRM_PASSWORD_LABEL' | translate }}</label>
+          <div class="password-wrapper-profile">
+            <input 
+              [type]="showEditConfirmPassword ? 'text' : 'password'" 
+              [ngModel]="confirmPassword()"
+              (ngModelChange)="confirmPassword.set($event)"
+              [placeholder]="'PROFILE.EDIT_CONFIRM_PASSWORD_PLACEHOLDER' | translate"
+            />
+            <button type="button" class="toggle-pass-profile" (click)="toggleEditConfirmPassword()">
+              {{ showEditConfirmPassword ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          
+          <!-- Mensaje de coincidencia de contraseñas -->
+          <div *ngIf="confirmPassword() && !passwordsMatch()" class="hint-row">
+            <span class="hint error">⚠ {{ 'PROFILE.PASSWORDS_MISMATCH' | translate }}</span>
+          </div>
+          
+          <div *ngIf="confirmPassword() && passwordsMatch()" class="success-message">
+            <span>✓ </span>
+            <span>{{ 'PROFILE.PASSWORDS_MATCH' | translate }}</span>
+          </div>
         </div>
 
         <div *ngIf="saveError()" class="msg msg--error">
@@ -282,8 +470,36 @@
 
       <div class="modal-actions">
         <button class="btn btn--ghost" (click)="closeEdit()">{{ 'PROFILE.EDIT_CANCEL' | translate }}</button>
-        <button class="btn btn--primary" [disabled]="saving()" (click)="saveEdit()">
+        <button class="btn btn--primary" [disabled]="saving() || !isFormValid()" (click)="saveEdit()">
           {{ saving() ? ('PROFILE.EDIT_SAVING' | translate) : ('PROFILE.EDIT_SAVE' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ NUEVO: MODAL CONFIRMAR ELIMINAR FOTO ============ -->
+  <div class="modal-overlay" *ngIf="deletePhotoModalOpen()" (click)="closeDeletePhotoModal()">
+    <div class="modal modal--warning" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'PROFILE.DELETE_PHOTO_MODAL_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeDeletePhotoModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-icon modal-icon--warning">
+          🖼️
+        </div>
+        <p class="modal-message" [innerHTML]="'PROFILE.DELETE_PHOTO_MODAL_TEXT' | translate"></p>
+        
+        <div *ngIf="uploadPhotoError()" class="msg msg--error">{{ uploadPhotoError() }}</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn--ghost" (click)="closeDeletePhotoModal()" [disabled]="deletingPhoto()">
+          {{ 'PROFILE.DELETE_PHOTO_CANCEL' | translate }}
+        </button>
+        <button class="btn btn--warning" [disabled]="deletingPhoto()" (click)="confirmDeletePhoto()">
+          {{ deletingPhoto() ? ('PROFILE.DELETE_PHOTO_DELETING' | translate) : ('PROFILE.DELETE_PHOTO_CONFIRM' | translate) }}
         </button>
       </div>
     </div>
@@ -298,9 +514,13 @@
       </div>
 
       <div class="modal-body">
-        <p [innerHTML]="'PROFILE.DELETE_MODAL_TEXT' | translate"></p>
+        <div class="modal-icon modal-icon--danger">
+          ⚠️
+        </div>
+        <p class="modal-message" [innerHTML]="'PROFILE.DELETE_MODAL_TEXT' | translate"></p>
+        
         <div class="form-row" *ngIf="!me()?.isGoogleUser">
-          <input type="password" [(ngModel)]="deletePassword" minlength="7" />
+          <input type="password" [(ngModel)]="deletePassword" minlength="7" placeholder="{{ 'PROFILE.DELETE_PASSWORD_PLACEHOLDER' | translate }}" />
         </div>
 
         <div *ngIf="deleteError()" class="msg msg--error">{{ deleteError() }}</div>
@@ -310,6 +530,38 @@
         <button class="btn btn--ghost" (click)="closeDelete()">{{ 'PROFILE.DELETE_CANCEL' | translate }}</button>
         <button class="btn btn--danger" [disabled]="deleting()" (click)="confirmDelete()">
           {{ deleting() ? ('PROFILE.DELETE_DELETING' | translate) : ('PROFILE.DELETE_CONFIRM' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE INTERESES -->
+  <div class="modal-overlay" *ngIf="showInterestsModal()" (click)="closeInterestsModal()">
+    <div class="modal modal--interests" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'PROFILE.INTERESTS_MODAL_TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeInterestsModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <p class="modal-description">{{ 'PROFILE.INTERESTS_MODAL_DESCRIPTION' | translate }}</p>
+        
+        <app-interest-selector
+          [selectedInterests]="selectedInterests()"
+          (selectedInterestsChange)="onInterestsChange($event)">
+        </app-interest-selector>
+
+        <div *ngIf="interestsError()" class="msg msg--error">
+          {{ interestsError() }}
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn--ghost" (click)="closeInterestsModal()" [disabled]="savingInterests()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button type="button" class="btn btn--primary" (click)="saveInterests()" [disabled]="savingInterests()">
+          {{ savingInterests() ? ('COMMON.SAVING' | translate) : ('COMMON.SAVE' | translate) }}
         </button>
       </div>
     </div>

@@ -26,6 +26,10 @@ export class UserService {
     return this.http.get<Page<User>>(`${this.apiUrl}?${params}`);
   }
 
+  getVisibleUsers(): Observable<{ data: User[]; totalItems: number }> {
+    return this.http.get<{ data: User[]; totalItems: number }>(`${this.apiUrl}/visibleusers`);
+  }
+
   getUserById(id: string): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/${id}`);
   }
@@ -56,6 +60,22 @@ export class UserService {
   updateMe(id: string, patch: Partial<User & { password?: string }>) {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.put<{ ok: boolean; user: User }>(`${this.apiUrl}/${id}/self`, patch, { headers });
+  }
+
+  uploadProfilePhoto(userId: string, file: File): Observable<{ ok: boolean; profilePhoto: string; user: User }> {
+    const formData = new FormData();
+    formData.append('photo', file);
+    
+    return this.http.post<{ ok: boolean; profilePhoto: string; user: User }>(
+      `${this.apiUrl}/${userId}/profile-photo`,
+      formData
+    );
+  }
+
+  deleteProfilePhoto(userId: string): Observable<{ ok: boolean; message: string }> {
+    return this.http.delete<{ ok: boolean; message: string }>(
+      `${this.apiUrl}/${userId}/profile-photo`
+    );
   }
 
   checkUserExistsForReset(identifier: string) {
@@ -164,5 +184,43 @@ export class UserService {
       username,
       text
     });
+  }
+
+  blockUser(userId: string, blockId: string): Observable<{ ok: boolean; message: string }> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<{ ok: boolean; message: string }>(
+      `${this.apiUrl}/info/block`,
+      { id: userId, blockId },
+      { headers }
+    );
+  }
+
+  unblockUser(userId: string, unblockId: string): Observable<{ ok: boolean; message: string }> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<{ ok: boolean; message: string }>(
+      `${this.apiUrl}/info/unblock`,
+      { id: userId, unblockId },
+      { headers }
+    );
+  }
+
+  getBlockedUsers(userId: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}/${userId}/blocked`);
+  }
+
+  uploadChatImage(userId: string, friendId: string, file: File): Observable<{ ok: boolean; imageUrl: string }> {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    return this.http.post<{ ok: boolean; imageUrl: string }>(
+      `${this.apiUrl}/${userId}/chat/${friendId}/image`,
+      formData
+    );
+  }
+
+  deleteChatMessage(messageId: string): Observable<{ message: string; messageId: string; deletedImage: boolean }> {
+    return this.http.delete<{ message: string; messageId: string; deletedImage: boolean }>(
+      `${this.apiUrl}/chat/${messageId}`
+    );
   }
 }

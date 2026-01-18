@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { GeocodingService, GeocodingResult, AddressValidation } from '../../services/geocoding.service';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
 
 interface CalendarDay {
   date: Date;
@@ -32,7 +33,7 @@ type NewEventDTO = {
 @Component({
   selector: 'app-calendario',
   standalone: true,
-  imports: [CommonModule, TranslateModule, FormsModule],
+  imports: [CommonModule, TranslateModule, FormsModule, NotificacionesComponent],
   templateUrl: './calendario.component.html',
   styleUrls: ['./calendario.component.css']
 })
@@ -108,13 +109,11 @@ export class CalendarioComponent implements OnInit {
   ngOnInit(): void {
     const savedLang = localStorage.getItem('lang') as 'es' | 'en' | 'cat' | 'fr';
     if (savedLang) {
-      this.currentLang.set(savedLang);  // ← Usar .set()
+      this.currentLang.set(savedLang);
       this.translateService.use(savedLang);
     }
-    // Cargar días de la semana desde traducciones
     this.loadWeekDays();
 
-    // Suscribirse a cambios de idioma para actualizar los días
     this.translateService.onLangChange.subscribe(() => {
       this.loadWeekDays();
     });
@@ -138,7 +137,6 @@ export class CalendarioComponent implements OnInit {
           this.showAddressSuggestions = results.length > 0;
         },
         error: (err) => {
-          console.error('Error searching address:', err);
           this.searchingAddress = false;
           this.addressSuggestions = [];
         }
@@ -185,7 +183,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   goToCrearEvento() {
-    this.router.navigate(['/crear-eventos']);
+    this.router.navigate(['/crear-evento']);
   }
 
   goToMisEventos() {
@@ -266,7 +264,7 @@ export class CalendarioComponent implements OnInit {
 
   currentMonthName = computed(() => {
     const date = this.currentDate();
-    const lang = this.currentLang();  // ← Leer la señal con ()
+    const lang = this.currentLang();
     const year = date.getFullYear();
     const localeMap: { [key: string]: string } = {
       "es": "es-ES",
@@ -307,16 +305,12 @@ export class CalendarioComponent implements OnInit {
     const endDay = lastDayDate.getDate().toString().padStart(2, '0');
     const end = `${lastDayDate.getFullYear()}-${endMonth}-${endDay}`;
 
-    console.log('Fetching calendar events:', { start, end });
-
     this.eventoService.getCalendarEvents(start, end).subscribe({
       next: (events) => {
-        console.log('Calendar events received:', events);
         this.events.set(events || []);
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error cargando eventos para calendario', err);
         this.loading.set(false);
       }
     });
@@ -373,11 +367,9 @@ export class CalendarioComponent implements OnInit {
 
   openCreateModal(date: Date): void {
     if (!this.isFutureDate(date)) {
-      console.log('Cannot create event in the past:', date);
       return;
     }
 
-    console.log('Opening create modal for date:', date);
     this.createDate.set(date);
     this.showCreateModal.set(true);
     
@@ -576,13 +568,11 @@ export class CalendarioComponent implements OnInit {
 
     this.eventoService.createEventoFromPanel(payload).subscribe({
       next: (response: any) => {
-        console.log('Evento creado con éxito', response);
         this.saving = false;
         this.closeCreateModal();
         this.loadEventsForMonth(this.currentDate());
       },
       error: (err) => {
-        console.error('Error al crear el evento', err);
         this.errorMessage = err?.error?.message || 'Error al crear el evento.';
         this.saving = false;
       }
@@ -666,7 +656,6 @@ export class CalendarioComponent implements OnInit {
         this.loadEventsForMonth(this.currentDate());
       },
       error: (err) => {
-        console.error('Error uniéndose al evento:', err);
         this.isLoadingEvent = false;
         this.translateService.get('CHATBOT.MODAL.JOIN_ERROR').subscribe(msg => {
           alert(msg);
@@ -717,7 +706,6 @@ export class CalendarioComponent implements OnInit {
               this.loadEventsForMonth(this.currentDate());
             },
             error: (err) => {
-              console.error('Error abandonando evento:', err);
               this.isLoadingEvent = false;
               this.translateService.get('CHATBOT.MODAL.LEAVE_ERROR').subscribe(msg => {
                 alert(msg);
@@ -754,7 +742,6 @@ export class CalendarioComponent implements OnInit {
               this.loadEventsForMonth(this.currentDate());
             },
             error: (err) => {
-              console.error('Error saliendo de lista de espera:', err);
               this.isLoadingEvent = false;
               this.translateService.get('CHATBOT.MODAL.LEAVE_WAITLIST_ERROR').subscribe(msg => {
                 alert(msg);

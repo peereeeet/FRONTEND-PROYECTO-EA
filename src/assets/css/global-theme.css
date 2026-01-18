@@ -1,4 +1,5 @@
 /* =====================================================
+<<<<<<< HEAD
    EVENTER - SISTEMA DE DISEÑO GLOBAL UNIFICADO
    ===================================================== */
 
@@ -64,10 +65,104 @@
   --warning-light: #fde68a;
   --info: #3b82f6;
   --info-light: #93c5fd;
+=======
+   EVENTER - SISTEMA DE DISEÑO MODERNO V2
+   ===================================================== */
+
+:root {
+  /* ========== PALETA DE COLORES - MODO CLARO ========== */
+  
+  /* Fondos principales */
+  --bg-gradient-start: #f8fafc;
+  --bg-gradient-end: #e0e7ff;
+  --bg: #ffffff;
+  --bg-panel: rgba(255, 255, 255, 0.75);
+  --bg-elev: rgba(248, 250, 252, 0.9);
+  --bg-secondary: #f1f5f9;
+  
+  /* Superficies con glassmorphism */
+  --surface: #ffffff;
+  --surface-card: rgba(255, 255, 255, 0.8);
+  --surface-elev: rgba(255, 255, 255, 0.6);
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  
+  /* Textos */
+  --text: #0f172a;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  --text-muted: #cbd5e1;
+  
+  /* Bordes */
+  --border: rgba(148, 163, 184, 0.2);
+  --border-light: rgba(226, 232, 240, 0.6);
+  --border-hover: rgba(99, 102, 241, 0.3);
+  
+  /* Colores de acento - Gradientes vibrantes */
+  --primary-start: #6366f1;
+  --primary-end: #8b5cf6;
+  --accent: #6366f1;
+  --accent-light: #818cf8;
+  --accent-dark: #4f46e5;
+  
+  /* Gradientes principales */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-purple: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --gradient-blue: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-info: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  
+  /* Gradientes de fondo suaves */
+  --gradient-bg-1: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  --gradient-bg-2: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(37, 99, 235, 0.05) 100%);
+  
+  /* Brillos y resplandores */
+  --glow: rgba(99, 102, 241, 0.15);
+  --glow-strong: rgba(99, 102, 241, 0.25);
+  --glow-purple: rgba(139, 92, 246, 0.2);
+  --glow-purple-strong: rgba(139, 92, 246, 0.35);
+  
+  /* Sombras modernas */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+  --shadow-2xl: 0 35px 60px -15px rgba(0, 0, 0, 0.15);
+  
+  /* Sombras de color */
+  --shadow-primary: 0 10px 40px -10px rgba(99, 102, 241, 0.35);
+  --shadow-purple: 0 10px 40px -10px rgba(139, 92, 246, 0.35);
+  --shadow-success: 0 10px 40px -10px rgba(16, 185, 129, 0.35);
+  --shadow-danger: 0 10px 40px -10px rgba(239, 68, 68, 0.35);
+  
+  /* Colores de estado */
+  --success: #10b981;
+  --success-light: #34d399;
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --danger: #ef4444;
+  --danger-light: #f87171;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --warning: #f59e0b;
+  --warning-light: #fbbf24;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --info: #3b82f6;
+  --info-light: #60a5fa;
+  --info-bg: rgba(59, 130, 246, 0.1);
+  
+  /* Backdrop blur */
+  --blur-sm: blur(8px);
+  --blur-md: blur(12px);
+  --blur-lg: blur(16px);
+  --blur-xl: blur(24px);
+>>>>>>> origin/develop
 }
 
 .dark-theme,
 [data-theme="dark"] {
+<<<<<<< HEAD
   /* ========== MODO OSCURO ========== */
   
   /* Fondos y superficies */
@@ -414,6 +509,135 @@ body {
   from {
     opacity: 0;
     transform: translateY(-8px);
+=======
+  /* ========== PALETA DE COLORES - MODO OSCURO ========== */
+  
+  /* Fondos principales */
+  --bg-gradient-start: #0f172a;
+  --bg-gradient-end: #1e1b4b;
+  --bg: #0f172a;
+  --bg-panel: rgba(15, 23, 42, 0.95);
+  --bg-elev: rgba(30, 41, 59, 0.8);
+  --bg-secondary: #1e293b;
+  
+  /* Superficies con glassmorphism */
+  --surface: #1e293b;
+  --surface-card: rgba(30, 41, 59, 0.6);
+  --surface-elev: rgba(51, 65, 85, 0.5);
+  --surface-glass: rgba(30, 41, 59, 0.4);
+  
+  /* Textos */
+  --text: #f1f5f9;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-muted: #64748b;
+  
+  /* Bordes */
+  --border: rgba(148, 163, 184, 0.15);
+  --border-light: rgba(148, 163, 184, 0.08);
+  --border-hover: rgba(129, 140, 248, 0.3);
+  
+  /* Colores de acento */
+  --primary-start: #818cf8;
+  --primary-end: #a78bfa;
+  --accent: #818cf8;
+  --accent-light: #a5b4fc;
+  --accent-dark: #6366f1;
+  
+  /* Gradientes principales - más vibrantes en oscuro */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-purple: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+  --gradient-blue: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  --gradient-success: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  --gradient-danger: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  --gradient-warning: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  --gradient-info: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+  
+  /* Gradientes de fondo suaves */
+  --gradient-bg-1: linear-gradient(135deg, rgba(129, 140, 248, 0.08) 0%, rgba(167, 139, 250, 0.08) 100%);
+  --gradient-bg-2: linear-gradient(135deg, rgba(96, 165, 250, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+  
+  /* Brillos y resplandores - más intensos en oscuro */
+  --glow: rgba(129, 140, 248, 0.2);
+  --glow-strong: rgba(129, 140, 248, 0.35);
+  --glow-purple: rgba(167, 139, 250, 0.25);
+  --glow-purple-strong: rgba(167, 139, 250, 0.4);
+  
+  /* Sombras modernas - más pronunciadas en oscuro */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  --shadow-2xl: 0 35px 60px -15px rgba(0, 0, 0, 0.8);
+  
+  /* Sombras de color */
+  --shadow-primary: 0 10px 40px -10px rgba(129, 140, 248, 0.4);
+  --shadow-purple: 0 10px 40px -10px rgba(167, 139, 250, 0.4);
+  --shadow-success: 0 10px 40px -10px rgba(52, 211, 153, 0.4);
+  --shadow-danger: 0 10px 40px -10px rgba(248, 113, 113, 0.4);
+  
+  /* Colores de estado */
+  --success: #34d399;
+  --success-light: #6ee7b7;
+  --success-bg: rgba(52, 211, 153, 0.15);
+  --danger: #f87171;
+  --danger-light: #fca5a5;
+  --danger-bg: rgba(248, 113, 113, 0.15);
+  --warning: #fbbf24;
+  --warning-light: #fcd34d;
+  --warning-bg: rgba(251, 191, 36, 0.15);
+  --info: #60a5fa;
+  --info-light: #93c5fd;
+  --info-bg: rgba(96, 165, 250, 0.15);
+}
+
+/* ========== RESET Y ESTILOS BASE ========== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ========== UTILIDADES GLOBALES ========== */
+
+.blur-backdrop {
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+}
+
+.glass-effect {
+  background: var(--surface-glass);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
+  border: 1px solid var(--border);
+}
+
+/* ========== ANIMACIONES GLOBALES ========== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+>>>>>>> origin/develop
   }
   to {
     opacity: 1;
@@ -421,6 +645,7 @@ body {
   }
 }
 
+<<<<<<< HEAD
 .lang-option {
   display: block;
   width: 100%;
@@ -691,10 +916,22 @@ input.error {
   border: 1px solid var(--border);
   box-shadow: var(--shadow-lg);
   animation: scaleIn 0.3s ease;
+=======
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+>>>>>>> origin/develop
 }
 
 @keyframes scaleIn {
   from {
+<<<<<<< HEAD
     transform: scale(0.9);
     opacity: 0;
   }
@@ -902,4 +1139,65 @@ input.error {
   .card {
     padding: 16px;
   }
+=======
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* ========== TRANSICIONES SUAVES ========== */
+
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.smooth-transition-fast {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.smooth-transition-slow {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+>>>>>>> origin/develop
 }

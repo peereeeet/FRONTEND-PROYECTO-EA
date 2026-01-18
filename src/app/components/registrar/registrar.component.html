@@ -63,7 +63,7 @@
       <p class="login-subtitle">{{ 'REGISTER.SUBTITLE' | translate }}</p>
     </div>
 
-    <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" novalidate>
+    <form *ngIf="registrarStep === 'FORM'" #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" novalidate>
       <div class="form-grid">
         <div class="form-column">
           <!-- USERNAME -->
@@ -71,18 +71,23 @@
             <label class="form-label" for="username">
               {{ 'REGISTER.USERNAME_LABEL' | translate }}
             </label>
-            <input
-              id="username"
-              type="text"
-              class="form-input"
-              [(ngModel)]="nuevoUsuario.username"
-              name="username"
-              #usernameCtrl="ngModel"
-              required
-              minlength="3"
-              maxlength="30"
-              [placeholder]="'REGISTER.USERNAME_PLACEHOLDER' | translate"
-              (blur)="validateUsername()" />
+            <div class="input-with-status">
+              <input
+                id="username"
+                type="text"
+                class="form-input"
+                [(ngModel)]="nuevoUsuario.username"
+                name="username"
+                #usernameCtrl="ngModel"
+                required
+                minlength="3"
+                maxlength="30"
+                [placeholder]="'REGISTER.USERNAME_PLACEHOLDER' | translate"
+                (input)="onUsernameInput()"
+                (blur)="validateUsername()" />
+              <span *ngIf="isCheckingUsername" class="input-status checking">⏳</span>
+              <span *ngIf="!isCheckingUsername && validateUsername() && !usernameExists && nuevoUsuario.username.length >= 3" class="input-status valid">✓</span>
+            </div>
             
             <div *ngIf="(usernameCtrl.touched || formSubmitted) && !validateUsername()" class="error-message">
               <span>⚠ </span>
@@ -114,20 +119,23 @@
             <label class="form-label" for="gmail">
               {{ 'REGISTER.EMAIL_LABEL' | translate }}
             </label>
-            <input
-              id="gmail"
-              type="email"
-              class="form-input"
-              [(ngModel)]="nuevoUsuario.gmail"
-              name="gmail"
-              #gmailCtrl="ngModel"
-              required
-              email
-              [placeholder]="'REGISTER.EMAIL_PLACEHOLDER' | translate"
-              (input)="validateEmail()"
-              (blur)="validateEmail()" />
+            <div class="input-with-status">
+              <input
+                id="gmail"
+                type="email"
+                class="form-input"
+                [(ngModel)]="nuevoUsuario.gmail"
+                name="gmail"
+                #gmailCtrl="ngModel"
+                required
+                email
+                [placeholder]="'REGISTER.EMAIL_PLACEHOLDER' | translate"
+                (input)="validateEmail()"
+                (blur)="validateEmail()" />
+              <span *ngIf="isCheckingEmail" class="input-status checking">⏳</span>
+              <span *ngIf="!isCheckingEmail && emailValidations.format && emailValidations.notTemporary && !emailExists" class="input-status valid">✓</span>
+            </div>
             
-            <!-- Indicadores de validación de email -->
             <div *ngIf="nuevoUsuario.gmail && (gmailCtrl.touched || formSubmitted)" class="validation-checks">
               <div class="validation-item" [class.valid]="emailValidations.format" [class.invalid]="!emailValidations.format">
                 <span class="check-icon">{{ emailValidations.format ? '✓' : '✗' }}</span>
@@ -214,7 +222,6 @@
               </button>
             </div>
             
-            <!-- Barra de fortaleza de contraseña -->
             <div *ngIf="nuevoUsuario.password" class="password-strength-bar">
               <div class="strength-bar" [class]="getPasswordStrengthClass()" [style.width.%]="(passwordStrength / 5) * 100"></div>
             </div>
@@ -222,7 +229,6 @@
               {{ ('REGISTER.PASSWORD_STRENGTH_' + getPasswordStrengthText().toUpperCase()) | translate }}
             </div>
             
-            <!-- Requisitos de contraseña -->
             <div *ngIf="nuevoUsuario.password && (passwordCtrl.touched || formSubmitted)" class="validation-checks">
               <div class="validation-item" [class.valid]="passwordValidations.length" [class.invalid]="!passwordValidations.length">
                 <span class="check-icon">{{ passwordValidations.length ? '✓' : '✗' }}</span>
@@ -282,6 +288,21 @@
         </div>
       </div>
 
+      <!-- BOTÓN PARA MOSTRAR/OCULTAR SELECTOR DE INTERESES -->
+      <div class="interests-toggle-container">
+        <button 
+          type="button" 
+          class="interests-toggle-btn"
+          (click)="openInterestsModal()">
+          <span class="toggle-icon">✨</span>
+          <span>{{ 'INTERESTS.SELECT' | translate }}</span>
+          <span class="selected-count" *ngIf="selectedInterests.length > 0">
+            ({{ selectedInterests.length }})
+          </span>
+        </button>
+        <p class="interests-hint">{{ 'INTERESTS.HINT' | translate }}</p>
+      </div>
+
       <div class="buttons-row">
         <button
           type="submit"
@@ -301,8 +322,92 @@
       </div>
     </form>
 
+    <!-- STEP VERIFICACIÓN OTP -->
+    <div *ngIf="registrarStep === 'VERIFY'" class="verify-step">
+      <div class="verify-container">
+        <div class="verify-icon">📧</div>
+        <h3>{{ 'REGISTER.VERIFY_TITLE' | translate }}</h3>
+        <p class="verify-subtitle">
+          {{ 'REGISTER.VERIFY_INSTRUCTIONS' | translate }}
+        </p>
+        <p class="verify-email">{{ pendingEmail }}</p>
+      </div>
+
+      <!-- Input OTP -->
+      <div class="form-group otp-group">
+        <label class="form-label">{{ 'REGISTER.OTP_LABEL' | translate }}</label>
+        <input 
+          class="form-input code-input"
+          [formControl]="otpControl"
+          type="text" 
+          inputmode="numeric" 
+          maxlength="6"
+          autocomplete="one-time-code"
+          (input)="sanitizeOtp($event)"
+          [placeholder]="'000000'" />
+        
+        <p class="input-hint">{{ 'REGISTER.OTP_HINT' | translate }}</p>
+      </div>
+
+      <!-- Error Local del paso Verify -->
+      <div *ngIf="otpControl.touched && otpControl.invalid" class="error-message">
+        <span>⚠ </span>
+        <span>{{ 'REGISTER.OTP_INVALID' | translate }}</span>
+      </div>
+
+      <div class="buttons-column">
+        <button 
+          type="button" 
+          class="login-button"
+          (click)="onVerify()"
+          [disabled]="isSubmitting || otpControl.invalid">
+          <span *ngIf="isSubmitting" class="loading-spinner"></span>
+          {{ isSubmitting ? ('COMMON.LOADING' | translate) : ('REGISTER.VERIFY_BUTTON' | translate) }}
+        </button>
+
+        <button 
+          type="button" 
+          class="admin-button" 
+          (click)="onResend()" 
+          [disabled]="resendCooldown > 0">
+          <span class="resend-icon">🔄</span>
+          {{ 'REGISTER.RESEND_CODE' | translate }}
+          <span *ngIf="resendCooldown > 0" class="cooldown-badge">({{ resendCooldown }}s)</span>
+        </button>
+
+        <button 
+          type="button" 
+          class="link-button" 
+          (click)="backToRegister()">
+          ← {{ 'REGISTER.BACK_TO_FORM' | translate }}
+        </button>
+      </div>
+    </div>
+
     <div *ngIf="errorMessage" class="form-error">
       {{ errorMessage }}
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showInterestsModal" (click)="closeInterestsModal()">
+    <div class="modal modal--interests" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'INTERESTS.TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeInterestsModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <app-interest-selector
+          [selectedInterests]="selectedInterests"
+          (selectedInterestsChange)="onInterestsChange($event)">
+        </app-interest-selector>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn primary" (click)="closeInterestsModal()">
+          {{ 'INTERESTS.CONFIRM' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </div>

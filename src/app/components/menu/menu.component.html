@@ -5,7 +5,9 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar__brand">
-        <div class="brand-logo">E</div>
+        <div class="brand-logo brand-logo--image">
+          <img src="assets/images/logo.png" alt="Eventer Logo" class="brand-logo-img">
+        </div>
         <div class="brand-text">
           <span class="brand-name">Eventer</span>
           <span class="brand-sub">{{ 'MENU.TITLE' | translate }}</span>
@@ -13,7 +15,10 @@
       </div>
 
       <div class="sidebar__user">
-        <div class="avatar avatar--lg">👤</div>
+        <div class="avatar avatar--lg">
+          <img *ngIf="me()?.profilePhoto" [src]="'http://localhost:3000' + me()!.profilePhoto" alt="Profile" class="avatar-img" />
+          <span *ngIf="!me()?.profilePhoto">👤</span>
+        </div>
         <div class="user-meta">
           <h2 class="user-name">
             {{ me()?.username || ('MENU.USER_FALLBACK' | translate) }}
@@ -87,6 +92,13 @@
           </span>
         </button>
 
+        <button class="nav-item" (click)="openBlockedModal()">
+          <span class="nav-icon">🚫</span>
+          <span class="nav-text">
+            {{ 'MENU.FRIENDS_BUTTON_BLOCKED' | translate }}
+          </span>
+        </button>
+
         <button class="btn btn--danger" (click)="onLogout()">
           {{ 'MENU.LOGOUT_BUTTON' | translate }}
         </button>
@@ -102,6 +114,8 @@
         </div>
 
         <div class="top-bar__right">
+          <app-notificaciones></app-notificaciones>
+
           <div class="lang-switcher-menu">
             <button
               type="button"
@@ -207,6 +221,9 @@
                     {{ newFriendRequests() }}
                   </span>
                 </button>
+                <button type="button" class="btn btn--ghost" (click)="openBlockedModal()">
+                  🚫 {{ 'MENU.FRIENDS_BUTTON_BLOCKED' | translate }}
+                </button>
               </div>
             </div>
 
@@ -215,7 +232,10 @@
                 <ul class="friends-list">
                   <li *ngFor="let f of friendsPaged()">
                     <div class="friend-left">
-                      <div class="avatar avatar--sm">🙂</div>
+                      <div class="avatar avatar--sm">
+                        <img *ngIf="f.profilePhoto" [src]="f.profilePhoto" alt="" class="avatar-img" />
+                        <span *ngIf="!f.profilePhoto">🙂</span>
+                      </div>
                       <div class="friend-data">
                         <div class="friend-name">{{ f.username }}</div>
                         <div class="friend-mail">{{ f.gmail }}</div>
@@ -235,6 +255,12 @@
                         (click)="openChat(f)"
                         title="Abrir chat">
                         💬
+                      </button>
+                      <button 
+                        class="btn btn--icon btn--danger-ghost"
+                        (click)="confirmBlockUser(f, 'friend'); $event.stopPropagation()"
+                        [title]="'MENU.FRIENDS_BLOCK' | translate">
+                        🚫
                       </button>
                       <button
                         type="button"
@@ -277,6 +303,13 @@
                 (click)="switchEventTab('search')">
                 <span class="tab-icon">🔍</span>
                 <span class="tab-label">{{ 'MENU.TAB_SEARCH' | translate }}</span>
+              </button>
+              <button 
+                class="tab-button-event" 
+                [class.tab-button-event--active]="activeEventTab === 'recommended'"
+                (click)="switchEventTab('recommended')">
+                <span class="tab-icon">✨</span>
+                <span class="tab-label">{{ 'MENU.TAB_RECOMMENDED' | translate }}</span>
               </button>
             </div>
 
@@ -356,6 +389,21 @@
                           <span>
                             <strong>{{ 'EVENTS.LABEL_PARTICIPANTS' | translate }}</strong>
                             {{ evento.participantes?.length || 0 }}
+                            <ng-container *ngIf="evento.maxParticipantes">
+                              / {{ evento.maxParticipantes }}
+                            </ng-container>
+                            <ng-container *ngIf="!evento.maxParticipantes">
+                              ({{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_UNLIMITED' | translate }})
+                            </ng-container>
+                          </span>
+                        </div>
+
+                        <div class="info-row" *ngIf="evento.listaEspera && evento.listaEspera.length > 0">
+                          <span class="icon">⏳</span>
+                          <span>
+                            <strong>{{ 'CHATBOT.MODAL.WAITLIST' | translate }}:</strong>
+                            {{ evento.listaEspera.length }}
+                            {{ evento.listaEspera.length === 1 ? 'persona' : 'personas' }}
                           </span>
                         </div>
 
@@ -601,6 +649,21 @@
                             <span>
                               <strong>{{ 'EVENTS.LABEL_PARTICIPANTS' | translate }}</strong>
                               {{ evento.participantes?.length || 0 }}
+                              <ng-container *ngIf="evento.maxParticipantes">
+                                / {{ evento.maxParticipantes }}
+                              </ng-container>
+                              <ng-container *ngIf="!evento.maxParticipantes">
+                                ({{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_UNLIMITED' | translate }})
+                              </ng-container>
+                            </span>
+                          </div>
+
+                          <div class="info-row" *ngIf="evento.listaEspera && evento.listaEspera.length > 0">
+                            <span class="icon">⏳</span>
+                            <span>
+                              <strong>{{ 'CHATBOT.MODAL.WAITLIST' | translate }}:</strong>
+                              {{ evento.listaEspera.length }}
+                              {{ evento.listaEspera.length === 1 ? 'persona' : 'personas' }}
                             </span>
                           </div>
 
@@ -685,6 +748,207 @@
                   </div>
                 </div>
               </div>
+              <div class="tab-panel-event" *ngIf="activeEventTab === 'recommended'">
+                <div class="recommended-section">
+                  <div class="recommended-header">
+                    <h2 class="recommended-title">
+                      ✨ {{ 'MENU.RECOMMENDED_TITLE' | translate }}
+                    </h2>
+                    <p class="recommended-subtitle">
+                      {{ 'MENU.RECOMMENDED_SUBTITLE' | translate }}
+                    </p>
+                  </div>
+
+                  <!-- USUARIO SIN INTERESES -->
+                  <div *ngIf="!userHasInterests()" class="no-interests-state">
+                    <div class="no-interests-icon">🎯</div>
+                    <h3 class="no-interests-title">
+                      {{ 'MENU.RECOMMENDED_NO_INTERESTS_TITLE' | translate }}
+                    </h3>
+                    <p class="no-interests-text">
+                      {{ 'MENU.RECOMMENDED_NO_INTERESTS_TEXT' | translate }}
+                    </p>
+                    <button class="btn btn--primary" (click)="goToProfileToAddInterests()">
+                      👤 {{ 'MENU.RECOMMENDED_ADD_INTERESTS' | translate }}
+                    </button>
+                  </div>
+
+                  <!-- LOADING -->
+                  <div *ngIf="userHasInterests() && loadingRecommended" class="loading-state">
+                    <div class="spinner"></div>
+                    <p>{{ 'MENU.RECOMMENDED_LOADING' | translate }}</p>
+                  </div>
+
+                  <!-- EVENTOS RECOMENDADOS -->
+                  <div *ngIf="userHasInterests() && !loadingRecommended">
+                    <!-- SIN RESULTADOS -->
+                    <div *ngIf="recommendedEventos.length === 0" class="empty-state">
+                      <span class="empty-icon">📭</span>
+                      <h3>{{ 'MENU.RECOMMENDED_EMPTY_TITLE' | translate }}</h3>
+                      <p>{{ 'MENU.RECOMMENDED_EMPTY_TEXT' | translate }}</p>
+                    </div>
+
+                    <!-- GRID DE EVENTOS -->
+                    <div class="eventos-grid" *ngIf="recommendedEventos.length > 0">
+                      <div *ngFor="let evento of recommendedEventos" class="evento-card">
+                        <div class="badges">
+                          <span *ngIf="isUserCreator(evento)" class="badge badge-creator">
+                            👑 {{ 'EXPLORE.CARD_BADGE_CREATOR' | translate }}
+                          </span>
+                          <span *ngIf="isAdmin()" class="badge badge-admin">
+                            🛡️ {{ 'EVENTS.ADMIN_BADGE' | translate }}
+                          </span>
+                          <span
+                            *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
+                            class="badge badge-joined">
+                            ✅ {{ 'EXPLORE.CARD_BADGE_JOINED' | translate }}
+                          </span>
+                          <span class="badge badge-category">
+                            🏷️ {{ evento.categoria || 'Otros' }}
+                          </span>
+                          <!-- Badge especial para recomendados -->
+                          <span class="badge badge-recommended">
+                            ✨ {{ 'MENU.TAB_RECOMMENDED' | translate }}
+                          </span>
+                        </div>
+
+                        <div class="evento-header">
+                          <h3 class="clickable-title" (click)="openEventModal(evento)">
+                            {{ evento.name }}
+                          </h3>
+                        </div>
+
+                        <div class="evento-info" (click)="openEventModal(evento)">
+                          <!-- Creador -->
+                          <div class="info-row">
+                            <span class="icon">👤</span>
+                            <span>
+                              <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
+                              {{ getCreadorName(evento) }}
+                            </span>
+                          </div>
+
+                          <!-- Dirección -->
+                          <div class="info-row">
+                            <span class="icon">📍</span>
+                            <span class="address-text">
+                              <strong>{{ 'EVENTS.LABEL_ADDRESS' | translate }}</strong>
+                              {{ evento.address || '-' }}
+                            </span>
+                          </div>
+
+                          <!-- Horario -->
+                          <div class="info-row">
+                            <span class="icon">🕒</span>
+                            <span>
+                              <strong>{{ 'EVENTS.LABEL_SCHEDULE' | translate }}</strong>
+                              {{ getScheduleText(evento) }}
+                            </span>
+                          </div>
+
+                          <!-- Participantes con límite -->
+                          <div class="info-row">
+                            <span class="icon">👥</span>
+                            <span>
+                              <strong>{{ 'EVENTS.LABEL_PARTICIPANTS' | translate }}</strong>
+                              {{ evento.participantes?.length || 0 }}
+                              <ng-container *ngIf="evento.maxParticipantes">
+                                / {{ evento.maxParticipantes }}
+                              </ng-container>
+                              <ng-container *ngIf="!evento.maxParticipantes">
+                                ({{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_UNLIMITED' | translate }})
+                              </ng-container>
+                            </span>
+                          </div>
+
+                          <!-- Lista de espera -->
+                          <div class="info-row" *ngIf="evento.listaEspera && evento.listaEspera.length > 0">
+                            <span class="icon">⏳</span>
+                            <span>
+                              <strong>{{ 'CHATBOT.MODAL.WAITLIST' | translate }}:</strong>
+                              {{ evento.listaEspera.length }}
+                              {{ evento.listaEspera.length === 1 ? 'persona' : 'personas' }}
+                            </span>
+                          </div>
+
+                          <!-- Valoraciones -->
+                          <div class="info-row rating">
+                            <span class="icon">⭐</span>
+                            <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRatingsRecommended">
+                              <strong>
+                                {{ 'EVENTS.LABEL_RATINGS' | translate }}
+                                {{ evento.avgRating | number:'1.1-2' }}
+                              </strong>
+                              ({{ evento.ratingsCount }} {{ 'EVENTS.LABEL_RATINGS_COUNT_SUFFIX' | translate }})
+                            </span>
+                            <ng-template #noRatingsRecommended>
+                              <span>{{ 'EVENTS.LABEL_RATINGS_NONE' | translate }}</span>
+                            </ng-template>
+                          </div>
+                        </div>
+
+                        <!-- Badges de estado -->
+                        <div class="evento-status-badges" *ngIf="isEventoLleno(evento) || estaEnListaEspera(evento)">
+                          <span 
+                            *ngIf="isEventoLleno(evento) && !isUserInEvento(evento) && !estaEnListaEspera(evento)" 
+                            class="badge badge--warning">
+                            🔒 {{ 'SEARCH.EVENT_FULL' | translate }} ({{ evento.participantes?.length || 0 }}/{{ evento.maxParticipantes }})
+                          </span>
+
+                          <span 
+                            *ngIf="estaEnListaEspera(evento)" 
+                            class="badge badge--info">
+                            ⏳ {{ 'SEARCH.IN_WAITLIST' | translate }}
+                          </span>
+                        </div>
+
+                        <div class="evento-actions">
+                          <!-- Botón para unirse o unirse a lista de espera -->
+                          <button
+                            *ngIf="!isUserInEvento(evento) && !estaEnListaEspera(evento)"
+                            class="btn btn--primary"
+                            (click)="joinRecommendedEvento(evento)">
+                            {{ isEventoFull(evento) ? '⏳ ' + ('SEARCH.BUTTON_JOIN_WAITLIST' | translate) : '➕ ' + ('EXPLORE.CARD_ACTION_JOIN' | translate) }}
+                          </button>
+                          
+                          <!-- Botón para salir de la lista de espera -->
+                          <button
+                            *ngIf="estaEnListaEspera(evento)"
+                            class="btn btn--warning"
+                            (click)="leaveWaitlistRecommended(evento)">
+                            🚫 {{ 'SEARCH.BUTTON_LEAVE_WAITLIST' | translate }}
+                          </button>
+                          
+                          <!-- Botón para abandonar el evento -->
+                          <button
+                            *ngIf="isUserInEvento(evento) && !isUserCreator(evento)"
+                            class="btn btn--secondary"
+                            (click)="leaveRecommendedEvento(evento)">
+                            🚪 {{ 'EXPLORE.CARD_ACTION_LEAVE' | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- PAGINACIÓN -->
+                    <div class="pagination" *ngIf="recommendedTotalPages > 1 && recommendedEventos.length > 0">
+                      <button class="btn-page" (click)="recommendedPrevPage()" [disabled]="recommendedPage <= 1">
+                        {{ 'EXPLORE.PAGINATION_PREV' | translate }}
+                      </button>
+                      <span class="page-info">
+                        {{ 'EXPLORE.PAGINATION_INFO_PREFIX' | translate }}
+                        {{ recommendedPage }}
+                        {{ 'EXPLORE.PAGINATION_INFO_OF' | translate }}
+                        {{ recommendedTotalPages }}
+                        ({{ 'COMMON.TOTAL' | translate }}: {{ recommendedTotalItems }})
+                      </span>
+                      <button class="btn-page" (click)="recommendedNextPage()" [disabled]="recommendedPage >= recommendedTotalPages">
+                        {{ 'EXPLORE.PAGINATION_NEXT' | translate }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -740,6 +1004,21 @@
                   <span>
                     <strong>{{ 'EVENTS.LABEL_PARTICIPANTS' | translate }}</strong>
                     {{ selectedEvent.participantes?.length || 0 }}
+                    <ng-container *ngIf="selectedEvent.maxParticipantes">
+                      / {{ selectedEvent.maxParticipantes }}
+                    </ng-container>
+                    <ng-container *ngIf="!selectedEvent.maxParticipantes">
+                      ({{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_UNLIMITED' | translate }})
+                    </ng-container>
+                  </span>
+                </div>
+
+                <div class="info-row" *ngIf="selectedEvent.listaEspera && selectedEvent.listaEspera.length > 0">
+                  <span class="icon">⏳</span>
+                  <span>
+                    <strong>{{ 'CHATBOT.MODAL.WAITLIST' | translate }}:</strong>
+                    {{ selectedEvent.listaEspera.length }}
+                    {{ selectedEvent.listaEspera.length === 1 ? 'persona' : 'personas' }}
                   </span>
                 </div>
 
@@ -846,30 +1125,43 @@
           </div>
 
           <div class="user-row" *ngFor="let u of modalPageItems">
+            <div class="user-avatar">
+              <div class="avatar avatar--sm">
+                <img *ngIf="u.profilePhoto" [src]="'http://localhost:3000' + u.profilePhoto" alt="" class="avatar-img" />
+                <span *ngIf="!u.profilePhoto">👤</span>
+              </div>
+            </div>
             <span class="user-name">
               {{ u.username }}
               <small>({{ u.gmail }})</small>
             </span>
 
             <ng-container *ngIf="isPendingFrom(u._id!); else checkSent">
-              <button type="button" class="btn btn--pending" (click)="openRequestsModal()">
-                📨 {{ 'MENU.MODAL_REQUEST_PENDING' | translate }}
-              </button>
+            <button type="button" class="btn btn--pending" (click)="openRequestsModal()">
+              📨 {{ 'MENU.MODAL_REQUEST_PENDING' | translate }}
+            </button>
             </ng-container>
 
             <ng-template #checkSent>
-              <ng-container *ngIf="isPendingTo(u._id!); else canAddTpl">
-                <span class="sent-text">
-                  ✅ {{ 'MENU.MODAL_REQUEST_SENT' | translate }}
-                </span>
-              </ng-container>
+            <ng-container *ngIf="isPendingTo(u._id!); else canAddTpl">
+              <span class="sent-text">
+                ✅ {{ 'MENU.MODAL_REQUEST_SENT' | translate }}
+              </span>
+            </ng-container>
             </ng-template>
 
             <ng-template #canAddTpl>
-              <button type="button" class="btn btn--add" (click)="addFromModal(u._id!)">
-                ➕ {{ 'MENU.MODAL_ADD_BUTTON' | translate }}
-              </button>
+            <button type="button" class="btn btn--add" (click)="addFromModal(u._id!)">
+              ➕ {{ 'MENU.MODAL_ADD_BUTTON' | translate }}
+            </button>
             </ng-template>
+
+            <button
+              class="btn btn--sm btn--danger"
+              (click)="confirmBlockUser(u, 'explore')"
+              [title]="'MENU.MODAL_BLOCK_BUTTON' | translate">
+              🚫
+            </button>
           </div>
 
           <div class="empty" *ngIf="!filteredUsers().length">
@@ -905,7 +1197,10 @@
         <ul *ngIf="!requestsLoading() && requestsList().length">
           <li *ngFor="let u of requestsList()">
             <div class="request-left">
-              <div class="avatar avatar--sm">👤</div>
+              <div class="avatar avatar--sm">
+                <img *ngIf="u.profilePhoto" [src]="'http://localhost:3000' + u.profilePhoto" alt="" class="avatar-img" />
+                <span *ngIf="!u.profilePhoto">👤</span>
+              </div>
               <div class="request-data">
                 <div class="request-name">{{ u.username }}</div>
                 <div class="request-mail">{{ u.gmail }}</div>
@@ -972,8 +1267,25 @@
             [class.from-them]="m.from !== me()?._id">
 
             <div class="bubble">
+              <!-- Header del missatge amb botó d'eliminar -->
+              <div class="message-header" *ngIf="canDeleteChatMessage(m)">
+                <button 
+                  type="button" 
+                  class="btn-delete-message" 
+                  (click)="confirmDeleteChatMessage(m); $event.stopPropagation()"
+                  [title]="'MENU.CHAT_DELETE_MESSAGE' | translate">
+                  🗑️
+                </button>
+              </div>
+
               <ng-container *ngIf="!isEventInvite(m); else eventInviteTpl">
-                <div class="text">
+                <!-- Mostrar imatge si existeix -->
+                <div class="message-image" *ngIf="m.imageUrl">
+                  <img [src]="getChatImageUrl(m.imageUrl)" [alt]="chatFriend()?.username" />
+                </div>
+                
+                <!-- Mostrar text si existeix -->
+                <div class="text" *ngIf="m.text">
                   {{ m.text }}
                 </div>
               </ng-container>
@@ -1044,16 +1356,84 @@
         </div>
       </div>
 
+      <!-- Vista prèvia d'imatge seleccionada -->
+      <div class="chat-image-preview" *ngIf="chatImagePreview()">
+        <div class="preview-container">
+          <img [src]="chatImagePreview()!" alt="Vista previa" />
+          <button type="button" class="btn-cancel-image" (click)="cancelChatImage()" 
+                  [disabled]="chatUploadingImage()">
+            ×
+          </button>
+        </div>
+      </div>
+
       <div class="chat-input-row">
+        <input type="file" #chatImageInput accept="image/*" (change)="onChatImageSelect($event)" style="display: none;">
+        
+        <button type="button" class="btn btn-image" (click)="chatImageInput.click()" 
+                [disabled]="chatUploadingImage()" 
+                [title]="'MENU.CHAT_ADD_IMAGE' | translate">
+          📷
+        </button>
+        
         <input
           type="text"
           class="chat-input"
           [value]="chatText()"
           (input)="onChatInput($event)"
           (keyup.enter)="sendChat()"
-          [placeholder]="'MENU.CHAT_PLACEHOLDER' | translate" />
-        <button type="button" class="btn send-btn" (click)="sendChat()">
-          ➤
+          [placeholder]="'MENU.CHAT_PLACEHOLDER' | translate"
+          [disabled]="chatUploadingImage()" />
+        
+        <button type="button" class="btn send-btn" (click)="sendChat()" [disabled]="chatUploadingImage()">
+          <span *ngIf="!chatUploadingImage()">➤</span>
+          <span *ngIf="chatUploadingImage()">⏳</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmació eliminar missatge del chat -->
+  <div class="modal-overlay" *ngIf="showDeleteChatMessageModal()" (click)="closeDeleteChatMessageModal()">
+    <div class="modal modal--confirm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <span class="modal-icon">⚠️</span>
+          {{ 'MENU.CHAT_DELETE_MESSAGE_TITLE' | translate }}
+        </h3>
+        <button class="btn-close" (click)="closeDeleteChatMessageModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="confirm-text">{{ 'MENU.CHAT_DELETE_MESSAGE_CONFIRM' | translate }}</p>
+        
+        <div class="message-preview" *ngIf="chatMessageToDelete()">
+          <div class="bubble-preview">
+            <div class="message-image" *ngIf="chatMessageToDelete()?.imageUrl">
+              <img [src]="getChatImageUrl(chatMessageToDelete()!.imageUrl!)" alt="Preview" />
+            </div>
+            <div class="text" *ngIf="chatMessageToDelete()?.text">{{ chatMessageToDelete()?.text }}</div>
+          </div>
+        </div>
+
+        <div *ngIf="chatError()" class="msg msg--error">
+          {{ chatError() }}
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button 
+          class="btn btn--ghost" 
+          (click)="closeDeleteChatMessageModal()"
+          [disabled]="deletingChatMessage()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button 
+          class="btn btn--danger" 
+          (click)="deleteChatMessage()"
+          [disabled]="deletingChatMessage()">
+          <span *ngIf="!deletingChatMessage()">🗑️ {{ 'MENU.CHAT_DELETE_MESSAGE_BTN' | translate }}</span>
+          <span *ngIf="deletingChatMessage()">{{ 'MENU.CHAT_DELETING_MESSAGE' | translate }}</span>
         </button>
       </div>
     </div>
@@ -1086,6 +1466,101 @@
             {{ 'MENU.CONFIRM_REMOVE_CONFIRM' | translate }}
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" *ngIf="showBlockedModal()" (click)="closeBlockedModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>🚫 {{ 'MENU.BLOCKED_TITLE' | translate }}</h2>
+        <button class="modal-close" (click)="closeBlockedModal()">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <div *ngIf="blockedLoading()" class="loading-state">
+          <span class="spinner"></span>
+          <p>{{ 'MENU.BLOCKED_LOADING' | translate }}</p>
+        </div>
+
+        <div *ngIf="blockedError()" class="error-message">
+          {{ blockedError() }}
+        </div>
+
+        <div *ngIf="!blockedLoading() && blockedUsers().length > 0" class="blocked-list">
+          <div *ngFor="let user of blockedUsers()" class="blocked-item">
+            <div class="avatar avatar--md">
+              <img 
+                *ngIf="user.profilePhoto" 
+                [src]="'http://localhost:3000' + user.profilePhoto" 
+                alt="profile" 
+                class="avatar-img" />
+              <span *ngIf="!user.profilePhoto">👤</span>
+            </div>
+            
+            <div class="blocked-info">
+              <span class="blocked-name">{{ user.username }}</span>
+              <span class="blocked-email">{{ user.gmail }}</span>
+            </div>
+            
+            <button
+              class="btn btn--sm btn--success"
+              (click)="confirmUnblockUser(user)">
+              ✓ {{ 'MENU.BLOCKED_UNBLOCK' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="!blockedLoading() && blockedUsers().length === 0" class="empty-state">
+          <span class="empty-icon">🚫</span>
+          <p class="empty-text">{{ 'MENU.BLOCKED_EMPTY' | translate }}</p>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn--secondary" (click)="closeBlockedModal()">
+          {{ 'MENU.MODAL_CLOSE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMACIÓN: BLOQUEAR USUARIO -->
+  <div class="modal-overlay modal-overlay--dark" *ngIf="showBlockConfirm()" (click)="cancelBlockUser()">
+    <div class="confirm-modal" (click)="$event.stopPropagation()">
+      <div class="confirm-icon confirm-icon--danger">⚠️</div>
+      <h3 class="confirm-title">{{ 'MENU.CONFIRM_BLOCK_TITLE' | translate }}</h3>
+      <p class="confirm-text">
+        {{ 'MENU.CONFIRM_BLOCK_TEXT' | translate }} <strong>{{ userToBlock()?.username }}</strong>?
+      </p>
+      <p class="confirm-warning">
+        {{ 'MENU.CONFIRM_BLOCK_WARNING' | translate }}
+      </p>
+      <div class="confirm-actions">
+        <button class="btn btn--secondary" (click)="cancelBlockUser()">
+          {{ 'MENU.CONFIRM_BLOCK_CANCEL' | translate }}
+        </button>
+        <button class="btn btn--danger" (click)="blockUser()">
+          {{ 'MENU.CONFIRM_BLOCK_CONFIRM' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMACIÓN: DESBLOQUEAR USUARIO -->
+  <div class="modal-overlay modal-overlay--dark" *ngIf="showUnblockConfirm()" (click)="cancelUnblockUser()">
+    <div class="confirm-modal" (click)="$event.stopPropagation()">
+      <div class="confirm-icon confirm-icon--success">✓</div>
+      <h3 class="confirm-title">{{ 'MENU.BLOCKED_CONFIRM_TITLE' | translate }}</h3>
+      <p class="confirm-text">
+        {{ 'MENU.BLOCKED_CONFIRM_TEXT' | translate }} <strong>{{ userToUnblock()?.username }}</strong>?
+      </p>
+      <div class="confirm-actions">
+        <button class="btn btn--secondary" (click)="cancelUnblockUser()">
+          {{ 'MENU.BLOCKED_CONFIRM_CANCEL' | translate }}
+        </button>
+        <button class="btn btn--success" (click)="unblockUser()">
+          {{ 'MENU.BLOCKED_CONFIRM_CONFIRM' | translate }}
+        </button>
       </div>
     </div>
   </div>

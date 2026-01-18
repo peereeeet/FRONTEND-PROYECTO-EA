@@ -4,13 +4,65 @@
 
   <header class="app-bar">
     <div class="app-bar__content">
-      <h1 class="app-bar__title">GESTIÓN DE EVENTOS</h1>
+      <h1 class="app-bar__title">{{ 'BACKOFFICE.EVENTS.TITLE' | translate }}</h1>
       <div class="app-bar__actions">
-        <button class="theme-toggle-btn" (click)="toggleTheme()">
-          {{ theme() === 'dark' ? '☀️' : '🌙' }}
-        </button>
+        <div class="lang-switcher">
+          <button
+            type="button"
+            class="lang-toggle"
+            (click)="toggleLangMenu()">
+            <span class="lang-icon">🌐</span>
+            <span class="lang-current">
+              {{
+                currentLang === 'es'
+                  ? ('LANG.ES' | translate)
+                  : currentLang === 'en'
+                  ? ('LANG.EN' | translate)
+                  : currentLang === 'cat'
+                  ? ('LANG.CAT' | translate)
+                  : ('LANG.FR' | translate)
+              }}
+            </span>
+            <span class="lang-arrow">▾</span>
+          </button>
+
+          <div class="lang-dropdown" *ngIf="showLangMenu">
+            <button
+              type="button"
+              class="lang-option"
+              [class.active]="currentLang === 'es'"
+              (click)="selectLanguage('es')">
+              {{ 'LANG.ES' | translate }}
+            </button>
+            <button
+              type="button"
+              class="lang-option"
+              [class.active]="currentLang === 'en'"
+              (click)="selectLanguage('en')">
+              {{ 'LANG.EN' | translate }}
+            </button>
+            <button
+              type="button"
+              class="lang-option"
+              [class.active]="currentLang === 'cat'"
+              (click)="selectLanguage('cat')">
+              {{ 'LANG.CAT' | translate }}
+            </button>
+            <button
+              type="button"
+              class="lang-option"
+              [class.active]="currentLang === 'fr'"
+              (click)="selectLanguage('fr')">
+              {{ 'LANG.FR' | translate }}
+            </button>
+          </div>
+
+          <button class="theme-toggle-btn" (click)="toggleTheme()" [title]="(theme() === 'dark' ? 'BACKOFFICE.COMMON.THEME_TOGGLE_LIGHT' : 'BACKOFFICE.COMMON.THEME_TOGGLE_DARK') | translate">
+            {{ theme() === 'dark' ? '☀️' : '🌙' }}
+          </button>
+        </div>
         <button type="button" class="btn-back" (click)="goHome()">
-          ← Volver a Home
+          {{ 'BACKOFFICE.COMMON.BACK_HOME' | translate }}
         </button>
       </div>
     </div>
@@ -18,54 +70,80 @@
 
   <div class="evento-form">
     <div class="form-header">
-      <h2>Completa los datos del evento</h2>
+      <h2>{{ 'BACKOFFICE.EVENTS.ADD_NEW' | translate }}</h2>
     </div>
 
     <form (ngSubmit)="onSubmit()">
       <div class="form-two-col">
         <div class="left-col">
           <div class="form-group">
-            <label for="creator" class="form-label">Creador del evento</label>
+            <label for="creator" class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_CREATOR' | translate }}</label>
             <select
               id="creator"
               class="form-input"
               [(ngModel)]="creatorId"
               name="creator"
               required>
-              <option value="" disabled [selected]="!creatorId">Selecciona un usuario…</option>
+              <option value="" disabled [selected]="!creatorId">{{ 'BACKOFFICE.EVENTS.PH_CREATOR' | translate }}</option>
               <option *ngFor="let u of users" [value]="u._id">{{ u.username }} — {{ u.gmail }}</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="name" class="form-label">Título del evento</label>
+            <label for="name" class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_NAME' | translate }}</label>
             <input
               id="name"
               class="form-input"
               type="text"
               [(ngModel)]="newEvent.name"
               name="name"
-              placeholder="Ej: Reunión de planificación Q4"
+              [placeholder]="'BACKOFFICE.EVENTS.PH_NAME' | translate"
               required
               minlength="3" />
             <small *ngIf="formSubmitted && (!newEvent.name || newEvent.name.trim().length<3)">
-              ⚠ El título es obligatorio (mínimo 3 caracteres).
+              {{ 'BACKOFFICE.EVENTS.ERR_NAME_REQ' | translate }}
             </small>
           </div>
 
           <div class="form-group">
-            <label for="address" class="form-label">Dirección</label>
+            <label for="address" class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_ADDRESS' | translate }}</label>
             <input
               id="address"
               class="form-input"
               type="text"
               [(ngModel)]="newEvent.address"
               name="address"
-              placeholder="Ej: C/ Mallorca 123, Barcelona" />
+              [placeholder]="'BACKOFFICE.EVENTS.PH_ADDRESS' | translate" />
+            <small *ngIf="formSubmitted && (!newEvent.address || newEvent.address.trim().length < 5)" class="error-message" style="color: var(--danger-500); display: block; margin-top: 4px;">
+              {{ 'BACKOFFICE.EVENTS.ERR_ADDRESS_MIN' | translate }}
+            </small>
+          </div>
+
+          <div class="form-row" style="display: flex; gap: 20px; align-items: flex-end;">
+            <div class="form-group" style="flex: 1;">
+              <label for="maxParticipantes" class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_MAX_PARTICIPANTS' | translate }}</label>
+              <input
+                id="maxParticipantes"
+                class="form-input"
+                type="number"
+                [(ngModel)]="newEvent.maxParticipantes"
+                name="maxParticipantes"
+                [placeholder]="'BACKOFFICE.EVENTS.PH_LIMIT' | translate" />
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px;">
+              <input
+                type="checkbox"
+                id="isPrivate"
+                [(ngModel)]="newEvent.isPrivate"
+                name="isPrivate"
+                style="width: 20px; height: 20px; cursor: pointer;" />
+              <label for="isPrivate" style="cursor: pointer;">{{ 'BACKOFFICE.EVENTS.LBL_IS_PRIVATE' | translate }}</label>
+            </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Horario del evento</label>
+            <label class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_DATE' | translate }}</label>
 
             <div class="schedule-row">
               <input
@@ -81,27 +159,27 @@
                 name="timeStr"
                 aria-label="Hora" />
 
-              <button type="button" class="add-slot" (click)="setSchedule()">📅 Establecer horario</button>
+              <button type="button" class="add-slot" (click)="setSchedule()">{{ 'BACKOFFICE.EVENTS.BTN_ADD' | translate }}</button>
               <button
                 type="button"
                 class="remove-slot"
                 *ngIf="newEvent.schedule"
-                (click)="clearSchedule()">❌ Quitar</button>
+                (click)="clearSchedule()">❌ {{ 'BACKOFFICE.EVENTS.BTN_DELETE' | translate }}</button>
             </div>
 
             <div class="schedule-preview">
-              <strong>Seleccionado: </strong>
+              <strong>{{ 'BACKOFFICE.EVENTS.DETAILS_DATE' | translate }} </strong>
               <span *ngIf="newEvent.schedule; else noHorario">
                 {{ getScheduleText(newEvent) }}
               </span>
-              <ng-template #noHorario><em>Sin horario establecido</em></ng-template>
+              <ng-template #noHorario><em>{{ 'BACKOFFICE.EVENTS.ERR_DATE_REQ' | translate }}</em></ng-template>
             </div>
           </div>
 
           <div class="error-message" *ngIf="errorMessage">⚠ {{ errorMessage }}</div>
 
           <button type="submit" (click)="formSubmitted = true" [disabled]="saving">
-            {{ saving ? 'Guardando…' : '💾 Guardar evento' }}
+            {{ (saving ? 'BACKOFFICE.EVENTS.BTN_UPDATE' : 'BACKOFFICE.EVENTS.BTN_ADD') | translate }}
           </button>
         </div>
 
@@ -109,43 +187,43 @@
           <div class="participants-wrapper">
             <div class="participants-column">
               <div class="list-header">
-                <h4>👥 Usuarios disponibles</h4>
+                <h4>{{ 'BACKOFFICE.USERS.OTHER_EVENTS' | translate }}</h4>
               </div>
 
               <div class="pager">
                 <button type="button" (click)="availablePrevPage()" [disabled]="availablePage<=1">«</button>
-                <span class="counter">Página {{ availablePage }} / {{ availableTotalPages }}</span>
+                <span class="counter">{{ 'BACKOFFICE.USERS.PAGING_PAGE' | translate }} {{ availablePage }} / {{ availableTotalPages }}</span>
                 <button type="button" (click)="availableNextPage()" [disabled]="availablePage>=availableTotalPages">»</button>
                 <span class="total">Total: {{ availableUsers.length }}</span>
               </div>
 
               <div class="user-row" *ngFor="let u of availablePageItems">
                 <span class="user-name">{{ u.username }}</span>
-                <button type="button" (click)="addParticipant(u)" class="btn-add">➕ Añadir</button>
+                <button type="button" (click)="addParticipant(u)" class="btn-add">{{ 'BACKOFFICE.USERS.BTN_ADD_EVENT' | translate }}</button>
               </div>
               <div class="empty" *ngIf="!availableUsers.length">
-                ✅ Todos los usuarios están en el evento
+                {{ 'BACKOFFICE.USERS.ALL_EVENTS_JOINED' | translate }}
               </div>
             </div>
 
             <div class="participants-column">
               <div class="list-header">
-                <h4>🎯 Participantes del evento</h4>
+                <h4>{{ 'BACKOFFICE.USERS.EVENTS_USER' | translate }}</h4>
               </div>
 
               <div class="pager">
                 <button type="button" (click)="selectedPrevPage()" [disabled]="selectedPage<=1">«</button>
-                <span class="counter">Página {{ selectedPage }} / {{ selectedTotalPages }}</span>
+                <span class="counter">{{ 'BACKOFFICE.USERS.PAGING_PAGE' | translate }} {{ selectedPage }} / {{ selectedTotalPages }}</span>
                 <button type="button" (click)="selectedNextPage()" [disabled]="selectedPage>=selectedTotalPages">»</button>
                 <span class="total">Total: {{ selectedUsers.length }}</span>
               </div>
 
               <div class="user-row" *ngFor="let u of selectedPageItems">
                 <span class="user-name">{{ u.username }}</span>
-                <button type="button" (click)="removeParticipant(u)" class="btn-remove">➖ Quitar</button>
+                <button type="button" (click)="removeParticipant(u)" class="btn-remove">{{ 'BACKOFFICE.USERS.BTN_DISABLE' | translate }}</button>
               </div>
               <div class="empty" *ngIf="!selectedUsers.length">
-                ℹ️ Nadie apuntado aún
+                {{ 'BACKOFFICE.USERS.EMPTY_STATE' | translate }}
               </div>
             </div>
           </div>
@@ -155,50 +233,50 @@
   </div>
 
   <div class="evento-list">
-    <h1>Lista de Eventos</h1>
+    <h1>{{ 'BACKOFFICE.EVENTS.LIST_TITLE' | translate }}</h1>
     
     <div *ngIf="eventos.length === 0" class="empty-state">
       <div class="empty-icon">📅</div>
-      <h3>No hay eventos programados</h3>
-      <p>Comienza creando el primer evento del sistema</p>
+      <h3>{{ 'BACKOFFICE.EVENTS.EMPTY_STATE' | translate }}</h3>
+      <p>{{ 'BACKOFFICE.EVENTS.EMPTY_STATE_SUB' | translate }}</p>
     </div>
 
     <ul *ngIf="eventos.length > 0">
       <li *ngFor="let evento of eventos; let i = index">
         <h3>{{ evento.name }}</h3>
 
-        <p><strong>📍 Dirección: </strong> {{ getEventAddress(evento) }}</p>
+        <p><strong>📍 {{ 'BACKOFFICE.EVENTS.DETAILS_ADDRESS' | translate }} </strong> {{ getEventAddress(evento) }}</p>
 
         <div>
-          <strong>🕒 Horario: </strong>
+          <strong>🕒 {{ 'BACKOFFICE.EVENTS.DETAILS_DATE' | translate }} </strong>
           <span>{{ getScheduleText(evento) }}</span>
         </div>
 
         <p>
-          <strong>👥 Participantes: </strong>
+          <strong>👥 {{ 'BACKOFFICE.EVENTS.DETAILS_PARTICIPANTS' | translate }} </strong>
           <span>{{ getParticipantsNames(evento) }}</span>
         </p>
 
         <div class="rating-summary" style="margin-top:8px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-          <strong>⭐ Valoraciones:</strong>
+          <strong>⭐ {{ 'BACKOFFICE.EVENTS.DETAILS_RATING' | translate }}:</strong>
           <span *ngIf="evento.ratingsCount && evento.ratingsCount > 0">
-            Media {{ evento.avgRating | number:'1.1-2' }} ({{ evento.ratingsCount }} valoraciones)
+            {{ 'BACKOFFICE.EVENTS.DETAILS_AVG_RATING' | translate: { avg: (evento.avgRating | number:'1.1-2'), count: evento.ratingsCount } }}
           </span>
           <span *ngIf="!evento.ratingsCount || evento.ratingsCount === 0">
-            Sin valoraciones aún
+            {{ 'BACKOFFICE.EVENTS.DETAILS_NO_RATINGS' | translate }}
           </span>
 
           <button
             type="button"
             class="btn-rate-link"
             (click)="openRatingsModal(evento)">
-            ⭐ Ver Valoraciones
+            ⭐ {{ 'BACKOFFICE.EVENTS.BTN_DETAILS_SHOW' | translate }}
           </button>
         </div>
 
         <div class="actions">
-          <button class="btn-edit" (click)="openEditModal(i)">✏️ Modificar Evento</button>
-          <button class="btn-delete" (click)="openDeleteModal(i)">🗑️ Eliminar Evento</button>
+          <button class="btn-edit" (click)="openEditModal(i)">{{ 'BACKOFFICE.EVENTS.BTN_MODIFY' | translate }}</button>
+          <button class="btn-delete" (click)="openDeleteModal(i)">{{ 'BACKOFFICE.EVENTS.BTN_DELETE' | translate }}</button>
         </div>
       </li>
     </ul>
@@ -208,11 +286,11 @@
 <!-- Modal de eliminación -->
 <div class="modal-overlay" *ngIf="showDeleteModal">
   <div class="modal">
-    <h3>¿Eliminar evento?</h3>
-    <p>Esta acción no se puede deshacer. Se eliminarán todos los datos del evento.</p>
+    <h3>{{ 'BACKOFFICE.EVENTS.MODAL_DELETE_TITLE' | translate }}</h3>
+    <p>{{ 'BACKOFFICE.EVENTS.MODAL_DELETE_TEXT' | translate }}</p>
     <div class="modal-actions">
-      <button class="btn-cancel" (click)="closeDeleteModal()">Cancelar</button>
-      <button class="btn-confirm" (click)="confirmarEliminar()">Eliminar</button>
+      <button class="btn-cancel" (click)="closeDeleteModal()">{{ 'COMMON.CANCEL' | translate }}</button>
+      <button class="btn-confirm" (click)="confirmarEliminar()">{{ 'BACKOFFICE.EVENTS.BTN_DELETE' | translate }}</button>
     </div>
   </div>
 </div>
@@ -221,35 +299,35 @@
 <div class="modal-overlay" *ngIf="showEditModal">
   <div class="modal large-modal">
     <div class="modal-header">
-      <h3>✏️ Modificar Evento</h3>
+      <h3>{{ 'BACKOFFICE.EVENTS.EDIT_EVENT' | translate }}</h3>
       <button class="btn-close" (click)="closeEditModal()">×</button>
     </div>
 
     <form (ngSubmit)="onEditSubmit()">
       <div class="form-group">
-        <label for="editCreator" class="form-label">Creador del evento:</label>
+        <label for="editCreator" class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_CREATOR' | translate }}</label>
         <select id="editCreator" class="form-input" [(ngModel)]="editCreatorId" name="editCreator" required>
-          <option value="" disabled [selected]="!editCreatorId">Selecciona un usuario…</option>
+          <option value="" disabled [selected]="!editCreatorId">{{ 'BACKOFFICE.EVENTS.PH_CREATOR' | translate }}</option>
           <option *ngFor="let u of users" [value]="u._id">{{ u.username }} — {{ u.gmail }}</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="editName" class="form-label">Titulo del evento:</label>
+        <label for="editName" class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_NAME' | translate }}:</label>
         <input
           id="editName"
           class="form-input"
           type="text"
           [(ngModel)]="editEvent.name"
           name="editName"
-          placeholder="Ej: Reunión de planificación Q4"
+          [placeholder]="'BACKOFFICE.EVENTS.PH_NAME' | translate"
           required />
       </div>
 
       <div class="form-two-col">
         <div class="left-col">
           <div class="form-group">
-            <label class="form-label">Horario del evento:</label>
+            <label class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_DATE' | translate }}:</label>
             <div class="schedule-row">
               <input 
                 type="date" 
@@ -264,7 +342,7 @@
                 name="editTimeStr" 
                 aria-label="Hora" />
               <button type="button" (click)="setEditSchedule()" class="add-slot">
-                📅 Actualizar horario
+                {{ 'BACKOFFICE.EVENTS.BTN_UPDATE' | translate }}
               </button>
 
               <button
@@ -272,28 +350,54 @@
                 *ngIf="editEvent.schedule && editEvent.schedule !== ''"
                 (click)="clearEditSchedule()"
                 class="remove-slot">
-                ❌ Quitar
+                ❌ {{ 'BACKOFFICE.EVENTS.BTN_DELETE' | translate }}
               </button>
             </div>
 
             <div class="schedule-preview">
-              <strong>Horario actual: </strong>
+              <strong>{{ 'BACKOFFICE.EVENTS.DETAILS_DATE' | translate }} </strong>
               <span *ngIf="editEvent.schedule; else noEditHorario">
                 {{ getScheduleText(editEvent) }}
               </span>
-              <ng-template #noEditHorario><em>Sin horario establecido</em></ng-template>
+              <ng-template #noEditHorario><em>{{ 'BACKOFFICE.EVENTS.ERR_DATE_REQ' | translate }}</em></ng-template>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="editAddress" class="form-label">Dirección:</label>
+            <label for="editAddress" class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_ADDRESS' | translate }}:</label>
             <input
               id="editAddress"
               class="form-input"
               type="text"
               [(ngModel)]="editEvent.address"
               name="editAddress"
-              placeholder="Ej: C/ Mallorca 123, Barcelona" />
+              [placeholder]="'BACKOFFICE.EVENTS.PH_ADDRESS' | translate" />
+            <small *ngIf="!editEvent.address || editEvent.address.trim().length < 5" class="error-message" style="color: var(--danger-500); display: block; margin-top: 4px;">
+              {{ 'BACKOFFICE.EVENTS.ERR_ADDRESS_MIN' | translate }}
+            </small>
+          </div>
+
+          <div class="form-row" style="display: flex; gap: 20px; align-items: flex-end; margin-top: 15px;">
+            <div class="form-group" style="flex: 1;">
+              <label for="editMaxParticipantes" class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_MAX_PARTICIPANTS' | translate }}</label>
+              <input
+                id="editMaxParticipantes"
+                class="form-input"
+                type="number"
+                [(ngModel)]="editEvent.maxParticipantes"
+                name="editMaxParticipantes"
+                [placeholder]="'BACKOFFICE.EVENTS.PH_LIMIT' | translate" />
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px;">
+              <input
+                type="checkbox"
+                id="editIsPrivate"
+                [(ngModel)]="editEvent.isPrivate"
+                name="editIsPrivate"
+                style="width: 20px; height: 20px; cursor: pointer;" />
+              <label for="editIsPrivate" style="cursor: pointer;">{{ 'BACKOFFICE.EVENTS.LBL_IS_PRIVATE' | translate }}</label>
+            </div>
           </div>
         </div>
 
@@ -301,51 +405,51 @@
           <div class="participants-wrapper">
             <div class="participants-column">
               <div class="list-header">
-                <h4>👥 Usuarios disponibles</h4>
+                <h4>{{ 'BACKOFFICE.USERS.OTHER_EVENTS' | translate }}</h4>
               </div>
 
               <div class="pager">
                 <button type="button" (click)="editAvailablePrevPage()" [disabled]="editAvailablePage<=1">«</button>
-                <span class="counter">Página {{ editAvailablePage }} / {{ editAvailableTotalPages }}</span>
+                <span class="counter">{{ 'BACKOFFICE.USERS.PAGING_PAGE' | translate }} {{ editAvailablePage }} / {{ editAvailableTotalPages }}</span>
                 <button type="button" (click)="editAvailableNextPage()" [disabled]="editAvailablePage>=editAvailableTotalPages">»</button>
                 <span class="total">Total: {{ editAvailableUsers.length }}</span>
               </div>
 
               <div class="user-row" *ngFor="let u of editAvailablePageItems">
                 <span class="user-name">{{ u.username }}</span>
-                <button type="button" (click)="addEditParticipant(u)" class="btn-add">➕ Añadir</button>
+                <button type="button" (click)="addEditParticipant(u)" class="btn-add">{{ 'BACKOFFICE.USERS.BTN_ADD_EVENT' | translate }}</button>
               </div>
               <div class="empty" *ngIf="!editAvailableUsers.length">
-                ✅ Todos los usuarios están en el evento
+                {{ 'BACKOFFICE.USERS.ALL_EVENTS_JOINED' | translate }}
               </div>
             </div>
 
             <div class="participants-column">
               <div class="list-header">
-                <h4>🎯 Participantes del evento</h4>
+                <h4>{{ 'BACKOFFICE.USERS.EVENTS_USER' | translate }}</h4>
               </div>
 
               <div class="pager">
                 <button type="button" (click)="editSelectedPrevPage()" [disabled]="editSelectedPage<=1">«</button>
-                <span class="counter">Página {{ editSelectedPage }} / {{ editSelectedTotalPages }}</span>
+                <span class="counter">{{ 'BACKOFFICE.USERS.PAGING_PAGE' | translate }} {{ editSelectedPage }} / {{ editSelectedTotalPages }}</span>
                 <button type="button" (click)="editSelectedNextPage()" [disabled]="editSelectedPage>=editSelectedTotalPages">»</button>
                 <span class="total">Total: {{ editSelectedUsers.length }}</span>
               </div>
 
               <div class="user-row" *ngFor="let u of editSelectedPageItems">
                 <span class="user-name">{{ u.username }}</span>
-                <button type="button" (click)="removeEditParticipant(u)" class="btn-remove">➖ Quitar</button>
+                <button type="button" (click)="removeEditParticipant(u)" class="btn-remove">{{ 'BACKOFFICE.USERS.BTN_DISABLE' | translate }}</button>
               </div>
               <div class="empty" *ngIf="!editSelectedUsers.length">
-                ℹ️ Nadie apuntado aún
+                {{ 'BACKOFFICE.USERS.EMPTY_STATE' | translate }}
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-actions">
-        <button type="button" class="btn-cancel" (click)="closeEditModal()">Cancelar</button>
-        <button type="submit" class="btn-confirm">💾 Guardar Cambios</button>
+        <button type="button" class="btn-cancel" (click)="closeEditModal()">{{ 'COMMON.CANCEL' | translate }}</button>
+        <button type="submit" class="btn-confirm">{{ 'BACKOFFICE.EVENTS.BTN_ADD' | translate }}</button>
       </div>
     </form>
   </div>
@@ -355,35 +459,35 @@
 <div class="modal-overlay" *ngIf="showRatingsModal">
   <div class="modal modal--large ratings-modal">
     <div class="modal-header">
-      <h3>⭐ Valoraciones de {{ ratingsEventoName }}</h3>
+      <h3>⭐ {{ 'BACKOFFICE.EVENTS.DETAILS_RATING' | translate }} {{ ratingsEventoName }}</h3>
       <button class="btn-close" (click)="closeRatingsModal()">×</button>
     </div>
 
     <div class="modal-body">
       <div class="ratings-summary">
         <div>
-          <strong>Valoración media:</strong>
+          <strong>{{ 'BACKOFFICE.EVENTS.DETAILS_AVG_RATING_TITLE' | translate }}:</strong>
           {{ ratingsAvg != null ? (ratingsAvg | number:'1.1-2') : '—' }}
         </div>
         <div>
-          <strong>Total de valoraciones:</strong>
+          <strong>{{ 'BACKOFFICE.EVENTS.DETAILS_TOTAL_RATINGS' | translate }}:</strong>
           {{ ratingsCount != null ? ratingsCount : 0 }}
         </div>
       </div>
 
       <div *ngIf="ratingsLoading" class="loading-ratings">
         <div class="spinner-small"></div>
-        <p>Cargando valoraciones...</p>
+        <p>{{ 'NOTIFICATIONS.LOADING' | translate }}</p>
       </div>
 
       <ng-container *ngIf="!ratingsLoading">
         <!-- Info de paginación -->
         <div class="list-info" *ngIf="ratingsList && ratingsList.length > 0">
           <span class="counter">
-            Mostrando {{ ((ratingsPage-1)*ratingsPageSize) + 1 }} - {{ Math.min(ratingsPage*ratingsPageSize, ratingsTotalItems) }} de {{ ratingsTotalItems }}
+            {{ 'BACKOFFICE.EVENTS.RATINGS_SHOWING' | translate: { start: (((ratingsPage-1)*ratingsPageSize) + 1), end: (Math.min(ratingsPage*ratingsPageSize, ratingsTotalItems)), total: ratingsTotalItems } }}
           </span>
           <span class="total">
-            Página {{ ratingsPage }} / {{ ratingsTotalPages }}
+            {{ 'BACKOFFICE.USERS.PAGING_PAGE' | translate }} {{ ratingsPage }} / {{ ratingsTotalPages }}
           </span>
         </div>
 
@@ -395,7 +499,7 @@
                 <div class="rating-user-badge">
                   <span class="user-avatar">👤</span>
                   <div class="user-details">
-                    <strong class="username">{{ r.usuario.username || 'Usuario' }}</strong>
+                    <strong class="username">{{ r.usuario.username || ('BACKOFFICE.USERS.ROLE_USER' | translate) }}</strong>
                     <span class="rating-date">{{ r.createdAt | date:'short' }}</span>
                   </div>
                 </div>
@@ -411,7 +515,7 @@
                 <p>{{ r.comentario }}</p>
               </div>
               <div class="rating-no-comment" *ngIf="!r.comentario">
-                <em>Sin comentario</em>
+                <em>{{ 'BACKOFFICE.EVENTS.DETAILS_NO_COMMENT' | translate }}</em>
               </div>
             </div>
           </li>
@@ -419,7 +523,7 @@
 
         <!-- Sin valoraciones -->
         <div class="empty-ratings" *ngIf="!ratingsList || ratingsList.length === 0">
-          <p>⭐ Aún no hay valoraciones para este evento</p>
+          <p>⭐ {{ 'BACKOFFICE.EVENTS.DETAILS_NO_RATINGS' | translate }}</p>
         </div>
 
         <!-- Paginación -->
@@ -428,14 +532,14 @@
             class="btn-pagination" 
             (click)="changeRatingsPage(-1)" 
             [disabled]="ratingsPage <= 1">
-            « Anterior
+            « {{ 'BACKOFFICE.EVENTS.BTN_PREV' | translate }}
           </button>
-          <span class="pagination-info">Página {{ ratingsPage }} de {{ ratingsTotalPages }}</span>
+          <span class="pagination-info">{{ 'BACKOFFICE.USERS.PAGING_PAGE' | translate }} {{ ratingsPage }} / {{ ratingsTotalPages }}</span>
           <button 
             class="btn-pagination" 
             (click)="changeRatingsPage(1)" 
             [disabled]="ratingsPage >= ratingsTotalPages">
-            Siguiente »
+            {{ 'BACKOFFICE.EVENTS.BTN_NEXT' | translate }} »
           </button>
         </div>
       </ng-container>
