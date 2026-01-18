@@ -272,9 +272,17 @@
     "CHAT_DELETE_MESSAGE_TITLE": "Supprimer le Message",
     "CHAT_DELETE_MESSAGE_CONFIRM": "Êtes-vous sûr de vouloir supprimer ce message? Cette action ne peut pas être annulée.",
     "CHAT_DELETE_MESSAGE_BTN": "Supprimer",
-    "CHAT_DELETING_MESSAGE": "Suppression..."
+    "CHAT_DELETING_MESSAGE": "Suppression...",
+    "BLOCKED_TITLE": "Utilisateurs Bloqués",
+    "BLOCKED_LOADING": "Chargement des utilisateurs bloqués...",
+    "BLOCKED_UNBLOCK": "Débloquer",
+    "BLOCKED_EMPTY": "Vous n'avez bloqué aucun utilisateur",
+    "BLOCKED_CONFIRM_TITLE": "Débloquer l'Utilisateur",
+    "BLOCKED_CONFIRM_TEXT": "Êtes-vous sûr de vouloir débloquer",
+    "BLOCKED_CONFIRM_CANCEL": "Annuler",
+    "BLOCKED_CONFIRM_CONFIRM": "Débloquer"
   },
-
+  
   "FRIENDS": {
     "STATE_ONLINE": "En ligne",
     "STATE_OFFLINE": "Hors ligne",
