@@ -44,9 +44,6 @@
     "GOOGLE_BIRTHDAY_TEXT": "Abans d’acabar el registre amb Google, necessitem la teva data de naixement per completar el teu perfil.",
     "GOOGLE_BIRTHDAY_LABEL": "Data de naixement",
     "GOOGLE_BIRTHDAY_CANCEL": "Cancel·lar",
-<<<<<<< HEAD
-    "GOOGLE_BIRTHDAY_CONFIRM": "Continuar"
-=======
     "GOOGLE_BIRTHDAY_CONFIRM": "Continuar",
     "GOOGLE_REGISTER_INTERESTS": "Què t'interessa? (Opcional)",
     "GOOGLE_INTERESTS_SHOW": "Afegir els meus interessos",
@@ -77,7 +74,6 @@
     "RESET_SUBMIT": "Restablir contrasenya",
     "RESET_SUBMITTING": "Restablint...",
     "BACK": "Tornar"
->>>>>>> origin/develop
   },
 
   "REGISTER": {
@@ -116,18 +112,12 @@
     "PASSWORD_STRENGTH_WEAK": "Feble",
     "PASSWORD_STRENGTH_MEDIUM": "Mitjana",
     "PASSWORD_STRENGTH_STRONG": "Forta",
-<<<<<<< HEAD
-=======
     "PASSWORD_STRENGTH_": "",
->>>>>>> origin/develop
     "PASSWORD_REQ_LENGTH": "Mínim 8 caràcters",
     "PASSWORD_REQ_UPPERCASE": "Una lletra majúscula",
     "PASSWORD_REQ_LOWERCASE": "Una lletra minúscula",
     "PASSWORD_REQ_NUMBER": "Un número",
     "PASSWORD_REQ_SPECIAL": "Un caràcter especial (!@#$...)",
-<<<<<<< HEAD
-    "PASSWORDS_MATCH": "Les contrasenyes coincideixen"
-=======
     "PASSWORDS_MATCH": "Les contrasenyes coincideixen",
     "INTERESTS_OPTIONAL": "(Opcional) Els teus interessos",
     "VERIFY_TITLE": "Verifica el teu correu",
@@ -170,7 +160,6 @@
       "FAMILY": "Família",
       "OTHER": "Altres"
     }
->>>>>>> origin/develop
   },
 
   "LANG": {
@@ -265,24 +254,16 @@
     "CHAT_EVENT_INVITE_TITLE": "Invitació a un esdeveniment",
     "CHAT_EVENT_INVITE_JOIN": "Unir-se",
     "CHAT_EVENT_INVITE_ALREADY_IN": "Ja hi ets dins",
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/develop
     "CONFIRM_REMOVE_TITLE": "Eliminar amic",
     "CONFIRM_REMOVE_TEXT": "Segur que vols eliminar",
     "CONFIRM_REMOVE_WARNING": "Aquesta acció és permanent i no es pot desfer.",
     "CONFIRM_REMOVE_CANCEL": "Cancel·lar",
     "CONFIRM_REMOVE_CONFIRM": "Eliminar",
-<<<<<<< HEAD
-
-=======
     "CONFIRM_BLOCK_TITLE": "Bloquejar usuari",
     "CONFIRM_BLOCK_TEXT": "Estàs segur que vols bloquejar a",
     "CONFIRM_BLOCK_WARNING": "Aquest usuari no podrà enviar-te missatges ni sol·licituds d'amistat. Si ja sou amics, s'eliminarà l'amistat.",
     "CONFIRM_BLOCK_CANCEL": "Cancel·lar",
     "CONFIRM_BLOCK_CONFIRM": "Bloquejar",
->>>>>>> origin/develop
     "TAB_MAP": "Mapa",
     "TAB_SEARCH": "Cercador",
     "SEARCH_TITLE": "Cercar Esdeveniments",
@@ -294,9 +275,6 @@
     "SEARCH_CLEAR_BUTTON": "Netejar",
     "SEARCH_LOADING": "Cercant esdeveniments...",
     "SEARCH_EMPTY_TITLE": "No s'han trobat esdeveniments",
-<<<<<<< HEAD
-    "SEARCH_EMPTY_TEXT": "Prova d'ajustar els teus filtres de cerca"
-=======
     "SEARCH_EMPTY_TEXT": "Prova d'ajustar els teus filtres de cerca",
     "TAB_RECOMMENDED": "Recomanats",
     "RECOMMENDED_TITLE": "Esdeveniments Recomanats per a Tu",
@@ -313,7 +291,6 @@
     "CHAT_DELETE_MESSAGE_CONFIRM": "Estàs segur que vols eliminar aquest missatge? Aquesta acció no es pot desfer.",
     "CHAT_DELETE_MESSAGE_BTN": "Eliminar",
     "CHAT_DELETING_MESSAGE": "Eliminant..."
->>>>>>> origin/develop
   },
 
   "FRIENDS": {
@@ -423,10 +400,6 @@
     "BACK_TO_MENU": "Tornar al menú",
     "GO_TO_CREATE": "Crear esdeveniment nou",
     "GO_TO_MY_EVENTS": "Els meus esdeveniments",
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/develop
     "LOADING_EVENTS": "Carregant esdeveniments...",
     "MAP_TITLE": "Mapa d'esdeveniments",
     "MAP_HINT": "Mou-te i fes zoom al mapa per veure els esdeveniments de la zona. Toca un punt per veure'n els detalls.",
@@ -445,18 +418,12 @@
     "MODAL_BUTTON_JOIN": "Unir-me a l'esdeveniment",
     "MODAL_BUTTON_LEAVE": "Sortir de l'esdeveniment",
     "MODAL_BUTTON_CLOSE": "Tancar",
-<<<<<<< HEAD
-
-    "BUTTON_LEAVE_WAITLIST": "Sortir de llista d'espera",
-      "WAITLIST_MESSAGE": "Estàs a la llista d'espera d'aquest esdeveniment"
-=======
     "BUTTON_LEAVE_WAITLIST": "Sortir de llista d'espera",
     "WAITLIST_MESSAGE": "Estàs a la llista d'espera d'aquest esdeveniment",
     "CARD_ACTION_JOIN": "Unir-se",
     "CARD_ACTION_LEAVE": "Sortir",
     "CARD_ACTION_DETAILS": "Veure detalls",
     "PARTICIPANTS": "participants"
->>>>>>> origin/develop
   },
 
   "CREATE_EVENT": {
@@ -503,15 +470,12 @@
     "FIELD_ADDRESS_ERROR_MIN": "⚠ L'adreça és obligatòria (mínim 5 caràcters).",
     "FIELD_CATEGORY_ERROR_REQUIRED": "⚠ La categoria és obligatòria.",
     "SUBMIT_LOADING": "Creant..."
-<<<<<<< HEAD
-=======
   },
   "CREATE_EVENTS": {
     "PRIVATE_NO_INVITES_ERROR": "Un esdeveniment privat ha de tenir almenys un convidat",
     "MAX_PARTICIPANTS_TOO_LOW": "El límit de participants ha de ser major o igual al nombre de convidats més el creador",
     "MAX_PARTICIPANTS_WARNING": "⚠️ El límit és inferior al nombre de convidats + creador",
     "PRIVATE_NEEDS_INVITES_INFO": "ℹ️ Recorda convidar almenys un amic per a l'esdeveniment privat"
->>>>>>> origin/develop
   },
 
   "MY_EVENTS": {
@@ -525,33 +489,19 @@
     "CREATED_EMPTY_TEXT": "Encara no has creat cap esdeveniment",
     "BADGE_CREATOR": "Creador",
     "FIELD_ADDRESS": "Adreça:",
-<<<<<<< HEAD
-    "BUTTON_VIEW_MAP": "🗺 Mapa",
-=======
     "BUTTON_VIEW_MAP": "Mapa",
->>>>>>> origin/develop
     "FIELD_SCHEDULE": "Horari:",
     "FIELD_PARTICIPANTS": "Participants:",
     "RATINGS_LABEL": "Valoracions:",
     "RATINGS_NONE": "Sense valoracions",
     "BUTTON_VIEW_RATINGS": "Valoracions",
-<<<<<<< HEAD
-    "BUTTON_EDIT": "✏️ Modificar",
-=======
     "BUTTON_EDIT": "Modificar",
->>>>>>> origin/develop
     "BUTTON_DELETE": "🗑️ Eliminar",
     "JOINED_TITLE": "🎯 Esdeveniments als quals estic inscrit ({{count}})",
     "JOINED_EMPTY_TEXT": "Encara no estàs inscrit en cap esdeveniment",
     "JOINED_BUTTON_EXPLORE": "Explorar esdeveniments",
     "BADGE_JOINED": "Inscrit",
-<<<<<<< HEAD
-
     "BUTTON_LEAVE": "👋 Sortir",
-
-=======
-    "BUTTON_LEAVE": "👋 Sortir",
->>>>>>> origin/develop
     "DELETE_MODAL_TITLE": "Eliminar esdeveniment",
     "DELETE_MODAL_TEXT": "Segur que vols eliminar <strong>{{name}}</strong>?",
     "DELETE_MODAL_CANCEL": "Cancel·lar",
@@ -560,45 +510,23 @@
     "LEAVE_MODAL_TEXT": "Segur que vols sortir de <strong>{{name}}</strong>?",
     "LEAVE_MODAL_CANCEL": "Cancel·lar",
     "LEAVE_MODAL_CONFIRM": "Sortir",
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/develop
     "BUTTON_SHARE_EVENT": "Enviar esdeveniment",
     "SHARE_EVENT_TITLE": "Compartir esdeveniment",
     "SHARE_EVENT_LOADING": "Carregant amics...",
     "SHARE_EVENT_NO_FRIENDS": "No tens amics per enviar aquest esdeveniment.",
     "SHARE_EVENT_SEND": "Enviar",
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/develop
     "BUTTON_EVENT_CHAT": "Xat",
     "EVENT_CHAT_TITLE": "Xat de l'esdeveniment",
     "EVENT_CHAT_LOADING": "Carregant els missatges de l'esdeveniment...",
     "EVENT_CHAT_EMPTY": "Encara no hi ha missatges en aquest esdeveniment.",
     "EVENT_CHAT_PLACEHOLDER": "Escriu un missatge per a aquest esdeveniment...",
-<<<<<<< HEAD
-
     "TAB_JOINED": "Esdeveniments Inscrit",
     "TAB_CREATED": "Esdeveniments Creats",
     "STATS_RATING": "Valoració",
-
-=======
-    "TAB_JOINED": "Esdeveniments Inscrit",
-    "TAB_CREATED": "Esdeveniments Creats",
-    "STATS_RATING": "Valoració",
->>>>>>> origin/develop
     "CREATOR_CANNOT_LEAVE": "No pots abandonar essent el creador",
     "SECTION_UPCOMING": "Propers Esdeveniments",
     "SECTION_PAST": "Esdeveniments Passats",
     "BADGE_FINISHED": "Finalitzat",
-<<<<<<< HEAD
-
-    "FILTER_ALL": "Tots",
-    "FILTER_PUBLIC": "Públics",
-    "FILTER_PRIVATE": "Privats"
-=======
     "FILTER_ALL": "Tots",
     "FILTER_PUBLIC": "Públics",
     "FILTER_PRIVATE": "Privats",
@@ -635,7 +563,6 @@
     "UPLOADED_ON": "Data",
     "DELETING": "Eliminant...",
     "CANCEL": "Cancel·lar"
->>>>>>> origin/develop
   },
 
   "RATINGS": {
@@ -887,9 +814,6 @@
         "CONFIRM": "Confirmar",
         "CANCEL": "Cancel·lar"
       }
-<<<<<<< HEAD
-    }
-=======
     },
 
     "NOTIFICATIONS": {
@@ -1060,5 +984,4 @@
       "ERR_MAX_PARTICIPANTS_MIN": "⚠️ No pot ser menor que els participants actuals."
     }
   }
->>>>>>> origin/develop
 }

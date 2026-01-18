@@ -7,7 +7,7 @@ import * as io from 'socket.io-client';
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private socket: any = null;
-  private readonly url = environment.apiUrl;
+  private readonly url = environment.socketUrl;
   private connectedUserId: string | null = null;
 
   constructor() {}

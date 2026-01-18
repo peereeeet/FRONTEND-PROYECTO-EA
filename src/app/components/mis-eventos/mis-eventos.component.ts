@@ -19,19 +19,14 @@ import { ThemeService } from '../../services/theme.service';
 import { GamificacionService } from '../../services/gamificacion.service';
 import { RewardNotificationService } from '../../services/reward-notification.service';
 import { RewardNotificationComponent } from '../reward-notification/reward-notification.component';
-<<<<<<< HEAD
-=======
 import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
->>>>>>> origin/develop
+import { environment } from '../../environments/environment';
+
 
 @Component({
   selector: 'app-mis-eventos',
   standalone: true,
-<<<<<<< HEAD
-  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, RewardNotificationComponent],
-=======
   imports: [CommonModule, RouterModule, FormsModule, TranslateModule, RewardNotificationComponent, NotificacionesComponent],
->>>>>>> origin/develop
   templateUrl: './mis-eventos.component.html',
   styleUrls: ['./mis-eventos.component.css']
 })
@@ -228,15 +223,11 @@ export class MisEventosComponent implements OnInit {
     this.destroy$.next();
     this.destroy$.complete();
     if (this.currentUserId) {
-<<<<<<< HEAD
     this.userService.heartbeat(this.currentUserId).subscribe({
       next: () => console.log('Heartbeat enviado al salir de mis-eventos'),
       error: (err) => console.error('Error en heartbeat al salir', err)
     });
-=======
-    this.userService.heartbeat(this.currentUserId).subscribe;
->>>>>>> origin/develop
-  }
+    }
   }
 
   loadMisEventos(): void {
@@ -797,7 +788,7 @@ hasLocation(evento: any): boolean {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch(`http://localhost:3000/api/event/${evento._id}/chat-image`, {
+      const response = await fetch(`${environment.apiURL}/api/event/${evento._id}/chat-image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.authService.getToken()}`
@@ -869,7 +860,7 @@ hasLocation(evento: any): boolean {
 
   getEventChatImageUrl(imageUrl: string): string {
     const token = this.authService.getToken();
-    return `http://localhost:3000${imageUrl}?token=${token}`;
+    return `${environment.apiURL}${imageUrl}?token=${token}`;
   }
 
   private scrollEventChatToBottom(): void {
@@ -900,7 +891,7 @@ hasLocation(evento: any): boolean {
     try {
       const token = this.authService.getToken();
       const response = await fetch(
-        `http://localhost:3000/api/user/events/chat/${message._id}`,
+        `${environment.apiURL}/api/user/events/chat/${message._id}`,
         {
           method: 'DELETE',
           headers: {
@@ -1002,15 +993,8 @@ hasLocation(evento: any): boolean {
           insignias: progreso.insignias.length,
           insigniasIds: progreso.insignias.map((i: any) => i._id)
         };
-<<<<<<< HEAD
-        console.log('📊 Progreso inicial cargado:', this.progresoInicial);
       },
       error: (err) => {
-        console.error('Error al cargar progreso inicial:', err);
-=======
-      },
-      error: (err) => {
->>>>>>> origin/develop
       }
     });
   }
@@ -1051,27 +1035,12 @@ hasLocation(evento: any): boolean {
             insignias: progresoNuevo.insignias.length,
             insigniasIds: progresoNuevo.insignias.map((i: any) => i._id)
           };
-<<<<<<< HEAD
-
-          console.log('🎮 Recompensa detectada:', {
-            accion: 'dejarValoracion',
-            puntosGanados,
-            subisteDeNivel,
-            insigniasDesbloqueadas: insigniasDesbloqueadas.length
-          });
         },
         error: (err) => {
-          console.error('Error al detectar cambios de progreso:', err);
-=======
-        },
-        error: (err) => {
->>>>>>> origin/develop
         }
       });
     }, 800);
   }
-<<<<<<< HEAD
-=======
 
   openAlbum(evento: Evento): void {
     this.albumEvento.set(evento);
@@ -1083,8 +1052,6 @@ hasLocation(evento: any): boolean {
     this.showAlbumModal.set(false);
     this.albumEvento.set(null);
     this.albumPhotos.set([]);
-    this.albumError.set('');
-    this.selectedPhotoFile.set(null);
     this.photoPreviewUrl.set(null);
   }
 
@@ -1236,7 +1203,7 @@ hasLocation(evento: any): boolean {
       return;
     }
 
-    fetch(`http://localhost:3000${photo.url}`, {
+    fetch(`${environment.apiURL}${photo.url}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -1259,7 +1226,7 @@ hasLocation(evento: any): boolean {
 
   getPhotoUrl(photo: EventoPhoto): string {
     const token = this.authService.getToken();
-    return `http://localhost:3000${photo.url}?token=${token}`;
+    return `${environment.apiURL}${photo.url}?token=${token}`;
   }
 
   isVideo(photo: EventoPhoto): boolean {
@@ -1280,5 +1247,4 @@ hasLocation(evento: any): boolean {
       minute: '2-digit'
     });
   }
->>>>>>> origin/develop
 }

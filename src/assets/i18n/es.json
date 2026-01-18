@@ -44,9 +44,6 @@
     "GOOGLE_BIRTHDAY_TEXT": "Antes de terminar el registro con Google, necesitamos tu fecha de nacimiento para completar tu perfil.",
     "GOOGLE_BIRTHDAY_LABEL": "Fecha de nacimiento",
     "GOOGLE_BIRTHDAY_CANCEL": "Cancelar",
-<<<<<<< HEAD
-    "GOOGLE_BIRTHDAY_CONFIRM": "Continuar"
-=======
     "GOOGLE_BIRTHDAY_CONFIRM": "Continuar",
     "GOOGLE_REGISTER_INTERESTS": "¿Qué te interesa? (Opcional)",
     "GOOGLE_INTERESTS_SHOW": "Añadir mis intereses",
@@ -71,7 +68,6 @@
     "SENT": "Enviado",
     "RESEND_COOLDOWN": "Espera {{seconds}} segundos para reenviar",
     "RESEND_READY": "Puedes reenviar el código ahora"
->>>>>>> origin/develop
   },
 
   "REGISTER": {
@@ -110,18 +106,12 @@
     "PASSWORD_STRENGTH_WEAK": "Débil",
     "PASSWORD_STRENGTH_MEDIUM": "Media",
     "PASSWORD_STRENGTH_STRONG": "Fuerte",
-<<<<<<< HEAD
-=======
     "PASSWORD_STRENGTH_": "",
->>>>>>> origin/develop
     "PASSWORD_REQ_LENGTH": "Mínimo 8 caracteres",
     "PASSWORD_REQ_UPPERCASE": "Una letra mayúscula",
     "PASSWORD_REQ_LOWERCASE": "Una letra minúscula",
     "PASSWORD_REQ_NUMBER": "Un número",
     "PASSWORD_REQ_SPECIAL": "Un carácter especial (!@#$...)",
-<<<<<<< HEAD
-    "PASSWORDS_MATCH": "Las contraseñas coinciden"
-=======
     "PASSWORDS_MATCH": "Las contraseñas coinciden",
     "SELECT": "Escoge tus intereses",
     "VERIFY_TITLE": "Verifica tu correo",
@@ -164,7 +154,6 @@
       "FAMILY": "Familia",
       "OTHER": "Otros"
     }
->>>>>>> origin/develop
   },
 
   "LANG": {
@@ -259,24 +248,16 @@
     "CHAT_EVENT_INVITE_TITLE": "Invitación a un evento",
     "CHAT_EVENT_INVITE_JOIN": "Unirse",
     "CHAT_EVENT_INVITE_ALREADY_IN": "Ya estás dentro",
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/develop
     "CONFIRM_REMOVE_TITLE": "Eliminar amigo",
     "CONFIRM_REMOVE_TEXT": "¿Seguro que quieres eliminar a",
     "CONFIRM_REMOVE_WARNING": "Esta acción es permanente y no podrás deshacerla.",
     "CONFIRM_REMOVE_CANCEL": "Cancelar",
     "CONFIRM_REMOVE_CONFIRM": "Eliminar",
-<<<<<<< HEAD
-
-=======
     "CONFIRM_BLOCK_TITLE": "Bloquear usuario",
     "CONFIRM_BLOCK_TEXT": "¿Estás seguro de que quieres bloquear a",
     "CONFIRM_BLOCK_WARNING": "Este usuario no podrá enviarte mensajes ni solicitudes de amistad. Si ya son amigos, se eliminará la amistad.",
     "CONFIRM_BLOCK_CANCEL": "Cancelar",
     "CONFIRM_BLOCK_CONFIRM": "Bloquear",
->>>>>>> origin/develop
     "TAB_MAP": "Mapa",
     "TAB_SEARCH": "Buscador",
     "SEARCH_TITLE": "Buscar Eventos",
@@ -288,9 +269,6 @@
     "SEARCH_CLEAR_BUTTON": "Limpiar",
     "SEARCH_LOADING": "Buscando eventos...",
     "SEARCH_EMPTY_TITLE": "No se encontraron eventos",
-<<<<<<< HEAD
-    "SEARCH_EMPTY_TEXT": "Intenta ajustar tus filtros de búsqueda"
-=======
     "SEARCH_EMPTY_TEXT": "Intenta ajustar tus filtros de búsqueda",
     "TAB_RECOMMENDED": "Recomendados",
     "RECOMMENDED_TITLE": "Eventos Recomendados para Ti",
@@ -307,7 +285,6 @@
     "CHAT_DELETE_MESSAGE_CONFIRM": "¿Estás seguro de que deseas eliminar este mensaje? Esta acción no se puede deshacer.",
     "CHAT_DELETE_MESSAGE_BTN": "Eliminar",
     "CHAT_DELETING_MESSAGE": "Eliminando..."
->>>>>>> origin/develop
   },
 
   "FRIENDS": {
@@ -417,10 +394,6 @@
     "BACK_TO_MENU": "Volver al menú",
     "GO_TO_CREATE": "Crear evento nuevo",
     "GO_TO_MY_EVENTS": "Mis eventos",
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/develop
     "LOADING_EVENTS": "Cargando eventos...",
     "MAP_TITLE": "Mapa de eventos",
     "MAP_HINT": "Desplázate y haz zoom en el mapa para ver los eventos de esa zona. Pulsa un pin para ver los detalles.",
@@ -439,18 +412,12 @@
     "MODAL_BUTTON_JOIN": "Unirme al evento",
     "MODAL_BUTTON_LEAVE": "Salir del evento",
     "MODAL_BUTTON_CLOSE": "Cerrar",
-<<<<<<< HEAD
-
-    "BUTTON_LEAVE_WAITLIST": "Salir de lista de espera",
-    "WAITLIST_MESSAGE": "Estás en la lista de espera de este evento"
-=======
     "BUTTON_LEAVE_WAITLIST": "Salir de lista de espera",
     "WAITLIST_MESSAGE": "Estás en la lista de espera de este evento",
     "CARD_ACTION_JOIN": "Unirse",
     "CARD_ACTION_LEAVE": "Salir",
     "CARD_ACTION_DETAILS": "Ver detalles",
     "PARTICIPANTS": "participantes"
->>>>>>> origin/develop
   },
 
   "CREATE_EVENT": {
@@ -497,15 +464,12 @@
     "FIELD_ADDRESS_ERROR_MIN": "⚠ La dirección es obligatoria (mínimo 5 caracteres).",
     "FIELD_CATEGORY_ERROR_REQUIRED": "⚠ La categoría es obligatoria.",
     "SUBMIT_LOADING": "Creando..."
-<<<<<<< HEAD
-=======
   },
   "CREATE_EVENTS": {
     "PRIVATE_NO_INVITES_ERROR": "Un evento privado debe tener al menos un invitado",
     "MAX_PARTICIPANTS_TOO_LOW": "El límite de participantes debe ser mayor o igual al número de invitados más el creador",
     "MAX_PARTICIPANTS_WARNING": "⚠️ El límite es menor que el número de invitados + creador",
     "PRIVATE_NEEDS_INVITES_INFO": "ℹ️ Recuerda invitar al menos a un amigo para el evento privado"
->>>>>>> origin/develop
   },
 
   "MY_EVENTS": {
@@ -519,33 +483,19 @@
     "CREATED_EMPTY_TEXT": "Aún no has creado ningún evento",
     "BADGE_CREATOR": "Creador",
     "FIELD_ADDRESS": "Dirección:",
-<<<<<<< HEAD
-    "BUTTON_VIEW_MAP": "🗺 Mapa",
-=======
     "BUTTON_VIEW_MAP": "Mapa",
->>>>>>> origin/develop
     "FIELD_SCHEDULE": "Horario:",
     "FIELD_PARTICIPANTS": "Participantes:",
     "RATINGS_LABEL": "Valoraciones:",
     "RATINGS_NONE": "Sin valoraciones",
     "BUTTON_VIEW_RATINGS": "Valoraciones",
-<<<<<<< HEAD
-    "BUTTON_EDIT": "✏️ Modificar",
-=======
     "BUTTON_EDIT": "Modificar",
->>>>>>> origin/develop
     "BUTTON_DELETE": "🗑️ Eliminar",
     "JOINED_TITLE": "🎯 Eventos en los que estoy inscrito ({{count}})",
     "JOINED_EMPTY_TEXT": "Aún no estás inscrito en ningún evento",
     "JOINED_BUTTON_EXPLORE": "Explorar eventos",
     "BADGE_JOINED": "Inscrito",
-<<<<<<< HEAD
-
     "BUTTON_LEAVE": "👋 Abandonar",
-
-=======
-    "BUTTON_LEAVE": "👋 Abandonar",
->>>>>>> origin/develop
     "DELETE_MODAL_TITLE": "Eliminar evento",
     "DELETE_MODAL_TEXT": "¿Seguro que quieres eliminar <strong>{{name}}</strong>?",
     "DELETE_MODAL_CANCEL": "Cancelar",
@@ -554,45 +504,23 @@
     "LEAVE_MODAL_TEXT": "¿Seguro que quieres salir de <strong>{{name}}</strong>?",
     "LEAVE_MODAL_CANCEL": "Cancelar",
     "LEAVE_MODAL_CONFIRM": "Salir",
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/develop
     "BUTTON_SHARE_EVENT": "Enviar evento",
     "SHARE_EVENT_TITLE": "Compartir evento",
     "SHARE_EVENT_LOADING": "Cargando amigos...",
     "SHARE_EVENT_NO_FRIENDS": "No tienes amigos para enviar este evento.",
     "SHARE_EVENT_SEND": "Enviar",
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/develop
     "BUTTON_EVENT_CHAT": "Chat",
     "EVENT_CHAT_TITLE": "Chat del evento",
     "EVENT_CHAT_LOADING": "Cargando mensajes del evento...",
     "EVENT_CHAT_EMPTY": "Todavía no hay mensajes en este evento.",
     "EVENT_CHAT_PLACEHOLDER": "Escribe un mensaje para este evento...",
-<<<<<<< HEAD
-
     "TAB_JOINED": "Eventos Inscrito",
     "TAB_CREATED": "Eventos Creados",
     "STATS_RATING": "Valoración",
-
-=======
-    "TAB_JOINED": "Eventos Inscrito",
-    "TAB_CREATED": "Eventos Creados",
-    "STATS_RATING": "Valoración",
->>>>>>> origin/develop
     "CREATOR_CANNOT_LEAVE": "No puedes abandonar siendo el creador",
     "SECTION_UPCOMING": "Próximos Eventos",
     "SECTION_PAST": "Eventos Pasados",
     "BADGE_FINISHED": "Finalizado",
-<<<<<<< HEAD
-
-    "FILTER_ALL": "Todos",
-    "FILTER_PUBLIC": "Públicos",
-    "FILTER_PRIVATE": "Privados"
-=======
     "FILTER_ALL": "Todos",
     "FILTER_PUBLIC": "Públicos",
     "FILTER_PRIVATE": "Privados",
@@ -642,7 +570,6 @@
     "UPLOADED_ON": "Fecha",
     "DELETING": "Eliminando...",
     "CANCEL": "Cancelar"
->>>>>>> origin/develop
   },
 
   "RATINGS": {
@@ -896,9 +823,6 @@
         "CONFIRM": "Confirmar",
         "CANCEL": "Cancelar"
       }
-<<<<<<< HEAD
-    }
-=======
     },
 
     "NOTIFICATIONS": {
@@ -1065,5 +989,4 @@
       "MODAL_CONFIRM_UPDATE_TEXT": "Se guardarán los cambios del evento en el sistema."
     }
   }
->>>>>>> origin/develop
 }
