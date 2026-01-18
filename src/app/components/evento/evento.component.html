@@ -114,6 +114,32 @@
               [(ngModel)]="newEvent.address"
               name="address"
               [placeholder]="'BACKOFFICE.EVENTS.PH_ADDRESS' | translate" />
+            <small *ngIf="formSubmitted && (!newEvent.address || newEvent.address.trim().length < 5)" class="error-message" style="color: var(--danger-500); display: block; margin-top: 4px;">
+              {{ 'BACKOFFICE.EVENTS.ERR_ADDRESS_MIN' | translate }}
+            </small>
+          </div>
+
+          <div class="form-row" style="display: flex; gap: 20px; align-items: flex-end;">
+            <div class="form-group" style="flex: 1;">
+              <label for="maxParticipantes" class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_MAX_PARTICIPANTS' | translate }}</label>
+              <input
+                id="maxParticipantes"
+                class="form-input"
+                type="number"
+                [(ngModel)]="newEvent.maxParticipantes"
+                name="maxParticipantes"
+                [placeholder]="'BACKOFFICE.EVENTS.PH_LIMIT' | translate" />
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px;">
+              <input
+                type="checkbox"
+                id="isPrivate"
+                [(ngModel)]="newEvent.isPrivate"
+                name="isPrivate"
+                style="width: 20px; height: 20px; cursor: pointer;" />
+              <label for="isPrivate" style="cursor: pointer;">{{ 'BACKOFFICE.EVENTS.LBL_IS_PRIVATE' | translate }}</label>
+            </div>
           </div>
 
           <div class="form-group">
@@ -346,6 +372,32 @@
               [(ngModel)]="editEvent.address"
               name="editAddress"
               [placeholder]="'BACKOFFICE.EVENTS.PH_ADDRESS' | translate" />
+            <small *ngIf="!editEvent.address || editEvent.address.trim().length < 5" class="error-message" style="color: var(--danger-500); display: block; margin-top: 4px;">
+              {{ 'BACKOFFICE.EVENTS.ERR_ADDRESS_MIN' | translate }}
+            </small>
+          </div>
+
+          <div class="form-row" style="display: flex; gap: 20px; align-items: flex-end; margin-top: 15px;">
+            <div class="form-group" style="flex: 1;">
+              <label for="editMaxParticipantes" class="form-label">{{ 'BACKOFFICE.EVENTS.LBL_MAX_PARTICIPANTS' | translate }}</label>
+              <input
+                id="editMaxParticipantes"
+                class="form-input"
+                type="number"
+                [(ngModel)]="editEvent.maxParticipantes"
+                name="editMaxParticipantes"
+                [placeholder]="'BACKOFFICE.EVENTS.PH_LIMIT' | translate" />
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px;">
+              <input
+                type="checkbox"
+                id="editIsPrivate"
+                [(ngModel)]="editEvent.isPrivate"
+                name="editIsPrivate"
+                style="width: 20px; height: 20px; cursor: pointer;" />
+              <label for="editIsPrivate" style="cursor: pointer;">{{ 'BACKOFFICE.EVENTS.LBL_IS_PRIVATE' | translate }}</label>
+            </div>
           </div>
         </div>
 

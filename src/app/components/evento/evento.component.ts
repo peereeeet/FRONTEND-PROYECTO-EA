@@ -224,8 +224,13 @@ export class EventoComponent implements OnInit {
       return;
     }
 
-    if (!this.creatorId) {
-      this.errorMessage = this.translate.instant('BACKOFFICE.EVENTS.ERR_CREATOR_REQ');
+    if (!this.newEvent.address || this.newEvent.address.trim().length < 5) {
+      this.errorMessage = this.translate.instant('BACKOFFICE.EVENTS.ERR_ADDRESS_MIN');
+      return;
+    }
+
+    if (this.newEvent.maxParticipantes !== null && this.newEvent.maxParticipantes !== undefined && this.newEvent.maxParticipantes <= 0) {
+      this.errorMessage = this.translate.instant('BACKOFFICE.EVENTS.ERR_MAX_PARTICIPANTS');
       return;
     }
 
@@ -240,7 +245,9 @@ export class EventoComponent implements OnInit {
       schedule: this.newEvent.schedule ?? [],
       address: this.newEvent.address || '',
       participantes: participantIds,
-      creador: this.creatorId
+      creador: this.creatorId,
+      isPrivate: this.newEvent.isPrivate || false,
+      maxParticipantes: this.newEvent.maxParticipantes || null
     };
 
     this.eventoService.addEvento(eventoJSON).subscribe({
@@ -412,6 +419,23 @@ export class EventoComponent implements OnInit {
     if (!this.editCreatorId) {
       alert(this.translate.instant('BACKOFFICE.EVENTS.ERR_CREATOR_REQ'));
       return;
+    }
+
+    if (!this.editEvent.address || this.editEvent.address.trim().length < 5) {
+      alert(this.translate.instant('BACKOFFICE.EVENTS.ERR_ADDRESS_MIN'));
+      return;
+    }
+
+    const currentParticipantsCount = this.editSelectedUsers.length;
+    if (this.editEvent.maxParticipantes !== null && this.editEvent.maxParticipantes !== undefined) {
+      if (this.editEvent.maxParticipantes <= 0) {
+        alert(this.translate.instant('BACKOFFICE.EVENTS.ERR_MAX_PARTICIPANTS'));
+        return;
+      }
+      if (this.editEvent.maxParticipantes < currentParticipantsCount) {
+        alert(this.translate.instant('BACKOFFICE.EVENTS.ERR_MAX_PARTICIPANTS_MIN'));
+        return;
+      }
     }
 
     const participantIds = this.editSelectedUsers
