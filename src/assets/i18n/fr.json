@@ -48,7 +48,22 @@
     "GOOGLE_REGISTER_INTERESTS": "Qu'est-ce qui vous intéresse ? (Optionnel)",
     "GOOGLE_INTERESTS_SHOW": "Ajouter mes intérêts",
     "GOOGLE_INTERESTS_HIDE": "Masquer les intérêts",
-    "GOOGLE_INTERESTS_SELECT": "Sélectionner mes intérêts"
+    "GOOGLE_INTERESTS_SELECT": "Sélectionner mes intérêts",
+    "GOOGLE_REGISTER_SAVING": "Enregistrement…",
+    "RESET_SUCCESS_MESSAGE": "Mot de passe réinitialisé avec succès. Connectez-vous.",
+    "RESET_ERROR_INVALID_OTP": "Le code OTP est invalide.",
+    "RESET_ERROR_EXPIRED_OTP": "Le code OTP a expiré.",
+    "RESET_TITLE": "Réinitialiser le mot de passe",
+    "RESET_TEXT": "Entrez le code de vérification envoyé à votre email, ainsi que votre nouveau mot de passe.",
+    "RESET_OTP_LABEL": "Code de vérification",
+    "RESET_OTP_PLACEHOLDER": "Entrez le code à 6 chiffres",
+    "RESET_NEW_PASSWORD_LABEL": "Nouveau mot de passe",
+    "RESET_NEW_PASSWORD_PLACEHOLDER": "Minimum 7 caractères",
+    "RESET_CANCEL": "Annuler",
+    "RESET_CONFIRM": "Réinitialiser le mot de passe",
+    "RESET_SAVING": "Réinitialisation…",
+    "RESEND_CODE": "Renvoyer le code",
+    "RESEND_IN": "Renvoyer dans"
   },
 
   "REGISTER": {

@@ -46,7 +46,27 @@
     "GOOGLE_REGISTER_INTERESTS": "What are you interested in? (Optional)",
     "GOOGLE_INTERESTS_SHOW": "Add my interests",
     "GOOGLE_INTERESTS_HIDE": "Hide interests",
-    "GOOGLE_INTERESTS_SELECT": "Select my interests"
+    "GOOGLE_INTERESTS_SELECT": "Select my interests",
+    "RESET_TITLE": "Reset password",
+    "RESET_TEXT": "Enter the 6-digit code we sent to your email, along with your new password.",
+    "RESET_OTP_LABEL": "Verification code",
+    "RESET_OTP_PLACEHOLDER": "Enter the 6-digit code",
+    "RESET_OTP_INVALID": "The code must be 6 numeric digits",
+    "RESET_NEW_PASSWORD_LABEL": "New password",
+    "RESET_NEW_PASSWORD_PLACEHOLDER": "Create a new password",
+    "RESET_NEW_PASSWORD_REQUIRED": "New password is required.",
+    "RESET_NEW_PASSWORD_MIN": "Minimum 7 characters.",
+    "RESET_CONFIRM_PASSWORD_LABEL": "Confirm new password",
+    "RESET_CONFIRM_PASSWORD_PLACEHOLDER": "Repeat the new password",
+    "RESET_CONFIRM_PASSWORD_MISMATCH": "Passwords do not match.",
+    "RESET_CANCEL": "Cancel",
+    "RESET_SUBMIT": "Reset password",
+    "RESET_SAVING": "Resetting...",
+    "RESEND_CODE": "Resend code",
+    "RESEND_IN": "Resend in",
+    "BACK_TO_LOGIN": "Back to login",
+    "ERROR_INVALID_OTP": "The code is incorrect or has expired.",
+    "ERROR_GENERIC_RESET": "Password reset failed. Please check your inputs."
   },
 
   "REGISTER": {
