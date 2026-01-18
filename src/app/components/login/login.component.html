@@ -216,14 +216,31 @@
           <label class="form-label">
             {{ 'LOGIN.OTP_LABEL' | translate }}
           </label>
-          <input
-            type="text"
-            class="form-input"
-            formControlName="otp"
-            inputmode="numeric" 
-            maxlength="6"
-            (input)="sanitizeResetOtp($event)"
-            [placeholder]="'123456'" />
+          <div class="otp-row" style="display: flex; gap: 10px; align-items: flex-start;">
+            <div style="flex-grow: 1;">
+              <input
+                type="text"
+                class="form-input"
+                formControlName="otp"
+                inputmode="numeric" 
+                maxlength="6"
+                (input)="sanitizeResetOtp($event)"
+                [placeholder]="'123456'" />
+            </div>
+            <button 
+              type="button" 
+              class="btn-resend"
+              (click)="resendCode()"
+              [disabled]="resendCooldown > 0 || sending"
+              style="white-space: nowrap; height: 42px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); cursor: pointer;">
+              <span *ngIf="resendCooldown > 0">
+                {{ 'REGISTER.RESEND_IN' | translate }} {{ resendCooldown }}s
+              </span>
+              <span *ngIf="resendCooldown === 0">
+                {{ 'REGISTER.RESEND_CODE' | translate }}
+              </span>
+            </button>
+          </div>
             
           <div *ngIf="resetForm.get('otp')?.touched && resetForm.get('otp')?.invalid" class="error-message">
              <span>⚠ </span><span>{{ 'REGISTER.OTP_INVALID' | translate }}</span>
@@ -241,9 +258,35 @@
             formControlName="newPassword"
             [placeholder]="'LOGIN.DIRECT_NEW_PASSWORD_PLACEHOLDER' | translate" />
             
-          <div *ngIf="resetForm.get('newPassword')?.touched && resetForm.get('newPassword')?.invalid" class="error-message">
-             <span>⚠ </span><span>{{ 'LOGIN.PASSWORD_MIN' | translate }}</span>
+          <!-- Granular Password Errors -->
+          <div *ngIf="resetForm.get('newPassword')?.touched && resetForm.get('newPassword')?.errors" class="password-requirements">
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['required']" class="req-item missing">
+               ⚠ {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
+             </div>
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['minlength']" class="req-item missing">
+               ⚠ {{ 'REGISTER.PASSWORD_REQ_LENGTH' | translate }}
+             </div>
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['missingUpperCase']" class="req-item missing">
+               ⚠ {{ 'REGISTER.PASSWORD_REQ_UPPERCASE' | translate }}
+             </div>
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['missingLowerCase']" class="req-item missing">
+               ⚠ {{ 'REGISTER.PASSWORD_REQ_LOWERCASE' | translate }}
+             </div>
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['missingNumber']" class="req-item missing">
+               ⚠ {{ 'REGISTER.PASSWORD_REQ_NUMBER' | translate }}
+             </div>
+             <div *ngIf="resetForm.get('newPassword')?.errors?.['missingSpecial']" class="req-item missing">
+               ⚠ {{ 'REGISTER.PASSWORD_REQ_SPECIAL' | translate }}
+             </div>
           </div>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div *ngIf="resetErrorMessage" class="error-message" style="margin-bottom: 1rem;">
+          <span>⚠ </span><span>{{ resetErrorMessage }}</span>
+        </div>
+        <div *ngIf="resetSuccessMessage" class="success-message" style="margin-bottom: 1rem; color: var(--success-color);">
+          <span>✅ </span><span>{{ resetSuccessMessage }}</span>
         </div>
 
         <div class="modal-actions">

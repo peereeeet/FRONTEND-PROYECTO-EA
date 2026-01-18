@@ -498,16 +498,36 @@ export class LoginComponent {
   resetEmail = '';
   isReseting = false;
 
+  /* New Properties */
+  resendCooldown: number = 0;
+  private resendTimer: any = null;
+  resetErrorMessage: string = '';
+  resetSuccessMessage: string = '';
+
   openReset() {
     this.resetOpen = true;
+    this.resetErrorMessage = '';
+    this.resetSuccessMessage = '';
+    // Reset cooldown state if needed, or keep it running if it's global? 
+    // Usually cooldown is per session/request. 
+    // If we just opened it, we assume we just sent a code (from forgot submit). 
+    // So we should probably start the cooldown immediately if we came from onForgotSubmit.
+    // However, onForgotSubmit calls openReset separately.
+    // Let's handle timer start in onForgotSubmit success.
+    
     this.resetForm = this.fb.group({
       otp: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
-      newPassword: ['', [Validators.required, Validators.minLength(7)]]
+      newPassword: ['', [Validators.required, this.passwordValidator()]]
     });
   }
 
   closeReset() {
     this.resetOpen = false;
+    this.stopResendTimer();
+  }
+
+  ngOnDestroy(): void {
+    this.stopResendTimer();
   }
 
   onResetSubmit() {
@@ -516,32 +536,106 @@ export class LoginComponent {
       return;
     }
     this.isReseting = true;
+    this.resetErrorMessage = '';
+    this.resetSuccessMessage = '';
+
     const { otp, newPassword } = this.resetForm.value;
 
     this.authService.resetPassword(this.resetEmail, otp, newPassword).subscribe({
       next: () => {
         this.isReseting = false;
-        this.closeReset();
-        alert('Contraseña restablecida con éxito. Inicia sesión.');
+        this.resetSuccessMessage = 'Contraseña restablecida con éxito. Inicia sesión.';
+        // Optional: Close after a delay or let user close
+        setTimeout(() => {
+          this.closeReset();
+          // alert('Contraseña restablecida con éxito. Inicia sesión.'); // User requested no alerts, but success feedback needed.
+          // Since we close, maybe show main login message? 
+          // For now, simple behavior: close and maybe show message on main form if we wanted, 
+          // but "resetSuccessMessage" inside modal might be missed if we close immediately.
+        }, 1500);
       },
       error: (err) => {
         this.isReseting = false;
         const msg = err?.error?.message;
-         if (msg === 'INVALID_CODE') {
-           alert('Código inválido.');
+        if (msg === 'INVALID_CODE') {
+          this.resetErrorMessage = this.translate.instant('REGISTER.VERIFY_ERROR_INVALID') || 'Código inválido';
         } else if (msg === 'EXPIRED_CODE') {
-           alert('El código ha expirado.');
+          this.resetErrorMessage = this.translate.instant('REGISTER.VERIFY_ERROR_EXPIRED') || 'El código ha expirado';
+        } else if (msg === 'RATE_LIMITED') {
+          this.resetErrorMessage = 'Demasiados intentos. Inténtalo más tarde.'; 
         } else {
-           alert(msg || 'Error al restablecer contraseña.');
+          this.resetErrorMessage = msg || this.translate.instant('COMMON.ERROR_GENERIC');
         }
       }
     });
+  }
+
+  resendCode() {
+    if (this.resendCooldown > 0) return;
+    
+    this.sending = true; // Reusing sending flag or create new
+    // We reuse logic from forgotPassword but we already have email
+    this.authService.forgotPassword(this.resetEmail).subscribe({
+      next: () => {
+        this.sending = false;
+        this.startResendTimer();
+        // Feedback?
+      },
+      error: (err) => {
+        this.sending = false;
+        // Handle error if needed (e.g. rate limit on resend)
+        const msg = err?.error?.message;
+        if (msg === 'RATE_LIMITED') {
+           this.resetErrorMessage = 'Espera antes de reenviar.';
+        }
+      }
+    });
+  }
+
+  private startResendTimer() {
+    this.resendCooldown = 60;
+    this.stopResendTimer();
+    this.resendTimer = setInterval(() => {
+      this.resendCooldown--;
+      if (this.resendCooldown <= 0) {
+        this.stopResendTimer();
+      }
+    }, 1000);
+  }
+
+  private stopResendTimer() {
+    if (this.resendTimer) {
+      clearInterval(this.resendTimer);
+      this.resendTimer = null;
+    }
   }
 
   sanitizeResetOtp(input: any) {
     let val = input.target.value.replace(/[^0-9]/g, '');
     if (val.length > 6) val = val.substring(0, 6);
     this.resetForm.get('otp')?.setValue(val);
+  }
+
+  // Custom Validator
+  private passwordValidator() {
+    return (control: any) => {
+      const value = control.value || '';
+      if (!value) return null;
+
+      const errors: any = {};
+      
+      // Backend: min 8
+      if (value.length < 8) errors.minlength = { requiredLength: 8, actualLength: value.length };
+      // Backend: max 128 (usually handled by validators but we can add if strict)
+      
+      // Regex checks
+      if (!/[A-Z]/.test(value)) errors.missingUpperCase = true;
+      if (!/[a-z]/.test(value)) errors.missingLowerCase = true;
+      if (!/[0-9]/.test(value)) errors.missingNumber = true;
+      if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) errors.missingSpecial = true;
+
+      return Object.keys(errors).length ? errors : null;
+    };
   }
 
   toggleLangMenu(): void {
