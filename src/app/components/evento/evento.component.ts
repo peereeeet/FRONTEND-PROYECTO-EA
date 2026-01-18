@@ -10,17 +10,20 @@ import { Router } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
 import { ValoracionService } from '../../services/valoracion.service';
 import { Valoracion } from '../../models/valoracion.model';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-evento',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './evento.component.html',
   styleUrls: ['./evento.component.css']
 })
 export class EventoComponent implements OnInit {
   private themeService = inject(ThemeService);
   theme = this.themeService.theme;
+  currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
+  showLangMenu = false;
 
   eventos: Evento[] = [];
   totalEventos = 0; 
@@ -86,7 +89,8 @@ export class EventoComponent implements OnInit {
     private userService: UserService,
     private location: Location,
     private router: Router,
-    private valoracionService: ValoracionService
+    private valoracionService: ValoracionService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -96,6 +100,17 @@ export class EventoComponent implements OnInit {
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+
+  toggleLangMenu(): void {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
+    this.showLangMenu = false;
   }
 
   loadUsers(): void {
@@ -205,12 +220,12 @@ export class EventoComponent implements OnInit {
     this.errorMessage = '';
 
     if (!this.newEvent.name || this.newEvent.name.trim().length < 3) {
-      this.errorMessage = 'El título del evento debe tener al menos 3 caracteres.';
+      this.errorMessage = this.translate.instant('BACKOFFICE.EVENTS.ERR_NAME_MIN');
       return;
     }
 
     if (!this.creatorId) {
-      this.errorMessage = 'Debes seleccionar un creador del evento.';
+      this.errorMessage = this.translate.instant('BACKOFFICE.EVENTS.ERR_CREATOR_REQ');
       return;
     }
 
@@ -241,7 +256,7 @@ export class EventoComponent implements OnInit {
         this.loadEvents();
       },
       error: (err) => {
-        this.errorMessage = 'Error al guardar el evento. Inténtalo de nuevo.';
+        this.errorMessage = this.translate.instant('BACKOFFICE.EVENTS.ERR_SAVE');
         this.saving = false;
       }
     });
@@ -269,7 +284,7 @@ export class EventoComponent implements OnInit {
         this.closeDeleteModal();
       },
       error: (err) => {
-        alert('Error al eliminar el evento');
+        alert(this.translate.instant('BACKOFFICE.EVENTS.ERR_DELETE'));
         this.closeDeleteModal();
       }
     });
@@ -390,12 +405,12 @@ export class EventoComponent implements OnInit {
 
   onEditSubmit(): void {
     if (!this.editEvent.name || this.editEvent.name.trim().length < 3) {
-      alert('El título del evento debe tener al menos 3 caracteres.');
+      alert(this.translate.instant('BACKOFFICE.EVENTS.ERR_NAME_MIN'));
       return;
     }
 
     if (!this.editCreatorId) {
-      alert('Debes seleccionar un creador del evento.');
+      alert(this.translate.instant('BACKOFFICE.EVENTS.ERR_CREATOR_REQ'));
       return;
     }
 
@@ -410,7 +425,7 @@ export class EventoComponent implements OnInit {
     };
 
     if (!eventoActualizado._id) {
-      alert('Error: no se puede actualizar un evento sin ID');
+      alert(this.translate.instant('BACKOFFICE.EVENTS.ERR_NO_ID'));
       return;
     }
 
@@ -430,35 +445,35 @@ export class EventoComponent implements OnInit {
       ? evento.schedule
       : (evento.schedule ? [evento.schedule as any] : []);
 
-    if (scheduleArray.length === 0) return 'Sin horario definido';
+    if (scheduleArray.length === 0) return this.translate.instant('BACKOFFICE.EVENTS.ERR_DATE_REQ');
 
     const firstSchedule = scheduleArray[0];
     const d = new Date(firstSchedule);
 
-    if (isNaN(d.getTime())) return 'Sin horario definido';
+    if (isNaN(d.getTime())) return this.translate.instant('BACKOFFICE.EVENTS.ERR_DATE_REQ');
 
-    const datePart = d.toLocaleDateString('es-ES');
-    const timePart = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    const datePart = d.toLocaleDateString(this.translate.currentLang || 'es-ES');
+    const timePart = d.toLocaleTimeString(this.translate.currentLang || 'es-ES', { hour: '2-digit', minute: '2-digit' });
 
-    return `${datePart} a las ${timePart}`;
+    return this.translate.instant('BACKOFFICE.EVENTS.DETAILS_DATE_FORMAT', { date: datePart, time: timePart });
   }
 
   getEventAddress(evento: Evento): string {
-    return evento.address || 'Sin dirección especificada';
+    return evento.address || this.translate.instant('BACKOFFICE.EVENTS.ERR_ADDRESS_REQ');
   }
 
   getParticipantsNames(evento: Evento): string {
     const participants = evento.participantes ?? [];
 
-    if (participants.length === 0) return 'Ningún participante';
+    if (participants.length === 0) return this.translate.instant('BACKOFFICE.EVENTS.DETAILS_NO_PARTICIPANTS');
 
     const names = participants
       .map(p => {
         if (typeof p === 'string') {
           const user = this.users.find(u => u._id === p);
-          return user?.username || 'Usuario desconocido';
+          return user?.username || this.translate.instant('BACKOFFICE.EVENTS.DETAILS_UNKNOWN_USER');
         }
-        return (p as any).username || 'Usuario desconocido';
+        return (p as any).username || this.translate.instant('BACKOFFICE.EVENTS.DETAILS_UNKNOWN_USER');
       })
       .filter(Boolean);
 
@@ -471,7 +486,7 @@ export class EventoComponent implements OnInit {
 
   openRatingsModal(evento: Evento): void {
     if (!evento._id) {
-      alert('Este evento no tiene ID válido.');
+      alert(this.translate.instant('BACKOFFICE.EVENTS.ERR_NO_ID'));
       return;
     }
 
@@ -513,7 +528,7 @@ export class EventoComponent implements OnInit {
           this.ratingsLoading = false;
         },
         error: (err) => {
-          this.ratingsError = 'Error cargando valoraciones';
+          this.ratingsError = this.translate.instant('BACKOFFICE.EVENTS.ERR_RATINGS_LOAD');
           this.ratingsList = [];
           this.ratingsTotalItems = 0;
           this.ratingsTotalPages = 1;

@@ -243,3 +243,101 @@ input:focus, select:focus, textarea:focus {
     border-color: #fbbf24;
     box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
 }
+
+/* =========================================================
+    LANGUAGE SWITCHER (Global UI Component)
+   ========================================================= */
+.lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 100;
+}
+
+.lang-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-elev);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.lang-toggle:hover {
+    background: var(--surface);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--purple-500);
+}
+
+.lang-icon {
+    font-size: 0.9rem;
+}
+
+.lang-current {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.lang-arrow {
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+/* Dropdown */
+.lang-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--surface-card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    min-width: 140px;
+    animation: langFadeIn 0.2s ease-out;
+}
+
+.lang-option {
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-primary);
+    text-align: left;
+    transition: background 0.2s ease;
+}
+
+.lang-option:hover {
+    background: var(--surface-elev);
+    color: var(--purple-600);
+}
+
+.lang-option.active {
+    background: var(--glow-purple);
+    color: var(--purple-600);
+}
+
+@keyframes langFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

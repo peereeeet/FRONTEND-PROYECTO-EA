@@ -4,13 +4,65 @@
 
   <header class="app-bar">
     <div class="app-bar__content">
-      <h1 class="app-bar__title">GESTIÓN DE USUARIOS</h1>
+      <h1 class="app-bar__title">{{ 'BACKOFFICE.USERS.TITLE' | translate }}</h1>
       <div class="app-bar__actions">
-        <button class="theme-toggle-btn" (click)="toggleTheme()">
-          {{ theme() === 'dark' ? '☀️' : '🌙' }}
-        </button>
+        <div class="lang-switcher">
+          <button
+            type="button"
+            class="lang-toggle"
+            (click)="toggleLangMenu()">
+            <span class="lang-icon">🌐</span>
+            <span class="lang-current">
+              {{
+                currentLang === 'es'
+                  ? ('LANG.ES' | translate)
+                  : currentLang === 'en'
+                  ? ('LANG.EN' | translate)
+                  : currentLang === 'cat'
+                  ? ('LANG.CAT' | translate)
+                  : ('LANG.FR' | translate)
+              }}
+            </span>
+            <span class="lang-arrow">▾</span>
+          </button>
+
+          <div class="lang-dropdown" *ngIf="showLangMenu">
+            <button
+              type="button"
+              class="lang-option"
+              [class.active]="currentLang === 'es'"
+              (click)="selectLanguage('es')">
+              {{ 'LANG.ES' | translate }}
+            </button>
+            <button
+              type="button"
+              class="lang-option"
+              [class.active]="currentLang === 'en'"
+              (click)="selectLanguage('en')">
+              {{ 'LANG.EN' | translate }}
+            </button>
+            <button
+              type="button"
+              class="lang-option"
+              [class.active]="currentLang === 'cat'"
+              (click)="selectLanguage('cat')">
+              {{ 'LANG.CAT' | translate }}
+            </button>
+            <button
+              type="button"
+              class="lang-option"
+              [class.active]="currentLang === 'fr'"
+              (click)="selectLanguage('fr')">
+              {{ 'LANG.FR' | translate }}
+            </button>
+          </div>
+
+          <button class="theme-toggle-btn" (click)="toggleTheme()" [title]="(theme() === 'dark' ? 'BACKOFFICE.COMMON.THEME_TOGGLE_LIGHT' : 'BACKOFFICE.COMMON.THEME_TOGGLE_DARK') | translate">
+            {{ theme() === 'dark' ? '☀️' : '🌙' }}
+          </button>
+        </div>
         <button type="button" class="btn-back" (click)="goHome()">
-          ← Volver a Home
+          {{ 'BACKOFFICE.COMMON.BACK_HOME' | translate }}
         </button>
       </div>
     </div>
@@ -19,51 +71,51 @@
   <div class="form-container">
     <form (ngSubmit)="agregarElemento(userForm)" #userForm="ngForm">
       <div class="form-header">
-        <h1>{{ indiceEdicion !== null ? 'Editar usuario' : 'Agregar un nuevo usuario' }}</h1>
+        <h1>{{ (indiceEdicion !== null ? 'BACKOFFICE.USERS.EDIT_USER' : 'BACKOFFICE.USERS.ADD_NEW') | translate }}</h1>
       </div>
 
       <div class="form-grid">
         <div class="left-col">
           <div class="form-group">
-            <label for="nombre" class="form-label">Nombre:</label>
+            <label for="nombre" class="form-label">{{ 'BACKOFFICE.USERS.LBL_NAME' | translate }}</label>
             <input
               id="nombre"
               class="form-input"
               [(ngModel)]="nuevoUsuario.username"
               name="name"
               #nameCtrl="ngModel"
-              placeholder="Nombre del usuario"
+              [placeholder]="'BACKOFFICE.USERS.PH_NAME' | translate"
               required />
             <div class="error-message" *ngIf="(nameCtrl.touched || formSubmitted) && nameCtrl.errors?.['required']">
-              ⚠️ El nombre es obligatorio.
+              {{ 'BACKOFFICE.USERS.ERR_NAME_REQ' | translate }}
             </div>
-            <div *ngIf="usernameExists" class="error-message">⚠ Este nombre de usuario ya está en uso.</div>
+            <div *ngIf="usernameExists" class="error-message">{{ 'BACKOFFICE.USERS.ERR_NAME_EXISTS' | translate }}</div>
           </div>
 
           <div class="form-group">
-            <label for="mail" class="form-label">Email:</label>
+            <label for="mail" class="form-label">{{ 'BACKOFFICE.USERS.LBL_EMAIL' | translate }}</label>
             <input
               id="mail"
               class="form-input"
               [(ngModel)]="nuevoUsuario.gmail"
               name="mail"
               #mailCtrl="ngModel"
-              placeholder="Email"
+              [placeholder]="'BACKOFFICE.USERS.PH_EMAIL' | translate"
               required
               email />
             <div class="error-message" *ngIf="(mailCtrl.touched || formSubmitted) && mailCtrl.errors?.['required']">
-              ⚠️ El email es obligatorio.
+              {{ 'BACKOFFICE.USERS.ERR_EMAIL_REQ' | translate }}
             </div>
             <div class="error-message" *ngIf="(mailCtrl.touched || formSubmitted) && !mailCtrl.errors?.['required'] && mailCtrl.errors?.['email']">
-              ⚠️ Formato de email no válido.
+              {{ 'BACKOFFICE.USERS.ERR_EMAIL_INVALID' | translate }}
             </div>
             <div class="error-message" *ngIf="emailExists">
-              ⚠️ Este correo ya está registrado.
+              {{ 'BACKOFFICE.USERS.ERR_EMAIL_EXISTS' | translate }}
             </div>
           </div>
 
           <div class="form-group">
-            <label for="password" class="form-label">Contraseña:</label>
+            <label for="password" class="form-label">{{ 'BACKOFFICE.USERS.LBL_PASS' | translate }}</label>
             <input
               id="password"
               class="form-input"
@@ -71,21 +123,21 @@
               name="password"
               #passCtrl="ngModel"
               type="password"
-              placeholder="Password"
+              [placeholder]="'BACKOFFICE.USERS.PH_PASS' | translate"
               required
               minlength="7" />
             <div class="error-message" *ngIf="(passCtrl.touched || formSubmitted) && passCtrl.errors?.['required']">
-              ⚠️ La contraseña es obligatoria.
+              {{ 'BACKOFFICE.USERS.ERR_PASS_REQ' | translate }}
             </div>
             <div class="error-message" *ngIf="(passCtrl.touched || formSubmitted) && !passCtrl.errors?.['required'] && passCtrl.errors?.['minlength']">
-              ⚠️ La contraseña debe tener al menos 7 caracteres.
+              {{ 'BACKOFFICE.USERS.ERR_PASS_MIN' | translate }}
             </div>
           </div>
         </div>
 
         <div class="right-col">
           <div class="form-group">
-            <label for="confirmarPassword" class="form-label">Confirmar Contraseña:</label>
+            <label for="confirmarPassword" class="form-label">{{ 'BACKOFFICE.USERS.LBL_CONFIRM_PASS' | translate }}</label>
             <input
               id="confirmarPassword"
               class="form-input"
@@ -93,26 +145,26 @@
               name="confirmarPassword"
               #confirmCtrl="ngModel"
               type="password"
-              placeholder="Confirmar Password"
+              [placeholder]="'BACKOFFICE.USERS.PH_CONFIRM_PASS' | translate"
               required
               minlength="7" />
             <div class="error-message" *ngIf="(confirmCtrl.touched || formSubmitted) && confirmCtrl.errors?.['required']">
-              ⚠️ Confirmar contraseña es obligatorio.
+              {{ 'BACKOFFICE.USERS.ERR_CONFIRM_REQ' | translate }}
             </div>
             <div class="error-message" *ngIf="(confirmCtrl.touched || formSubmitted) && !confirmCtrl.errors?.['required'] && confirmCtrl.errors?.['minlength']">
-              ⚠️ Debe tener al menos 7 caracteres.
+              {{ 'BACKOFFICE.USERS.ERR_PASS_MIN' | translate }}
             </div>
             <div class="error-message"
                  *ngIf="(confirmCtrl.touched || formSubmitted)
                          && confirmarPassword
                          && nuevoUsuario.password
                          && confirmarPassword !== nuevoUsuario.password">
-              ⚠️ Las contraseñas no coinciden.
+              {{ 'BACKOFFICE.USERS.ERR_CONFIRM_MISMATCH' | translate }}
             </div>
           </div>
 
           <div class="form-group">
-            <label for="birthday" class="form-label">Aniversario:</label>
+            <label for="birthday" class="form-label">{{ 'BACKOFFICE.USERS.LBL_BIRTHDAY' | translate }}</label>
             <input
               id="birthday"
               class="form-input"
@@ -122,15 +174,15 @@
               #birthdayCtrl="ngModel"
               required />
             <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && birthdayCtrl.errors?.['required']">
-              ⚠️ El aniversario es obligatorio.
+              {{ 'BACKOFFICE.USERS.ERR_BIRTHDAY_REQ' | translate }}
             </div>
             <div class="error-message" *ngIf="(birthdayCtrl.touched || formSubmitted) && !birthdayCtrl.errors?.['required'] && isFutureBirthday(birthdayStr)">
-              ⚠️ La fecha no puede ser posterior a hoy.
+              {{ 'BACKOFFICE.USERS.ERR_BIRTHDAY_FUTURE' | translate }}
             </div>
           </div>
 
           <div class="form-group">
-            <label for="rol" class="form-label">Rol:</label>
+            <label for="rol" class="form-label">{{ 'BACKOFFICE.USERS.LBL_ROLE' | translate }}</label>
             <select
               id="rol"
               class="form-input"
@@ -139,17 +191,17 @@
               #rolCtrl="ngModel"
               required
             >
-              <option value="usuario">Usuario</option>
-              <option value="admin">Administrador</option>
+              <option value="usuario">{{ 'BACKOFFICE.USERS.ROLE_USER' | translate }}</option>
+              <option value="admin">{{ 'BACKOFFICE.USERS.ROLE_ADMIN' | translate }}</option>
             </select>
             <div class="error-message" *ngIf="(rolCtrl.touched || formSubmitted) && rolCtrl.errors?.['required']">
-              ⚠️ El rol es obligatorio.
+              {{ 'BACKOFFICE.USERS.ERR_ROLE_REQ' | translate }}
             </div>
           </div>
 
           <div class="form-actions" style="margin-top: 30px; display: flex; flex-direction: column; gap: 12px;">
             <button type="submit" class="submit-button">
-              {{ indiceEdicion !== null ? 'Actualizar' : 'Agregar' }}
+              {{ (indiceEdicion !== null ? 'BACKOFFICE.USERS.BTN_UPDATE' : 'BACKOFFICE.USERS.BTN_ADD') | translate }}
             </button>
 
             <button
@@ -157,7 +209,7 @@
               type="button"
               class="submit-button cancel"
               (click)="cancelarEdicion(userForm)">
-              Cancelar edición
+              {{ 'BACKOFFICE.USERS.BTN_CANCEL_EDIT' | translate }}
             </button>
           </div>
         </div>
@@ -167,12 +219,12 @@
 
   <div class="lista-usuarios">
     <div class="list-header">
-      <h2>Lista de Usuarios</h2>
+      <h2>{{ 'BACKOFFICE.USERS.LIST_TITLE' | translate }}</h2>
     </div>
 
     <div class="pager">
       <button type="button" (click)="prevBackendPage()" [disabled]="page<=1">«</button>
-      <span class="counter">Página {{ page }} / {{ totalPages }}</span>
+      <span class="counter">{{ 'BACKOFFICE.USERS.PAGING_PAGE' | translate }} {{ page }} / {{ totalPages }}</span>
       <button type="button" (click)="nextBackendPage()" [disabled]="page>=totalPages">»</button>
       <span class="total">Total: {{ totalUsuarios }}</span>
     </div>
@@ -183,47 +235,47 @@
           <strong>{{ usuario.username }}</strong>
           <div class="button-container">
             <button (click)="toggleDesplegable(idx(i))" class="detalles">
-              {{ desplegado[idx(i)] ? '👁️ Ocultar' : '👁️ Mostrar' }}
+              {{ (desplegado[idx(i)] ? 'BACKOFFICE.USERS.BTN_DETAILS_HIDE' : 'BACKOFFICE.USERS.BTN_DETAILS_SHOW') | translate }}
             </button>
-            <button (click)="prepararEdicion(usuario, idx(i))" class="modificar">✏️ Modificar</button>
+            <button (click)="prepararEdicion(usuario, idx(i))" class="modificar">{{ 'BACKOFFICE.USERS.BTN_MODIFY' | translate }}</button>
             <button (click)="openDeleteModal(idx(i))" [ngClass]="usuario.isActive ? 'btn-deshabilitar' : 'btn-habilitar'">
-              {{ usuario.isActive ? '🚫 Deshabilitar' : '✅ Habilitar' }}
+              {{ (usuario.isActive ? 'BACKOFFICE.USERS.BTN_DISABLE' : 'BACKOFFICE.USERS.BTN_ENABLE') | translate }}
             </button>
           </div>
         </div>
 
         <div *ngIf="desplegado[idx(i)]" class="user-details">
-          <p><strong>Email: </strong> {{ usuario.gmail | maskEmail }}</p>
+          <p><strong>{{ 'BACKOFFICE.USERS.DETAILS_EMAIL' | translate }} </strong> {{ usuario.gmail | maskEmail }}</p>
 
-          <p><strong>Contraseña: </strong>
+          <p><strong>{{ 'BACKOFFICE.USERS.DETAILS_PASS' | translate }} </strong>
             <span *ngIf="mostrarPassword[idx(i)]">{{ usuario.password }}</span>
             <span *ngIf="!mostrarPassword[idx(i)]">********</span>
             <button style="margin-left: 10px; padding: 4px 8px; background: var(--primary-500); color: white; border: none; border-radius: 4px; font-size: 0.8rem;" 
                     (click)="togglePassword(idx(i))">
-              {{ mostrarPassword[idx(i)] ? '🙈 Ocultar' : '👀 Mostrar' }}
+              {{ (mostrarPassword[idx(i)] ? 'BACKOFFICE.USERS.BTN_DETAILS_HIDE' : 'BACKOFFICE.USERS.BTN_DETAILS_SHOW') | translate }}
             </button>
           </p>
 
-          <p><strong>Aniversario: </strong>
+          <p><strong>{{ 'BACKOFFICE.USERS.DETAILS_BIRTHDAY' | translate }} </strong>
             <strong>{{ usuario.birthday | date: 'dd-MM-yyyy' }}</strong>
           </p>
 
-          <p><strong>Rol:</strong> {{ usuario.rol | titlecase }}</p>
+          <p><strong>{{ 'BACKOFFICE.USERS.DETAILS_ROLE' | translate }}</strong> {{ (usuario.rol === 'admin' ? 'BACKOFFICE.USERS.ROLE_ADMIN' : 'BACKOFFICE.USERS.ROLE_USER') | translate }}</p>
 
           <div class="user-events">
-            <p><strong>Eventos del usuario: </strong> {{ getUserEventNames(usuario) }}</p>
+            <p><strong>{{ 'BACKOFFICE.USERS.EVENTS_USER' | translate }} </strong> {{ getUserEventNames(usuario) }}</p>
 
             <div class="available-events" *ngIf="getAvailableEvents(usuario).length > 0">
-              <h4>🎯 Otros eventos disponibles</h4>
+              <h4>{{ 'BACKOFFICE.USERS.OTHER_EVENTS' | translate }}</h4>
               <ul>
                 <li *ngFor="let ev of getAvailableEvents(usuario)">
                   <span>{{ ev.name }}</span>
-                  <button class="btn-add" (click)="onAddEvent(usuario, ev)">➕ Añadir</button>
+                  <button class="btn-add" (click)="onAddEvent(usuario, ev)">{{ 'BACKOFFICE.USERS.BTN_ADD_EVENT' | translate }}</button>
                 </li>
               </ul>
             </div>
             <div class="empty" *ngIf="!getAvailableEvents(usuario).length" style="padding: 10px; color: var(--text-muted); font-style: italic;">
-              ✅ El usuario está en todos los eventos disponibles
+              {{ 'BACKOFFICE.USERS.ALL_EVENTS_JOINED' | translate }}
             </div>
           </div>
         </div>
@@ -232,10 +284,10 @@
 
     <div *ngIf="usuarios.length === 0" class="empty-state">
       <div class="empty-icon">👥</div>
-      <h3>No hay usuarios registrados</h3>
-      <p>Comienza agregando el primer usuario al sistema</p>
+      <h3>{{ 'BACKOFFICE.USERS.EMPTY_STATE' | translate }}</h3>
+      <p>{{ 'BACKOFFICE.USERS.EMPTY_STATE_SUB' | translate }}</p>
       <button class="submit-button" (click)="userForm.ngSubmit.emit()">
-        Crear Primer Usuario
+        {{ 'BACKOFFICE.USERS.BTN_CREATE_FIRST' | translate }}
       </button>
     </div>
   </div>
@@ -243,17 +295,17 @@
   <div class="modal-overlay" *ngIf="showDeleteModal">
     <div class="modal">
       <h3>
-        {{ usuarioAEliminar?.isActive ? '¿Deshabilitar usuario?' : '¿Habilitar usuario?' }}
+        {{ (usuarioAEliminar?.isActive ? 'BACKOFFICE.USERS.MODAL_DISABLE_TITLE' : 'BACKOFFICE.USERS.MODAL_ENABLE_TITLE') | translate }}
       </h3>
       <p>
-        {{ usuarioAEliminar?.isActive
-          ? 'El usuario será deshabilitado temporalmente, pero sus datos se conservarán.'
-          : 'El usuario volverá a estar habilitado en el sistema y podrá iniciar sesión nuevamente.' }}
+        {{ (usuarioAEliminar?.isActive
+          ? 'BACKOFFICE.USERS.MODAL_DISABLE_TEXT'
+          : 'BACKOFFICE.USERS.MODAL_ENABLE_TEXT') | translate }}
       </p>
       <div class="modal-actions">
-        <button class="btn-cancel" (click)="closeDeleteModal()">Cancelar</button>
+        <button class="btn-cancel" (click)="closeDeleteModal()">{{ 'COMMON.CANCEL' | translate }}</button>
         <button class="btn-confirm" (click)="confirmarDisable()">
-          {{ usuarioAEliminar?.isActive ? 'Deshabilitar' : 'Habilitar' }}
+          {{ (usuarioAEliminar?.isActive ? 'BACKOFFICE.USERS.BTN_DISABLE' : 'BACKOFFICE.USERS.BTN_ENABLE') | translate }}
         </button>
       </div>
     </div>
@@ -261,11 +313,11 @@
 
   <div class="modal-overlay" *ngIf="showUpdateModal">
     <div class="modal">
-      <h3>¿Confirmar actualización?</h3>
-      <p>Se guardarán los cambios del usuario en el sistema.</p>
+      <h3>{{ 'BACKOFFICE.USERS.MODAL_CONFIRM_UPDATE_TITLE' | translate }}</h3>
+      <p>{{ 'BACKOFFICE.USERS.MODAL_CONFIRM_UPDATE_TEXT' | translate }}</p>
       <div class="modal-actions">
-        <button class="btn-cancel" (click)="closeUpdateModal()">Cancelar</button>
-        <button class="btn-confirm" (click)="confirmarUpdate()">Actualizar</button>
+        <button class="btn-cancel" (click)="closeUpdateModal()">{{ 'COMMON.CANCEL' | translate }}</button>
+        <button class="btn-confirm" (click)="confirmarUpdate()">{{ 'BACKOFFICE.USERS.BTN_UPDATE' | translate }}</button>
       </div>
     </div>
   </div>

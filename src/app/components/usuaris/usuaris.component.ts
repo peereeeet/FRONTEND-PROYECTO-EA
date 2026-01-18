@@ -8,17 +8,20 @@ import { Evento } from '../../models/evento.model';
 import { EventoService } from '../../services/evento.service';
 import { Location } from '@angular/common';
 import { ThemeService } from '../../services/theme.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-usuaris',
   templateUrl: './usuaris.component.html',
   styleUrls: ['./usuaris.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, MaskEmailPipe]
+  imports: [CommonModule, FormsModule, MaskEmailPipe, TranslateModule]
 })
 export class UsuarisComponent implements OnInit {
   private themeService = inject(ThemeService);
   theme = this.themeService.theme;
+  currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
+  showLangMenu = false;
 
   usuarios: User[] = [];
   desplegado: boolean[] = [];
@@ -64,7 +67,8 @@ export class UsuarisComponent implements OnInit {
   constructor(
     private userService: UserService,
     private eventoService: EventoService,
-    private location: Location
+    private location: Location,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -74,6 +78,17 @@ export class UsuarisComponent implements OnInit {
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+
+  toggleLangMenu(): void {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
+    this.showLangMenu = false;
   }
 
   loadUsers(): void {
@@ -91,6 +106,20 @@ export class UsuarisComponent implements OnInit {
     });
   }
 
+  onRolChange(u: User, event: any): void {
+    const nuevoRol = event.target.value;
+    if (!u._id) return;
+
+    this.userService.updateUserRole(u._id, nuevoRol).subscribe({
+      next: (actualizado) => {
+        u.rol = actualizado.rol;
+        const idx = this.usuarios.findIndex(x => x._id === u._id);
+        if (idx >= 0) this.usuarios[idx].rol = actualizado.rol;
+      },
+      error: () => alert(this.translate.instant('BACKOFFICE.USERS.ERR_ROLE_UPDATE'))
+    });
+  }
+
   cambiarRol(u: User): void {
     if (!u._id) return;
     const nuevoRol = u.rol === 'admin' ? 'usuario' : 'admin';
@@ -98,11 +127,10 @@ export class UsuarisComponent implements OnInit {
     this.userService.updateUserRole(u._id, nuevoRol).subscribe({
       next: (actualizado) => {
         u.rol = actualizado.rol;
-        
         const idx = this.usuarios.findIndex(x => x._id === u._id);
         if (idx >= 0) this.usuarios[idx].rol = actualizado.rol;
       },
-      error: () => alert('Error al cambiar el rol del usuario')
+      error: () => alert(this.translate.instant('BACKOFFICE.USERS.ERR_ROLE_UPDATE'))
     });
   }
 
@@ -215,7 +243,7 @@ export class UsuarisComponent implements OnInit {
       },
       error: () => {
         this.isCheckingEmail = false;
-        alert('Error al verificar el correo.');
+        alert(this.translate.instant('BACKOFFICE.USERS.ERR_EMAIL_VERIFY'));
       }
     });
   }
@@ -261,7 +289,7 @@ export class UsuarisComponent implements OnInit {
     const usuarioAEliminar = this.usuarios[idx];
 
     if (!usuarioAEliminar._id) {
-      alert('El usuario no se puede modificar porque no está registrado en la base de datos.');
+        alert(this.translate.instant('BACKOFFICE.USERS.ERR_NOT_REGISTERED'));
       this.closeDeleteModal();
       return;
     }
@@ -276,7 +304,7 @@ export class UsuarisComponent implements OnInit {
         this.closeDeleteModal();
       },
       () => {
-        alert('Error al actualizar el estado del usuario. Por favor, inténtalo de nuevo.');
+        alert(this.translate.instant('BACKOFFICE.USERS.ERR_STATUS_UPDATE'));
         this.closeDeleteModal();
       }
     );
@@ -353,7 +381,7 @@ export class UsuarisComponent implements OnInit {
       next: (updated) => {
         this.loadUsers();
       },
-      error: () => alert('No se pudo añadir el usuario a ese evento.')
+      error: () => alert(this.translate.instant('BACKOFFICE.USERS.ERR_ADD_EVENT'))
     });
   }
 

@@ -6,16 +6,68 @@
     <div class="app-bar__content">
       <div class="app-bar__logo-title">
         <img src="assets/images/angular.png" alt="Angular" class="app-bar__logo" />
-        <h1 class="app-bar__title">BACKOFFICE</h1>
+        <h1 class="app-bar__title">{{ 'BACKOFFICE.DASHBOARD.TITLE' | translate }}</h1>
       </div>
       <div class="app-bar__user">
-         <span>Bienvenido 👋</span>
+         <span>{{ 'BACKOFFICE.COMMON.WELCOME' | translate }}</span>
       </div>
       <div class="app-bar__actions">
-        <button class="theme-toggle-btn" (click)="toggleTheme()">
+      <div class="lang-switcher">
+        <button
+          type="button"
+          class="lang-toggle"
+          (click)="toggleLangMenu()">
+          <span class="lang-icon">🌐</span>
+          <span class="lang-current">
+            {{
+              currentLang === 'es'
+                ? ('LANG.ES' | translate)
+                : currentLang === 'en'
+                ? ('LANG.EN' | translate)
+                : currentLang === 'cat'
+                ? ('LANG.CAT' | translate)
+                : ('LANG.FR' | translate)
+            }}
+          </span>
+          <span class="lang-arrow">▾</span>
+        </button>
+
+        <div class="lang-dropdown" *ngIf="showLangMenu">
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'es'"
+            (click)="selectLanguage('es')">
+            {{ 'LANG.ES' | translate }}
+          </button>
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'en'"
+            (click)="selectLanguage('en')">
+            {{ 'LANG.EN' | translate }}
+          </button>
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'cat'"
+            (click)="selectLanguage('cat')">
+            {{ 'LANG.CAT' | translate }}
+          </button>
+          <button
+            type="button"
+            class="lang-option"
+            [class.active]="currentLang === 'fr'"
+            (click)="selectLanguage('fr')">
+            {{ 'LANG.FR' | translate }}
+          </button>
+        </div>
+
+        <button class="theme-toggle-btn" (click)="toggleTheme()" [title]="(theme() === 'dark' ? 'BACKOFFICE.COMMON.THEME_TOGGLE_LIGHT' : 'BACKOFFICE.COMMON.THEME_TOGGLE_DARK') | translate">
           {{ theme() === 'dark' ? '☀️' : '🌙' }}
         </button>
-        <button class="logout-button" (click)="onLogout()">Cerrar sesión</button>
+      </div>
+        <button class="logout-button" (click)="onLogout()">{{ 'BACKOFFICE.COMMON.LOGOUT' | translate }}</button>
       </div>
     </div>
   </header>
@@ -24,36 +76,35 @@
     <section class="hero">
       <div class="hero__content">
         <span class="hero__icon">👤</span>
-        <h1 class="hero__title">Bienvenido al Sistema</h1>
+        <h1 class="hero__title">{{ 'BACKOFFICE.DASHBOARD.HERO_TITLE' | translate }}</h1>
         <p class="hero__subtitle">
-          Gestiona usuarios y eventos con una interfaz moderna, intuitiva y eficiente. 
-          Todo lo que necesitas en un solo lugar.
+          {{ 'BACKOFFICE.DASHBOARD.HERO_SUBTITLE' | translate }}
         </p>
         
         <div class="hero__stats">
           <div class="stat-card">
             <div class="stat-number" id="userCount">0</div>
-            <div class="stat-label">👥 Usuarios Creados</div>
+            <div class="stat-label">{{ 'BACKOFFICE.DASHBOARD.STATS_USERS' | translate }}</div>
           </div>
           <div class="stat-card">
             <div class="stat-number" id="eventCount">0</div>
-            <div class="stat-label">📅 Eventos Programados</div>
+            <div class="stat-label">{{ 'BACKOFFICE.DASHBOARD.STATS_EVENTS' | translate }}</div>
           </div>
         </div>
       </div>
     </section>
 
     <section class="nav-section">
-      <h2 class="nav__title">Navegación</h2>
-      <p class="nav__subtitle">Accede rápidamente a las secciones principales</p>
+      <h2 class="nav__title">{{ 'BACKOFFICE.DASHBOARD.NAV_TITLE' | translate }}</h2>
+      <p class="nav__subtitle">{{ 'BACKOFFICE.DASHBOARD.NAV_SUBTITLE' | translate }}</p>
 
       <div class="nav__actions">
         <a class="nav-card" routerLink="/usuaris">
           <div class="nav-card__icon">👥</div>
           <div class="nav-card__content">
-            <h3 class="nav-card__title">Gestión de Usuarios</h3>
+            <h3 class="nav-card__title">{{ 'BACKOFFICE.DASHBOARD.GOTO_USERS_TITLE' | translate }}</h3>
             <p class="nav-card__description">
-              Administra usuarios, permisos y perfiles del sistema
+              {{ 'BACKOFFICE.DASHBOARD.GOTO_USERS_DESC' | translate }}
             </p>
           </div>
         </a>
@@ -61,9 +112,9 @@
         <a class="nav-card" routerLink="/evento">
           <div class="nav-card__icon">📅</div>
           <div class="nav-card__content">
-            <h3 class="nav-card__title">Gestión de Eventos</h3>
+            <h3 class="nav-card__title">{{ 'BACKOFFICE.DASHBOARD.GOTO_EVENTS_TITLE' | translate }}</h3>
             <p class="nav-card__description">
-              Crea y gestiona eventos, horarios y participantes
+              {{ 'BACKOFFICE.DASHBOARD.GOTO_EVENTS_DESC' | translate }}
             </p>
           </div>
         </a>
@@ -71,10 +122,10 @@
 
       <div class="quick-actions">
         <a class="quick-action" routerLink="/usuaris">
-          ➕ Nuevo Usuario
+          {{ 'BACKOFFICE.DASHBOARD.QUICK_NEW_USER' | translate }}
         </a>
         <a class="quick-action" routerLink="/evento">
-          🎯 Nuevo Evento
+          {{ 'BACKOFFICE.DASHBOARD.QUICK_NEW_EVENT' | translate }}
         </a>
       </div>
     </section>
