@@ -78,10 +78,6 @@ export class RegistrarComponent implements OnDestroy {
     'mailinator.com', 'throwaway.email', 'temp-mail.org'
   ];
 
-  private temporaryDomains = [
-    'tempmail.com', '10minutemail.com', 'guerrillamail.com', 
-    'mailinator.com', 'throwaway.email', 'temp-mail.org'
-  ];
 
   private usernameSubject = new Subject<string>();
   private emailSubject = new Subject<string>();

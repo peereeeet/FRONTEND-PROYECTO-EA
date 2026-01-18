@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UsuarioProgreso, Insignia, RankingUsuario } from '../models/gamificacion.model';
+import { environment } from '../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class GamificacionService {
-  private apiUrl = 'http://localhost:3000/api/gamificacion';
+  private apiUrl = environment.apiUrl + '/api/gamificacion';
 
   constructor(private http: HttpClient) {}
   private getAuthHeaders(): HttpHeaders {

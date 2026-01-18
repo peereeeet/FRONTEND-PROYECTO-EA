@@ -3,12 +3,11 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import * as io from 'socket.io-client';
 
+
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private socket: any = null;
   private readonly url = environment.apiUrl;
-  private connectedUserId: string | null = null;
-  private readonly url = 'http://localhost:3000';
   private connectedUserId: string | null = null;
 
   constructor() {}
@@ -23,10 +22,6 @@ export class SocketService {
     }
 
     this.socket = io.connect(this.url, {
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5 
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionDelay: 1000,

@@ -10,6 +10,7 @@ import { Location } from '@angular/common';
 import { ThemeService } from '../../services/theme.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
+
 @Component({
   selector: 'app-usuaris',
   templateUrl: './usuaris.component.html',
@@ -592,10 +593,6 @@ export class UsuarisComponent implements OnInit {
   parseAsUTCDate(isoStr: string): Date {
     const [year, month, day] = isoStr.split('-').map(Number);
     return new Date(Date.UTC(year, month - 1, day));
-  }
-
-  toggleTheme(): void {
-    this.themeService.toggleTheme();
   }
 
   toggleLangMenu(): void {
