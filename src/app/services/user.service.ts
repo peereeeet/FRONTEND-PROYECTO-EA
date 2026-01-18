@@ -25,8 +25,13 @@ export class UserService {
     return this.http.get<Page<User>>(`${this.apiUrl}?${params}`);
   }
 
-  getVisibleUsers(): Observable<{ data: User[]; totalItems: number }> {
-    return this.http.get<{ data: User[]; totalItems: number }>(`${this.apiUrl}/visibleusers`);
+  getVisibleUsers(page = 1, limit = 10, q = ''): Observable<Page<User>> {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+      ...(q ? { q } : {})
+    }).toString();
+    return this.http.get<Page<User>>(`${this.apiUrl}/visibleusers?${params}`);
   }
 
   getUserById(id: string): Observable<User> {

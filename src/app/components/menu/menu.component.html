@@ -1116,11 +1116,11 @@
           <div class="pager">
             <button type="button" (click)="modalPrev()" [disabled]="mPage()<=1">«</button>
             <span class="counter">
-              {{ 'MENU.MODAL_PAGE_LABEL' | translate }} {{ mPage() }} / {{ mTotalPages }}
+              {{ 'MENU.MODAL_PAGE_LABEL' | translate }} {{ mPage() }} / {{ mTotalPages() }}
             </span>
-            <button type="button" (click)="modalNext()" [disabled]="mPage()>=mTotalPages">»</button>
+            <button type="button" (click)="modalNext()" [disabled]="mPage()>=mTotalPages()">»</button>
             <span class="total">
-              {{ 'MENU.MODAL_TOTAL_LABEL' | translate }}: {{ filteredUsers().length }}
+              {{ 'MENU.MODAL_TOTAL_LABEL' | translate }}: {{ mTotalItems() }}
             </span>
           </div>
 

@@ -169,16 +169,11 @@ export class MenuComponent implements OnInit, OnDestroy {
   friendToRemove = signal<any | null>(null);
   removingFriend = signal(false);
 
-  get mTotalPages(): number {
-    const n = this.filteredUsers().length;
-    return Math.max(1, Math.ceil(n / this.mPageSize()));
-  }
+  mTotalPages = signal(1);
+  mTotalItems = signal(0);
 
   get modalPageItems(): User[] {
-    const page = this.mPage();
-    const size = this.mPageSize();
-    const start = (page - 1) * size;
-    return this.filteredUsers().slice(start, start + size);
+    return this.allUsers();
   }
 
   meStatusText = computed(() => {
@@ -658,8 +653,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   onModalSearchInput(event: Event): void {
     const input = event.target as HTMLInputElement | null;
     this.modalSearch.set(input?.value ?? '');
-    this.applyModalFilter();
     this.mPage.set(1);
+    this.loadModalUsers();
   }
 
   onPageSizeChange(event: Event): void {
@@ -670,12 +665,13 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   buscarPersonas(): void {
-    this.applyModalFilter();
     this.mPage.set(1);
+    this.loadModalUsers();
   }
 
   private loadModalUsers(): void {
-    this.userService.getVisibleUsers()
+    this.modalError.set('');
+    this.userService.getVisibleUsers(this.mPage(), this.mPageSize(), this.modalSearch())
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: response => {
@@ -685,12 +681,14 @@ export class MenuComponent implements OnInit, OnDestroy {
           }));
 
           this.allUsers.set(arr);
-          this.applyModalFilter();
+          this.mTotalPages.set(response.totalPages ?? 1);
+          this.mTotalItems.set(response.totalItems ?? 0);
         },
         error: err => {
           this.modalError.set(err?.error?.message || 'No se pudo cargar la lista de usuarios');
           this.allUsers.set([]);
-          this.filteredUsers.set([]);
+          this.mTotalPages.set(1);
+          this.mTotalItems.set(0);
         }
       });
   }
@@ -872,11 +870,17 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   modalPrev(): void {
-    if (this.mPage() > 1) this.mPage.set(this.mPage() - 1);
+    if (this.mPage() > 1) {
+      this.mPage.set(this.mPage() - 1);
+      this.loadModalUsers();
+    }
   }
 
   modalNext(): void {
-    if (this.mPage() < this.mTotalPages) this.mPage.set(this.mPage() + 1);
+    if (this.mPage() < this.mTotalPages()) {
+      this.mPage.set(this.mPage() + 1);
+      this.loadModalUsers();
+    }
   }
 
   private _friendsArray(): any[] {
