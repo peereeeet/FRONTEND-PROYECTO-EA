@@ -237,30 +237,6 @@
             <p>{{ 'GAMIFICATION.LOADING' | translate }}</p>
           </div>
         </div>
-
-        <!-- ===== CARD EVENTOS ===== -->
-        <div class="card events-card">
-          <div class="events-header">
-            <h3 class="card-title">{{ 'PROFILE.EVENTS_TITLE' | translate }}</h3>
-            <span class="count-pill">{{ eventos().length }}</span>
-          </div>
-
-          <div *ngIf="!eventos().length" class="empty-events">
-            {{ 'PROFILE.EVENTS_EMPTY' | translate }}
-          </div>
-
-          <ul class="event-list" *ngIf="eventos().length">
-            <li *ngFor="let ev of eventos()">
-              <div class="ev-body">
-                <div class="ev-title">{{ ev.title }}</div>
-                <div class="ev-sub">
-                  {{ ev.date ? formatDate(ev.date) : '' }}
-                  <span *ngIf="ev.location"> · {{ ev.location }}</span>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
       </section>
     </main>
   </div>

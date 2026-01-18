@@ -183,7 +183,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   goToCrearEvento() {
-    this.router.navigate(['/crear-eventos']);
+    this.router.navigate(['/crear-evento']);
   }
 
   goToMisEventos() {

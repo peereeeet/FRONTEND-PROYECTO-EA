@@ -449,100 +449,285 @@
   background: rgba(30, 41, 59, 0.6);
 }
 
+/* (Estils de verify movits al final del fitxer) */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== INPUT AMB INDICADOR D'ESTAT ===== */
+
+.input-with-status {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-status .form-input {
+  flex: 1;
+  padding-right: 40px;
+}
+
+.input-status {
+  position: absolute;
+  right: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.input-status.checking {
+  animation: spin 1s linear infinite;
+}
+
+.input-status.valid {
+  color: #10b981;
+  font-weight: 700;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ===== PAS DE VERIFICACIÓ MILLORAT ===== */
+
 .verify-step {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 10px 0;
+  padding: 20px 0;
   animation: fadeIn 0.4s ease-out;
 }
 
 .verify-container {
   width: 100%;
   max-width: 400px;
+  margin-bottom: 24px;
+}
+
+.verify-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .verify-container h3 {
-  margin: 0 0 8px;
-  background: var(--gradient-primary);
+  margin: 0 0 12px;
+  background: var(--gradient-primary, linear-gradient(135deg, #38bdf8, #1d4ed8));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 800;
 }
 
 .verify-subtitle {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  margin-bottom: 24px;
+  color: var(--text-secondary, #6b7280);
+  font-size: 1rem;
+  margin-bottom: 8px;
+  line-height: 1.5;
 }
 
-/* Código OTP centrado y grande */
+.verify-email {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(29, 78, 216, 0.1));
+  border: 1px solid rgba(29, 78, 216, 0.2);
+  color: var(--accent-blue, #1d4ed8);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+/* OTP Input millorat */
+.otp-group {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
 .code-input {
   text-align: center;
-  letter-spacing: 0.3em;
-  font-size: 1.5rem;
+  letter-spacing: 0.5em;
+  font-size: 1.8rem;
   font-weight: 700;
-  padding: 14px;
+  padding: 16px;
   border-radius: 16px;
-}  
-.code-input::placeholder {
-  letter-spacing: normal;
-  font-size: 1rem;
-  font-weight: 400;
-  opacity: 0.6;
+  background: var(--surface-elev, #f8fafc);
+  border: 2px solid var(--border, #e2e8f0);
+  transition: all 0.3s ease;
 }
 
-/* Columna de botones del verify */
+.code-input:focus {
+  border-color: var(--accent-blue, #1d4ed8);
+  box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.15);
+  outline: none;
+}
+
+.code-input::placeholder {
+  letter-spacing: 0.3em;
+  font-size: 1.5rem;
+  font-weight: 400;
+  opacity: 0.4;
+  color: var(--text-secondary, #9ca3af);
+}
+
+.input-hint {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #6b7280);
+  text-align: center;
+}
+
+/* Botons de verificació */
 .buttons-column {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-top: 24px;
+  width: 100%;
+  max-width: 300px;
 }
 
 .buttons-column button {
   width: 100%;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 8px;
 }
 
-/* Botón secundario (Resend) */
-.admin-button {
-  background: var(--surface-elev);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+.resend-icon {
+  font-size: 1rem;
 }
-.admin-button:hover {
-  background: var(--surface);
-  border-color: var(--accent-blue);
-  box-shadow: var(--shadow-md);
+
+.cooldown-badge {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  margin-left: 4px;
+}
+
+/* Botó secundari (Resend) millorat */
+.admin-button {
+  background: var(--surface-elev, #f8fafc);
+  color: var(--text-primary, #0f172a);
+  border: 2px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.admin-button:hover:not(:disabled) {
+  background: var(--surface, #ffffff);
+  border-color: var(--accent-blue, #1d4ed8);
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.15);
   transform: translateY(-2px);
 }
+
 .admin-button:disabled {
   opacity: 0.6;
-  pointer-events: none;
+  cursor: not-allowed;
+  transform: none;
 }
 
-/* Enlace simple (Volver) */
+/* Botó link millorat */
 .link-button {
   background: none;
   border: none;
-  color: var(--text-secondary);
-  font-size: 0.85rem;
+  color: var(--text-secondary, #6b7280);
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  text-decoration: underline;
-  margin-top: 6px;
-}
-.link-button:hover {
-  color: var(--accent-blue);
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  text-decoration: none;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.link-button:hover {
+  color: var(--accent-blue, #1d4ed8);
+  background: rgba(29, 78, 216, 0.05);
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 700px) {
+  .verify-icon {
+    font-size: 3rem;
+  }
+
+  .verify-container h3 {
+    font-size: 1.5rem;
+  }
+
+  .code-input {
+    font-size: 1.5rem;
+    letter-spacing: 0.3em;
+    padding: 14px;
+  }
+
+  .code-input::placeholder {
+    font-size: 1.2rem;
+  }
+
+  .buttons-column {
+    max-width: 100%;
+  }
+}
+
+/* ===== MODE FOSC ===== */
+
+[data-theme="dark"] .verify-email {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .code-input {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: var(--text-primary, #f1f5f9);
+}
+
+[data-theme="dark"] .code-input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+}
+
+[data-theme="dark"] .admin-button {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: var(--text-primary, #f1f5f9);
+}
+
+[data-theme="dark"] .admin-button:hover:not(:disabled) {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: #38bdf8;
+}
+
+[data-theme="dark"] .link-button:hover {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+[data-theme="dark"] .cooldown-badge {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .input-status.valid {
+  color: #6ee7b7;
 }

@@ -835,13 +835,18 @@ export class MenuComponent implements OnInit, OnDestroy {
       .acceptFriendRequest(myId, userId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => {
+        next: (response: any) => {
           this.requestsList.set(
             this.requestsList().filter((u) => this.getId(u) !== userId)
           );
           this.newFriendRequests.set(this.requestsList().length);
           this.cargarAmigos(myId);
-          this.detectarCambiosProgreso('hacerAmigo');
+          
+          if (response.rewardDataUser) {
+            this.rewardService.showReward(response.rewardDataUser);
+          } else {
+            this.detectarCambiosProgreso('hacerAmigo');
+          }
         },
         error: () => this.requestsError.set('Error al aceptar la solicitud'),
       });

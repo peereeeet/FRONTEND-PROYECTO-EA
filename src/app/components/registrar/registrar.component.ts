@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -8,6 +8,7 @@ import { User } from '../../models/user.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
 import { InterestSelectorComponent } from '../interest-selector/interest-selector.component';
+import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-registrar',
@@ -16,7 +17,7 @@ import { InterestSelectorComponent } from '../interest-selector/interest-selecto
   templateUrl: './registrar.component.html',
   styleUrls: ['./registrar.component.css']
 })
-export class RegistrarComponent {
+export class RegistrarComponent implements OnDestroy {
   nuevoUsuario: User = {
     username: '',
     gmail: '',
@@ -77,6 +78,10 @@ export class RegistrarComponent {
     'mailinator.com', 'throwaway.email', 'temp-mail.org'
   ];
 
+  private usernameSubject = new Subject<string>();
+  private emailSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
+
   constructor(private userService: UserService, private authService: AuthService, private router: Router, private translate: TranslateService) {
     const t = new Date();
     this.maxDate = new Date(Date.UTC(
@@ -85,7 +90,6 @@ export class RegistrarComponent {
       t.getDate()
     )).toISOString().split('T')[0];
     
-    // Fecha mínima fija: 1900-01-01
     this.minDate = '1900-01-01';
     
     this.birthdayStr = '';
@@ -94,6 +98,34 @@ export class RegistrarComponent {
     const savedLang = (localStorage.getItem('lang') as 'es' | 'en' | 'cat' | 'fr') || 'es';
     this.currentLang = savedLang;
     this.translate.use(savedLang);
+
+    this.usernameSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(username => {
+      if (username && username.length >= 3 && this.validateUsername()) {
+        this.checkUsernameAvailability(username);
+      }
+    });
+
+    this.emailSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(email => {
+      if (email && this.emailValidations.format) {
+        this.checkEmailAvailability(email);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    if (this.resendTimer) {
+      clearInterval(this.resendTimer);
+    }
   }
 
   isTooYoung(): boolean {
@@ -124,9 +156,47 @@ export class RegistrarComponent {
     if (email) {
       const domain = email.split('@')[1]?.toLowerCase();
       this.emailValidations.notTemporary = !this.temporaryDomains.includes(domain);
+      
+      if (this.emailValidations.format && this.emailValidations.notTemporary) {
+        this.emailSubject.next(email);
+      }
     } else {
       this.emailValidations.notTemporary = false;
     }
+  }
+
+  onUsernameInput(): void {
+    const username = this.nuevoUsuario.username.trim();
+    this.usernameExists = false;
+    if (username.length >= 3) {
+      this.usernameSubject.next(username);
+    }
+  }
+
+  checkUsernameAvailability(username: string): void {
+    this.isCheckingUsername = true;
+    this.userService.checkUsernameExists(username).subscribe({
+      next: (res) => {
+        this.usernameExists = res.exists;
+        this.isCheckingUsername = false;
+      },
+      error: () => {
+        this.isCheckingUsername = false;
+      }
+    });
+  }
+
+  checkEmailAvailability(email: string): void {
+    this.isCheckingEmail = true;
+    this.userService.checkEmailExists(email).subscribe({
+      next: (res) => {
+        this.emailExists = res.exists;
+        this.isCheckingEmail = false;
+      },
+      error: () => {
+        this.isCheckingEmail = false;
+      }
+    });
   }
 
   validatePassword(): void {
@@ -226,40 +296,31 @@ export class RegistrarComponent {
 
     this.isSubmitting = true;
 
-    // Asegurar fecha correcta (UTC sin hora) para evitar "day-off" por timezone
     const [y, m, d] = this.birthdayStr.split('-').map(x => parseInt(x, 10));
-    // Mes en Date es 0-indexed
     const correctBirthday = new Date(Date.UTC(y, m - 1, d));
 
-    // Payload específico para register (AuthService espera RegisterData con birthday: string)
     const registerPayload: RegisterData = {
       username: this.nuevoUsuario.username.trim(),
       gmail: this.nuevoUsuario.gmail.trim(),
       password: this.nuevoUsuario.password?.trim() || '',
-      birthday: correctBirthday.toISOString(), // Enviamos ISO string
+      birthday: correctBirthday.toISOString(),
       interests: this.selectedInterests
     };
 
     this.authService.register(registerPayload).subscribe({
       next: () => {
         this.isSubmitting = false;
-        // Cambio: En lugar de ir a login, pasamos al step de verificar
-        // Guardamos el email para el payload de verificación
         this.pendingEmail = this.nuevoUsuario.gmail; 
         this.registrarStep = 'VERIFY';
         this.startResendTimer();
       },
       error: (err) => {
         this.isSubmitting = false;
-        // Manejo de error específico o genérico
-        // A veces el backend puede devolver objetos complejos en err.error
         const msg = err?.error?.message || err?.error?.error || 'Ha ocurrido un error al registrar el usuario.';
         this.errorMessage = msg;
       }
     });
   }
-
-  // --- MÉTODOS OTP / VERIFY ---
 
   pendingEmail = '';
   
@@ -273,18 +334,14 @@ export class RegistrarComponent {
 
     const otpValue = this.otpControl.value || '';
     
-    // IMPORTANTE: usamos pendingEmail (que viene del registro) y otp
     this.authService.verifyEmail(this.pendingEmail, otpValue).subscribe({
       next: () => {
         this.isSubmitting = false;
-        // Éxito -> redirigir a Login o mostrar éxito
-        // Podríamos mostrar un alert o mensaje temporal, o ir directo
-        alert('¡Email verificado! Ahora puedes iniciar sesión.');
+        this.router.navigate(['/login']);
         this.router.navigate(['/login']);
       },
       error: (err) => {
         this.isSubmitting = false;
-        // Mapeo básico de errores si el backend devuelve strings específicos
         const msg = err?.error?.message;
         if (msg === 'INVALID_CODE') {
            this.errorMessage = 'El código es incorrecto.';
@@ -324,7 +381,6 @@ export class RegistrarComponent {
   }
 
   sanitizeOtp(input: any) {
-    // Permitir solo números y máx 6 chars
     let val = input.target.value.replace(/[^0-9]/g, '');
     if (val.length > 6) val = val.substring(0, 6);
     this.otpControl.setValue(val);

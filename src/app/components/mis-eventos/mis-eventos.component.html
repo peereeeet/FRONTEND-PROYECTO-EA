@@ -150,7 +150,7 @@
                 <p>{{ 'MY_EVENTS.JOINED_EMPTY_TEXT' | translate }}</p>
               </div>
 
-              <!-- EVENTOS FUTUROS -->
+              <!-- EVENTOS FUTUROS INSCRITOS -->
               <div *ngIf="eventosInscritosFuturos.length > 0" class="events-section">
                 <div class="section-header">
                   <h2 class="section-title">
@@ -193,7 +193,7 @@
                         </span>
                       </div>
                       <div class="info-item">
-                        <span class="info-icon">🕒</span>
+                        <span class="info-icon">🕐</span>
                         <span class="info-content">
                           <strong>{{ 'MY_EVENTS.FIELD_SCHEDULE' | translate }}</strong>
                           {{ getScheduleText(evento) }}
@@ -203,7 +203,12 @@
                         <span class="info-icon">👥</span>
                         <span class="info-content">
                           <strong>{{ 'MY_EVENTS.FIELD_PARTICIPANTS' | translate }}</strong>
-                          {{ evento.participantes?.length || 0 }}
+                          <ng-container *ngIf="evento.maxParticipantes; else unlimited">
+                            {{ 'MY_EVENTS.PARTICIPANTS_LIMITED' | translate:{current: evento.participantes?.length || 0, max: evento.maxParticipantes} }}
+                          </ng-container>
+                          <ng-template #unlimited>
+                            {{ 'MY_EVENTS.PARTICIPANTS_UNLIMITED' | translate:{count: evento.participantes?.length || 0} }}
+                          </ng-template>
                         </span>
                       </div>
                     </div>
@@ -225,7 +230,7 @@
                         <button 
                           class="btn btn--share" 
                           (click)="openShareModal(evento)">
-                          📤 {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
+                          ✉️ {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
                         </button>
                       </div>
                     </div>
@@ -235,28 +240,115 @@
                         class="btn btn--map" 
                         (click)="openMap(evento)" 
                         [disabled]="!hasLocation(evento)">
-                       {{ 'MY_EVENTS.BUTTON_VIEW_MAP' | translate }}
+                         {{ 'MY_EVENTS.BUTTON_VIEW_MAP' | translate }}
                       </button>
                       <button 
                         class="btn btn--chat" 
                         (click)="openEventChat(evento)">
-                        💬 {{ 'MY_EVENTS.BUTTON_EVENT_CHAT' | translate }}
+                         {{ 'MY_EVENTS.BUTTON_EVENT_CHAT' | translate }}
                       </button>
                       <button 
                         class="btn btn--album" 
                         (click)="openAlbum(evento)">
                         📸 {{ 'MY_EVENTS.BUTTON_ALBUM' | translate }}
                       </button>
+                    </div>
+
+                    <!-- Mensaje de creador o botón de abandonar -->
+                    <div class="evento-footer">
+                      <div *ngIf="isUserCreator(evento)" class="creator-notice">
+                        ℹ️ {{ 'MY_EVENTS.CREATOR_CANNOT_LEAVE' | translate }}
+                      </div>
                       <button 
                         *ngIf="!isUserCreator(evento)" 
-                        class="btn btn--secondary" 
+                        class="btn btn--leave-event" 
                         (click)="openLeaveModal(evento)">
-                       {{ 'MY_EVENTS.BUTTON_LEAVE' | translate }}
+                         {{ 'MY_EVENTS.BUTTON_LEAVE' | translate }}
                       </button>
-                      <div 
-                        *ngIf="isUserCreator(evento)" 
-                        class="creator-notice">
-                        ℹ️ {{ 'MY_EVENTS.CREATOR_CANNOT_LEAVE' | translate }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- EVENTOS PASADOS INSCRITOS -->
+              <div *ngIf="eventosInscritosPasados.length > 0" class="events-section events-section--past">
+                <div class="section-header">
+                  <h2 class="section-title">
+                    <span class="section-icon">📜</span>
+                    {{ 'MY_EVENTS.SECTION_PAST' | translate }}
+                    <span class="section-count">{{ eventosInscritosPasados.length }}</span>
+                  </h2>
+                </div>
+
+                <div class="events-grid">
+                  <div *ngFor="let evento of eventosInscritosPasados" class="evento-card evento-card--past">
+                    <div class="evento-title-row">
+                      <div class="evento-title-line">
+                        <h3 class="evento-title">{{ evento.name }}</h3>
+
+                        <span *ngIf="evento.categoria" class="badge-category">
+                          {{ evento.categoria }}
+                        </span>
+                        
+                        <span class="badge-finished">
+                          ✓ {{ 'MY_EVENTS.BADGE_FINISHED' | translate }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="evento-info">
+                      <div class="info-item">
+                        <span class="info-icon">👤</span>
+                        <span class="info-content">
+                          <strong>{{ 'EVENTS.LABEL_CREATOR' | translate }}</strong>
+                          {{ getCreadorName(evento) }}
+                        </span>
+                      </div>
+                      <div class="info-item">
+                        <span class="info-icon">📍</span>
+                        <span class="info-content">
+                          <strong>{{ 'MY_EVENTS.FIELD_ADDRESS' | translate }}</strong>
+                          {{ evento.address || '-' }}
+                        </span>
+                      </div>
+                      <div class="info-item">
+                        <span class="info-icon">🕐</span>
+                        <span class="info-content">
+                          <strong>{{ 'MY_EVENTS.FIELD_SCHEDULE' | translate }}</strong>
+                          {{ getScheduleText(evento) }}
+                        </span>
+                      </div>
+                      <div class="info-item">
+                        <span class="info-icon">👥</span>
+                        <span class="info-content">
+                          <strong>{{ 'MY_EVENTS.FIELD_PARTICIPANTS' | translate }}</strong>
+                          <ng-container *ngIf="evento.maxParticipantes; else unlimitedPast">
+                            {{ 'MY_EVENTS.PARTICIPANTS_LIMITED' | translate:{current: evento.participantes?.length || 0, max: evento.maxParticipantes} }}
+                          </ng-container>
+                          <ng-template #unlimitedPast>
+                            {{ 'MY_EVENTS.PARTICIPANTS_UNLIMITED' | translate:{count: evento.participantes?.length || 0} }}
+                          </ng-template>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="evento-stats">
+                      <div class="stat">
+                        <span class="stat-label">{{ 'MY_EVENTS.STATS_RATING' | translate }}</span>
+                        <span class="stat-value">
+                          <ng-container *ngIf="evento.ratingsCount && evento.ratingsCount > 0; else noRating2">
+                            ⭐ {{ evento.avgRating | number: '1.1-2' }}
+                          </ng-container>
+                          <ng-template #noRating2>—</ng-template>
+                        </span>
+                      </div>
+                      <div class="stat-actions">
+                        <button class="btn btn--rate" (click)="openRatingsModal(evento)">
+                          ⭐ {{ 'MY_EVENTS.BUTTON_VIEW_RATINGS' | translate }}
+                        </button>
+                        <button class="btn btn--album" (click)="openAlbum(evento)">
+                          📸 {{ 'MY_EVENTS.BUTTON_ALBUM' | translate }}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -422,7 +514,7 @@
                         <button 
                           class="btn btn--share" 
                           (click)="openShareModal(evento)">
-                          📤 {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
+                           {{ 'MY_EVENTS.BUTTON_SHARE_EVENT' | translate }}
                         </button>
                       </div>
                     </div>
@@ -778,17 +870,17 @@
 
         <div *ngIf="ratingsLoading" class="loading-ratings">
           <div class="spinner-small"></div>
-          <p>Cargando valoraciones...</p>
+          <p>{{ 'COMMON.LOADING' | translate }}</p>
         </div>
 
         <ng-container *ngIf="!ratingsLoading">
           <!-- Info de página -->
           <div class="list-info" *ngIf="ratingsList && ratingsList.length > 0">
             <span class="counter">
-              Mostrando {{ ((page-1)*pageSize) + 1 }} - {{ Math.min(page*pageSize, ratingsList.length) }} de {{ ratingsList.length }}
+              {{ 'COMMON.PAGE' | translate }} {{ ((page-1)*pageSize) + 1 }} - {{ Math.min(page*pageSize, ratingsList.length) }} {{ 'COMMON.OF' | translate }} {{ ratingsList.length }}
             </span>
             <span class="total">
-              Página {{ page }} / {{ Math.ceil(ratingsList.length / pageSize) }}
+              {{ 'COMMON.PAGE' | translate }} {{ page }} {{ 'COMMON.OF' | translate }} {{ Math.ceil(ratingsList.length / pageSize) }}
             </span>
           </div>
 
@@ -825,13 +917,13 @@
           <!-- Paginador -->
           <div class="pager" *ngIf="ratingsList && ratingsList.length > pageSize">
             <button type="button" class="pager-btn" (click)="prevRatingsPage()" [disabled]="page <= 1">
-              « Anterior
+              {{ 'RATINGS.PAGER_PREV' | translate }}
             </button>
             <span class="pager-info">
-              {{ page }} / {{ Math.ceil(ratingsList.length / pageSize) }}
+              {{ 'COMMON.PAGE' | translate }} {{ page }} {{ 'COMMON.OF' | translate }} {{ Math.ceil(ratingsList.length / pageSize) }}
             </span>
             <button type="button" class="pager-btn" (click)="nextRatingsPage()" [disabled]="page >= Math.ceil(ratingsList.length / pageSize)">
-              Siguiente »
+              {{ 'RATINGS.PAGER_NEXT' | translate }}
             </button>
           </div>
 
@@ -854,7 +946,7 @@
   <div class="modal-overlay" *ngIf="showEditModal">
     <div class="modal modal--medium">
       <div class="modal-header">
-        <h3>✏️ Modificar evento</h3>
+        <h3>✏️ {{ 'MY_EVENTS.BUTTON_EDIT' | translate }}</h3>
         <button class="btn-close" (click)="closeEditModal()">×</button>
       </div>
 

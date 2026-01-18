@@ -71,18 +71,23 @@
             <label class="form-label" for="username">
               {{ 'REGISTER.USERNAME_LABEL' | translate }}
             </label>
-            <input
-              id="username"
-              type="text"
-              class="form-input"
-              [(ngModel)]="nuevoUsuario.username"
-              name="username"
-              #usernameCtrl="ngModel"
-              required
-              minlength="3"
-              maxlength="30"
-              [placeholder]="'REGISTER.USERNAME_PLACEHOLDER' | translate"
-              (blur)="validateUsername()" />
+            <div class="input-with-status">
+              <input
+                id="username"
+                type="text"
+                class="form-input"
+                [(ngModel)]="nuevoUsuario.username"
+                name="username"
+                #usernameCtrl="ngModel"
+                required
+                minlength="3"
+                maxlength="30"
+                [placeholder]="'REGISTER.USERNAME_PLACEHOLDER' | translate"
+                (input)="onUsernameInput()"
+                (blur)="validateUsername()" />
+              <span *ngIf="isCheckingUsername" class="input-status checking">⏳</span>
+              <span *ngIf="!isCheckingUsername && validateUsername() && !usernameExists && nuevoUsuario.username.length >= 3" class="input-status valid">✓</span>
+            </div>
             
             <div *ngIf="(usernameCtrl.touched || formSubmitted) && !validateUsername()" class="error-message">
               <span>⚠ </span>
@@ -114,18 +119,22 @@
             <label class="form-label" for="gmail">
               {{ 'REGISTER.EMAIL_LABEL' | translate }}
             </label>
-            <input
-              id="gmail"
-              type="email"
-              class="form-input"
-              [(ngModel)]="nuevoUsuario.gmail"
-              name="gmail"
-              #gmailCtrl="ngModel"
-              required
-              email
-              [placeholder]="'REGISTER.EMAIL_PLACEHOLDER' | translate"
-              (input)="validateEmail()"
-              (blur)="validateEmail()" />
+            <div class="input-with-status">
+              <input
+                id="gmail"
+                type="email"
+                class="form-input"
+                [(ngModel)]="nuevoUsuario.gmail"
+                name="gmail"
+                #gmailCtrl="ngModel"
+                required
+                email
+                [placeholder]="'REGISTER.EMAIL_PLACEHOLDER' | translate"
+                (input)="validateEmail()"
+                (blur)="validateEmail()" />
+              <span *ngIf="isCheckingEmail" class="input-status checking">⏳</span>
+              <span *ngIf="!isCheckingEmail && emailValidations.format && emailValidations.notTemporary && !emailExists" class="input-status valid">✓</span>
+            </div>
             
             <div *ngIf="nuevoUsuario.gmail && (gmailCtrl.touched || formSubmitted)" class="validation-checks">
               <div class="validation-item" [class.valid]="emailValidations.format" [class.invalid]="!emailValidations.format">
@@ -314,32 +323,34 @@
     </form>
 
     <!-- STEP VERIFICACIÓN OTP -->
-    <div *ngIf="registrarStep === 'VERIFY'" class="verify-container">
-      <div class="verify-text">
-        <p>
+    <div *ngIf="registrarStep === 'VERIFY'" class="verify-step">
+      <div class="verify-container">
+        <div class="verify-icon">📧</div>
+        <h3>{{ 'REGISTER.VERIFY_TITLE' | translate }}</h3>
+        <p class="verify-subtitle">
           {{ 'REGISTER.VERIFY_INSTRUCTIONS' | translate }}
-          <br>
-          <strong>{{ pendingEmail }}</strong>
         </p>
+        <p class="verify-email">{{ pendingEmail }}</p>
       </div>
 
       <!-- Input OTP -->
-      <div class="form-group">
+      <div class="form-group otp-group">
         <label class="form-label">{{ 'REGISTER.OTP_LABEL' | translate }}</label>
         <input 
-          class="form-input otp-input"
+          class="form-input code-input"
           [formControl]="otpControl"
           type="text" 
           inputmode="numeric" 
           maxlength="6"
+          autocomplete="one-time-code"
           (input)="sanitizeOtp($event)"
-          [placeholder]="'123456'" />
+          [placeholder]="'000000'" />
         
         <p class="input-hint">{{ 'REGISTER.OTP_HINT' | translate }}</p>
       </div>
 
       <!-- Error Local del paso Verify -->
-      <div *ngIf="otpControl.touched && otpControl.invalid && registrarStep === 'VERIFY'" class="error-message">
+      <div *ngIf="otpControl.touched && otpControl.invalid" class="error-message">
         <span>⚠ </span>
         <span>{{ 'REGISTER.OTP_INVALID' | translate }}</span>
       </div>
@@ -351,7 +362,7 @@
           (click)="onVerify()"
           [disabled]="isSubmitting || otpControl.invalid">
           <span *ngIf="isSubmitting" class="loading-spinner"></span>
-          {{ 'REGISTER.VERIFY_BUTTON' | translate }}
+          {{ isSubmitting ? ('COMMON.LOADING' | translate) : ('REGISTER.VERIFY_BUTTON' | translate) }}
         </button>
 
         <button 
@@ -359,8 +370,16 @@
           class="admin-button" 
           (click)="onResend()" 
           [disabled]="resendCooldown > 0">
+          <span class="resend-icon">🔄</span>
           {{ 'REGISTER.RESEND_CODE' | translate }}
-          <span *ngIf="resendCooldown > 0"> ({{ resendCooldown }}s)</span>
+          <span *ngIf="resendCooldown > 0" class="cooldown-badge">({{ resendCooldown }}s)</span>
+        </button>
+
+        <button 
+          type="button" 
+          class="link-button" 
+          (click)="backToRegister()">
+          ← {{ 'REGISTER.BACK_TO_FORM' | translate }}
         </button>
       </div>
     </div>
