@@ -475,42 +475,24 @@ export class LoginComponent {
       return;
     }
     this.sending = true;
-
-    // Se usa el servicio forgotPassword para enviar el mail con OTP
-    // NO revelamos si el usuario existe o no.
     const identifier = (this.forgotForm.value.identifier || '').trim();
     
-    // Guardamos el email/identifier en una variable 'resetEmail' para usarlo al resetear
-    // Si el usuario metió un username, el backend resolverá. 
-    // PERO: La especificación dice que forgot-password body: { email }.
-    // Si el usuario mete username, puede fallar si el backend espera email estricto.
-    // Asumiremos que el backend maneja "email" field pero quizás acepta username si así está hecho.
-    // Sin embargo, según el USER_REQUEST, el endpoint es POST /api/auth/forgot-password body: { email }.
-    // Si el input se llama "identifier", lo mandamos en el campo "email" ya que el backend mapea.
     this.resetEmail = identifier;
 
     this.authService.forgotPassword(identifier).subscribe({
       next: () => {
         this.sending = false;
-        // Éxito (o fingido). Pasamos al modal de Reset.
         this.forgotOpen = false;
-        this.openReset(); // Abrir modal de reset
+        this.openReset();
       },
       error: (err) => {
         this.sending = false;
-        // Incluso si falla (ej. usuario no existe), por seguridad a veces se dice "Si existe, se envió".
-        // Pero si queremos UX clara y el backend da error 404, mostramos "Error" o fingimos éxito.
-        // El user pidió: "forgot-password debe mostrar mensaje genérico (no revelar existencia)".
-        // Así que si da error, igual podríamos mostrar el siguiente paso o un mensaje genérico.
-        // Para simplificar y seguir el flujo feliz:
         this.forgotOpen = false;
         this.openReset();
-        // Opcional: mostrar un toast "Si la cuenta existe, recibirás un código".
       }
     });
   }
 
-  // --- LOGICA RESET PASS ---
   resetOpen = false;
   resetForm!: FormGroup;
   resetEmail = '';

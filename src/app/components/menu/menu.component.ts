@@ -1088,7 +1088,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       this.chatError.set('La imagen es demasiado grande. Máximo 10MB');
       return;
