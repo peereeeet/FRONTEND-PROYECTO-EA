@@ -337,6 +337,7 @@
                     id="maxParticipantes"
                     type="number"
                     [(ngModel)]="newEvent.maxParticipantes"
+                    (input)="onMaxParticipantesChange()"
                     name="maxParticipantes"
                     [placeholder]="'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_PLACEHOLDER' | translate"
                     class="max-participants-input"
@@ -358,6 +359,17 @@
                 <small class="error-text" *ngIf="formSubmitted && newEvent.maxParticipantes !== null && newEvent.maxParticipantes !== undefined && newEvent.maxParticipantes <= 0">
                   {{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_ERROR_MIN' | translate }}
                 </small>
+                <div *ngIf="newEvent.isPrivate && newEvent.maxParticipantes !== null && newEvent.maxParticipantes !== undefined && newEvent.maxParticipantes > 0" 
+                     class="form-hint-validation">
+                  <span *ngIf="newEvent.maxParticipantes !== undefined && newEvent.maxParticipantes >= amigosSeleccionados.length + 1" 
+                        class="hint-success">
+                    ✓ Límite suficiente para {{ amigosSeleccionados.length }} invitados + 1 creador
+                  </span>
+                  <span *ngIf="newEvent.maxParticipantes !== undefined && newEvent.maxParticipantes < amigosSeleccionados.length + 1" 
+                        class="hint-error">
+                    ⚠ Necesitas al menos {{ amigosSeleccionados.length + 1 }} plazas
+                  </span>
+                </div>
               </div>
 
               <div class="form-group form-group--full">
@@ -365,6 +377,7 @@
                   <input 
                     type="checkbox" 
                     [(ngModel)]="newEvent.isPrivate"
+                    (change)="onPrivateChange()"
                     name="isPrivate"
                     class="toggle-input">
                   <span class="toggle-label">

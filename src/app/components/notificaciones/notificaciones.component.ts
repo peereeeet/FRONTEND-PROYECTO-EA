@@ -184,6 +184,11 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
         this.router.navigate(['/menu']);
         break;
 
+      case 'event_invitation':
+        // Navegar a la página de invitaciones
+        this.router.navigate(['/invitaciones']);
+        break;
+
       case 'event_join':
       case 'event_reminder':
       case 'event_spot_available':
@@ -266,6 +271,12 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
           eventName: notif.relatedEventName || 'un evento'
         });
       
+      case 'event_invitation':
+        return this.translate.instant('NOTIFICATIONS.MESSAGES.event_invitation', {
+          username: notif.relatedUsername || 'Un usuario',
+          eventName: notif.relatedEventName || 'un evento'
+        });
+      
       default:
         return notif.message;
     }
@@ -278,7 +289,8 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
       event_join: '🎉',
       event_reminder: '⏰',
       new_message: '💬',
-      event_spot_available: '🎟️'
+      event_spot_available: '🎟️',
+      event_invitation: '📧'
     };
     return icons[type] || '🔔';
   }
@@ -290,7 +302,8 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
       event_join: 'purple',
       event_reminder: 'orange',
       new_message: 'pink',
-      event_spot_available: 'yellow'
+      event_spot_available: 'yellow',
+      event_invitation: 'indigo'
     };
     return colors[type] || 'gray';
   }

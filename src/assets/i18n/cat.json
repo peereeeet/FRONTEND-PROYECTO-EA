@@ -471,6 +471,12 @@
     "FIELD_CATEGORY_ERROR_REQUIRED": "⚠ La categoria és obligatòria.",
     "SUBMIT_LOADING": "Creant..."
   },
+  "CREATE_EVENTS": {
+    "PRIVATE_NO_INVITES_ERROR": "Un esdeveniment privat ha de tenir almenys un convidat",
+    "MAX_PARTICIPANTS_TOO_LOW": "El límit de participants ha de ser major o igual al nombre de convidats més el creador",
+    "MAX_PARTICIPANTS_WARNING": "⚠️ El límit és inferior al nombre de convidats + creador",
+    "PRIVATE_NEEDS_INVITES_INFO": "ℹ️ Recorda convidar almenys un amic per a l'esdeveniment privat"
+  },
 
   "MY_EVENTS": {
     "TITLE": "Els meus esdeveniments",
@@ -830,14 +836,18 @@
       "friend_accepted": "Sol·licitud acceptada",
       "event_join": "Amic s'ha unit al teu esdeveniment",
       "event_reminder": "Recordatori d'esdeveniment",
-      "new_message": "Missatge nou"
+      "new_message": "Missatge nou",
+      "event_spot_available": "Plaça disponible",
+      "event_invitation": "Invitació a esdeveniment"
     },
     "MESSAGES": {
       "friend_request": "{{username}} t'ha enviat una sol·licitud d'amistat",
       "friend_accepted": "{{username}} ha acceptat la teva sol·licitud d'amistat",
       "event_join": "{{username}} s'ha unit al teu esdeveniment \"{{eventName}}\"",
       "event_reminder": "El teu esdeveniment \"{{eventName}}\" començarà aviat",
-      "new_message": "{{username}} t'ha enviat un missatge"
+      "new_message": "{{username}} t'ha enviat un missatge",
+      "event_spot_available": "Hi ha una plaça disponible a \"{{eventName}}\". Ja estàs inscrit!",
+      "event_invitation": "{{username}} t'ha convidat a l'esdeveniment \"{{eventName}}\""
     }
   },
   "BACKOFFICE": {

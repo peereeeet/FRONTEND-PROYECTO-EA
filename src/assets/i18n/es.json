@@ -465,6 +465,12 @@
     "FIELD_CATEGORY_ERROR_REQUIRED": "⚠ La categoría es obligatoria.",
     "SUBMIT_LOADING": "Creando..."
   },
+  "CREATE_EVENTS": {
+    "PRIVATE_NO_INVITES_ERROR": "Un evento privado debe tener al menos un invitado",
+    "MAX_PARTICIPANTS_TOO_LOW": "El límite de participantes debe ser mayor o igual al número de invitados más el creador",
+    "MAX_PARTICIPANTS_WARNING": "⚠️ El límite es menor que el número de invitados + creador",
+    "PRIVATE_NEEDS_INVITES_INFO": "ℹ️ Recuerda invitar al menos a un amigo para el evento privado"
+  },
 
   "MY_EVENTS": {
     "TITLE": "Mis eventos",
@@ -840,14 +846,17 @@
       "event_join": "Amigo se unió a tu evento",
       "event_reminder": "Recordatorio de evento",
       "new_message": "Nuevo mensaje",
-      "event_spot_available": "Hay una plaza disponible en \"{{eventName}}\". ¡Ya estás inscrito!"
+      "event_spot_available": "Hay una plaza disponible en \"{{eventName}}\". ¡Ya estás inscrito!",
+      "event_invitation": "Invitación a evento"
     },
     "MESSAGES": {
       "friend_request": "{{username}} te ha enviado una solicitud de amistad",
       "friend_accepted": "{{username}} ha aceptado tu solicitud de amistad",
       "event_join": "{{username}} se ha unido a tu evento \"{{eventName}}\"",
       "event_reminder": "Tu evento \"{{eventName}}\" comienza pronto",
-      "new_message": "{{username}} te ha enviado un mensaje"
+      "new_message": "{{username}} te ha enviado un mensaje",
+      "event_spot_available": "Hay una plaza disponible en \"{{eventName}}\". ¡Ya estás inscrito!",
+      "event_invitation": "{{username}} te ha invitado al evento \"{{eventName}}\""
       }
   },
   "BACKOFFICE": {

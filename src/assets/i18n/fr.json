@@ -453,6 +453,12 @@
     "FIELD_CATEGORY_ERROR_REQUIRED": "⚠ La catégorie est obligatoire.",
     "SUBMIT_LOADING": "Création..."
   },
+  "CREATE_EVENTS": {
+    "PRIVATE_NO_INVITES_ERROR": "Un événement privé doit avoir au moins un invité",
+    "MAX_PARTICIPANTS_TOO_LOW": "La limite de participants doit être supérieure ou égale au nombre d'invités plus le créateur",
+    "MAX_PARTICIPANTS_WARNING": "⚠️ La limite est inférieure au nombre d'invités + créateur",
+    "PRIVATE_NEEDS_INVITES_INFO": "ℹ️ N'oubliez pas d'inviter au moins un ami pour l'événement privé"
+  },
 
   "MY_EVENTS": {
     "TITLE": "Mes événements",
@@ -811,7 +817,9 @@
       "friend_accepted": "Demande acceptée",
       "event_join": "Un ami a rejoint votre événement",
       "event_reminder": "Rappel d'événement",
-      "new_message": "Nouveau message"
+      "new_message": "Nouveau message",
+      "event_spot_available": "Place disponible",
+      "event_invitation": "Invitation à un événement"
     },
     "MESSAGES": {
       "friend_request": "{{username}} vous a envoyé une demande d'ami",
@@ -819,7 +827,8 @@
       "event_join": "{{username}} a rejoint votre événement \"{{eventName}}\"",
       "event_reminder": "Votre événement \"{{eventName}}\" commence bientôt",
       "new_message": "{{username}} vous a envoyé un message",
-      "event_spot_available": "Une place est disponible dans \"{{eventName}}\". Vous êtes maintenant inscrit !"
+      "event_spot_available": "Une place est disponible dans \"{{eventName}}\". Vous êtes maintenant inscrit !",
+      "event_invitation": "{{username}} vous a invité à l'événement \"{{eventName}}\""
     }
   },
   "BACKOFFICE": {

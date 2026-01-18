@@ -675,17 +675,16 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   private loadModalUsers(): void {
-    this.userService.getUsers(1, 200, '')
+    this.userService.getVisibleUsers()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: page => {
-          const arr = (page?.data ?? []).map(u => ({
+        next: response => {
+          const arr = (response?.data ?? []).map(u => ({
             ...u,
             isOnline: (u as any).online ?? (u as any).isOnline ?? false
           }));
 
-          const nonAdmins = arr.filter(u => u.rol !== 'admin');
-          this.allUsers.set(nonAdmins);
+          this.allUsers.set(arr);
           this.applyModalFilter();
         },
         error: err => {

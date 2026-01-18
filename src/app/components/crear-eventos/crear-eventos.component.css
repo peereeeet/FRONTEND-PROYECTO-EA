@@ -2217,3 +2217,39 @@ app-notificaciones {
 app-notificaciones .notification-panel {
   z-index: 9999;
 }
+/* Estilos para los indicadores de validación */
+.form-hint-validation {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.hint-success {
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.hint-error {
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Tema oscuro para los hints */
+[data-theme="dark"] .hint-success {
+  color: #34d399;
+}
+
+[data-theme="dark"] .hint-error {
+  color: #f87171;
+}

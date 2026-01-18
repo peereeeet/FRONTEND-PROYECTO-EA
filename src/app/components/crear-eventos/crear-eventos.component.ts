@@ -425,6 +425,28 @@ export class CrearEventosComponent implements OnInit {
       return;
     }
 
+    if (this.newEvent.isPrivate && this.amigosSeleccionados.length === 0) {
+      this.translate
+        .get('CREATE_EVENTS.PRIVATE_NO_INVITES_ERROR')
+        .subscribe((msg: string) => {
+          this.errorMessage = msg || 'Un evento privado debe tener al menos un invitado.';
+        });
+      return;
+    }
+
+    if (this.newEvent.isPrivate && this.newEvent.maxParticipantes !== null) {
+      const totalInvitadosConCreador = this.amigosSeleccionados.length + 1;
+      if (this.newEvent.maxParticipantes !== undefined && this.newEvent.maxParticipantes < totalInvitadosConCreador) {
+        this.translate
+          .get('CREATE_EVENTS.MAX_PARTICIPANTS_TOO_LOW')
+          .subscribe((msg: string) => {
+            this.errorMessage = msg || 
+              `El límite de participantes (${this.newEvent.maxParticipantes}) debe ser mayor o igual al número de invitados más el creador (${totalInvitadosConCreador}).`;
+          });
+        return;
+      }
+    }
+
     if (!this.newEvent.schedule && (this.dateStr || this.timeStr)) {
       this.newEvent.schedule = this.composeISOFromDateTime(
         this.dateStr,
@@ -761,5 +783,28 @@ export class CrearEventosComponent implements OnInit {
 
   setUnlimitedParticipants(): void {
     this.newEvent.maxParticipantes = null;
+  }
+
+  onMaxParticipantesChange(): void {
+    if (!this.newEvent.isPrivate || this.newEvent.maxParticipantes === null) {
+      return;
+    }
+
+    const totalInvitadosConCreador = this.amigosSeleccionados.length + 1;
+    if (this.newEvent.maxParticipantes !== undefined && this.newEvent.maxParticipantes < totalInvitadosConCreador) {
+      this.translate
+        .get('CREATE_EVENTS.MAX_PARTICIPANTS_WARNING')
+        .subscribe((msg: string) => {
+        });
+    }
+  }
+
+  onPrivateChange(): void {
+    if (this.newEvent.isPrivate && this.amigosSeleccionados.length === 0) {
+      this.translate
+        .get('CREATE_EVENTS.PRIVATE_NEEDS_INVITES_INFO')
+        .subscribe((msg: string) => {
+        });
+    }
   }
 }

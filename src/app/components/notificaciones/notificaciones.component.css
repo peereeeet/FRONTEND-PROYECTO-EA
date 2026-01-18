@@ -318,6 +318,16 @@
   border-color: #ec4899;
 }
 
+.notif-icon[data-type="event_invitation"] {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  border-color: #6366f1;
+}
+
+.notif-icon[data-type="event_spot_available"] {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  border-color: #eab308;
+}
+
 /* Contenido */
 .notif-content {
   flex: 1;
