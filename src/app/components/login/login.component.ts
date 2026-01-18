@@ -508,12 +508,7 @@ export class LoginComponent {
     this.resetOpen = true;
     this.resetErrorMessage = '';
     this.resetSuccessMessage = '';
-    // Reset cooldown state if needed, or keep it running if it's global? 
-    // Usually cooldown is per session/request. 
-    // If we just opened it, we assume we just sent a code (from forgot submit). 
-    // So we should probably start the cooldown immediately if we came from onForgotSubmit.
-    // However, onForgotSubmit calls openReset separately.
-    // Let's handle timer start in onForgotSubmit success.
+
     
     this.resetForm = this.fb.group({
       otp: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
@@ -533,11 +528,11 @@ export class LoginComponent {
   onResetSubmit() {
     if (this.resetForm.invalid) {
       this.resetForm.markAllAsTouched();
+      this.resetErrorMessage = '';
+      this.resetSuccessMessage = '';
       return;
     }
     this.isReseting = true;
-    this.resetErrorMessage = '';
-    this.resetSuccessMessage = '';
 
     const { otp, newPassword } = this.resetForm.value;
 
@@ -545,13 +540,9 @@ export class LoginComponent {
       next: () => {
         this.isReseting = false;
         this.resetSuccessMessage = 'Contraseña restablecida con éxito. Inicia sesión.';
-        // Optional: Close after a delay or let user close
+
         setTimeout(() => {
           this.closeReset();
-          // alert('Contraseña restablecida con éxito. Inicia sesión.'); // User requested no alerts, but success feedback needed.
-          // Since we close, maybe show main login message? 
-          // For now, simple behavior: close and maybe show message on main form if we wanted, 
-          // but "resetSuccessMessage" inside modal might be missed if we close immediately.
         }, 1500);
       },
       error: (err) => {
@@ -573,17 +564,14 @@ export class LoginComponent {
   resendCode() {
     if (this.resendCooldown > 0) return;
     
-    this.sending = true; // Reusing sending flag or create new
-    // We reuse logic from forgotPassword but we already have email
+    this.sending = true;
     this.authService.forgotPassword(this.resetEmail).subscribe({
       next: () => {
-        this.sending = false;
+         this.sending = false;
         this.startResendTimer();
-        // Feedback?
       },
       error: (err) => {
         this.sending = false;
-        // Handle error if needed (e.g. rate limit on resend)
         const msg = err?.error?.message;
         if (msg === 'RATE_LIMITED') {
            this.resetErrorMessage = 'Espera antes de reenviar.';
@@ -616,7 +604,6 @@ export class LoginComponent {
     this.resetForm.get('otp')?.setValue(val);
   }
 
-  // Custom Validator
   private passwordValidator() {
     return (control: any) => {
       const value = control.value || '';
@@ -624,11 +611,10 @@ export class LoginComponent {
 
       const errors: any = {};
       
-      // Backend: min 8
-      if (value.length < 8) errors.minlength = { requiredLength: 8, actualLength: value.length };
-      // Backend: max 128 (usually handled by validators but we can add if strict)
+
       
-      // Regex checks
+      if (value.length < 8) errors.minlength = { requiredLength: 8, actualLength: value.length };
+      
       if (!/[A-Z]/.test(value)) errors.missingUpperCase = true;
       if (!/[a-z]/.test(value)) errors.missingLowerCase = true;
       if (!/[0-9]/.test(value)) errors.missingNumber = true;

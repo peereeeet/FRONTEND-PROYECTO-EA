@@ -209,9 +209,8 @@
       <p class="modal-text">
         {{ 'LOGIN.RESET_INSTRUCTIONS' | translate }}
       </p>
-
       <form [formGroup]="resetForm" (ngSubmit)="onResetSubmit()">
-        <!-- OTP Input -->
+
         <div class="form-group">
           <label class="form-label">
             {{ 'LOGIN.OTP_LABEL' | translate }}
@@ -247,7 +246,6 @@
           </div>
         </div>
 
-        <!-- New Password -->
         <div class="form-group">
           <label class="form-label">
             {{ 'LOGIN.NEW_PASSWORD_LABEL' | translate }}
@@ -258,7 +256,8 @@
             formControlName="newPassword"
             [placeholder]="'LOGIN.DIRECT_NEW_PASSWORD_PLACEHOLDER' | translate" />
             
-          <!-- Granular Password Errors -->
+
+            
           <div *ngIf="resetForm.get('newPassword')?.touched && resetForm.get('newPassword')?.errors" class="password-requirements">
              <div *ngIf="resetForm.get('newPassword')?.errors?.['required']" class="req-item missing">
                ⚠ {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
@@ -281,10 +280,12 @@
           </div>
         </div>
 
-        <!-- Success/Error Messages -->
+
+        
         <div *ngIf="resetErrorMessage" class="error-message" style="margin-bottom: 1rem;">
           <span>⚠ </span><span>{{ resetErrorMessage }}</span>
         </div>
+
         <div *ngIf="resetSuccessMessage" class="success-message" style="margin-bottom: 1rem; color: var(--success-color);">
           <span>✅ </span><span>{{ resetSuccessMessage }}</span>
         </div>
