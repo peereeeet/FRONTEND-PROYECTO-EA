@@ -1858,7 +1858,8 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.performSearch();
     }
 
-    if (tab === 'recommended' && this.recommendedEventos.length === 0) {
+    if (tab === 'recommended') {
+      this.recommendedPage = 1;
       this.loadRecommendedEventos();
     }
   }
