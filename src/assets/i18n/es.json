@@ -53,7 +53,21 @@
     "RESET_INSTRUCTIONS": "Ingresa el código que hemos enviado a tu correo y tu nueva contraseña.",
     "OTP_LABEL": "Código de verificación (6 dígitos)",
     "NEW_PASSWORD_LABEL": "Nueva contraseña",
-    "RESET_PASSWORD_BUTTON": "Cambiar contraseña"
+    "RESET_PASSWORD_BUTTON": "Cambiar contraseña",
+    "RESET_PASSWORD_BUTTON_LOADING": "Cambiando...",
+    "BACK_TO_LOGIN": "Volver al Login",
+    "OTP_INVALID": "El código debe tener 6 dígitos numéricos",
+    "RESET_SUCCESS": "¡Contraseña restablecida con éxito! Inicia sesión.",
+    "RESEND_CODE": "Reenviar código",
+    "RESEND_IN": "Reenviar en",
+    "RESET_ERROR_INVALID": "El código es incorrecto",
+    "RESET_ERROR_EXPIRED": "El código ha expirado. Solicita uno nuevo",
+    "RESET_ERROR_GENERIC": "Error al restablecer la contraseña. Verifica los datos e inténtalo de nuevo.",
+    "RESET_EMAIL_SENT": "Si el correo existe, se han enviado instrucciones para restablecer la contraseña.",
+    "SENDING": "Enviando...",
+    "SENT": "Enviado",
+    "RESEND_COOLDOWN": "Espera {{seconds}} segundos para reenviar",
+    "RESEND_READY": "Puedes reenviar el código ahora"
   },
 
   "REGISTER": {
