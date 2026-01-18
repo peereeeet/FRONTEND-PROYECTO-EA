@@ -507,12 +507,6 @@ export class LoginComponent {
     this.resetOpen = true;
     this.resetErrorMessage = '';
     this.resetSuccessMessage = '';
-    // Reset cooldown state if needed, or keep it running if it's global? 
-    // Usually cooldown is per session/request. 
-    // If we just opened it, we assume we just sent a code (from forgot submit). 
-    // So we should probably start the cooldown immediately if we came from onForgotSubmit.
-    // However, onForgotSubmit calls openReset separately.
-    // Let's handle timer start in onForgotSubmit success.
     
     this.resetForm = this.fb.group({
       otp: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],

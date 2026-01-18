@@ -55,12 +55,10 @@ export class UsuarisComponent implements OnInit {
   todosEventos: Evento[] = [];
   private eventosById = new Map<string, Evento>();
 
-  // Edit Modal State
   showEditModal = false;
   editingUser: User | null = null;
   editForm!: FormGroup;
   
-  // Interest Catalog
   interestCatalog = [
     'Deportes', 'Música', 'Cultura', 'Gastronomía',
     'Tecnología', 'Naturaleza', 'Arte', 'Cine',
@@ -133,7 +131,6 @@ export class UsuarisComponent implements OnInit {
     this.interestsFormArray.removeAt(index);
   }
 
-  // --- CUSTOM VALIDATORS (Exact Parity with Backend) ---
 
   private restrictedUsernameValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -227,8 +224,6 @@ export class UsuarisComponent implements OnInit {
     return pass === confirm ? null : { mismatch: true };
   }
 
-  // --- FORM ACTIONS ---
-
   agregarElemento(): void {
     this.formSubmitted = true;
     this.errorMessage = '';
@@ -320,7 +315,6 @@ export class UsuarisComponent implements OnInit {
     });
     this.interestsFormArray.clear();
     
-    // Restore validators (password required for create)
     this.userForm.get('password')?.setValidators([
       Validators.required,
       Validators.minLength(8),
@@ -357,7 +351,6 @@ export class UsuarisComponent implements OnInit {
       this.interestsFormArray.push(new FormControl(i));
     });
 
-    // Password optional in edit
     this.userForm.get('password')?.setValidators([
       Validators.minLength(8),
       Validators.maxLength(128),
@@ -367,8 +360,6 @@ export class UsuarisComponent implements OnInit {
     this.userForm.get('password')?.updateValueAndValidity();
     this.userForm.get('confirmPassword')?.updateValueAndValidity();
   }
-
-  // --- EDIT MODAL METHODS ---
 
   openEditModal(usuario: User, index: number): void {
     this.editingUser = { ...usuario };
@@ -380,7 +371,6 @@ export class UsuarisComponent implements OnInit {
       birthdayStr = this.toISODate(d);
     }
 
-    // Build interests FormGroup with checkboxes
     const interestsGroup: any = {};
     this.interestCatalog.forEach((interest, i) => {
       const isSelected = (usuario.interests || []).includes(interest);
@@ -425,8 +415,6 @@ export class UsuarisComponent implements OnInit {
     if (this.editForm.invalid || !this.editingUser) return;
 
     const val = this.editForm.value;
-    
-    // Extract selected interests from checkboxes
     const selectedInterests: string[] = [];
     this.interestCatalog.forEach((interest, i) => {
       if (val.interests[`interest_${i}`]) {
@@ -443,7 +431,6 @@ export class UsuarisComponent implements OnInit {
       interests: selectedInterests
     };
 
-    // Only include password if provided
     if (val.password && val.password.trim()) {
       updatedUser.password = val.password;
     }
@@ -458,7 +445,6 @@ export class UsuarisComponent implements OnInit {
     const pass = group.get('password')?.value;
     const confirm = group.get('confirmPassword')?.value;
     
-    // Only validate match if password has a value
     if (pass && pass.trim()) {
       return pass === confirm ? null : { mismatch: true };
     }
@@ -515,8 +501,6 @@ export class UsuarisComponent implements OnInit {
     });
   }
 
-  // --- DATA LOADING ---
-
   loadUsers(): void {
     this.userService.getUsers(this.page, this.pageSize).subscribe((response) => {
       this.usuarios = response.data;
@@ -536,8 +520,6 @@ export class UsuarisComponent implements OnInit {
       });
     });
   }
-
-  // --- PAGINATION ---
 
   get totalPages(): number {
     return this.totalPagesBackend;
@@ -565,8 +547,6 @@ export class UsuarisComponent implements OnInit {
     }
   }
 
-  // --- EVENT MANAGEMENT ---
-
   getUserEventNames(usuario: User): string {
     if (!usuario.eventos || usuario.eventos.length === 0) {
       return this.translate.instant('BACKOFFICE.USERS.NO_EVENTS');
@@ -593,8 +573,6 @@ export class UsuarisComponent implements OnInit {
     });
   }
 
-  // --- UTILITIES ---
-
   todayISO(): string {
     const now = new Date();
     return this.toISODate(now);
@@ -611,8 +589,6 @@ export class UsuarisComponent implements OnInit {
     const [year, month, day] = isoStr.split('-').map(Number);
     return new Date(Date.UTC(year, month - 1, day));
   }
-
-  // --- THEME & LANGUAGE ---
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
