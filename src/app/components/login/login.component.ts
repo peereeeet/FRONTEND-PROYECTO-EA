@@ -184,7 +184,6 @@ export class LoginComponent {
   }
 
   private handleGoogleCredentialResponse(res: any): void {
-    this.googleBirthdayOpen = true;
     const credential = res?.credential;
     if (!credential) return;
 
