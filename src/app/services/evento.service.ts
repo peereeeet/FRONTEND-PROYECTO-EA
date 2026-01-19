@@ -3,10 +3,11 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Evento } from '../models/evento.model';
 import { EventoPhoto } from '../models/evento-photo.model';
+import { environment } from '../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class EventoService {
-  private apiUrl = 'http://localhost:3000/api/event';
+  private apiUrl = environment.apiBaseUrl + '/event';
 
   constructor(private http: HttpClient) {}
 
@@ -165,7 +166,7 @@ export class EventoService {
       message: string; 
       evento: Evento;
       enListaEspera: boolean;
-    }>(`${this.apiUrl}/${id}/join`, {});
+    }>(`${this.apiUrl}/${id}/join`, { joined: true });
   }
 
   leaveEvento(id: string): Observable<{
@@ -175,7 +176,7 @@ export class EventoService {
     return this.http.post<{
       message: string;
       evento: Evento;
-    }>(`${this.apiUrl}/${id}/leave`, {});
+    }>(`${this.apiUrl}/${id}/leave`, { left: true });
   }
 
   leaveWaitlist(id: string): Observable<{
@@ -266,13 +267,13 @@ export class EventoService {
       message: string; 
       evento: Evento;
       enListaEspera?: boolean;
-    }>(`${this.apiUrl}/${eventoId}/accept-invitation`, {});
+    }>(`${this.apiUrl}/${eventoId}/accept-invitation`, { accepted: true });
   }
 
   rejectInvitation(eventoId: string): Observable<{ message: string; evento: Evento }> {
     return this.http.post<{ message: string; evento: Evento }>(
       `${this.apiUrl}/${eventoId}/reject-invitation`,
-      {}
+      { rejected: true }
     );
   }
 

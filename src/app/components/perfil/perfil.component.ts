@@ -13,6 +13,7 @@ import { GamificacionService } from '../../services/gamificacion.service';
 import { UsuarioProgreso, calcularProgresoNivel, getNivelInfo } from '../../models/gamificacion.model';
 import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
 import { InterestSelectorComponent } from '../interest-selector/interest-selector.component';
+import { getAssetUrl } from '../../environments/environment';
 
 type EditDTO = { username: string; gmail: string; birthday: string; password?: string; };
 
@@ -31,6 +32,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
   private gamificacionService = inject(GamificacionService);
   
   theme = this.themeService.theme;
+  getAssetUrl = getAssetUrl;
 
   me = signal<User | null>(null);
   eventos = signal<any[]>([]);

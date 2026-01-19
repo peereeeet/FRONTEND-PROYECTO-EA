@@ -19,6 +19,8 @@ import { RewardNotificationService } from '../../services/reward-notification.se
 import { GamificacionService } from '../../services/gamificacion.service';
 import { RewardNotificationComponent } from '../reward-notification/reward-notification.component';
 import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
+import { environment, getAssetUrl } from '../../environments/environment';
+
 
 type FriendLike = User;
 
@@ -44,6 +46,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private themeService = inject(ThemeService);
   theme = this.themeService.theme;
+  getAssetUrl = getAssetUrl;
   private socketService = inject(SocketService);
   private chatbotStateService = inject(ChatbotStateService);
   private readonly EVENT_INVITE_PREFIX = '__EVENT_INVITE__|';
@@ -1074,7 +1077,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   getChatImageUrl(imageUrl: string): string {
     const token = this.auth.getToken();
-    return `http://localhost:3000${imageUrl}?token=${token}`;
+    return `${environment.assetsBaseUrl}${imageUrl}?token=${token}`;
   }
 
   onChatImageSelect(event: Event): void {
@@ -1128,7 +1131,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch(`http://localhost:3000/api/user/${me._id}/chat/${friend._id}/image`, {
+      const response = await fetch(`${environment.apiBaseUrl}/user/${me._id}/chat/${friend._id}/image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.auth.getToken()}`
@@ -1194,7 +1197,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     try {
       const token = this.auth.getToken();
       const response = await fetch(
-        `http://localhost:3000/api/user/chat/${message._id}`,
+        `${environment.apiBaseUrl}/user/chat/${message._id}`,
         {
           method: 'DELETE',
           headers: {

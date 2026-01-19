@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import * as io from 'socket.io-client';
+import { environment } from '../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private socket: any = null;
-  private readonly url = 'http://localhost:3000';
+  private readonly url = environment.socketUrl;
   private connectedUserId: string | null = null;
 
   constructor() {}
@@ -20,7 +21,8 @@ export class SocketService {
     }
 
     this.socket = io.connect(this.url, {
-      transports: ['websocket', 'polling'],
+      transports: ['polling'],
+      upgrade: false,
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5 

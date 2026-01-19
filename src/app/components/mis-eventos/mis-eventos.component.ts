@@ -20,6 +20,7 @@ import { GamificacionService } from '../../services/gamificacion.service';
 import { RewardNotificationService } from '../../services/reward-notification.service';
 import { RewardNotificationComponent } from '../reward-notification/reward-notification.component';
 import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-mis-eventos',
@@ -783,7 +784,7 @@ hasLocation(evento: any): boolean {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch(`http://localhost:3000/api/event/${evento._id}/chat-image`, {
+      const response = await fetch(`${environment.apiBaseUrl}/event/${evento._id}/chat-image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.authService.getToken()}`
@@ -855,7 +856,7 @@ hasLocation(evento: any): boolean {
 
   getEventChatImageUrl(imageUrl: string): string {
     const token = this.authService.getToken();
-    return `http://localhost:3000${imageUrl}?token=${token}`;
+    return `${environment.assetsBaseUrl}${imageUrl}?token=${token}`;
   }
 
   private scrollEventChatToBottom(): void {
@@ -886,7 +887,7 @@ hasLocation(evento: any): boolean {
     try {
       const token = this.authService.getToken();
       const response = await fetch(
-        `http://localhost:3000/api/user/events/chat/${message._id}`,
+        `${environment.apiBaseUrl}/user/events/chat/${message._id}`,
         {
           method: 'DELETE',
           headers: {
@@ -1200,7 +1201,7 @@ hasLocation(evento: any): boolean {
       return;
     }
 
-    fetch(`http://localhost:3000${photo.url}`, {
+    fetch(`${environment.assetsBaseUrl}${photo.url}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -1223,7 +1224,7 @@ hasLocation(evento: any): boolean {
 
   getPhotoUrl(photo: EventoPhoto): string {
     const token = this.authService.getToken();
-    return `http://localhost:3000${photo.url}?token=${token}`;
+    return `${environment.assetsBaseUrl}${photo.url}?token=${token}`;
   }
 
   isVideo(photo: EventoPhoto): boolean {

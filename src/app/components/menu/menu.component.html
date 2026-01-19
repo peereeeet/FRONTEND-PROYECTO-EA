@@ -16,7 +16,7 @@
 
       <div class="sidebar__user">
         <div class="avatar avatar--lg">
-          <img *ngIf="me()?.profilePhoto" [src]="'http://localhost:3000' + me()!.profilePhoto" alt="Profile" class="avatar-img" />
+          <img *ngIf="me()?.profilePhoto" [src]="getAssetUrl(me()?.profilePhoto || '')" alt="Profile" class="avatar-img" />
           <span *ngIf="!me()?.profilePhoto">👤</span>
         </div>
         <div class="user-meta">
@@ -1127,7 +1127,7 @@
           <div class="user-row" *ngFor="let u of modalPageItems">
             <div class="user-avatar">
               <div class="avatar avatar--sm">
-                <img *ngIf="u.profilePhoto" [src]="'http://localhost:3000' + u.profilePhoto" alt="" class="avatar-img" />
+                <img *ngIf="u.profilePhoto" [src]="getAssetUrl(u.profilePhoto)" alt="" class="avatar-img" />
                 <span *ngIf="!u.profilePhoto">👤</span>
               </div>
             </div>
@@ -1198,7 +1198,7 @@
           <li *ngFor="let u of requestsList()">
             <div class="request-left">
               <div class="avatar avatar--sm">
-                <img *ngIf="u.profilePhoto" [src]="'http://localhost:3000' + u.profilePhoto" alt="" class="avatar-img" />
+                <img *ngIf="u.profilePhoto" [src]="getAssetUrl(u.profilePhoto)" alt="" class="avatar-img" />
                 <span *ngIf="!u.profilePhoto">👤</span>
               </div>
               <div class="request-data">
@@ -1491,7 +1491,7 @@
             <div class="avatar avatar--md">
               <img 
                 *ngIf="user.profilePhoto" 
-                [src]="'http://localhost:3000' + user.profilePhoto" 
+                [src]="getAssetUrl(user.profilePhoto)" 
                 alt="profile" 
                 class="avatar-img" />
               <span *ngIf="!user.profilePhoto">👤</span>

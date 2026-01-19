@@ -16,7 +16,7 @@
 
       <div class="sidebar__user">
         <div class="avatar avatar--lg">
-          <img *ngIf="profilePhotoUrl()" [src]="'http://localhost:3000' + profilePhotoUrl()" alt="Profile" class="avatar-img" />
+          <img *ngIf="profilePhotoUrl()" [src]="getAssetUrl(profilePhotoUrl())" alt="Profile" class="avatar-img" />
           <span *ngIf="!profilePhotoUrl()">👤</span>
         </div>
         <div class="user-meta">
@@ -259,7 +259,7 @@
           <div class="photo-upload-area">
             <!-- Vista previa de la foto actual -->
             <div class="current-photo" *ngIf="profilePhotoUrl() && !photoPreviewUrl()">
-              <img [src]="'http://localhost:3000' + profilePhotoUrl()" alt="Foto actual" />
+              <img [src]="getAssetUrl(profilePhotoUrl())" alt="Foto actual" />
               <button type="button" class="btn-remove-photo" (click)="openDeletePhotoModal()" [disabled]="uploadingPhoto()">
                 🗑️ {{ 'PROFILE.PHOTO_DELETE_BUTTON' | translate }}
               </button>

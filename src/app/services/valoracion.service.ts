@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Valoracion, ValoracionesPage } from '../models/valoracion.model';
+import { environment } from '../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ValoracionService {
-  private base = 'http://localhost:3000/api/ratings';
+  private base = environment.apiBaseUrl + '/ratings';
 
   constructor(private http: HttpClient) {}
 

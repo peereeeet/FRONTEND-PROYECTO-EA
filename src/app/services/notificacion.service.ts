@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Notificacion } from '../models/notificacion.model';
+import { environment } from '../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class NotificacionService {
-  private apiUrl = 'http://localhost:3000/api/notificaciones';
+  private apiUrl = environment.apiBaseUrl + '/notificaciones';
   
   private unreadCountSubject = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCountSubject.asObservable();
@@ -55,7 +56,7 @@ export class NotificacionService {
   markAsRead(notificacionId: string): Observable<{ ok: boolean; message: string }> {
     return this.http.patch<{ ok: boolean; message: string }>(
       `${this.apiUrl}/${notificacionId}/read`,
-      {}
+      { read: true }
     ).pipe(
       tap(response => {
         if (response.ok) {
@@ -68,7 +69,7 @@ export class NotificacionService {
   markAllAsRead(userId: string): Observable<{ ok: boolean; message: string }> {
     return this.http.patch<{ ok: boolean; message: string }>(
       `${this.apiUrl}/${userId}/read-all`,
-      {}
+      { readAll: true }
     ).pipe(
       tap(response => {
         if (response.ok) {

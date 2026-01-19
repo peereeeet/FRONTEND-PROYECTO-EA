@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable, Subject } from 'rxjs';
 import { User, ChatMessage, EventChatMessage  } from '../models/user.model';
+import { environment } from '../environments/environment';
 
 export interface Page<T> {
   data: T[];
@@ -12,7 +13,7 @@ export interface Page<T> {
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private apiUrl = 'http://localhost:3000/api/user';
+  private apiUrl = environment.apiBaseUrl + '/user';
 
   constructor(private http: HttpClient) {}
 
@@ -91,7 +92,7 @@ export class UserService {
   }
 
   disableUser(id: string): Observable<User> {
-    return this.http.patch<User>(`${this.apiUrl}/${id}/disable`, {});
+    return this.http.patch<User>(`${this.apiUrl}/${id}/disable`, { disabled: true });
   }
 
   addEventToUser(userId: string, eventId: string): Observable<User> {
@@ -119,11 +120,11 @@ export class UserService {
   }
 
   setOnline(userId: string): Observable<{ ok: boolean; online: boolean }> {
-    return this.http.put<{ ok: boolean; online: boolean }>(`${this.apiUrl}/${userId}/online`, {});
+    return this.http.put<{ ok: boolean; online: boolean }>(`${this.apiUrl}/${userId}/online`, { online: true });
   }
 
   setOffline(userId: string): Observable<{ ok: boolean; online: boolean }> {
-    return this.http.put<{ ok: boolean; online: boolean }>(`${this.apiUrl}/${userId}/offline`, {});
+    return this.http.put<{ ok: boolean; online: boolean }>(`${this.apiUrl}/${userId}/offline`, { online: false });
   }
 
   listFriends(id: string, page = 1, limit = 20, q = ''): Observable<Page<User>> {

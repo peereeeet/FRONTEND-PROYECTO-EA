@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/front-end-angular",
+            "outputPath": "dist/ea2/browser",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -48,7 +48,13 @@
                       "maximumError": "100kb"
                     }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/app/environments/environment.ts",
+                  "with": "src/app/environments/environment.prod.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
