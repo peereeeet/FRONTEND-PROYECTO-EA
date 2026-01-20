@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import * as io from 'socket.io-client';
+import io from 'socket.io-client';
 import { environment } from '../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -20,13 +20,14 @@ export class SocketService {
       this.disconnect();
     }
 
-    this.socket = io.connect(this.url, {
-      transports: ['polling'],
+    this.socket = io(this.url, {
+      path: '/socket.io',
+      transports: ['websocket'],
       upgrade: false,
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5 
-    } as any);
+    });
 
     this.socket.on('connect', () => {
       if (this.socket) {
