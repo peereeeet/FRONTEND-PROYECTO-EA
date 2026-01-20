@@ -1,100 +1,173 @@
 <div class="login-container">
-  <div class="space-background"></div>
-  <div class="stars"></div>
+  <div class="login-backdrop"></div>
 
-  <div class="login-card">
-    <div class="login-header">
-      <h1 class="login-title">Crear una nueva cuenta</h1>
-      <p class="login-subtitle">Regístrate para continuar</p>
+  <div class="login-card login-card--wide">
+    <div class="lang-switcher">
+      <button
+        type="button"
+        class="lang-toggle"
+        (click)="toggleLangMenu()">
+        <span class="lang-icon">🌐</span>
+        <span class="lang-current">
+          {{
+            currentLang === 'es'
+              ? ('LANG.ES' | translate)
+              : currentLang === 'en'
+              ? ('LANG.EN' | translate)
+              : currentLang === 'cat'
+              ? ('LANG.CAT' | translate)
+              : ('LANG.FR' | translate)
+          }}
+        </span>
+        <span class="lang-arrow">▾</span>
+      </button>
+
+      <div class="lang-dropdown" *ngIf="showLangMenu">
+        <button
+          type="button"
+          class="lang-option"
+          [class.active]="currentLang === 'es'"
+          (click)="selectLanguage('es')">
+          {{ 'LANG.ES' | translate }}
+        </button>
+        <button
+          type="button"
+          class="lang-option"
+          [class.active]="currentLang === 'en'"
+          (click)="selectLanguage('en')">
+          {{ 'LANG.EN' | translate }}
+        </button>
+        <button
+          type="button"
+          class="lang-option"
+          [class.active]="currentLang === 'cat'"
+          (click)="selectLanguage('cat')">
+          {{ 'LANG.CAT' | translate }}
+        </button>
+        <button
+          type="button"
+          class="lang-option"
+          [class.active]="currentLang === 'fr'"
+          (click)="selectLanguage('fr')">
+          {{ 'LANG.FR' | translate }}
+        </button>
+      </div>
+
+      <button class="theme-toggle-btn" (click)="toggleTheme()">
+        {{ theme() === 'dark' ? '☀️' : '🌙' }}
+      </button>
     </div>
 
-    <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" novalidate>
+    <div class="login-header">
+      <h1 class="login-title">{{ 'REGISTER.TITLE' | translate }}</h1>
+      <p class="login-subtitle">{{ 'REGISTER.SUBTITLE' | translate }}</p>
+    </div>
+
+    <form *ngIf="registrarStep === 'FORM'" #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" novalidate>
       <div class="form-grid">
-        <!-- Columna izquierda -->
         <div class="form-column">
+          <!-- USERNAME -->
           <div class="form-group">
-            <label class="form-label" for="username">Nombre de usuario</label>
-            <input
-              id="username"
-              type="text"
-              class="form-input"
-              [(ngModel)]="nuevoUsuario.username"
-              name="username"
-              #usernameCtrl="ngModel"
-              required
-              minlength="3"
-              placeholder="Tu nombre de usuario"
-            >
-            <div *ngIf="(usernameCtrl.touched || formSubmitted) && usernameCtrl.invalid" class="error-message">
-              <span>⚠</span>
-              <span *ngIf="usernameCtrl.errors?.['required']">El nombre es obligatorio.</span>
-              <span *ngIf="usernameCtrl.errors?.['minlength']">Mínimo 3 caracteres.</span>
+            <label class="form-label" for="username">
+              {{ 'REGISTER.USERNAME_LABEL' | translate }}
+            </label>
+            <div class="input-with-status">
+              <input
+                id="username"
+                type="text"
+                class="form-input"
+                [(ngModel)]="nuevoUsuario.username"
+                name="username"
+                #usernameCtrl="ngModel"
+                required
+                minlength="3"
+                maxlength="30"
+                [placeholder]="'REGISTER.USERNAME_PLACEHOLDER' | translate"
+                (input)="onUsernameInput()"
+                (blur)="validateUsername()" />
+              <span *ngIf="isCheckingUsername" class="input-status checking">⏳</span>
+              <span *ngIf="!isCheckingUsername && validateUsername() && !usernameExists && nuevoUsuario.username.length >= 3" class="input-status valid">✓</span>
+            </div>
+            
+            <div *ngIf="(usernameCtrl.touched || formSubmitted) && !validateUsername()" class="error-message">
+              <span>⚠ </span>
+              <span *ngIf="nuevoUsuario.username.length === 0">
+                {{ 'REGISTER.USERNAME_REQUIRED' | translate }}
+              </span>
+              <span *ngIf="nuevoUsuario.username.length > 0 && nuevoUsuario.username.length < 3">
+                {{ 'REGISTER.USERNAME_MIN_LENGTH' | translate }}
+              </span>
+              <span *ngIf="nuevoUsuario.username.length > 30">
+                {{ 'REGISTER.USERNAME_MAX_LENGTH' | translate }}
+              </span>
+              <span *ngIf="!usernameStartsWithLetter() && nuevoUsuario.username.length >= 3">
+                {{ 'REGISTER.USERNAME_START_LETTER' | translate }}
+              </span>
+              <span *ngIf="!usernameHasValidChars() && nuevoUsuario.username.length >= 3">
+                {{ 'REGISTER.USERNAME_VALID_CHARS' | translate }}
+              </span>
+            </div>
+            
+            <div *ngIf="usernameExists" class="error-message">
+              <span>⚠ </span>
+              <span>{{ 'REGISTER.USERNAME_EXISTS' | translate }}</span>
             </div>
           </div>
 
+          <!-- EMAIL -->
           <div class="form-group">
-            <label class="form-label" for="gmail">Email</label>
-            <input
-              id="gmail"
-              type="email"
-              class="form-input"
-              [(ngModel)]="nuevoUsuario.gmail"
-              name="gmail"
-              #gmailCtrl="ngModel"
-              required
-              email
-              placeholder="ejemplo@correo.com"
-            >
+            <label class="form-label" for="gmail">
+              {{ 'REGISTER.EMAIL_LABEL' | translate }}
+            </label>
+            <div class="input-with-status">
+              <input
+                id="gmail"
+                type="email"
+                class="form-input"
+                [(ngModel)]="nuevoUsuario.gmail"
+                name="gmail"
+                #gmailCtrl="ngModel"
+                required
+                email
+                [placeholder]="'REGISTER.EMAIL_PLACEHOLDER' | translate"
+                (input)="validateEmail()"
+                (blur)="validateEmail()" />
+              <span *ngIf="isCheckingEmail" class="input-status checking">⏳</span>
+              <span *ngIf="!isCheckingEmail && emailValidations.format && emailValidations.notTemporary && !emailExists" class="input-status valid">✓</span>
+            </div>
+            
+            <div *ngIf="nuevoUsuario.gmail && (gmailCtrl.touched || formSubmitted)" class="validation-checks">
+              <div class="validation-item" [class.valid]="emailValidations.format" [class.invalid]="!emailValidations.format">
+                <span class="check-icon">{{ emailValidations.format ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.EMAIL_FORMAT_VALID' | translate }}</span>
+              </div>
+              <div class="validation-item" [class.valid]="emailValidations.notTemporary" [class.invalid]="!emailValidations.notTemporary">
+                <span class="check-icon">{{ emailValidations.notTemporary ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.EMAIL_NOT_TEMPORARY' | translate }}</span>
+              </div>
+            </div>
+            
             <div *ngIf="(gmailCtrl.touched || formSubmitted) && gmailCtrl.invalid" class="error-message">
-              <span>⚠</span>
-              <span *ngIf="gmailCtrl.errors?.['required']">El correo es obligatorio.</span>
-              <span *ngIf="gmailCtrl.errors?.['email']">Formato no válido.</span>
+              <span>⚠ </span>
+              <span *ngIf="gmailCtrl.errors?.['required']">
+                {{ 'REGISTER.EMAIL_REQUIRED' | translate }}
+              </span>
+              <span *ngIf="gmailCtrl.errors?.['email']">
+                {{ 'REGISTER.EMAIL_INVALID' | translate }}
+              </span>
             </div>
-          </div>
-        </div>
-
-        <!-- Columna derecha -->
-        <div class="form-column">
-          <div class="form-group">
-            <label class="form-label" for="password">Contraseña</label>
-            <input
-              id="password"
-              type="password"
-              class="form-input"
-              [(ngModel)]="nuevoUsuario.password"
-              name="password"
-              #passwordCtrl="ngModel"
-              required
-              minlength="7"
-              placeholder="Crea una contraseña"
-            >
-            <div *ngIf="(passwordCtrl.touched || formSubmitted) && passwordCtrl.invalid" class="error-message">
-              <span>⚠</span>
-              <span *ngIf="passwordCtrl.errors?.['required']">Campo obligatorio.</span>
-              <span *ngIf="passwordCtrl.errors?.['minlength']">Mínimo 7 caracteres.</span>
+            
+            <div *ngIf="emailExists" class="error-message">
+              <span>⚠ </span>
+              <span>{{ 'REGISTER.EMAIL_EXISTS' | translate }}</span>
             </div>
           </div>
 
+          <!-- BIRTHDAY -->
           <div class="form-group">
-            <label class="form-label" for="confirmarPassword">Confirmar Contraseña</label>
-            <input
-              id="confirmarPassword"
-              type="password"
-              class="form-input"
-              [(ngModel)]="confirmarPassword"
-              name="confirmarPassword"
-              #confirmarCtrl="ngModel"
-              required
-              placeholder="Repite la contraseña"
-            >
-            <div *ngIf="(confirmarCtrl.touched || formSubmitted) && confirmarPassword !== nuevoUsuario.password" class="error-message">
-              <span>⚠</span>
-              <span>Las contraseñas no coinciden.</span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="birthday">Aniversario</label>
+            <label class="form-label" for="birthday">
+              {{ 'REGISTER.BIRTHDAY_LABEL' | translate }}
+            </label>
             <input
               id="birthday"
               type="date"
@@ -104,35 +177,237 @@
               #birthdayCtrl="ngModel"
               required
               [max]="maxDate"
-            >
+              [min]="minDate" />
+            
             <div *ngIf="(birthdayCtrl.touched || formSubmitted) && birthdayCtrl.invalid" class="error-message">
-              <span>⚠</span>
-              <span *ngIf="birthdayCtrl.errors?.['required']">La fecha es obligatoria.</span>
-              <span *ngIf="birthdayStr && isFutureDate()">Debe ser anterior a hoy.</span>
+              <span>⚠ </span>
+              <span *ngIf="birthdayCtrl.errors?.['required']">
+                {{ 'REGISTER.BIRTHDAY_REQUIRED' | translate }}
+              </span>
+            </div>
+            
+            <div *ngIf="birthdayStr && isTooYoung()" class="error-message">
+              <span>⚠ </span>
+              <span>{{ 'REGISTER.BIRTHDAY_MIN_AGE' | translate }}</span>
+            </div>
+            
+            <div *ngIf="birthdayStr && isFutureDate()" class="error-message">
+              <span>⚠ </span>
+              <span>{{ 'REGISTER.BIRTHDAY_FUTURE' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-column">
+          <!-- PASSWORD -->
+          <div class="form-group">
+            <label class="form-label" for="password">
+              {{ 'REGISTER.PASSWORD_LABEL' | translate }}
+            </label>
+            <div class="password-wrapper">
+              <input
+                id="password"
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-input"
+                [(ngModel)]="nuevoUsuario.password"
+                name="password"
+                #passwordCtrl="ngModel"
+                required
+                minlength="8"
+                [placeholder]="'REGISTER.PASSWORD_PLACEHOLDER' | translate"
+                (input)="validatePassword()"
+                (blur)="validatePassword()" />
+              <button type="button" class="toggle-pass" (click)="togglePassword()">
+                {{ showPassword ? '🙈' : '👁️' }}
+              </button>
+            </div>
+            
+            <div *ngIf="nuevoUsuario.password" class="password-strength-bar">
+              <div class="strength-bar" [class]="getPasswordStrengthClass()" [style.width.%]="(passwordStrength / 5) * 100"></div>
+            </div>
+            <div *ngIf="nuevoUsuario.password" class="strength-text" [class]="getPasswordStrengthClass()">
+              {{ ('REGISTER.PASSWORD_STRENGTH_' + getPasswordStrengthText().toUpperCase()) | translate }}
+            </div>
+            
+            <div *ngIf="nuevoUsuario.password && (passwordCtrl.touched || formSubmitted)" class="validation-checks">
+              <div class="validation-item" [class.valid]="passwordValidations.length" [class.invalid]="!passwordValidations.length">
+                <span class="check-icon">{{ passwordValidations.length ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.PASSWORD_REQ_LENGTH' | translate }}</span>
+              </div>
+              <div class="validation-item" [class.valid]="passwordValidations.uppercase" [class.invalid]="!passwordValidations.uppercase">
+                <span class="check-icon">{{ passwordValidations.uppercase ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.PASSWORD_REQ_UPPERCASE' | translate }}</span>
+              </div>
+              <div class="validation-item" [class.valid]="passwordValidations.lowercase" [class.invalid]="!passwordValidations.lowercase">
+                <span class="check-icon">{{ passwordValidations.lowercase ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.PASSWORD_REQ_LOWERCASE' | translate }}</span>
+              </div>
+              <div class="validation-item" [class.valid]="passwordValidations.number" [class.invalid]="!passwordValidations.number">
+                <span class="check-icon">{{ passwordValidations.number ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.PASSWORD_REQ_NUMBER' | translate }}</span>
+              </div>
+              <div class="validation-item" [class.valid]="passwordValidations.special" [class.invalid]="!passwordValidations.special">
+                <span class="check-icon">{{ passwordValidations.special ? '✓' : '✗' }}</span>
+                <span>{{ 'REGISTER.PASSWORD_REQ_SPECIAL' | translate }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONFIRM PASSWORD -->
+          <div class="form-group">
+            <label class="form-label" for="confirmarPassword">
+              {{ 'REGISTER.CONFIRM_PASSWORD_LABEL' | translate }}
+            </label>
+            <div class="password-wrapper">
+              <input
+                id="confirmarPassword"
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                class="form-input"
+                [(ngModel)]="confirmarPassword"
+                name="confirmarPassword"
+                #confirmarCtrl="ngModel"
+                required
+                [placeholder]="'REGISTER.CONFIRM_PASSWORD_PLACEHOLDER' | translate" />
+              <button type="button" class="toggle-pass" (click)="toggleConfirmPassword()">
+                {{ showConfirmPassword ? '🙈' : '👁️' }}
+              </button>
+            </div>
+            
+            <div
+              *ngIf="(confirmarCtrl.touched || formSubmitted) && confirmarPassword && !passwordsMatch()"
+              class="error-message">
+              <span>⚠ </span>
+              <span>{{ 'REGISTER.CONFIRM_PASSWORD_MISMATCH' | translate }}</span>
+            </div>
+            
+            <div *ngIf="confirmarPassword && passwordsMatch()" class="success-message">
+              <span>✓ </span>
+              <span>{{ 'REGISTER.PASSWORDS_MATCH' | translate }}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ✅ Botones uno al lado del otro -->
+      <!-- BOTÓN PARA MOSTRAR/OCULTAR SELECTOR DE INTERESES -->
+      <div class="interests-toggle-container">
+        <button 
+          type="button" 
+          class="interests-toggle-btn"
+          (click)="openInterestsModal()">
+          <span class="toggle-icon">✨</span>
+          <span>{{ 'INTERESTS.SELECT' | translate }}</span>
+          <span class="selected-count" *ngIf="selectedInterests.length > 0">
+            ({{ selectedInterests.length }})
+          </span>
+        </button>
+        <p class="interests-hint">{{ 'INTERESTS.HINT' | translate }}</p>
+      </div>
+
       <div class="buttons-row">
         <button
           type="submit"
           class="login-button"
-          [disabled]="isSubmitting"
-        >
+          [disabled]="isSubmitting || !isFormValid()">
           <span *ngIf="isSubmitting" class="loading-spinner"></span>
-          {{ isSubmitting ? 'Registrando...' : 'Registrar' }}
+          {{
+            isSubmitting
+              ? ('REGISTER.BUTTON_LOADING' | translate)
+              : ('REGISTER.BUTTON' | translate)
+          }}
         </button>
 
         <button type="button" class="admin-button" (click)="goToLogin()">
-          Volver al Login
+          {{ 'REGISTER.BACK_TO_LOGIN' | translate }}
         </button>
       </div>
     </form>
 
+    <!-- STEP VERIFICACIÓN OTP -->
+    <div *ngIf="registrarStep === 'VERIFY'" class="verify-step">
+      <div class="verify-container">
+        <div class="verify-icon">📧</div>
+        <h3>{{ 'REGISTER.VERIFY_TITLE' | translate }}</h3>
+        <p class="verify-subtitle">
+          {{ 'REGISTER.VERIFY_INSTRUCTIONS' | translate }}
+        </p>
+        <p class="verify-email">{{ pendingEmail }}</p>
+      </div>
+
+      <!-- Input OTP -->
+      <div class="form-group otp-group">
+        <label class="form-label">{{ 'REGISTER.OTP_LABEL' | translate }}</label>
+        <input 
+          class="form-input code-input"
+          [formControl]="otpControl"
+          type="text" 
+          inputmode="numeric" 
+          maxlength="6"
+          autocomplete="one-time-code"
+          (input)="sanitizeOtp($event)"
+          [placeholder]="'000000'" />
+        
+        <p class="input-hint">{{ 'REGISTER.OTP_HINT' | translate }}</p>
+      </div>
+
+      <!-- Error Local del paso Verify -->
+      <div *ngIf="otpControl.touched && otpControl.invalid" class="error-message">
+        <span>⚠ </span>
+        <span>{{ 'REGISTER.OTP_INVALID' | translate }}</span>
+      </div>
+
+      <div class="buttons-column">
+        <button 
+          type="button" 
+          class="login-button"
+          (click)="onVerify()"
+          [disabled]="isSubmitting || otpControl.invalid">
+          <span *ngIf="isSubmitting" class="loading-spinner"></span>
+          {{ isSubmitting ? ('COMMON.LOADING' | translate) : ('REGISTER.VERIFY_BUTTON' | translate) }}
+        </button>
+
+        <button 
+          type="button" 
+          class="admin-button" 
+          (click)="onResend()" 
+          [disabled]="resendCooldown > 0">
+          <span class="resend-icon">🔄</span>
+          {{ 'REGISTER.RESEND_CODE' | translate }}
+          <span *ngIf="resendCooldown > 0" class="cooldown-badge">({{ resendCooldown }}s)</span>
+        </button>
+
+        <button 
+          type="button" 
+          class="link-button" 
+          (click)="backToRegister()">
+          ← {{ 'REGISTER.BACK_TO_FORM' | translate }}
+        </button>
+      </div>
+    </div>
+
     <div *ngIf="errorMessage" class="form-error">
       {{ errorMessage }}
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showInterestsModal" (click)="closeInterestsModal()">
+    <div class="modal modal--interests" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ 'INTERESTS.TITLE' | translate }}</h3>
+        <button class="btn-close" (click)="closeInterestsModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <app-interest-selector
+          [selectedInterests]="selectedInterests"
+          (selectedInterestsChange)="onInterestsChange($event)">
+        </app-interest-selector>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn primary" (click)="closeInterestsModal()">
+          {{ 'INTERESTS.CONFIRM' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </div>

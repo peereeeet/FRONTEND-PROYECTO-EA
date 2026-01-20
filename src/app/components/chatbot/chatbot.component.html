@@ -1,0 +1,278 @@
+<!-- Botón flotante para abrir el chat - Solo se muestra si shouldShowChatbot es true -->
+<button 
+  class="chat-toggle-btn" 
+  (click)="toggleChat()"
+  *ngIf="!isChatOpen && shouldShowChatbot"
+  aria-label="Open chat">
+  <span class="icon">🤖</span>
+</button>
+
+<!-- Ventana del chat - Solo se muestra si shouldShowChatbot es true -->
+<div class="chat-container" [class.open]="isChatOpen" [attr.data-theme]="theme()" *ngIf="shouldShowChatbot">
+  <!-- Header del chat -->
+  <div class="chat-header">
+    <div class="header-content">
+      <div class="bot-avatar">🤖</div>
+      <div class="header-text">
+        <h3>{{ 'CHATBOT.TITLE' | translate }}</h3>
+        <p>{{ 'CHATBOT.SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="clear-btn" (click)="clearChat()" [title]="'CHATBOT.CLEAR_CHAT' | translate">
+        🗑️
+      </button>
+      <button class="close-btn" (click)="toggleChat()" [title]="'COMMON.CLOSE' | translate">
+        ✕
+      </button>
+    </div>
+  </div>
+
+  <!-- Área de mensajes -->
+  <div class="chat-messages" #messageContainer>
+    <div *ngFor="let message of messages" 
+         class="message-wrapper"
+         [class.user-message]="!message.isBot"
+         [class.bot-message]="message.isBot">
+      
+      <div class="message-content">
+        <div class="message-bubble">
+          <p>{{ message.text }}</p>
+          <span class="timestamp">
+            {{ message.timestamp | date: 'HH:mm' }}
+          </span>
+        </div>
+
+        <!-- Eventos relacionados si los hay -->
+        <div class="related-events" *ngIf="message.relatedEvents && message.relatedEvents.length > 0">
+          <h4>{{ 'CHATBOT.EVENTS_FOUND' | translate }}:</h4>
+          <div class="event-cards">
+            <div class="event-card" *ngFor="let event of message.relatedEvents" (click)="viewEvent(event._id)">
+              <div class="event-header">
+                <h5>{{ event.name }}</h5>
+                <span class="event-category">{{ event.categoria }}</span>
+              </div>
+              <div class="event-details">
+                <p class="event-date">📅 {{ event.schedule | date: 'dd/MM/yyyy HH:mm' }}</p>
+                <p class="event-location">📍 {{ event.address }}</p>
+                <p class="event-participants">👥 {{ event.participantes?.length || 0 }} {{ 'CHATBOT.PARTICIPANTS' | translate }}</p>
+              </div>
+              <button class="view-event-btn">{{ 'CHATBOT.VIEW_DETAILS' | translate }}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicador de carga -->
+    <div class="message-wrapper bot-message" *ngIf="isLoading">
+      <div class="message-content">
+        <div class="message-bubble loading">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sugerencias de preguntas rápidas -->
+  <div class="quick-questions" *ngIf="messages.length <= 1 && !isLoading">
+    <p class="quick-title">{{ 'CHATBOT.SUGGESTED_QUESTIONS' | translate }}:</p>
+    <div class="question-chips">
+      <button 
+        class="question-chip" 
+        *ngFor="let question of quickQuestions"
+        (click)="useQuickQuestion(question)">
+        {{ question }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Input para escribir mensajes -->
+  <div class="chat-input">
+    <textarea
+      [(ngModel)]="userInput"
+      (keypress)="onKeyPress($event)"
+      [placeholder]="'CHATBOT.PLACEHOLDER' | translate"
+      rows="1"
+      [disabled]="isLoading"
+      maxlength="500"></textarea>
+    <button 
+      class="send-btn" 
+      (click)="sendMessage()"
+      [disabled]="!userInput.trim() || isLoading"
+      [attr.aria-label]="'CHATBOT.SEND_MESSAGE' | translate">
+      <span *ngIf="!isLoading">➤</span>
+      <span *ngIf="isLoading" class="spinner">⟳</span>
+    </button>
+  </div>
+</div>
+
+<!-- MODAL DE EVENTO -->
+<div class="event-modal-overlay" *ngIf="showEventModal && shouldShowChatbot" (click)="closeEventModal()" [attr.data-theme]="theme()">
+  <div class="event-modal" (click)="$event.stopPropagation()">
+    <!-- Loading -->
+    <div class="modal-loading" *ngIf="isLoadingEvent">
+      <div class="spinner-large">⟳</div>
+      <p>{{ 'COMMON.LOADING' | translate }}</p>
+    </div>
+
+    <!-- Contenido del evento -->
+    <div class="modal-content" *ngIf="!isLoadingEvent && selectedEvent">
+      <!-- Header -->
+      <div class="modal-header">
+        <div class="modal-title-section">
+          <h2>{{ selectedEvent.name }}</h2>
+          <span class="modal-category">{{ selectedEvent.categoria }}</span>
+        </div>
+        <button class="modal-close-btn" (click)="closeEventModal()" [title]="'COMMON.CLOSE' | translate">
+          ✕
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <!-- Información del evento -->
+        <div class="modal-info-section">
+          <div class="modal-info-item">
+            <span class="info-icon">📅</span>
+            <div class="info-content">
+              <span class="info-label">{{ 'CHATBOT.MODAL.DATE' | translate }}</span>
+              <span class="info-value">{{ getScheduleDate(selectedEvent.schedule) | date: 'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          </div>
+
+          <div class="modal-info-item" *ngIf="selectedEvent.address">
+            <span class="info-icon">📍</span>
+            <div class="info-content">
+              <span class="info-label">{{ 'CHATBOT.MODAL.LOCATION' | translate }}</span>
+              <span class="info-value">{{ selectedEvent.address }}</span>
+            </div>
+          </div>
+
+          <div class="modal-info-item">
+            <span class="info-icon">👥</span>
+            <div class="info-content">
+              <span class="info-label">{{ 'CHATBOT.MODAL.PARTICIPANTS' | translate }}</span>
+              <span class="info-value">
+                {{ selectedEvent.participantes?.length || 0 }}
+                <span *ngIf="selectedEvent.maxParticipantes"> / {{ selectedEvent.maxParticipantes }}</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="modal-info-item" *ngIf="selectedEvent.listaEspera && selectedEvent.listaEspera.length > 0">
+            <span class="info-icon">⏳</span>
+            <div class="info-content">
+              <span class="info-label">{{ 'CHATBOT.MODAL.WAITLIST' | translate }}</span>
+              <span class="info-value">{{ selectedEvent.listaEspera.length }} {{ 'CHATBOT.MODAL.IN_WAITLIST' | translate }}</span>
+            </div>
+          </div>
+
+          <div class="modal-info-item" *ngIf="selectedEvent.creador">
+            <span class="info-icon">👤</span>
+            <div class="info-content">
+              <span class="info-label">{{ 'CHATBOT.MODAL.CREATOR' | translate }}</span>
+              <span class="info-value">
+                {{ getCreadorUsername(selectedEvent.creador) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Avisos -->
+        <div class="modal-notice modal-notice-creator" *ngIf="isUserCreator()">
+          <span class="notice-icon">ℹ️</span>
+          <p>{{ 'CHATBOT.MODAL.YOU_ARE_CREATOR' | translate }}</p>
+        </div>
+
+        <div class="modal-notice modal-notice-full" *ngIf="isEventFull() && !isUserInEvent() && !isUserInWaitlist()">
+          <span class="notice-icon">🔒</span>
+          <p>{{ 'CHATBOT.MODAL.EVENT_FULL' | translate }}</p>
+        </div>
+
+        <div class="modal-notice modal-notice-waitlist" *ngIf="isUserInWaitlist()">
+          <span class="notice-icon">⏳</span>
+          <p>{{ 'CHATBOT.MODAL.YOU_IN_WAITLIST' | translate }}</p>
+        </div>
+
+        <div class="modal-notice modal-notice-joined" *ngIf="isUserInEvent()">
+          <span class="notice-icon">✅</span>
+          <p>{{ 'CHATBOT.MODAL.YOU_JOINED' | translate }}</p>
+        </div>
+      </div>
+
+      <!-- Footer con acciones -->
+      <div class="modal-footer">
+        <!-- Si ya está inscrito -->
+        <button 
+          class="modal-btn modal-btn-leave" 
+          *ngIf="isUserInEvent() && !isUserCreator()"
+          (click)="leaveEvent()"
+          [disabled]="isLoadingEvent">
+          <span class="btn-icon">🚪</span>
+          {{ 'CHATBOT.MODAL.LEAVE_EVENT' | translate }}
+        </button>
+
+        <!-- Si está en lista de espera -->
+        <button 
+          class="modal-btn modal-btn-leave-waitlist" 
+          *ngIf="isUserInWaitlist()"
+          (click)="leaveWaitlist()"
+          [disabled]="isLoadingEvent">
+          <span class="btn-icon">🚫</span>
+          {{ 'CHATBOT.MODAL.LEAVE_WAITLIST' | translate }}
+        </button>
+
+        <!-- Si no está inscrito y el evento no está lleno -->
+        <button 
+          class="modal-btn modal-btn-join" 
+          *ngIf="!isUserInEvent() && !isUserInWaitlist() && !isEventFull()"
+          (click)="joinEvent()"
+          [disabled]="isLoadingEvent">
+          <span class="btn-icon">✅</span>
+          {{ 'CHATBOT.MODAL.JOIN_EVENT' | translate }}
+        </button>
+
+        <!-- Si no está inscrito y el evento está lleno -->
+        <button 
+          class="modal-btn modal-btn-join-waitlist" 
+          *ngIf="!isUserInEvent() && !isUserInWaitlist() && isEventFull()"
+          (click)="joinEvent()"
+          [disabled]="isLoadingEvent">
+          <span class="btn-icon">⏳</span>
+          {{ 'CHATBOT.MODAL.JOIN_WAITLIST' | translate }}
+        </button>
+
+        <button 
+          class="modal-btn modal-btn-close" 
+          (click)="closeEventModal()">
+          {{ 'COMMON.CLOSE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN -->
+<div class="confirm-modal-overlay" *ngIf="showConfirmModal && shouldShowChatbot" (click)="closeConfirmModal()" [attr.data-theme]="theme()">
+  <div class="confirm-modal" (click)="$event.stopPropagation()">
+    <div class="confirm-modal-header">
+      <h3>{{ confirmModalData?.title }}</h3>
+    </div>
+    <div class="confirm-modal-body">
+      <p>{{ confirmModalData?.message }}</p>
+    </div>
+    <div class="confirm-modal-footer">
+      <button class="confirm-btn confirm-btn-cancel" (click)="closeConfirmModal()">
+        {{ confirmModalData?.cancelText }}
+      </button>
+      <button class="confirm-btn confirm-btn-confirm" (click)="confirmAction()">
+        {{ confirmModalData?.confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

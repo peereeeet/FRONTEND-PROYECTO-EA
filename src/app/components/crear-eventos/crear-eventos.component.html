@@ -1,0 +1,525 @@
+<div class="menu-page">
+  <div class="menu-bg"></div>
+  <app-reward-notification></app-reward-notification>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <div class="brand-logo brand-logo--image">
+          <img src="assets/images/logo.png" alt="Eventer Logo" class="brand-logo-img">
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Eventer</span>
+          <span class="brand-sub">{{ 'CREATE_EVENT.TITLE' | translate }}</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <span class="nav-section-label">{{ 'MENU.EVENTS_TITLE' | translate }}</span>
+
+        <button class="nav-item" (click)="goBackToMenu()">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">{{ 'CREATE_EVENT.BACK_TO_MENU' | translate }}</span>
+        </button>
+
+        <button class="nav-item nav-item--active">
+          <span class="nav-icon">➕</span>
+          <span class="nav-text">{{ 'CREATE_EVENT.TITLE' | translate }}</span>
+        </button>
+
+        <button class="nav-item" (click)="goToMisEventos()">
+          <span class="nav-icon">📅</span>
+          <span class="nav-text">{{ 'CREATE_EVENT.GO_TO_MY_EVENTS' | translate }}</span>
+        </button>
+
+        <button class="nav-item" (click)="goToCalendar()">
+          <span class="nav-icon">🗓️</span>
+          <span class="nav-text">{{ 'MENU.CALENDAR' | translate }}</span>
+        </button>
+      </nav>
+    </aside>
+
+    <div class="main-panel">
+      <header class="top-bar">
+        <div class="top-bar__left">
+          <h1 class="top-title">{{ 'CREATE_EVENT.TITLE' | translate }}</h1>
+        </div>
+
+        <div class="top-bar__right">
+          <app-notificaciones></app-notificaciones>
+          
+          <div class="lang-switcher-menu">
+            <button type="button" class="lang-toggle" (click)="toggleLangMenu()">
+              <span class="lang-icon">🌐</span>
+              <span class="lang-current">
+                {{
+                  currentLang === 'es'
+                    ? ('LANG.ES' | translate)
+                    : currentLang === 'en'
+                    ? ('LANG.EN' | translate)
+                    : currentLang === 'cat'
+                    ? ('LANG.CAT' | translate)
+                    : ('LANG.FR' | translate)
+                }}
+              </span>
+              <span class="lang-arrow">▾</span>
+            </button>
+
+            <div class="lang-dropdown" *ngIf="showLangMenu">
+              <button type="button" class="lang-option" [class.active]="currentLang === 'es'" (click)="selectLanguage('es')">
+                {{ 'LANG.ES' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'en'" (click)="selectLanguage('en')">
+                {{ 'LANG.EN' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'cat'" (click)="selectLanguage('cat')">
+                {{ 'LANG.CAT' | translate }}
+              </button>
+              <button type="button" class="lang-option" [class.active]="currentLang === 'fr'" (click)="selectLanguage('fr')">
+                {{ 'LANG.FR' | translate }}
+              </button>
+            </div>
+
+            <button class="theme-toggle-btn" (click)="toggleTheme()">
+              {{ theme() === 'dark' ? '☀️' : '🌙' }}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="form-card">
+          <form class="event-form" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="name">{{ 'CREATE_EVENT.FIELD_NAME_LABEL' | translate }}</label>
+                <input
+                  id="name"
+                  type="text"
+                  [(ngModel)]="newEvent.name"
+                  name="name"
+                  [placeholder]="'CREATE_EVENT.FIELD_NAME_PLACEHOLDER' | translate"
+                  required
+                  minlength="3"
+                />
+                <small *ngIf="formSubmitted && (!newEvent.name || newEvent.name.trim().length<3)">
+                  {{ 'CREATE_EVENT.FIELD_NAME_ERROR_MIN' | translate }}
+                </small>
+              </div>
+
+              <div class="form-group form-group--full address-section">
+                <label for="address" class="address-label">
+                  <span class="label-text">{{ 'CREATE_EVENT.FIELD_ADDRESS_LABEL' | translate }}</span>
+                  <span class="label-badge" *ngIf="addressValidation && addressValidation.completeness > 0">
+                    {{ addressValidation.completeness }}% {{ 'CREATE_EVENT.ADDRESS_COMPLETENESS' | translate }}
+                  </span>
+                </label>
+                
+                <div class="address-input-wrapper">
+                  <input
+                    id="address"
+                    type="text"
+                    [(ngModel)]="newEvent.address"
+                    name="address"
+                    [placeholder]="'CREATE_EVENT.FIELD_ADDRESS_PLACEHOLDER_DETAILED' | translate"
+                    (input)="onAddressInput($event)"
+                    (focus)="onAddressFocus()"
+                    (blur)="onAddressBlur()"
+                    class="address-input"
+                    [class.address-input--valid]="addressValidation?.isValid"
+                    [class.address-input--invalid]="addressValidation && !addressValidation.isValid && addressValidation.completeness > 0"
+                    autocomplete="off"
+                  />
+                  
+                  <button 
+                    type="button" 
+                    class="validate-address-btn"
+                    (click)="validateCurrentAddress()"
+                    [disabled]="!newEvent.address || validatingAddress"
+                    [title]="'CREATE_EVENT.ADDRESS_VALIDATE_TITLE' | translate">
+                    <span *ngIf="!validatingAddress">✓</span>
+                    <span *ngIf="validatingAddress" class="spinner-small">⟳</span>
+                  </button>
+
+                  <button 
+                    type="button" 
+                    class="clear-address-btn"
+                    *ngIf="newEvent.address"
+                    (click)="clearAddress()"
+                    [title]="'CREATE_EVENT.ADDRESS_CLEAR_TITLE' | translate">
+                    ✕
+                  </button>
+                </div>
+
+                <div class="address-suggestions" *ngIf="showAddressSuggestions && addressSuggestions.length > 0">
+                  <div class="suggestions-header">
+                    <span class="suggestions-icon">📍</span>
+                    <span class="suggestions-title">{{ 'CREATE_EVENT.ADDRESS_SUGGESTIONS_TITLE' | translate }} ({{ addressSuggestions.length }})</span>
+                  </div>
+                  <div class="suggestions-list">
+                    <button
+                      type="button"
+                      class="suggestion-item"
+                      *ngFor="let suggestion of addressSuggestions; let i = index"
+                      (click)="selectAddressSuggestion(suggestion)"
+                      [class.suggestion-item--best]="i === 0">
+                      <div class="suggestion-main">
+                        <span class="suggestion-icon" *ngIf="i === 0">⭐</span>
+                        <span class="suggestion-text">{{ formatSuggestionAddress(suggestion) }}</span>
+                      </div>
+                      <div class="suggestion-details" *ngIf="suggestion.address">
+                        <span class="detail-badge" *ngIf="suggestion.address.house_number">
+                          🏠 {{ suggestion.address.house_number }}
+                        </span>
+                        <span class="detail-badge" *ngIf="suggestion.address.postcode">
+                          📮 {{ suggestion.address.postcode }}
+                        </span>
+                        <span class="detail-badge" *ngIf="suggestion.address.city || suggestion.address.town">
+                          🏙️ {{ suggestion.address.city || suggestion.address.town }}
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="address-suggestions address-loading" *ngIf="searchingAddress && !addressSuggestions.length">
+                  <div class="loading-content">
+                    <span class="spinner">⟳</span>
+                    <span>{{ 'CREATE_EVENT.ADDRESS_SEARCHING' | translate }}</span>
+                  </div>
+                </div>
+
+                <div class="address-validation" *ngIf="addressValidation && newEvent.address">
+                  <div class="completeness-bar-container">
+                    <div class="completeness-bar">
+                      <div 
+                        class="completeness-fill"
+                        [style.width.%]="addressValidation.completeness"
+                        [class.completeness-fill--low]="addressValidation.completeness < 50"
+                        [class.completeness-fill--medium]="addressValidation.completeness >= 50 && addressValidation.completeness < 80"
+                        [class.completeness-fill--high]="addressValidation.completeness >= 80">
+                      </div>
+                    </div>
+                    <span class="completeness-label">{{ addressValidation.completeness }}%</span>
+                  </div>
+
+                  <div class="address-components">
+                    <div 
+                      class="component-chip"
+                      [class.component-chip--valid]="addressValidation.hasStreet"
+                      [class.component-chip--invalid]="!addressValidation.hasStreet">
+                      <span class="component-icon">{{ addressValidation.hasStreet ? '✓' : '✗' }}</span>
+                      <span class="component-text">{{ 'CREATE_EVENT.ADDRESS_COMPONENT_STREET' | translate }}</span>
+                    </div>
+                    
+                    <div 
+                      class="component-chip"
+                      [class.component-chip--valid]="addressValidation.hasNumber"
+                      [class.component-chip--invalid]="!addressValidation.hasNumber">
+                      <span class="component-icon">{{ addressValidation.hasNumber ? '✓' : '✗' }}</span>
+                      <span class="component-text">{{ 'CREATE_EVENT.ADDRESS_COMPONENT_NUMBER' | translate }}</span>
+                    </div>
+                    
+                    <div 
+                      class="component-chip"
+                      [class.component-chip--valid]="addressValidation.hasPostalCode"
+                      [class.component-chip--invalid]="!addressValidation.hasPostalCode">
+                      <span class="component-icon">{{ addressValidation.hasPostalCode ? '✓' : '✗' }}</span>
+                      <span class="component-text">{{ 'CREATE_EVENT.ADDRESS_COMPONENT_POSTAL' | translate }}</span>
+                    </div>
+                    
+                    <div 
+                      class="component-chip"
+                      [class.component-chip--valid]="addressValidation.hasCity"
+                      [class.component-chip--invalid]="!addressValidation.hasCity">
+                      <span class="component-icon">{{ addressValidation.hasCity ? '✓' : '✗' }}</span>
+                      <span class="component-text">{{ 'CREATE_EVENT.ADDRESS_COMPONENT_CITY' | translate }}</span>
+                    </div>
+                    
+                    <div 
+                      class="component-chip"
+                      [class.component-chip--valid]="addressValidation.hasCountry"
+                      [class.component-chip--invalid]="!addressValidation.hasCountry">
+                      <span class="component-icon">{{ addressValidation.hasCountry ? '✓' : '✗' }}</span>
+                      <span class="component-text">{{ 'CREATE_EVENT.ADDRESS_COMPONENT_COUNTRY' | translate }}</span>
+                    </div>
+                  </div>
+
+                  <div class="validation-message">
+                    <div class="validation-alert validation-alert--success" *ngIf="addressValidation.isValid">
+                      <span class="alert-icon">✓</span>
+                      <span class="alert-text">{{ 'CREATE_EVENT.ADDRESS_VALID_COMPLETE' | translate }}</span>
+                    </div>
+                    
+                    <div class="validation-alert validation-alert--warning" *ngIf="!addressValidation.isValid && addressValidation.completeness >= 50">
+                      <span class="alert-icon">⚠️</span>
+                      <div class="alert-content">
+                        <span class="alert-text">{{ 'CREATE_EVENT.ADDRESS_INCOMPLETE' | translate }}</span>
+                        <small class="alert-details">
+                          {{ 'CREATE_EVENT.ADDRESS_MISSING' | translate }}: {{ addressValidation.missingComponents.join(', ') }}
+                        </small>
+                      </div>
+                    </div>
+                    
+                    <div class="validation-alert validation-alert--error" *ngIf="!addressValidation.isValid && addressValidation.completeness < 50">
+                      <span class="alert-icon">✗</span>
+                      <div class="alert-content">
+                        <span class="alert-text">{{ 'CREATE_EVENT.ADDRESS_INVALID' | translate }}</span>
+                        <small class="alert-details">
+                          {{ addressValidation.warnings[0] || ('CREATE_EVENT.ADDRESS_PROVIDE_MORE_SPECIFIC' | translate) }}
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="formatted-address" *ngIf="addressValidation.formattedAddress && addressValidation.isValid">
+                    <div class="formatted-header">
+                      <span class="formatted-icon">📍</span>
+                      <span class="formatted-title">{{ 'CREATE_EVENT.ADDRESS_FORMATTED_TITLE' | translate }}</span>
+                    </div>
+                    <div class="formatted-text">{{ addressValidation.formattedAddress }}</div>
+                  </div>
+                </div>
+
+                <small class="form-hint" *ngIf="!newEvent.address || !addressValidation">
+                  <span class="hint-icon">💡</span>
+                  {{ 'CREATE_EVENT.ADDRESS_EXAMPLE_HINT' | translate }}
+                </small>
+              </div>
+
+              <div class="form-group categoria-searchable">
+                <label for="categoria">{{ 'CREATE_EVENT_EXTENDED.CATEGORY_LABEL' | translate }}</label>
+                <div class="categoria-input-wrapper">
+                  <input
+                    id="categoria"
+                    type="text"
+                    [(ngModel)]="categoriaSearch"
+                    name="categoriaSearch"
+                    [placeholder]="'CREATE_EVENT_EXTENDED.CATEGORY_SEARCH_PLACEHOLDER' | translate"
+                    class="categoria-input"
+                    (focus)="onCategoriaInputFocus()"
+                    (blur)="onCategoriaInputBlur()"
+                    (input)="onCategoriaSearchChange()"
+                    autocomplete="off"
+                    required
+                  />
+                  <span class="categoria-arrow">▼</span>
+                  
+                  <div class="categoria-dropdown" *ngIf="showCategoriaDropdown && categoriasFiltradas.length > 0">
+                    <div class="categoria-count">
+                      {{ 'CREATE_EVENT_EXTENDED.CATEGORY_COUNT' | translate : {count: categoriasFiltradas.length} }}
+                    </div>
+                    <div class="categoria-options">
+                      <button
+                        type="button"
+                        class="categoria-option"
+                        *ngFor="let cat of categoriasFiltradas"
+                        (click)="selectCategoria(cat)"
+                        [class.selected]="newEvent.categoria === cat"
+                      >
+                        {{ cat }}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="categoria-dropdown categoria-no-results" *ngIf="showCategoriaDropdown && categoriasFiltradas.length === 0">
+                    <div class="categoria-empty">
+                      ❌ {{ 'CREATE_EVENT_EXTENDED.CATEGORY_NO_RESULTS' | translate : {query: categoriaSearch} }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="maxParticipantes">{{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_LABEL' | translate }}</label>
+                <div class="max-participants-wrapper">
+                  <input
+                    id="maxParticipantes"
+                    type="number"
+                    [(ngModel)]="newEvent.maxParticipantes"
+                    (input)="onMaxParticipantesChange()"
+                    name="maxParticipantes"
+                    [placeholder]="'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_PLACEHOLDER' | translate"
+                    class="max-participants-input"
+                    min="1"
+                    step="1"
+                  />
+                  <button 
+                    type="button" 
+                    class="btn-unlimited"
+                    (click)="setUnlimitedParticipants()"
+                    [class.active]="!newEvent.maxParticipantes">
+                    ∞ {{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_UNLIMITED' | translate }}
+                  </button>
+                </div>
+                <small class="form-hint">
+                  <span class="hint-icon">💡</span>
+                  {{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_HINT' | translate }}
+                </small>
+                <small class="error-text" *ngIf="formSubmitted && newEvent.maxParticipantes !== null && newEvent.maxParticipantes !== undefined && newEvent.maxParticipantes <= 0">
+                  {{ 'CREATE_EVENT_EXTENDED.MAX_PARTICIPANTS_ERROR_MIN' | translate }}
+                </small>
+                <div *ngIf="newEvent.isPrivate && newEvent.maxParticipantes !== null && newEvent.maxParticipantes !== undefined && newEvent.maxParticipantes > 0" 
+                     class="form-hint-validation">
+                  <span *ngIf="newEvent.maxParticipantes !== undefined && newEvent.maxParticipantes >= amigosSeleccionados.length + 1" 
+                        class="hint-success">
+                    ✓ Límite suficiente para {{ amigosSeleccionados.length }} invitados + 1 creador
+                  </span>
+                  <span *ngIf="newEvent.maxParticipantes !== undefined && newEvent.maxParticipantes < amigosSeleccionados.length + 1" 
+                        class="hint-error">
+                    ⚠ Necesitas al menos {{ amigosSeleccionados.length + 1 }} plazas
+                  </span>
+                </div>
+              </div>
+
+              <div class="form-group form-group--full">
+                <label class="toggle-container">
+                  <input 
+                    type="checkbox" 
+                    [(ngModel)]="newEvent.isPrivate"
+                    (change)="onPrivateChange()"
+                    name="isPrivate"
+                    class="toggle-input">
+                  <span class="toggle-label">
+                    <span class="toggle-icon">🔒</span>
+                    {{ 'CREATE_EVENT_EXTENDED.PRIVATE_LABEL' | translate }}
+                  </span>
+                </label>
+                <small class="form-hint">
+                  {{ 'CREATE_EVENT_EXTENDED.PRIVATE_HINT' | translate }}
+                </small>
+              </div>
+
+              <div class="form-group form-group--full" *ngIf="newEvent.isPrivate">
+                <label>{{ 'CREATE_EVENT_EXTENDED.INVITE_FRIENDS_LABEL' | translate : {count: amigosSeleccionados.length} }}</label>
+                
+                <div class="amigos-selector">
+
+                  <div class="search-amigos">
+                    <input 
+                      type="text" 
+                      [(ngModel)]="searchAmigoQuery"
+                      name="searchAmigo"
+                      [placeholder]="'CREATE_EVENT_EXTENDED.SEARCH_FRIENDS_PLACEHOLDER' | translate"
+                      class="search-input">
+                  </div>
+
+                  <div class="selection-buttons" *ngIf="amigos.length > 0">
+                    <button 
+                      type="button" 
+                      (click)="seleccionarTodosAmigos()"
+                      class="btn-selection">
+                      ✓ {{ 'CREATE_EVENT_EXTENDED.SELECT_ALL_BUTTON' | translate }}
+                    </button>
+                    <button 
+                      type="button" 
+                      (click)="deseleccionarTodosAmigos()"
+                      class="btn-selection">
+                      ✗ {{ 'CREATE_EVENT_EXTENDED.DESELECT_ALL_BUTTON' | translate }}
+                    </button>
+                  </div>
+
+                  <div class="amigos-list" *ngIf="amigos.length > 0">
+                    <div 
+                      *ngFor="let amigo of amigosFiltrados" 
+                      class="amigo-item"
+                      [class.selected]="isAmigoSeleccionado(amigo._id)"
+                      (click)="toggleAmigoSeleccion(amigo._id)">
+                      <div class="amigo-info">
+                        <div class="amigo-avatar">
+                          {{ amigo.username.charAt(0).toUpperCase() }}
+                        </div>
+                        <div class="amigo-details">
+                          <span class="amigo-name">{{ amigo.username }}</span>
+                          <span class="amigo-email">{{ amigo.gmail }}</span>
+                        </div>
+                      </div>
+                      <div class="amigo-checkbox">
+                        <span *ngIf="isAmigoSeleccionado(amigo._id)" class="check-icon">✓</span>
+                      </div>
+                    </div>
+
+                    <div *ngIf="amigosFiltrados.length === 0 && searchAmigoQuery" class="no-amigos">
+                      <p>{{ 'CREATE_EVENT_EXTENDED.NO_FRIENDS_FOUND' | translate : {query: searchAmigoQuery} }}</p>
+                    </div>
+                  </div>
+
+                  <div *ngIf="amigos.length === 0" class="no-amigos">
+                    <div class="empty-amigos">
+                      <span class="icon">👥</span>
+                      <p>{{ 'CREATE_EVENT_EXTENDED.NO_FRIENDS_TITLE' | translate }}</p>
+                      <small>{{ 'CREATE_EVENT_EXTENDED.NO_FRIENDS_HINT' | translate }}</small>
+                    </div>
+                  </div>
+
+                  <div class="selected-count" *ngIf="amigosSeleccionados.length > 0">
+                    <span class="count-icon">✓</span>
+                    <span>{{ 'CREATE_EVENT_EXTENDED.SELECTED_COUNT' | translate : {count: amigosSeleccionados.length} }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="dateStr">{{ 'CREATE_EVENT.FIELD_DATE_LABEL' | translate }}</label>
+                <input
+                  id="dateStr"
+                  type="date"
+                  [(ngModel)]="dateStr"
+                  name="dateStr"
+                  [attr.aria-label]="'CREATE_EVENT.FIELD_DATE_LABEL' | translate"
+                  [attr.min]="todayISO"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="timeStr">{{ 'CREATE_EVENT.FIELD_TIME_LABEL' | translate }}</label>
+                <input
+                  id="timeStr"
+                  type="time"
+                  [(ngModel)]="timeStr"
+                  name="timeStr"
+                  [attr.aria-label]="'CREATE_EVENT.FIELD_TIME_LABEL' | translate"
+                />
+              </div>
+
+              <div class="form-group form-group--full">
+                <label>{{ 'CREATE_EVENT.FIELD_DATE_LABEL' | translate }} & {{ 'CREATE_EVENT.FIELD_TIME_LABEL' | translate }}</label>
+                <div class="schedule-controls">
+                  <button class="btn btn--primary" type="button" (click)="setSchedule()">
+                    ✓ {{ 'CREATE_EVENT.SCHEDULE_SET' | translate }}
+                  </button>
+                  <button
+                    class="btn btn--danger-outline"
+                    type="button"
+                    *ngIf="newEvent.schedule"
+                    (click)="clearSchedule()">
+                    ✗ {{ 'CREATE_EVENT.SCHEDULE_CLEAR' | translate }}
+                  </button>
+                  <div class="schedule-display">
+                    <strong>{{ 'CREATE_EVENT.SCHEDULE_SELECTED' | translate }}</strong>
+                    <span *ngIf="newEvent.schedule; else noHorario">
+                      {{ getScheduleText(newEvent) }}
+                    </span>
+                    <ng-template #noHorario>
+                      <em>{{ 'CREATE_EVENT.SCHEDULE_NONE' | translate }}</em>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="msg msg--error" *ngIf="errorMessage">
+              {{ 'CREATE_EVENT.ERROR_MESSAGE_PREFIX' | translate }} {{ errorMessage }}
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn--primary btn--large" type="submit" [disabled]="saving">
+                {{ saving ? ('CREATE_EVENT.SUBMIT_SAVING' | translate) : ('CREATE_EVENT.SUBMIT_DEFAULT' | translate) }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

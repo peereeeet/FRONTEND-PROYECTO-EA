@@ -1,49 +1,44 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators, FormArray, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
-import { TruncatePipe } from '../../pipes/truncate.pipe';
 import { MaskEmailPipe } from '../../pipes/maskEmail.pipe';
 import { Evento } from '../../models/evento.model';
 import { EventoService } from '../../services/evento.service';
 import { Location } from '@angular/common';
-import { DynamicTableComponent, TableColumn } from '../table/table.component';
+import { ThemeService } from '../../services/theme.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-usuaris',
   templateUrl: './usuaris.component.html',
   styleUrls: ['./usuaris.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, MaskEmailPipe, DynamicTableComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MaskEmailPipe, TranslateModule]
 })
 export class UsuarisComponent implements OnInit {
+  private themeService = inject(ThemeService);
+  theme = this.themeService.theme;
+  currentLang: 'es' | 'en' | 'cat' | 'fr' = (localStorage.getItem('lang') as any) || 'es';
+  showLangMenu = false;
+
   usuarios: User[] = [];
   desplegado: boolean[] = [];
   mostrarPassword: boolean[] = [];
 
-  showTableView: boolean = false;
-  tableColumns: TableColumn[] = [
-    { key: 'username', label: 'Nombre de Usuario', sortable: true },
-    { key: 'gmail', label: 'Email', sortable: true },
-    { key: 'birthday', label: 'Cumpleaños', sortable: true, type: 'date' },
-    { key: 'eventCount', label: 'Nº Eventos', sortable: true },
-    { key: 'actions', label: 'Acciones', type: 'actions' }
-  ];
+  userForm!: FormGroup;
+  tempInterest: string = '';
 
-  nuevoUsuario: User = {
-    username: '',
-    gmail: '',
-    password: '',
-    birthday: new Date(),
-    eventos: []
-  };
-
-  birthdayStr: string = this.todayISO();
-  confirmarPassword: string = '';
   usuarioEdicion: User | null = null;
   indiceEdicion: number | null = null;
   formSubmitted = false;
+  usuarioAEliminar: User | null = null;
+  errorMessage = '';
+  emailExists: boolean = false;
+  isCheckingEmail: boolean = false;
+  isCheckingUsername = false;
+  usernameExists = false;
 
   showDeleteModal = false;
   private pendingDeleteIndex: number | null = null;
@@ -54,155 +49,437 @@ export class UsuarisComponent implements OnInit {
 
   page = 1;
   pageSize = 6;
+  totalUsuarios = 0;
+  totalPagesBackend = 1;
 
   todosEventos: Evento[] = [];
   private eventosById = new Map<string, Evento>();
 
+  showEditModal = false;
+  editingUser: User | null = null;
+  editForm!: FormGroup;
+  
+  interestCatalog = [
+    'Deportes', 'Música', 'Cultura', 'Gastronomía',
+    'Tecnología', 'Naturaleza', 'Arte', 'Cine',
+    'Lectura', 'Viajes', 'Fotografía', 'Juegos'
+  ];
+
   constructor(
     private userService: UserService,
     private eventoService: EventoService,
-    private location: Location
+    private location: Location,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
-    this.eventoService.getEventos().subscribe({
-      next: (evts) => {
-        this.todosEventos = evts.map(e => ({
-          ...e,
-          schedule: Array.isArray(e.schedule) ? e.schedule : (e.schedule ? [e.schedule as any] : []),
-          participantes: Array.isArray((e as any).participantes) ? (e as any).participantes : ((e as any).participants || [])
-        }));
-        this.eventosById.clear();
-        this.todosEventos.forEach(e => { if (e._id) this.eventosById.set(e._id, e); });
+    this.initForm();
+    this.loadEventos();
+    this.loadUsers();
+  }
+
+  private initForm(): void {
+    this.userForm = new FormGroup({
+      username: new FormControl('', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(30),
+        Validators.pattern(/^[a-zA-Z][a-zA-Z0-9_]*$/),
+        this.restrictedUsernameValidator()
+      ]),
+      gmail: new FormControl('', [
+        Validators.required,
+        Validators.email,
+        Validators.maxLength(100),
+        this.backendEmailValidator()
+      ]),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(128),
+        this.backendPasswordValidator()
+      ]),
+      confirmPassword: new FormControl('', [Validators.required]),
+      birthday: new FormControl(this.todayISO(), [
+        Validators.required,
+        this.backendBirthdayValidator()
+      ]),
+      rol: new FormControl('usuario', [Validators.required]),
+      interests: new FormArray([])
+    }, { validators: this.passwordMatchValidator });
+  }
+
+  get interestsFormArray(): FormArray {
+    return this.userForm.get('interests') as FormArray;
+  }
+
+  addInterestFromInput(): void {
+    const trimmed = this.tempInterest.trim();
+    if (!trimmed) return;
+    
+    const currentInterests = this.interestsFormArray.value as string[];
+    if (currentInterests.includes(trimmed)) {
+      this.tempInterest = '';
+      return;
+    }
+    
+    this.interestsFormArray.push(new FormControl(trimmed));
+    this.tempInterest = '';
+  }
+
+  removeInterest(index: number): void {
+    this.interestsFormArray.removeAt(index);
+  }
+
+
+  private restrictedUsernameValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const restricted = ['admin', 'root', 'system', 'null', 'undefined'];
+      if (control.value && restricted.includes(control.value.toLowerCase())) {
+        return { restricted: true };
+      }
+      return null;
+    };
+  }
+
+  private backendEmailValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+
+      const emailRegex = /^[a-zA-Z0-9]([a-zA-Z0-9._-]*[a-zA-Z0-9])?@[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?\\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(value)) return { format: true };
+
+      const temporaryEmailDomains = [
+        'tempmail.com', '10minutemail.com', 'guerrillamail.com', 'mailinator.com',
+        'throwaway.email', 'temp-mail.org', 'maildrop.cc', 'getnada.com',
+        'trashmail.com', 'sharklasers.com'
+      ];
+      const domain = value.split('@')[1]?.toLowerCase();
+      if (temporaryEmailDomains.includes(domain)) return { temporary: true };
+
+      const [localPart, domainPart] = value.split('@');
+      if (localPart.length > 64) return { localTooLong: true };
+      if (domainPart.length > 253) return { domainTooLong: true };
+      if (/\\.\\./.test(value)) return { consecutiveDots: true };
+      if (localPart.startsWith('.') || localPart.endsWith('.')) return { edgeDots: true };
+
+      return null;
+    };
+  }
+
+  private backendPasswordValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+
+      const errors: any = {};
+      if (!/[A-Z]/.test(value)) errors.missingUpper = true;
+      if (!/[a-z]/.test(value)) errors.missingLower = true;
+      if (!/[0-9]/.test(value)) errors.missingNumber = true;
+      if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) errors.missingSpecial = true;
+
+      const commonPasswords = [
+        'password', 'password123', '12345678', 'qwerty', 'abc123',
+        'monkey', '1234567890', 'letmein', 'trustno1', 'dragon',
+        'baseball', 'iloveyou', 'master', 'sunshine', 'ashley',
+        'bailey', 'passw0rd', 'shadow', '123456', 'admin123'
+      ];
+      if (commonPasswords.some(common => value.toLowerCase().includes(common))) errors.common = true;
+
+      const sequences = ['123', 'abc', 'qwerty', 'asdf'];
+      if (sequences.some(seq => value.toLowerCase().includes(seq))) errors.sequence = true;
+
+      if (/(.)\1{2,}/.test(value)) errors.repeatChars = true;
+
+      return Object.keys(errors).length ? errors : null;
+    };
+  }
+
+  private backendBirthdayValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+
+      const birthday = new Date(value);
+      const today = new Date();
+      if (birthday > today) return { future: true };
+
+      const age = today.getFullYear() - birthday.getFullYear();
+      const monthDiff = today.getMonth() - birthday.getMonth();
+      const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())
+        ? age - 1
+        : age;
+
+      if (actualAge < 13) return { underAge: true };
+      if (actualAge > 120) return { overAge: true };
+
+      return null;
+    };
+  }
+
+  private passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
+    const pass = group.get('password')?.value;
+    const confirm = group.get('confirmPassword')?.value;
+    return pass === confirm ? null : { mismatch: true };
+  }
+
+  agregarElemento(): void {
+    this.formSubmitted = true;
+    this.errorMessage = '';
+    this.emailExists = false;
+    this.usernameExists = false;
+
+    if (this.userForm.invalid) return;
+
+    const val = this.userForm.value;
+
+    this.isCheckingEmail = true;
+    this.userService.checkEmailExists(val.gmail, this.usuarioEdicion?._id).subscribe({
+      next: (res) => {
+        this.isCheckingEmail = false;
+        if (res.exists) {
+          this.emailExists = true;
+          return;
+        }
+
+        this.isCheckingUsername = true;
+        this.userService.checkUsernameExists(val.username, this.usuarioEdicion?._id).subscribe({
+          next: (res) => {
+            this.isCheckingUsername = false;
+            if (res.exists) {
+              this.usernameExists = true;
+              return;
+            }
+
+            const birthdayDate = this.parseAsUTCDate(val.birthday);
+
+            if (this.indiceEdicion !== null) {
+              const actualizado: User = {
+                ...this.usuarioEdicion,
+                username: val.username,
+                gmail: val.gmail,
+                birthday: birthdayDate,
+                rol: val.rol,
+                interests: val.interests
+              };
+              if (val.password) actualizado.password = val.password;
+
+              this.pendingUpdateUser = actualizado;
+              this.pendingUpdateIndex = this.indiceEdicion;
+              this.showUpdateModal = true;
+              return;
+            }
+
+            const usuarioJSON: User = {
+              username: val.username,
+              gmail: val.gmail,
+              password: val.password,
+              birthday: birthdayDate,
+              eventos: [],
+              rol: val.rol,
+              interests: val.interests,
+              isActive: true
+            };
+
+            this.userService.addUser(usuarioJSON).subscribe(() => {
+              this.loadUsers();
+              this.resetFormInternal();
+            });
+          },
+          error: () => (this.isCheckingUsername = false)
+        });
+      },
+      error: () => {
+        this.isCheckingEmail = false;
+        this.errorMessage = this.translate.instant('BACKOFFICE.USERS.ERR_EMAIL_VERIFY');
+      }
+    });
+  }
+
+  cancelarEdicion(): void {
+    this.resetFormInternal();
+  }
+
+  private resetFormInternal(): void {
+    this.indiceEdicion = null;
+    this.usuarioEdicion = null;
+    this.formSubmitted = false;
+    this.userForm.reset({
+      username: '',
+      gmail: '',
+      password: '',
+      confirmPassword: '',
+      birthday: this.todayISO(),
+      rol: 'usuario'
+    });
+    this.interestsFormArray.clear();
+    
+    this.userForm.get('password')?.setValidators([
+      Validators.required,
+      Validators.minLength(8),
+      Validators.maxLength(128),
+      this.backendPasswordValidator()
+    ]);
+    this.userForm.get('confirmPassword')?.setValidators([Validators.required]);
+    this.userForm.get('password')?.updateValueAndValidity();
+    this.userForm.get('confirmPassword')?.updateValueAndValidity();
+  }
+
+  prepararEdicion(usuario: User, index: number): void {
+    this.usuarioEdicion = { ...usuario };
+    this.indiceEdicion = index;
+    this.desplegado = this.desplegado.map((_, i) => i === index);
+
+    let birthdayStr = this.todayISO();
+    if (usuario.birthday) {
+      const d = new Date(usuario.birthday as string | Date);
+      birthdayStr = this.toISODate(d);
+    }
+
+    this.userForm.patchValue({
+      username: usuario.username,
+      gmail: usuario.gmail,
+      password: '',
+      confirmPassword: '',
+      birthday: birthdayStr,
+      rol: usuario.rol || 'usuario'
+    });
+
+    this.interestsFormArray.clear();
+    (usuario.interests || []).forEach(i => {
+      this.interestsFormArray.push(new FormControl(i));
+    });
+
+    this.userForm.get('password')?.setValidators([
+      Validators.minLength(8),
+      Validators.maxLength(128),
+      this.backendPasswordValidator()
+    ]);
+    this.userForm.get('confirmPassword')?.setValidators([]);
+    this.userForm.get('password')?.updateValueAndValidity();
+    this.userForm.get('confirmPassword')?.updateValueAndValidity();
+  }
+
+  openEditModal(usuario: User, index: number): void {
+    this.editingUser = { ...usuario };
+    this.showEditModal = true;
+
+    let birthdayStr = this.todayISO();
+    if (usuario.birthday) {
+      const d = new Date(usuario.birthday as string | Date);
+      birthdayStr = this.toISODate(d);
+    }
+
+    const interestsGroup: any = {};
+    this.interestCatalog.forEach((interest, i) => {
+      const isSelected = (usuario.interests || []).includes(interest);
+      interestsGroup[`interest_${i}`] = new FormControl(isSelected);
+    });
+
+    this.editForm = new FormGroup({
+      username: new FormControl(usuario.username, [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(30),
+        Validators.pattern(/^[a-zA-Z][a-zA-Z0-9_]*$/),
+        this.restrictedUsernameValidator()
+      ]),
+      gmail: new FormControl(usuario.gmail, [
+        Validators.required,
+        Validators.email,
+        Validators.maxLength(100),
+        this.backendEmailValidator()
+      ]),
+      password: new FormControl('', [
+        Validators.minLength(8),
+        Validators.maxLength(128),
+        this.backendPasswordValidator()
+      ]),
+      confirmPassword: new FormControl(''),
+      birthday: new FormControl(birthdayStr, [
+        Validators.required,
+        this.backendBirthdayValidator()
+      ]),
+      rol: new FormControl(usuario.rol || 'usuario', [Validators.required]),
+      interests: new FormGroup(interestsGroup)
+    }, { validators: this.conditionalPasswordMatchValidator });
+  }
+
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.editingUser = null;
+  }
+
+  saveEdit(): void {
+    if (this.editForm.invalid || !this.editingUser) return;
+
+    const val = this.editForm.value;
+    const selectedInterests: string[] = [];
+    this.interestCatalog.forEach((interest, i) => {
+      if (val.interests[`interest_${i}`]) {
+        selectedInterests.push(interest);
       }
     });
 
-    this.userService.getUsers().subscribe(data => {
-      this.usuarios = data.map(u => ({
-        ...u,
-        birthday: new Date(u.birthday as unknown as string)
-      }));
-      this.desplegado = new Array(this.usuarios.length).fill(false);
-      this.mostrarPassword = new Array(this.usuarios.length).fill(false);
-      this.clampPage();
-    });
-  }
-
-  toggleTableView(): void {
-    this.showTableView = !this.showTableView;
-  }
-
-  get usuariosForTable(): any[] {
-    return this.usuarios.map(usuario => ({
-      ...usuario,
-      eventCount: this.getUserEvents(usuario).length,
-      birthday: new Date(usuario.birthday)
-    }));
-  }
-
-  onTableEdit(user: any): void {
-    const index = this.usuarios.findIndex(u => u._id === user._id);
-    if (index !== -1) {
-      this.prepararEdicion(this.usuarios[index], index);
-      document.querySelector('.form-container')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-
-  onTableDelete(user: any): void {
-    const index = this.usuarios.findIndex(u => u._id === user._id);
-    if (index !== -1) {
-      this.openDeleteModal(index);
-    }
-  }
-
-  exportTable(): void {
-    const csvContent = this.convertToCSV(this.usuariosForTable);
-    this.downloadCSV(csvContent, 'usuarios.csv');
-  }
-
-  private convertToCSV(data: any[]): string {
-    const headers = ['Nombre de Usuario', 'Email', 'Cumpleaños', 'Nº Eventos'];
-    const csvRows = [headers.join(',')];
-    
-    data.forEach(row => {
-      const values = [
-        `"${row.username}"`,
-        `"${row.gmail}"`,
-        `"${new Date(row.birthday).toLocaleDateString()}"`,
-        row.eventCount
-      ];
-      csvRows.push(values.join(','));
-    });
-    
-    return csvRows.join('\n');
-  }
-
-  private downloadCSV(csvContent: string, filename: string): void {
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.click();
-    window.URL.revokeObjectURL(url);
-  }
-
-  goHome(): void { this.location.back(); }
-
-  agregarElemento(userForm: NgForm): void {
-    this.formSubmitted = true;
-
-    if (userForm.invalid) return;
-    if (this.nuevoUsuario.password !== this.confirmarPassword) return;
-    if (this.isFutureBirthday(this.birthdayStr)) return;
-
-    const birthdayDate = this.parseAsUTCDate(this.birthdayStr);
-
-    if (this.indiceEdicion !== null) {
-      const actualizado: User = {
-        ...this.nuevoUsuario,
-        birthday: birthdayDate,
-        _id: this.usuarios[this.indiceEdicion]._id
-      };
-      this.pendingUpdateUser = actualizado;
-      this.pendingUpdateIndex = this.indiceEdicion;
-      this.showUpdateModal = true;
-      return;
-    }
-
-    const usuarioJSON: User = {
-      username: this.nuevoUsuario.username,
-      gmail: this.nuevoUsuario.gmail,
-      password: this.nuevoUsuario.password,
-      birthday: birthdayDate,
-      eventos: this.nuevoUsuario.eventos ?? []
+    const updatedUser: User = {
+      ...this.editingUser,
+      username: val.username,
+      gmail: val.gmail,
+      birthday: this.parseAsUTCDate(val.birthday),
+      rol: val.rol,
+      interests: selectedInterests
     };
 
-    this.userService.addUser(usuarioJSON).subscribe(response => {
-      this.usuarios.push({
-        ...usuarioJSON,
-        _id: response._id,
-        eventos: response.eventos ?? usuarioJSON.eventos
-      });
-      this.desplegado.push(false);
-      this.mostrarPassword.push(false);
-      this.clampPage();
-      userForm.resetForm();
-      this.resetFormInternal();
+    if (val.password && val.password.trim()) {
+      updatedUser.password = val.password;
+    }
+
+    this.userService.updateUser(updatedUser).subscribe(() => {
+      this.loadUsers();
+      this.closeEditModal();
     });
   }
 
-  confirmarUpdate(): void {
-    if (this.pendingUpdateUser == null || this.pendingUpdateIndex == null) {
-      this.closeUpdateModal();
-      return;
+  private conditionalPasswordMatchValidator(group: AbstractControl): ValidationErrors | null {
+    const pass = group.get('password')?.value;
+    const confirm = group.get('confirmPassword')?.value;
+    
+    if (pass && pass.trim()) {
+      return pass === confirm ? null : { mismatch: true };
     }
-    const idx = this.pendingUpdateIndex;
-    this.userService.updateUser(this.pendingUpdateUser).subscribe(response => {
-      this.usuarios[idx] = { ...(response as User) };
-      this.closeUpdateModal();
-      this.resetFormInternal();
-      this.clampPage();
+    return null;
+  }
+
+  toggleDesplegable(index: number): void {
+    this.desplegado[index] = !this.desplegado[index];
+  }
+
+  togglePassword(index: number): void {
+    this.mostrarPassword[index] = !this.mostrarPassword[index];
+  }
+
+  openDeleteModal(index: number): void {
+    this.pendingDeleteIndex = index;
+    this.usuarioAEliminar = this.usuarios[index];
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.pendingDeleteIndex = null;
+    this.usuarioAEliminar = null;
+  }
+
+  confirmarDisable(): void {
+    if (this.pendingDeleteIndex === null) return;
+    const usuario = this.usuarios[this.pendingDeleteIndex];
+    if (!usuario._id) return;
+
+    const updatedUser: User = { ...usuario, isActive: !usuario.isActive };
+    this.userService.updateUser(updatedUser).subscribe(() => {
+      this.loadUsers();
+      this.closeDeleteModal();
     });
   }
 
@@ -212,164 +489,123 @@ export class UsuarisComponent implements OnInit {
     this.pendingUpdateIndex = null;
   }
 
-  openDeleteModal(index: number): void {
-    this.pendingDeleteIndex = index;
-    this.showDeleteModal = true;
-  }
+  confirmarUpdate(): void {
+    if (!this.pendingUpdateUser || this.pendingUpdateIndex === null) return;
+    const userId = this.usuarios[this.pendingUpdateIndex]._id;
+    if (!userId) return;
 
-  closeDeleteModal(): void {
-    this.pendingDeleteIndex = null;
-    this.showDeleteModal = false;
-  }
-
-  confirmarEliminar(): void {
-    if (this.pendingDeleteIndex == null) {
-      this.closeDeleteModal();
-      return;
-    }
-    const idx = this.pendingDeleteIndex;
-    const usuarioAEliminar = this.usuarios[idx];
-
-    if (!usuarioAEliminar._id) {
-      alert('El usuario no se puede eliminar porque no está registrado en la base de datos.');
-      this.closeDeleteModal();
-      return;
-    }
-
-    this.userService.deleteUserById(usuarioAEliminar._id).subscribe(
-      () => {
-        this.usuarios.splice(idx, 1);
-        this.desplegado.splice(idx, 1);
-        this.mostrarPassword.splice(idx, 1);
-        this.clampPage();
-        this.closeDeleteModal();
-      },
-      () => {
-        alert('Error al eliminar el usuario. Por favor, inténtalo de nuevo.');
-        this.closeDeleteModal();
-      }
-    );
-  }
-
-  cancelarEdicion(userForm: NgForm): void {
-    this.indiceEdicion = null;
-    this.usuarioEdicion = null;
-    userForm.resetForm();
-    this.resetFormInternal();
-  }
-
-  private resetFormInternal(): void {
-    this.nuevoUsuario = {
-      username: '',
-      gmail: '',
-      password: '',
-      birthday: new Date(),
-      eventos: []
-    };
-    this.birthdayStr = this.todayISO();
-    this.confirmarPassword = '';
-    this.formSubmitted = false;
-    this.indiceEdicion = null;
-  }
-
-  prepararEdicion(usuario: User, index: number): void {
-    this.usuarioEdicion = { ...usuario };
-    this.nuevoUsuario = { ...usuario };
-    this.indiceEdicion = index;
-
-    this.desplegado = this.desplegado.map((_, i) => i === index);
-    this.birthdayStr = this.toISODate(new Date(usuario.birthday));
-  }
-
-  toggleDesplegable(index: number): void {
-    const willOpen = !this.desplegado[index];
-    this.desplegado = this.desplegado.map((_, i) => i === index ? willOpen : false);
-  }
-
-  togglePassword(index: number): void {
-    this.mostrarPassword[index] = !this.mostrarPassword[index];
-  }
-
-  private userEventIds(u: User): string[] {
-    return (u.eventos ?? []).map(e => typeof e === 'string' ? e : (e._id ?? '')).filter(Boolean) as string[];
-  }
-
-  getUserEvents(u: User): Evento[] {
-    const ids = new Set(this.userEventIds(u));
-    return this.todosEventos.filter(ev => ev._id && ids.has(ev._id));
-  }
-
-  getUserEventNames(u: User): string {
-    const names = this.getUserEvents(u).map(e => e.name).filter(Boolean);
-    return names.length ? names.join(', ') : '-';
-  }
-
-  getAvailableEvents(u: User): Evento[] {
-    const ids = new Set(this.userEventIds(u));
-    return this.todosEventos.filter(ev => ev._id && !ids.has(ev._id));
-  }
-
-  onAddEvent(u: User, ev: Evento): void {
-    if (!u._id || !ev._id) return;
-    this.userService.addEventToUser(u._id, ev._id).subscribe({
-      next: (updated) => {
-        const idx = this.usuarios.findIndex(x => x._id === updated._id);
-        if (idx >= 0) {
-          const current = this.usuarios[idx];
-          const currentIds = this.userEventIds(current);
-          if (!currentIds.includes(ev._id!)) {
-            current.eventos = [...(current.eventos ?? []), ev._id!];
-          }
-        }
-      },
-      error: () => alert('No se pudo añadir el usuario a ese evento.')
+    this.userService.updateUser(this.pendingUpdateUser).subscribe(() => {
+      this.loadUsers();
+      this.closeUpdateModal();
+      this.resetFormInternal();
     });
   }
 
-  get pagedUsuarios(): User[] {
-    const start = (this.page - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    return this.usuarios.slice(start, end);
+  loadUsers(): void {
+    this.userService.getUsers(this.page, this.pageSize).subscribe((response) => {
+      this.usuarios = response.data;
+      this.totalUsuarios = response.totalItems;
+      this.totalPagesBackend = response.totalPages;
+      this.desplegado = new Array(this.usuarios.length).fill(false);
+      this.mostrarPassword = new Array(this.usuarios.length).fill(false);
+    });
   }
+
+  loadEventos(): void {
+    this.eventoService.getEventos(1, 1000).subscribe((response) => {
+      this.todosEventos = response.data;
+      this.eventosById.clear();
+      response.data.forEach((ev: Evento) => {
+        if (ev._id) this.eventosById.set(ev._id, ev);
+      });
+    });
+  }
+
   get totalPages(): number {
-    return Math.max(1, Math.ceil(this.usuarios.length / this.pageSize));
-  }
-  setPageSize(v: string): void {
-    const n = parseInt(v, 10) || 6;
-    this.pageSize = n;
-    this.page = 1;
-    this.clampPage();
-  }
-  prevPage(): void { if (this.page > 1) this.page--; }
-  nextPage(): void { if (this.page < this.totalPages) this.page++; }
-  idx(i: number): number { return (this.page - 1) * this.pageSize + i; }
-  private clampPage(): void {
-    this.page = Math.min(Math.max(1, this.page), this.totalPages);
+    return this.totalPagesBackend;
   }
 
-  private todayISO(): string {
-    const d = new Date();
-    return d.toISOString().slice(0, 10);
-  }
-  private toISODate(d: Date): string {
-    return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
-      .toISOString()
-      .slice(0, 10);
-  }
-  private parseAsUTCDate(ymd: string): Date {
-    const [y, m, d] = ymd.split('-').map(Number);
-    return new Date(Date.UTC(y, m - 1, d));
-  }
-  private todayUTC(): Date {
-    const t = new Date();
-    return new Date(Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()));
-  }
-  isFutureBirthday(ymd: string): boolean {
-    if (!ymd) return false;
-    return this.parseAsUTCDate(ymd) > this.todayUTC();
+  get pagedUsuarios(): User[] {
+    return this.usuarios;
   }
 
-  isEvento(e: string | Evento): e is Evento {
-    return !!e && typeof e === 'object' && 'name' in e && 'schedule' in e;
+  idx(localIndex: number): number {
+    return (this.page - 1) * this.pageSize + localIndex;
+  }
+
+  nextBackendPage(): void {
+    if (this.page < this.totalPages) {
+      this.page++;
+      this.loadUsers();
+    }
+  }
+
+  prevBackendPage(): void {
+    if (this.page > 1) {
+      this.page--;
+      this.loadUsers();
+    }
+  }
+
+  getUserEventNames(usuario: User): string {
+    if (!usuario.eventos || usuario.eventos.length === 0) {
+      return this.translate.instant('BACKOFFICE.USERS.NO_EVENTS');
+    }
+    return usuario.eventos
+      .map((ev: string | Evento) => {
+        if (typeof ev === 'string') {
+          return this.eventosById.get(ev)?.name || ev;
+        }
+        return ev.name || '';
+      })
+      .join(', ');
+  }
+
+  getAvailableEvents(usuario: User): Evento[] {
+    const userEventIds = new Set(usuario.eventos || []);
+    return this.todosEventos.filter(ev => ev._id && !userEventIds.has(ev._id));
+  }
+
+  onAddEvent(usuario: User, evento: Evento): void {
+    if (!usuario._id || !evento._id) return;
+    this.userService.addEventToUser(usuario._id, evento._id).subscribe(() => {
+      this.loadUsers();
+    });
+  }
+
+  todayISO(): string {
+    const now = new Date();
+    return this.toISODate(now);
+  }
+
+  toISODate(d: Date): string {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  parseAsUTCDate(isoStr: string): Date {
+    const [year, month, day] = isoStr.split('-').map(Number);
+    return new Date(Date.UTC(year, month - 1, day));
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  toggleLangMenu(): void {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  selectLanguage(lang: 'es' | 'en' | 'cat' | 'fr'): void {
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+    this.showLangMenu = false;
+  }
+
+  goHome(): void {
+    this.location.back();
   }
 }
